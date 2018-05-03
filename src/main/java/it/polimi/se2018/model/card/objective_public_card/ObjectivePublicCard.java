@@ -8,36 +8,36 @@ import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
  * @author Matteo Formentin
  */
 public abstract class ObjectivePublicCard {
-    private int ID;
-    private String Name;
-    private String Description;
-    private int Point;
+    private int id;
+    private String name;
+    private String description;
+    private int point;
 
     /**
-     * Return card ID.
+     * Return card id.
      *
-     * @return ID int.
+     * @return id int.
      */
-    public int getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
     /**
-     * Set card ID.
+     * Set card id.
      *
-     * @param ID int
+     * @param id int
      */
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
      * Return card name.
      *
-     * @return Name String.
+     * @return name String.
      */
     public String getName() {
-        return Name;
+        return name;
     }
 
     /**
@@ -46,16 +46,16 @@ public abstract class ObjectivePublicCard {
      * @param name String
      */
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     /**
      * Return card description.
      *
-     * @return Description String.
+     * @return description String.
      */
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     /**
@@ -64,16 +64,16 @@ public abstract class ObjectivePublicCard {
      * @param description String.
      */
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
     /**
      * Return card objective point.
      *
-     * @return Point int.
+     * @return point int.
      */
     public int getPoint() {
-        return Point;
+        return point;
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class ObjectivePublicCard {
      * @param point int.
      */
     public void setPoint(int point) {
-        Point = point;
+        this.point = point;
     }
 
     /**

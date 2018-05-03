@@ -16,7 +16,7 @@ import it.polimi.se2018.model.roundTrack.DiceStack;
 public class RigaSughero extends ToolCard {
     public RigaSughero() {
         super();
-        super.setID(8);
+        super.setId(8);
         super.setName("Tenaglia a Rotelle");
         super.setDescription("Dopo aver scelto un dado, piazzalo in una casella che non sia adiacente a un altro dado\n" +
                 "Devi rispettare tutte le restrizioni di piazzamento");

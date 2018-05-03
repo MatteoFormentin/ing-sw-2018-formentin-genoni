@@ -15,7 +15,7 @@ import it.polimi.se2018.model.roundTrack.DiceStack;
 public class TaglierinaCircolare extends ToolCard {
     public TaglierinaCircolare() {
         super();
-        super.setID(4);
+        super.setId(4);
         super.setName("Taglierina Circolare");
         super.setDescription("Dopo aver scelto un dado, scambia quel dado con un dado sul Tracciato dei Round");
     }

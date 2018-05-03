@@ -9,36 +9,36 @@ import it.polimi.se2018.model.dice.DiceColor;
  * @author Matteo Formentin
  */
 public abstract class ObjectivePrivateCard {
-    private int ID;
-    private String Name;
-    private String Description;
+    private int id;
+    private String name;
+    private String description;
     private DiceColor diceColor;
 
     /**
-     * Return card ID.
+     * Return card id.
      *
-     * @return ID int.
+     * @return id int.
      */
-    public int getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
     /**
-     * Set card ID.
+     * Set card id.
      *
-     * @param ID int
+     * @param id int
      */
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
      * Return card name.
      *
-     * @return Name String.
+     * @return name String.
      */
     public String getName() {
-        return Name;
+        return name;
     }
 
     /**
@@ -47,7 +47,7 @@ public abstract class ObjectivePrivateCard {
      * @param name String
      */
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     /**
@@ -56,16 +56,16 @@ public abstract class ObjectivePrivateCard {
      * @return Description String.
      */
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     /**
      * Set card description.
      *
-     * @param description String.
+     * @param  description String.
      */
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
     /**
@@ -80,7 +80,7 @@ public abstract class ObjectivePrivateCard {
     /**
      * Set card objective color.
      *
-     * @param diceColor DiceColor.
+     * @param  diceColor DiceColor.
      */
     public void setDiceColor(DiceColor diceColor) {
         this.diceColor = diceColor;
@@ -90,7 +90,7 @@ public abstract class ObjectivePrivateCard {
     /**
      * Calculate card point coming from objective.
      *
-     * @param windowPatternCard WindowPatternCard.
+     * @param  windowPatternCard WindowPatternCard.
      */
     public abstract int calculatePoint(WindowPatternCard windowPatternCard);
 

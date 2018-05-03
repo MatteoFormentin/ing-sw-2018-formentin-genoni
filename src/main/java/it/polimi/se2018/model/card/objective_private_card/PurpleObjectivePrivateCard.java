@@ -14,7 +14,7 @@ import it.polimi.se2018.model.dice.DiceColor;
 public class PurpleObjectivePrivateCard extends ObjectivePrivateCard {
     public PurpleObjectivePrivateCard() {
         super();
-        super.setID(4);
+        super.setId(4);
         super.setDiceColor(DiceColor.Purple);
         super.setName("Sfumature Viola");
         super.setDescription("Somma dei valori su tutti i dadi viola");

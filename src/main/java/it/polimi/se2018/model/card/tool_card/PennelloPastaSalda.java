@@ -16,7 +16,7 @@ import it.polimi.se2018.model.roundTrack.DiceStack;
 public class PennelloPastaSalda extends ToolCard {
     public PennelloPastaSalda() {
         super();
-        super.setID(5);
+        super.setId(5);
         super.setName("Taglierina Circolare");
         super.setDescription("Dopo aver scelto un dado, tira nuovamente quel dado\n" +
                 "Se non puoi piazzarlo, riponilo nella Riserva");

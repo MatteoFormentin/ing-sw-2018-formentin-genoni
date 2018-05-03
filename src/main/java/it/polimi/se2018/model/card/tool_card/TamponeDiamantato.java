@@ -16,7 +16,7 @@ import it.polimi.se2018.model.roundTrack.DiceStack;
 public class TamponeDiamantato extends ToolCard {
     public TamponeDiamantato() {
         super();
-        super.setID(9);
+        super.setId(9);
         super.setName("Tampone Diamantato");
         super.setDescription("Dopo aver scelto un dado, giralo sulla faccia opposta \n" +
                 "6 diventa 1, 5 diventa 2, 4 diventa 3 ecc.");

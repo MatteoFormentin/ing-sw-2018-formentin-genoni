@@ -12,7 +12,7 @@ package it.polimi.se2018.model.card.tool_card;
 public class AlesatoreLaminaRame extends ToolCard {
     public AlesatoreLaminaRame() {
         super();
-        super.setID(2);
+        super.setId(2);
         super.setName("Alesatore per lamina di rame");
         super.setDescription("Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di valore\n" +
                 "Devi rispettare tutte le altre restrizioni di piazzamento");

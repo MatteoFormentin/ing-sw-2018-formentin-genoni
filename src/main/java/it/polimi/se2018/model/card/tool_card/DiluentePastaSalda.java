@@ -16,7 +16,7 @@ import it.polimi.se2018.model.roundTrack.DiceStack;
 public class DiluentePastaSalda extends ToolCard {
     public DiluentePastaSalda() {
         super();
-        super.setID(10);
+        super.setId(10);
         super.setName("Diluente per Pasta Salda");
         super.setDescription("Dopo aver scelto un dado, riponilo nel Sacchetto, poi pescane uno dal Sacchetto\n" +
                 "Scegli il valore del nuovo dado e piazzalo, rispettando tutte le restrizioni di piazzamento");

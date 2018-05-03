@@ -16,7 +16,7 @@ import it.polimi.se2018.model.roundTrack.DiceStack;
 public class TaglierinaManuale extends ToolCard {
     public TaglierinaManuale() {
         super();
-        super.setID(11);
+        super.setId(11);
         super.setName("Taglierina Manuale");
         super.setDescription("Muovi fino a due dadi dello stesso colore di un solo dado sul Tracciato dei Round\n" +
                 "Devi rispettare tutte le restrizioni di piazzamento");

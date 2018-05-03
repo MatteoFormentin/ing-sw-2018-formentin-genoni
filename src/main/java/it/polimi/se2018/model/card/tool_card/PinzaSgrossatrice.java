@@ -16,7 +16,7 @@ import it.polimi.se2018.model.roundTrack.DiceStack;
 public class PinzaSgrossatrice extends ToolCard {
     public PinzaSgrossatrice() {
         super();
-        super.setID(0);
+        super.setId(0);
         super.setName("Pinza Sgrossatrice");
         super.setDescription("Dopo aver scelto un dado, aumenta o dominuisci il valore del dado scelto di 1\n" +
                 "Non puoi cambiare un 6 in 1 o un 1 in 6");

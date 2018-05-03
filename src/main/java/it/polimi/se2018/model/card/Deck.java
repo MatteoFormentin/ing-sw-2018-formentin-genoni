@@ -2,26 +2,19 @@ package it.polimi.se2018.model.card;
 
 import it.polimi.se2018.model.card.objective_private_card.*;
 import it.polimi.se2018.model.card.objective_public_card.*;
-import it.polimi.se2018.model.card.tool_card.ToolCard;
+import it.polimi.se2018.model.card.tool_card.*;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 
 import java.util.Random;
 import java.util.TreeSet;
 
 /**
- * Gestisce le carte e l'estrazione delle stesse.
+ * Card factory, extract random card.
  *
  * @author Matteo Formentin
  */
 
 public class Deck {
-    private ObjectivePublicCard[] objectivePublicCard;
-
-    private ToolCard[] toolCard;
-
-    private ObjectivePrivateCard[] objectivePrivateCard;
-
-    private WindowPatternCard[] windowPatternCard;
 
     private TreeSet<Integer> extractedPublic;
     private TreeSet<Integer> extractedPrivate;
@@ -31,11 +24,6 @@ public class Deck {
     //return windowPatternCard[extract(23, extractedWindow)];?
 
     public Deck() {
-        objectivePublicCard = new ObjectivePublicCard[10];
-        objectivePrivateCard = new ObjectivePrivateCard[5];
-        toolCard = new ToolCard[11];
-        windowPatternCard = new WindowPatternCard[24];
-
         extractedPublic = new TreeSet<>();
         extractedPrivate = new TreeSet<>();
         extractedTool = new TreeSet<>();
@@ -43,10 +31,10 @@ public class Deck {
     }
 
     /**
-     * Estrae una carta Obiettivo pubblico casuale.
+     * Extract one random objective public card.
      *
      * @return one random ObjectivePublicCard.
-     * @throws IndexOutOfBoundsException se si verifica un errore nel random.
+     * @throws IndexOutOfBoundsException if random error.
      */
     public ObjectivePublicCard drawObjectivePublicCard() {
         switch (extractInt(10, extractedPublic)) {
@@ -71,15 +59,15 @@ public class Deck {
             case 9:
                 return new DifferentColor();
             default:
-                throw new IndexOutOfBoundsException("Errore nel random");
+                throw new IndexOutOfBoundsException("Error");
         }
     }
 
     /**
-     * Estrae una carta Obiettivo privato casuale.
+     * Extract one random objective private card.
      *
      * @return one random ObjectivePrivateCard.
-     * @throws IndexOutOfBoundsException se si verifica un errore nel random.
+     * @throws IndexOutOfBoundsException if random error.
      */
     public ObjectivePrivateCard drawObjectivePrivateCard() {
         switch (extractInt(4, extractedPrivate)) {
@@ -94,30 +82,63 @@ public class Deck {
             case 4:
                 return new PurpleObjectivePrivateCard();
             default:
-                throw new IndexOutOfBoundsException("Errore nel random");
+                throw new IndexOutOfBoundsException("Error");
         }
     }
 
     /**
-     * Estrae una carta Utensile pubblico casuale.
+     * Extract one random tool card.
      *
      * @return one random ToolCard.
-     * @throws IndexOutOfBoundsException se si verifica un errore nel random.
+     * @throws IndexOutOfBoundsException if random error.
      */
     public ToolCard drawToolCard() {
-        return null;
+        switch (extractInt(11, extractedTool)) {
+            case 0:
+                return new PinzaSgrossatrice();
+            case 1:
+                return new PennelloEglomise();
+            case 2:
+                return new AlesatoreLaminaRame();
+            case 3:
+                return new Lathekin();
+            case 4:
+                return new TaglierinaCircolare();
+            case 5:
+                return new PennelloPastaSalda();
+            case 6:
+                return new Martelletto();
+            case 7:
+                return new TenagliaRotelle();
+            case 8:
+                return new RigaSughero();
+            case 9:
+                return new TamponeDiamantato();
+            case 10:
+                return new DiluentePastaSalda();
+            case 11:
+                return new TaglierinaManuale();
+            default:
+                throw new IndexOutOfBoundsException("Error");
+        }
     }
 
+    /**
+     * Extract one random window pattern card.
+     *
+     * @return one random WindowPatternCard.
+     * @throws IndexOutOfBoundsException if random error.
+     */
     public WindowPatternCard drawWindowPatternCard() {
         return null;
     }
 
     /**
-     * Estrae un intero casuale compreso tra 0 e bound. Salva i risultati in un
-     * TreeSet per evitare ripetizioni
+     * Extract one random integer.
+     * Result are stored in TreeSet to avoid repetition
      *
-     * @param bound     limite superiore intero.
-     * @param extracted TreeSet contenenete i numeri già estratti.
+     * @param bound     integer upper bound limit.
+     * @param extracted TreeSet contains extracted value.
      * @return one random integer between 0 and bound.
      */
     private int extractInt(int bound, TreeSet<Integer> extracted) {

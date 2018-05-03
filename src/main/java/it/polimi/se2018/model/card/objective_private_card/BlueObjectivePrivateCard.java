@@ -14,7 +14,7 @@ import it.polimi.se2018.model.dice.DiceColor;
 public class BlueObjectivePrivateCard extends ObjectivePrivateCard {
     public BlueObjectivePrivateCard() {
         super();
-        super.setID(3);
+        super.setId(3);
         super.setDiceColor(DiceColor.Blue);
         super.setName("Sfumature Blu");
         super.setDescription("Somma dei valori su tutti i dadi blu");

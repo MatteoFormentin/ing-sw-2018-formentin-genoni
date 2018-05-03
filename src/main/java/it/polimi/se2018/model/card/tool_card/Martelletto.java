@@ -16,7 +16,7 @@ import it.polimi.se2018.model.roundTrack.DiceStack;
 public class Martelletto extends ToolCard {
     public Martelletto() {
         super();
-        super.setID(6);
+        super.setId(6);
         super.setName("Taglierina Circolare");
         super.setDescription("Tira nuovamente tutti i dadi della Riserva\n" +
                 "Questa carta può essera usata solo durante il tuo secondo turno, prima di scegliere il secondo dado");

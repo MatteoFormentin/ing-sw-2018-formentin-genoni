@@ -11,7 +11,7 @@ package it.polimi.se2018.model.card.tool_card;
 public class Lathekin extends ToolCard {
     public Lathekin() {
         super();
-        super.setID(3);
+        super.setId(3);
         super.setName("Lathekin");
         super.setDescription("Muovi  esattamente  due  dadi,  rispettando  tutte  le  restrizioni  di  piazzamento");
     }
