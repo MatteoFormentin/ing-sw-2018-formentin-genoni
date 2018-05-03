@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.cell;
+package it.polimi.se2018.model.card.windowPatternCard;
 
 public class Cell {
 
@@ -22,4 +22,5 @@ public class Cell {
     public boolean CheckRestriction() {
         return false;
     }
+
 }

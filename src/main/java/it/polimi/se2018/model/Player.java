@@ -1,7 +1,7 @@
 package it.polimi.se2018.model;
 
 
-import it.polimi.se2018.model.windowPatternCard.WindowPatternCard;
+import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 
 public class Player {
     private int ID;

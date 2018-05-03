@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.windowPatternCard;
+package it.polimi.se2018.model.card.windowPatternCard;
 
 import javafx.scene.control.Cell;
 
@@ -8,15 +8,15 @@ public class WindowPatternCard {
     }
 
     private int ID;
-    private string Name;
+    private String Name;
     private int Level;
     private Cell[] Matrix[4][5];
 
-    public string GetName() {
+    public String GetName() {
         return null;
     }
 
-    public void SetName(string Name) {
+    public void SetName(String Name) {
         return null;
     }
 
@@ -51,4 +51,5 @@ public class WindowPatternCard {
     public boolean InsertDice(int Line, int Column, Dice Dice, boolean ColorR, boolean AdjacentR, boolean ValueR) {
         return false;
     }
+
 }
