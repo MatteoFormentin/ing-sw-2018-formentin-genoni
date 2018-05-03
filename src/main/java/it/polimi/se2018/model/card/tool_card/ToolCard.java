@@ -2,7 +2,7 @@ package it.polimi.se2018.model.card.tool_card;
 
 /**
  * Base class for tool card.
- * Gli id delle carte partono da 0 e sono quindi diminuiti di uno rispetto al cartaceo.
+ * Card id starts form 0 instead of 1.
  *
  * @author Matteo Formentin
  */

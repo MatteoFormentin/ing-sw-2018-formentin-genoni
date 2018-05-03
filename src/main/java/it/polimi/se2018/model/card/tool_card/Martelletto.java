@@ -17,7 +17,7 @@ public class Martelletto extends ToolCard {
     public Martelletto() {
         super();
         super.setId(6);
-        super.setName("Taglierina Circolare");
+        super.setName("Martelletto");
         super.setDescription("Tira nuovamente tutti i dadi della Riserva\n" +
                 "Questa carta può essera usata solo durante il tuo secondo turno, prima di scegliere il secondo dado");
     }
@@ -27,8 +27,8 @@ public class Martelletto extends ToolCard {
      *
      * @param diceStack DiceStack (Riserva).
      */
-    public int effect(DiceStack diceStack) {
-        return 0;
+    public void effect(DiceStack diceStack) {
+
     }
 
 }

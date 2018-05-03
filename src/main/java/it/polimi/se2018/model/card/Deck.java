@@ -70,7 +70,7 @@ public class Deck {
      * @throws IndexOutOfBoundsException if random error.
      */
     public ObjectivePrivateCard drawObjectivePrivateCard() {
-        switch (extractInt(4, extractedPrivate)) {
+        switch (extractInt(5, extractedPrivate)) {
             case 0:
                 return new RedObjectivePrivateCard();
             case 1:
@@ -93,7 +93,7 @@ public class Deck {
      * @throws IndexOutOfBoundsException if random error.
      */
     public ToolCard drawToolCard() {
-        switch (extractInt(11, extractedTool)) {
+        switch (extractInt(12, extractedTool)) {
             case 0:
                 return new PinzaSgrossatrice();
             case 1:
@@ -146,7 +146,7 @@ public class Deck {
         int rand;
         do {
             rand = random.nextInt(bound);
-        } while (!extracted.contains(rand));
+        } while (extracted.contains(rand));
         extracted.add(rand);
         return rand;
     }

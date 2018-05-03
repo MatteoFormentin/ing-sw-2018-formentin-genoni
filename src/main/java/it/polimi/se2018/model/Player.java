@@ -5,39 +5,111 @@ import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 
+/**
+ * Player state and data.
+ *
+ * @author Matteo Formentin
+ */
 public class Player {
-    private int ID;
-    private String Nickname;
-    private int FavorToken;
-    private int Points;
-    private ObjectivePrivateCard PrivateObject;
-    private WindowPatternCard PlayerWindowPattern;
-    private Dice[] HandDice;
-    private int NumberDice;
-    private boolean SecondTurn;
-    private boolean HasUsedDice;
-    public boolean HasUsedToolCard;
+    private int id;
+    private String nickname;
+    private int favorToken;
+    private int points;
+    private ObjectivePrivateCard privateObject;
+    private WindowPatternCard playerWindowPattern;
+    private Dice[] handDice;
+    private int numberDice;
+    private boolean secondTurn;
+    private boolean hasUsedDice;
+    private boolean hasUsedToolCard;
 
-    public void SetNickname(int ID, String nickname) {
+
+    public int getId() {
+        return id;
     }
 
-    public int GetID() {
-        return 0;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String GetNickname() {
-        return null;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void SetFavorToken(int FavorToken) {
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public int GetFavorToken() {
-        return 0;
+    public int getFavorToken() {
+        return favorToken;
     }
 
-    public void SetWindowPattern(WindowPatternCard WindowPattern) {
+    public void setFavorToken(int favorToken) {
+        this.favorToken = favorToken;
+    }
 
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public ObjectivePrivateCard getPrivateObject() {
+        return privateObject;
+    }
+
+    public void setPrivateObject(ObjectivePrivateCard privateObject) {
+        this.privateObject = privateObject;
+    }
+
+    public WindowPatternCard getPlayerWindowPattern() {
+        return playerWindowPattern;
+    }
+
+    public void setPlayerWindowPattern(WindowPatternCard playerWindowPattern) {
+        this.playerWindowPattern = playerWindowPattern;
+    }
+
+    public Dice[] getHandDice() {
+        return handDice;
+    }
+
+    public void setHandDice(Dice[] handDice) {
+        this.handDice = handDice;
+    }
+
+    public int getNumberDice() {
+        return numberDice;
+    }
+
+    public void setNumberDice(int numberDice) {
+        this.numberDice = numberDice;
+    }
+
+    public boolean isSecondTurn() {
+        return secondTurn;
+    }
+
+    public void setSecondTurn(boolean secondTurn) {
+        this.secondTurn = secondTurn;
+    }
+
+    public boolean isHasUsedDice() {
+        return hasUsedDice;
+    }
+
+    public void setHasUsedDice(boolean hasUsedDice) {
+        this.hasUsedDice = hasUsedDice;
+    }
+
+    public boolean isHasUsedToolCard() {
+        return hasUsedToolCard;
+    }
+
+    public void setHasUsedToolCard(boolean hasUsedToolCard) {
+        this.hasUsedToolCard = hasUsedToolCard;
     }
 
 }

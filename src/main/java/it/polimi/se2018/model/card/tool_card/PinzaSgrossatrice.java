@@ -27,8 +27,7 @@ public class PinzaSgrossatrice extends ToolCard {
      *
      * @param diceStack DiceStack (Riserva).
      */
-    public int effect(DiceStack diceStack) {
-        return 0;
-    }
+    public void effect(DiceStack diceStack) {
 
+    }
 }

@@ -3,7 +3,7 @@ package it.polimi.se2018.model.card.tool_card;
 import it.polimi.se2018.model.roundTrack.DiceStack;
 
 /**
- * Tool card Tenaglia a Rotelle.
+ * Tool card Riga in Sughero.
  * <p>
  * Description
  * Dopo aver scelto un dado, piazzalo in una casella che non sia adiacente a un altro dado
@@ -17,7 +17,7 @@ public class RigaSughero extends ToolCard {
     public RigaSughero() {
         super();
         super.setId(8);
-        super.setName("Tenaglia a Rotelle");
+        super.setName("Riga in Sughero");
         super.setDescription("Dopo aver scelto un dado, piazzalo in una casella che non sia adiacente a un altro dado\n" +
                 "Devi rispettare tutte le restrizioni di piazzamento");
     }
@@ -27,8 +27,7 @@ public class RigaSughero extends ToolCard {
      *
      * @param diceStack DiceStack (Riserva).
      */
-    public int effect(DiceStack diceStack) {
-        return 0;
-    }
+    public void effect(DiceStack diceStack) {
 
+    }
 }

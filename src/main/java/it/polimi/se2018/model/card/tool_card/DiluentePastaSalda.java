@@ -27,8 +27,8 @@ public class DiluentePastaSalda extends ToolCard {
      *
      * @param diceStack DiceStack (Riserva).
      */
-    public int effect(DiceStack diceStack/*, DiceBag diceBag*/) {
-        return 0;
+    public void effect(DiceStack diceStack/*, DiceBag diceBag*/) {
+
     }
 
 }

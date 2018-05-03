@@ -17,7 +17,7 @@ public class PennelloPastaSalda extends ToolCard {
     public PennelloPastaSalda() {
         super();
         super.setId(5);
-        super.setName("Taglierina Circolare");
+        super.setName("Pennello per Pasta Salda");
         super.setDescription("Dopo aver scelto un dado, tira nuovamente quel dado\n" +
                 "Se non puoi piazzarlo, riponilo nella Riserva");
     }
@@ -27,8 +27,7 @@ public class PennelloPastaSalda extends ToolCard {
      *
      * @param diceStack DiceStack (Riserva).
      */
-    public int effect(DiceStack diceStack) {
-        return 0;
-    }
+    public void effect(DiceStack diceStack) {
 
+    }
 }

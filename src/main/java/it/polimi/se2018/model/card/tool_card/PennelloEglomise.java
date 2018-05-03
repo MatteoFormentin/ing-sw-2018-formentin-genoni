@@ -21,8 +21,8 @@ public class PennelloEglomise extends ToolCard {
     /**
      * Card effect..
      */
-    public int effect() {
-        return 0;
+    public void effect() {
+
     }
 
 }

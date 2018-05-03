@@ -2,7 +2,6 @@ package it.polimi.se2018.model.card.windowPatternCard;
 
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
-import javafx.scene.control.Cell;
 
 public class WindowPatternCard {
 
