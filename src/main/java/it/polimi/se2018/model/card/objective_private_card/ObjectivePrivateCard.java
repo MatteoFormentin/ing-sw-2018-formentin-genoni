@@ -1,45 +1,98 @@
 package it.polimi.se2018.model.card.objective_private_card;
 
+import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 import it.polimi.se2018.model.dice.DiceColor;
 
+/**
+ * Base class for objective private card.
+ *
+ * @author Matteo Formentin
+ */
 public abstract class ObjectivePrivateCard {
     private int ID;
     private String Name;
     private String Description;
-    private DiceColor Color;
+    private DiceColor diceColor;
 
-
+    /**
+     * Return card ID.
+     *
+     * @return ID int.
+     */
     public int getID() {
         return ID;
     }
 
+    /**
+     * Set card ID.
+     *
+     * @param ID int
+     */
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    /**
+     * Return card name.
+     *
+     * @return Name String.
+     */
     public String getName() {
         return Name;
     }
 
+    /**
+     * Set card name.
+     *
+     * @param name String
+     */
     public void setName(String name) {
         Name = name;
     }
 
+    /**
+     * Return card description.
+     *
+     * @return Description String.
+     */
     public String getDescription() {
         return Description;
     }
 
+    /**
+     * Set card description.
+     *
+     * @param description String.
+     */
     public void setDescription(String description) {
         Description = description;
     }
 
-    public DiceColor getColor() {
-        return Color;
+    /**
+     * Return card objective color.
+     *
+     * @return diceColor DiceColor.
+     */
+    public DiceColor getDiceColor() {
+        return diceColor;
     }
 
-    public void setColor(DiceColor color) {
-        Color = color;
+    /**
+     * Set card objective color.
+     *
+     * @param diceColor DiceColor.
+     */
+    public void setDiceColor(DiceColor diceColor) {
+        this.diceColor = diceColor;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
-    }
+
+    /**
+     * Calculate card point coming from objective.
+     *
+     * @param windowPatternCard WindowPatternCard.
+     */
+    public abstract int calculatePoint(WindowPatternCard windowPatternCard);
 
 
 }

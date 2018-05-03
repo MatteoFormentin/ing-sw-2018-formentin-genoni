@@ -2,6 +2,14 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 
+/**
+ * Public objective card Sfumature Chiare.
+ * <p>
+ * Description
+ * Set di 1 & 2 ovunque
+ *
+ * @author Matteo Formentin
+ */
 public class LightNumber extends ObjectivePublicCard {
     public LightNumber() {
         super();
@@ -12,7 +20,7 @@ public class LightNumber extends ObjectivePublicCard {
     }
 
     @Override
-    int pointCounter(WindowPatternCard windowPatternCard) {
+    public int calculatePoint(WindowPatternCard windowPatternCard) {
         return 0;
     }
 }

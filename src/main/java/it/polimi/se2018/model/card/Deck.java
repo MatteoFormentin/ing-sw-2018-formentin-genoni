@@ -8,6 +8,12 @@ import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 import java.util.Random;
 import java.util.TreeSet;
 
+/**
+ * Gestisce le carte e l'estrazione delle stesse.
+ *
+ * @author Matteo Formentin
+ */
+
 public class Deck {
     private ObjectivePublicCard[] objectivePublicCard;
 
@@ -36,6 +42,12 @@ public class Deck {
         extractedWindow = new TreeSet<>();
     }
 
+    /**
+     * Estrae una carta Obiettivo pubblico casuale.
+     *
+     * @return one random ObjectivePublicCard.
+     * @throws IndexOutOfBoundsException se si verifica un errore nel random.
+     */
     public ObjectivePublicCard drawObjectivePublicCard() {
         switch (extractInt(10, extractedPublic)) {
             case 0:
@@ -63,6 +75,12 @@ public class Deck {
         }
     }
 
+    /**
+     * Estrae una carta Obiettivo privato casuale.
+     *
+     * @return one random ObjectivePrivateCard.
+     * @throws IndexOutOfBoundsException se si verifica un errore nel random.
+     */
     public ObjectivePrivateCard drawObjectivePrivateCard() {
         switch (extractInt(4, extractedPrivate)) {
             case 0:
@@ -80,6 +98,12 @@ public class Deck {
         }
     }
 
+    /**
+     * Estrae una carta Utensile pubblico casuale.
+     *
+     * @return one random ToolCard.
+     * @throws IndexOutOfBoundsException se si verifica un errore nel random.
+     */
     public ToolCard drawToolCard() {
         return null;
     }
@@ -88,6 +112,14 @@ public class Deck {
         return null;
     }
 
+    /**
+     * Estrae un intero casuale compreso tra 0 e bound. Salva i risultati in un
+     * TreeSet per evitare ripetizioni
+     *
+     * @param bound     limite superiore intero.
+     * @param extracted TreeSet contenenete i numeri già estratti.
+     * @return one random integer between 0 and bound.
+     */
     private int extractInt(int bound, TreeSet<Integer> extracted) {
         Random random = new Random();
         int rand;

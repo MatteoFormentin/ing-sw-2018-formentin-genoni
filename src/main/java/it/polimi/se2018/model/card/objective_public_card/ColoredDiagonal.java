@@ -2,7 +2,15 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 
-public class ColoredDiagonal extends ObjectivePublicCard{
+/**
+ * Public objective card Diagonali Colorate.
+ * <p>
+ * Description
+ * Numero  di  dadi  dello  stesso  colore  diagonalmente  adiacenti
+ *
+ * @author Matteo Formentin
+ */
+public class ColoredDiagonal extends ObjectivePublicCard {
     public ColoredDiagonal() {
         super();
         super.setID(8);
@@ -12,7 +20,7 @@ public class ColoredDiagonal extends ObjectivePublicCard{
     }
 
     @Override
-    int pointCounter(WindowPatternCard windowPatternCard) {
+    public int calculatePoint(WindowPatternCard windowPatternCard) {
         return 0;
     }
 

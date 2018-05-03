@@ -2,6 +2,14 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 
+/**
+ * Public objective card per Sfumature Scure.
+ * <p>
+ * Description
+ * Set di 5 & 6 ovunque
+ *
+ * @author Matteo Formentin
+ */
 public class DarkNumber extends ObjectivePublicCard {
     public DarkNumber() {
         super();
@@ -12,7 +20,7 @@ public class DarkNumber extends ObjectivePublicCard {
     }
 
     @Override
-    int pointCounter(WindowPatternCard windowPatternCard) {
+    public int calculatePoint(WindowPatternCard windowPatternCard) {
         return 0;
     }
 }

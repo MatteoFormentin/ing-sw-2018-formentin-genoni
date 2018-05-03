@@ -2,6 +2,14 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 
+/**
+ * Public objective card Sfumature diverse - Colonna.
+ * <p>
+ * Description
+ * Colonne senza sfumature ripetute
+ *
+ * @author Matteo Formentin
+ */
 public class DifferentNumberColumn extends ObjectivePublicCard {
     public DifferentNumberColumn() {
         super();
@@ -12,7 +20,7 @@ public class DifferentNumberColumn extends ObjectivePublicCard {
     }
 
     @Override
-    int pointCounter(WindowPatternCard windowPatternCard) {
+    public int calculatePoint(WindowPatternCard windowPatternCard) {
         return 0;
     }
 }

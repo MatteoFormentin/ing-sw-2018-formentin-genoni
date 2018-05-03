@@ -2,6 +2,14 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 
+/**
+ * Public objective card Sfumature Diverse.
+ * <p>
+ * Description
+ * Set di dadi di ogni valore ovunque
+ *
+ * @author Matteo Formentin
+ */
 public class DifferentNumber extends ObjectivePublicCard {
     public DifferentNumber() {
         super();
@@ -12,7 +20,7 @@ public class DifferentNumber extends ObjectivePublicCard {
     }
 
     @Override
-    int pointCounter(WindowPatternCard windowPatternCard) {
+    public int calculatePoint(WindowPatternCard windowPatternCard) {
         return 0;
     }
 }
