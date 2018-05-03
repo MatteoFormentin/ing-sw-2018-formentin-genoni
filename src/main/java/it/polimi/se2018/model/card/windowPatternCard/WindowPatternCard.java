@@ -1,5 +1,7 @@
 package it.polimi.se2018.model.card.windowPatternCard;
 
+import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.DiceColor;
 import javafx.scene.control.Cell;
 
 public class WindowPatternCard {
@@ -10,14 +12,13 @@ public class WindowPatternCard {
     private int ID;
     private String Name;
     private int Level;
-    private Cell[] Matrix[4][5];
+    private Cell[][] Matrix; //[4][5] inizializzare nel costruttore
 
     public String GetName() {
         return null;
     }
 
     public void SetName(String Name) {
-        return null;
     }
 
     public int GetLevel() {
@@ -25,7 +26,6 @@ public class WindowPatternCard {
     }
 
     public void SetLevel(int Level) {
-        return null;
     }
 
     public Cell GetCell(int Line, int Column) {

@@ -10,6 +10,7 @@ public class DiceStack {
 
     }
     public Dice GetDice() {
+        return null;
 
     }
 

@@ -1,30 +1,31 @@
 package it.polimi.se2018.model;
 
 
+import it.polimi.se2018.model.card.objectivePrivateCard.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
+import it.polimi.se2018.model.dice.Dice;
 
 public class Player {
     private int ID;
-    private string Nickname;
+    private String Nickname;
     private int FavorToken;
     private int Points;
-    private PrivateObjectiveCard PrivateObject;
-    private PlayerWindowPattern WindowPattern;
+    private ObjectivePrivateCard PrivateObject;
+    private WindowPatternCard PlayerWindowPattern;
     private Dice[] HandDice;
     private int NumberDice;
     private boolean SecondTurn;
     private boolean HasUsedDice;
     public boolean HasUsedToolCard;
 
-    public void SetNickname(int ID, string nickname) {
-        return null;
+    public void SetNickname(int ID, String nickname) {
     }
 
     public int GetID() {
         return 0;
     }
 
-    public string GetNickname() {
+    public String GetNickname() {
         return null;
     }
 

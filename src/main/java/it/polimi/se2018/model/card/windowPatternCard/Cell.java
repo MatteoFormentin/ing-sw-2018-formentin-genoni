@@ -1,5 +1,9 @@
 package it.polimi.se2018.model.card.windowPatternCard;
 
+import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.DiceColor;
+
+
 public class Cell {
 
     public Cell() {
@@ -7,12 +11,10 @@ public class Cell {
 
     private Dice Dice;
     private boolean Restriction;
-    private void DiceColor;
-    private NumberRestriction Int;
-    public Dice contains = 20;
+    public int NumberRestriction;
+    public DiceColor ColorRestriction;
 
     public void SetDice(Dice Dice) {
-        return null;
     }
 
     public Dice GetDice() {
