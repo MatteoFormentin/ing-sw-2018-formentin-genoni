@@ -1,8 +1,8 @@
 package it.polimi.se2018.model;
 
 
-import it.polimi.se2018.model.card.objectivePublicCard.ObjectivePublicCard;
-import it.polimi.se2018.model.card.toolCard.ToolCard;
+import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
+import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.roundTrack.RoundTrack;
 

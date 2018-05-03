@@ -1,7 +1,7 @@
 package it.polimi.se2018.model;
 
 
-import it.polimi.se2018.model.card.objectivePrivateCard.ObjectivePrivateCard;
+import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 
