@@ -65,7 +65,7 @@ public class DiceFactory {
             return dice;
         }
     }
-    /* perhaps useless and not convenient
+
     /**
      * Method <strong>getPoolDice</strong>
      * <em>Description</em>
@@ -73,24 +73,22 @@ public class DiceFactory {
      *
      * @param numberOfDice to draw from the factory
      * @return array with numberOfDice Dice
-
-    public Dice[] getPoolDice(int numberOfDice){
+    */
+    public static Dice[] getPoolDice(int numberOfDice){
         Dice[] arrayDice= new Dice[numberOfDice];
         for (int i=0; i<numberOfDice; i++) {
             arrayDice[i]=getDice();
         }
         return arrayDice;
     }
-    */
+
     /**
      * Method <strong>getPoolDice</strong>
-     * <em>Description</em>
-     * method to reinsert a die in the factory (ie delete it from the game, without creating errors)
+     * <em>Description</em>: friendly method to reinsert a die in the factory (ie delete it from the game, without creating errors)
      *
      * @param dice to reinsert in the factory
-     * @return null per il dado
      */
-    public void reInsertDice(Dice dice){
+    static void reInsertDice(Dice dice){
         if(currentNumberOfEachDice[dice.getColor().ordinal()]==0) {
             availableColours.addLast(dice.getColor()); // re-add the flag to make the color available
         }

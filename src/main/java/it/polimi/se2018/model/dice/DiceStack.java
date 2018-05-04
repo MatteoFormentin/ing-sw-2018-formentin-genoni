@@ -20,14 +20,26 @@ public class DiceStack {
      * Method <strong>DiceStack</strong>
      * <em>Description</em>: constructor for DiceStack, with 1 dice
      *
-     * @param Dice constructor for a diceStack with 1 dice
+     * @param dice constructor for a diceStack with 1 dice
      */
-    public DiceStack(Dice Dice){
+    public DiceStack(Dice dice){
         diceList = new LinkedList<Dice>();
-        diceList.add(Dice);
+        addDice(dice);
     }
     /**
      * Method <strong>DiceStack</strong>
+     * <em>Description</em>: constructor for DiceStack, with n dice
+     *
+     * @param arrayDice with n dice
+     */
+    public DiceStack(Dice[] arrayDice){
+        diceList = new LinkedList<Dice>();
+        for(int i=0; i< arrayDice.length; i++){
+            addDice(arrayDice[i]);
+        }
+    }
+    /**
+     * Method <strong>addDice</strong>
      * <em>Description</em>: can add dice to the stack
      *
      * @param Dice to add to the stack
@@ -37,8 +49,8 @@ public class DiceStack {
     }
 
     /**
-     * Method <strong>DiceStack</strong>
-     * <em>Description</em>: can return the color of the dice
+     * Method <strong>getDice</strong>
+     * <em>Description</em>: can return the dice for let them see the value or color
      *
      * @param index
      * @return Dice  or null if there isn't any dice in that index
@@ -48,17 +60,29 @@ public class DiceStack {
         return diceList.get(index);
     }
     /**
-     * Method <strong>DiceStack</strong>
-     * <em>Description</em>: remove the dice from the stack
+     * Method <strong>removeDiceFromStack</strong>
+     * <em>Description</em>: remove the dice from the stack.
      *
      * @param index integer of the index of the dice
      * @return the dice removed or null if there isn't any dice in that index
      */
-    public Dice removeDice(int index){
+    public Dice removeDiceFromStack(int index){
         if(index>=diceList.size()) return null;
         Dice dice=diceList.get(index);
         diceList.remove(index);
         return dice;
+    }
+    /**
+     * Method <strong>removeDiceFromGame</strong>
+     * <em>Description</em>: remove the dice from the stack and it goes to the factory
+     *
+     * @param index integer of the index of the dice
+     */
+    public void removeDiceFromGame(int index){
+        if(index>=diceList.size()) return null;
+        Dice dice=diceList.get(index);
+        diceList.remove(index);
+        DiceFactory.reInsertDice(dice);
     }
 
     /**

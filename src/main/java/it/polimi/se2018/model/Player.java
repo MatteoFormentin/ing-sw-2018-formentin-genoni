@@ -4,11 +4,18 @@ package it.polimi.se2018.model;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.DiceStack;
 
 /**
  * Player state and data.
  *
  * @author Matteo Formentin
+ * @version 1.1
+ * Genoni illegally modifies:
+ *                   the secondTurn attribute & method
+ *                   the Default Constructor
+ *                   the array handDice became a DiceStack the only Class that can handle
+ * @since 1.0
  */
 public class Player {
     private int id;
@@ -17,12 +24,24 @@ public class Player {
     private int points;
     private ObjectivePrivateCard privateObject;
     private WindowPatternCard playerWindowPattern;
-    private Dice[] handDice;
+    private DiceStack handDice;
     private int numberDice;
     private boolean secondTurn;
     private boolean hasUsedDice;
     private boolean hasUsedToolCard;
-
+    public Player(){
+        id=0;
+        nickname="Mr. Nessuno";
+        favorToken=0;
+        points=0;
+        privateObject=null;
+        playerWindowPattern=null;
+        handDice=null;
+        numberDice=0;
+        secondTurn=false;
+        hasUsedDice=false;
+        hasUsedToolCard=false;
+    }
 
     public int getId() {
         return id;
@@ -88,13 +107,11 @@ public class Player {
         this.numberDice = numberDice;
     }
 
-    public boolean isSecondTurn() {
-        return secondTurn;
+    public void HasPlayedATurn(){
+        secondTurn=!secondTurn;
     }
 
-    public void setSecondTurn(boolean secondTurn) {
-        this.secondTurn = secondTurn;
-    }
+    public boolean isSecondTurn() {return secondTurn;}
 
     public boolean isHasUsedDice() {
         return hasUsedDice;
@@ -112,4 +129,9 @@ public class Player {
         this.hasUsedToolCard = hasUsedToolCard;
     }
 
+
+    public void doTurn() {
+        //
+        HasPlayedATurn();
+    }
 }
