@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.card.tool_card;
 
-import it.polimi.se2018.model.roundTrack.DiceStack;
+import it.polimi.se2018.model.dice.DiceStack;
 
 /**
  * Tool card Pinza Sgrossatrice.

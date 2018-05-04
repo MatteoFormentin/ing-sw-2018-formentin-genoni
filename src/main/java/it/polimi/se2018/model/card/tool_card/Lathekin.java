@@ -17,7 +17,7 @@ public class Lathekin extends ToolCard {
     }
 
     /**
-     * Card effect..
+     * Card effect.
      */
     public void effect() {
 
