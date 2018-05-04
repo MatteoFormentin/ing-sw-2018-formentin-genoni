@@ -1,5 +1,7 @@
 package it.polimi.se2018.model.dice;
 
+import it.polimi.se2018.model.dice.dice_color.DiceColor;
+
 import java.util.Random;
 /**
  * <strong>Class Dice</strong>
@@ -18,6 +20,10 @@ public class Dice {
     Dice() {
         value = rollDice();
         color = null;
+    }
+    Dice(DiceColor color){
+        value = rollDice();
+        this.color = color;
     }
 
     /**
