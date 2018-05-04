@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.dice.dice_color;
+package it.polimi.se2018.model.dice;
 
 import java.util.Arrays;
 

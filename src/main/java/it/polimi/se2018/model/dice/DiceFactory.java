@@ -1,12 +1,11 @@
 package it.polimi.se2018.model.dice;
 
-import it.polimi.se2018.model.dice.dice_color.DiceColor;
-
 import java.util.LinkedList;
 import java.util.Random;
 
-import static it.polimi.se2018.model.dice.dice_color.DiceColor.getDiceColor;
-import static it.polimi.se2018.model.dice.dice_color.DiceColor.getNumberOfDiceColors;
+import static it.polimi.se2018.model.dice.DiceColor.getDiceColor;
+import static it.polimi.se2018.model.dice.DiceColor.getNumberOfDiceColors;
+
 
 /**
  * Factorydice must be created only once at the start of the game
