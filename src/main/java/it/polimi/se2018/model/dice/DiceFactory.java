@@ -11,7 +11,7 @@ import static it.polimi.se2018.model.dice.dice_color.DiceColor.getNumberOfDiceCo
 /**
  * Factorydice must be created only once at the start of the game
  * @author Luca Genoni
- * @version 1.0
+ * @version 1.1 method reInsertDice(Dice)
  * @since 1.0
  */
 public class DiceFactory {
@@ -77,7 +77,7 @@ public class DiceFactory {
      */
     public Dice[] getPoolDice(int numberOfDice){
         Dice[] arrayDice= new Dice[numberOfDice];
-        /*  useless??? the getDice is done well well see the the test
+        /*  useless??? the getDice is done well well let's see the the test
         if(currentNumberOfDice==numberOfDice){
             //restituisce i restanti 9 dadi
             for(int color; color<getNumberOfDiceColors();color++){
@@ -97,13 +97,21 @@ public class DiceFactory {
         }
         return arrayDice;
     }
-    public void reInsertionDice(Dice d){
-
-        if(currentNumberOfEachDice[d.getColor().ordinal()]==0) {
-
+    /**
+     * Method <strong>getPoolDice</strong>
+     * <em>Description</em>
+     * method to reinsert a die in the factory (ie delete it from the game, without creating errors)
+     *
+     * @param dice to reinsert in the factory
+     * @return null per il dado
+     */
+    public void reInsertDice(Dice dice){
+        if(currentNumberOfEachDice[dice.getColor().ordinal()]==0) {
+            availableColours.addLast(dice.getColor()); // re-add the flag to make the color available
         }
+        currentNumberOfDice++;
+        currentNumberOfEachDice[dice.getColor().ordinal()]++;
 
-        currentNumberOfEachDice[d.getColor().ordinal()]++;
     }
 
 }
