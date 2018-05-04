@@ -11,7 +11,7 @@ import static it.polimi.se2018.model.dice.dice_color.DiceColor.getNumberOfDiceCo
 /**
  * Factorydice must be created only once at the start of the game
  * @author Luca Genoni
- * @version 1.1 method reInsertDice(Dice)
+ * @version 1.2 fix getDice() & getpoll removed
  * @since 1.0
  */
 public class DiceFactory {
@@ -32,7 +32,7 @@ public class DiceFactory {
     public static void DiceFactory(){
         for (int i=0;i<currentNumberOfEachDice.length; i++){
             currentNumberOfEachDice[i]=maxNumberOfEachDice;
-            availableColours.addLast(getDiceColor(i));
+            availableColours.add(getDiceColor(i));
         }
     }
 
@@ -51,22 +51,22 @@ public class DiceFactory {
             int random=0;
             while(repeat){
                 random = new Random().nextInt(availableColours.size());
-                if (currentNumberOfEachDice[availableColours.get(random).ordinal()]>1) {
-                    //found a color available, it stops the loop
-                    repeat = false;
-                }else if(currentNumberOfEachDice[availableColours.get(random).ordinal()]==1) {
-                    //it's the last dice of that color, remove the reference
-                    availableColours.remove(random);
+                if (currentNumberOfEachDice[availableColours.get(random).ordinal()]>0) {
+                    //when it found a color available, the loop stops
                     repeat = false;
                 }
             }
-            currentNumberOfEachDice[availableColours.get(random).ordinal()]--;
             currentNumberOfDice--;
-            Dice dice = new Dice(availableColours.get(random));    //the new dice
+            currentNumberOfEachDice[availableColours.get(random).ordinal()]--;
+            Dice dice = new Dice(availableColours.get(random));
+            if(currentNumberOfEachDice[availableColours.get(random).ordinal()]==0){
+                //remove the availableColours after the creation of the dice.
+                availableColours.remove(random);
+            }
             return dice;
         }
     }
-
+    /* perhaps useless and not convenient
     /**
      * Method <strong>getPoolDice</strong>
      * <em>Description</em>
@@ -74,29 +74,15 @@ public class DiceFactory {
      *
      * @param numberOfDice to draw from the factory
      * @return array with numberOfDice Dice
-     */
+
     public Dice[] getPoolDice(int numberOfDice){
         Dice[] arrayDice= new Dice[numberOfDice];
-        /*  useless??? the getDice is done well well let's see the the test
-        if(currentNumberOfDice==numberOfDice){
-            //restituisce i restanti 9 dadi
-            for(int color; color<getNumberOfDiceColors();color++){
-                while(currentNumberOfEachDice[color]!=0){
-                    currentNumberOfDice--;
-                    currentNumberOfEachDice[color]--;
-                    arrayDice[currentNumberOfDice]= new Dice(getDiceColor(color));
-                }
-            }
-        }else{
-            for (int i=0; i<numberOfDice; i++) {
-                arrayDice[i]=getDice();
-            }
-        }*/
         for (int i=0; i<numberOfDice; i++) {
             arrayDice[i]=getDice();
         }
         return arrayDice;
     }
+    */
     /**
      * Method <strong>getPoolDice</strong>
      * <em>Description</em>
