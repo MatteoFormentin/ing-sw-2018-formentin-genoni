@@ -95,7 +95,7 @@ public class Player {
         return handDice;
     }
 
-    public void setHandDice(Dice[] handDice) {
+    public void setHandDice(DiceStack handDice) {
         this.handDice = handDice;
     }
 

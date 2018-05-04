@@ -79,7 +79,6 @@ public class DiceStack {
      * @param index integer of the index of the dice
      */
     public void removeDiceFromGame(int index){
-        if(index>=diceList.size()) return null;
         Dice dice=diceList.get(index);
         diceList.remove(index);
         DiceFactory.reInsertDice(dice);
