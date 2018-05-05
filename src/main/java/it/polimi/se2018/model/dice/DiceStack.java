@@ -1,4 +1,8 @@
 package it.polimi.se2018.model.dice;
+
+import it.polimi.se2018.model.dice.dice_factory.Dice;
+import it.polimi.se2018.model.dice.dice_factory.DiceFactory;
+
 import java.util.LinkedList;
 
 /**
@@ -9,34 +13,23 @@ import java.util.LinkedList;
  */
 public class DiceStack {
     private  LinkedList<Dice> diceList;
+    private static DiceFactory diceFactory;
     /**
      * Method <strong>DiceStack</strong>
      * <em>Description</em>: constructor for empty DiceStack
      */
-    public DiceStack(){
-        diceList = new LinkedList<Dice>();
+    public DiceStack(DiceFactory diceFactory){
+        diceList = new LinkedList<>();
+        this.diceFactory= diceFactory;
     }
-    /**
-     * Method <strong>DiceStack</strong>
-     * <em>Description</em>: constructor for DiceStack, with 1 dice
-     *
-     * @param dice constructor for a diceStack with 1 dice
-     */
-    public DiceStack(Dice dice){
-        diceList = new LinkedList<Dice>();
-        addDice(dice);
-    }
-    /**
-     * Method <strong>DiceStack</strong>
-     * <em>Description</em>: constructor for DiceStack, with n dice
-     *
-     * @param arrayDice with n dice
-     */
-    public DiceStack(Dice[] arrayDice){
-        diceList = new LinkedList<Dice>();
-        for(int i=0; i< arrayDice.length; i++){
-            addDice(arrayDice[i]);
+    public DiceStack(int numberOfNewDice){
+        diceList = new LinkedList<>();
+        for(int i=0;i<numberOfNewDice;i++){
+            diceList.add((diceFactory.createDice()));
         }
+    }
+    public void setDiceFactory(DiceFactory diceFactory) {
+        this.diceFactory = diceFactory;
     }
     /**
      * Method <strong>addDice</strong>
@@ -67,23 +60,20 @@ public class DiceStack {
      * @return the dice removed or null if there isn't any dice in that index
      */
     public Dice removeDiceFromStack(int index){
-        if(index>=diceList.size()) return null;
+        if(index>=diceList.size()||index<0) return null;
         Dice dice=diceList.get(index);
         diceList.remove(index);
         return dice;
     }
     /**
      * Method <strong>removeDiceFromGame</strong>
-     * <em>Description</em>: remove the dice from the stack and it goes to the factory
+     * <em>Description</em>: remove the dice from the stack.
      *
      * @param index integer of the index of the dice
      */
-    public void removeDiceFromGame(int index){
-        Dice dice=diceList.get(index);
-        diceList.remove(index);
-        DiceFactory.reInsertDice(dice);
+    public void reinsertDiceToFactory(int index){
+        diceFactory.removeDice(removeDiceFromStack(index));
     }
-
     /**
      * Method <strong>DiceStack</strong>
      * <em>Description</em>: remove the dice from the stack

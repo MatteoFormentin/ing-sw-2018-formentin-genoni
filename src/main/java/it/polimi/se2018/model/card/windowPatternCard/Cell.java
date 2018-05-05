@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.card.windowPatternCard;
 
-import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.dice_factory.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
 
