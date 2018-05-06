@@ -48,6 +48,17 @@ public class Deck {
     }
 
     /**
+     * Reset deck.
+     */
+    public void resetDeck() {
+        extractedPublic = new TreeSet<>();
+        extractedPrivate = new TreeSet<>();
+        extractedTool = new TreeSet<>();
+        extractedWindow = new TreeSet<>();
+    }
+
+
+    /**
      * Extract one random objective public card.
      *
      * @return one random ObjectivePublicCard.
