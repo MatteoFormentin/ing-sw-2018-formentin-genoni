@@ -25,13 +25,9 @@ public class Deck {
     private TreeSet<Integer> extractedTool;
     private TreeSet<Integer> extractedWindow;
 
-<<<<<<< HEAD
     //return window_pattern_card[extract(23, extractedWindow)];?
 
-    public Deck() {
-=======
     private Deck() {
->>>>>>> 453384ddc1b9fd4d373ad113076f7b44021231de
         windowPatternCardsDeck = new WindowPatternCardLoader().initCard();
         extractedPublic = new TreeSet<>();
         extractedPrivate = new TreeSet<>();
@@ -46,7 +42,7 @@ public class Deck {
      *
      * @return singleDeck Deck instance.
      */
-    public static synchronized Deck getBalancedDiceFactory() {
+    public static synchronized Deck getDeck() {
         if (singleDeck == null) {
             singleDeck = new Deck();
         }

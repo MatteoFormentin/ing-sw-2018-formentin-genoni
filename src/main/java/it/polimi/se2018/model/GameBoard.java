@@ -50,7 +50,7 @@ public class GameBoard {
         //init game of card arrays & FactoryDice
         if(typeOfFactory)poolDice.setDiceFactory(getBalancedDiceFactory());
         else poolDice.setDiceFactory(new FactoryRandomDice());
-        Deck deck = new Deck();
+        Deck deck = Deck.getDeck();
         for(int i=0;i<toolCard.length;i++) toolCard[i] = deck.drawToolCard();
         for(int i=0;i<objectivePublicCard.length;i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
         //init player
