@@ -1,6 +1,8 @@
 package it.polimi.se2018.model.card.objective_public_card;
 
+import it.polimi.se2018.model.card.windowPatternCard.Cell;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
+import it.polimi.se2018.model.dice.dice_factory.Dice;
 
 /**
  * Public objective card Sfumature Medie.
@@ -21,6 +23,23 @@ public class MidNumber extends ObjectivePublicCard {
 
     @Override
     public int calculatePoint(WindowPatternCard windowPatternCard) {
-        return 0;
+        Cell[][] matrix = windowPatternCard.getMatrix();
+        int points;
+        int three = 0;
+        int four = 0;
+        Dice currentCellDice;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 1; j < 5; j++) {
+                currentCellDice = matrix[i][j].getCellDice();
+                if (currentCellDice.getValue() == 3) {
+                    three++;
+                }
+                if (currentCellDice.getValue() == 4) {
+                    four++;
+                }
+            }
+        }
+        points = super.getPoint() * Math.min(three, four);
+        return points;
     }
 }

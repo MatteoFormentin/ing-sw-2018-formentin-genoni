@@ -1,6 +1,9 @@
 package it.polimi.se2018.model.card.objective_public_card;
 
+import it.polimi.se2018.model.card.windowPatternCard.Cell;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
+import it.polimi.se2018.model.dice.DiceColor;
+import it.polimi.se2018.model.dice.dice_factory.Dice;
 
 /**
  * Public objective card Varietà di Colore.
@@ -21,6 +24,35 @@ public class DifferentColor extends ObjectivePublicCard {
 
     @Override
     public int calculatePoint(WindowPatternCard windowPatternCard) {
-        return 0;
+        Cell[][] matrix = windowPatternCard.getMatrix();
+        int points;
+        int red = 0;
+        int yellow = 0;
+        int green = 0;
+        int blue = 0;
+        int purple = 0;
+        Dice currentCellDice;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 1; j < 5; j++) {
+                currentCellDice = matrix[i][j].getCellDice();
+                if (currentCellDice.getColor() == DiceColor.Purple) {
+                    red++;
+                }
+                if (currentCellDice.getColor() == DiceColor.Yellow) {
+                    yellow++;
+                }
+                if (currentCellDice.getColor() == DiceColor.Green) {
+                    green++;
+                }
+                if (currentCellDice.getColor() == DiceColor.Blue) {
+                    blue++;
+                }
+                if (currentCellDice.getColor() == DiceColor.Purple) {
+                    purple++;
+                }
+            }
+        }
+        points = super.getPoint() * Math.min(red, Math.min(yellow, Math.min(green, Math.min(blue, purple))));
+        return points;
     }
 }

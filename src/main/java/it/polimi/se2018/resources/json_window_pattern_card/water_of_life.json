@@ -1,0 +1,35 @@
+{
+  "name": "Water of Life",
+  "difficult": 6,
+  "board": [
+    [
+      "6",
+      "Blue",
+      "false",
+      "false",
+      "1"
+    ],
+    [
+      "false",
+      "5",
+      "Blue",
+      "false",
+      "false"
+    ],
+    [
+      "4",
+      "Red",
+      "2",
+      "Blue",
+      "false"
+    ],
+    [
+      "Green",
+      "6",
+      "Yellow",
+      "3",
+      "Purple"
+    ]
+  ]
+}
+

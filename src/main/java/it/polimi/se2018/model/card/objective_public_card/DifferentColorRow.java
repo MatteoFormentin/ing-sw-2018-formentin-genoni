@@ -1,6 +1,8 @@
 package it.polimi.se2018.model.card.objective_public_card;
 
+import it.polimi.se2018.model.card.windowPatternCard.Cell;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
+import it.polimi.se2018.model.dice.dice_factory.Dice;
 
 /**
  * Public objective card Colori diversi - Riga.
@@ -21,6 +23,24 @@ public class DifferentColorRow extends ObjectivePublicCard {
 
     @Override
     public int calculatePoint(WindowPatternCard windowPatternCard) {
-        return 0;
+        Cell[][] matrix = windowPatternCard.getMatrix();
+        int points = 0;
+        boolean flag;
+        Dice currentCellDice;
+        Dice previousCellDice;
+        for (int i = 0; i < 4; i++) {
+            previousCellDice = matrix[i][0].getCellDice();
+            flag = true;
+            for (int j = 1; j < 5; j++) {
+                currentCellDice = matrix[i][j].getCellDice();
+                if (currentCellDice.getColor() == previousCellDice.getColor()) {
+                    flag = false;
+                    break;
+                }
+                previousCellDice = currentCellDice;
+            }
+            if (flag) points += this.getPoint();
+        }
+        return points;
     }
 }

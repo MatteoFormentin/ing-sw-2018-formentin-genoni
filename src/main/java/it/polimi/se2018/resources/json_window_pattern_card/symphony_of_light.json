@@ -1,0 +1,35 @@
+{
+  "name": "Symphony of Light",
+  "difficult": 6,
+  "board": [
+    [
+      "2",
+      "false",
+      "5",
+      "false",
+      "1"
+    ],
+    [
+      "Yellow",
+      "6",
+      "Purple",
+      "2",
+      "Red"
+    ],
+    [
+      "false",
+      "Blue",
+      "4",
+      "Green",
+      "false"
+    ],
+    [
+      "false",
+      "3",
+      "false",
+      "5",
+      "false"
+    ]
+  ]
+}
+
