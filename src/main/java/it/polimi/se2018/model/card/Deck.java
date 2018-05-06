@@ -18,21 +18,51 @@ import java.util.TreeSet;
 
 public class Deck {
 
+    private static Deck singleDeck;
     private ArrayList<WindowPatternCard> windowPatternCardsDeck;
     private TreeSet<Integer> extractedPublic;
     private TreeSet<Integer> extractedPrivate;
     private TreeSet<Integer> extractedTool;
     private TreeSet<Integer> extractedWindow;
 
+<<<<<<< HEAD
     //return window_pattern_card[extract(23, extractedWindow)];?
 
     public Deck() {
+=======
+    private Deck() {
+>>>>>>> 453384ddc1b9fd4d373ad113076f7b44021231de
         windowPatternCardsDeck = new WindowPatternCardLoader().initCard();
         extractedPublic = new TreeSet<>();
         extractedPrivate = new TreeSet<>();
         extractedTool = new TreeSet<>();
         extractedWindow = new TreeSet<>();
     }
+
+    /**
+     * Return deck instance.
+     * <p>
+     * Implement singleton pattern.
+     *
+     * @return singleDeck Deck instance.
+     */
+    public static synchronized Deck getBalancedDiceFactory() {
+        if (singleDeck == null) {
+            singleDeck = new Deck();
+        }
+        return singleDeck;
+    }
+
+    /**
+     * Reset deck.
+     */
+    public void resetDeck() {
+        extractedPublic = new TreeSet<>();
+        extractedPrivate = new TreeSet<>();
+        extractedTool = new TreeSet<>();
+        extractedWindow = new TreeSet<>();
+    }
+
 
     /**
      * Extract one random objective public card.
