@@ -3,7 +3,7 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
-import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.dice_factory.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
 
 /**
@@ -25,10 +25,10 @@ public class Player {
     private ObjectivePrivateCard privateObject;
     private WindowPatternCard playerWindowPattern;
     private DiceStack handDice;
-    private int numberDice;
     private boolean secondTurn;
     private boolean hasUsedDice;
     private boolean hasUsedToolCard;
+
     public Player(){
         id=0;
         nickname="Mr. Nessuno";
@@ -37,7 +37,18 @@ public class Player {
         privateObject=null;
         playerWindowPattern=null;
         handDice=null;
-        numberDice=0;
+        secondTurn=false;
+        hasUsedDice=false;
+        hasUsedToolCard=false;
+    }
+    public Player(String nickname,int id){
+        this.id=id;
+        this.nickname=nickname;
+        favorToken=0;
+        points=0;
+        privateObject=null;
+        playerWindowPattern=null;
+        handDice=null;
         secondTurn=false;
         hasUsedDice=false;
         hasUsedToolCard=false;
@@ -91,23 +102,15 @@ public class Player {
         this.playerWindowPattern = playerWindowPattern;
     }
 
-    public Dice[] getHandDice() {
-        return handDice;
+    public Dice getHandDice(int index) {
+        return handDice.getDice(index);
     }
 
     public void setHandDice(DiceStack handDice) {
         this.handDice = handDice;
     }
 
-    public int getNumberDice() {
-        return numberDice;
-    }
-
-    public void setNumberDice(int numberDice) {
-        this.numberDice = numberDice;
-    }
-
-    public void HasPlayedATurn(){
+    public void changeSecondTurn(){
         secondTurn=!secondTurn;
     }
 
@@ -129,9 +132,4 @@ public class Player {
         this.hasUsedToolCard = hasUsedToolCard;
     }
 
-
-    public void doTurn() {
-        //
-        HasPlayedATurn();
-    }
 }
