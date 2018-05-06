@@ -18,20 +18,33 @@ import java.util.TreeSet;
 
 public class Deck {
 
+    private static Deck singleDeck;
     private ArrayList<WindowPatternCard> windowPatternCardsDeck;
     private TreeSet<Integer> extractedPublic;
     private TreeSet<Integer> extractedPrivate;
     private TreeSet<Integer> extractedTool;
     private TreeSet<Integer> extractedWindow;
 
-    //return windowPatternCard[extract(23, extractedWindow)];?
-
-    public Deck() {
+    private Deck() {
         windowPatternCardsDeck = new WindowPatternCardLoader().initCard();
         extractedPublic = new TreeSet<>();
         extractedPrivate = new TreeSet<>();
         extractedTool = new TreeSet<>();
         extractedWindow = new TreeSet<>();
+    }
+
+    /**
+     * Return deck instance.
+     * <p>
+     * Implement singleton pattern.
+     *
+     * @return singleDeck Deck instance.
+     */
+    public static synchronized Deck getBalancedDiceFactory() {
+        if (singleDeck == null) {
+            singleDeck = new Deck();
+        }
+        return singleDeck;
     }
 
     /**
