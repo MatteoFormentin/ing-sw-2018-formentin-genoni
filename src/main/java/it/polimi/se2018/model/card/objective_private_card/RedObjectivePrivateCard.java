@@ -19,9 +19,4 @@ public class RedObjectivePrivateCard extends ObjectivePrivateCard {
         super.setName("Sfumature Rosse");
         super.setDescription("Somma dei valori su tutti i dadi rossi");
     }
-
-    @Override
-    public int calculatePoint(WindowPatternCard windowPatternCard) {
-        return 0;
-    }
 }

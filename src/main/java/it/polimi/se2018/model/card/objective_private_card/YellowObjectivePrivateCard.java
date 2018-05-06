@@ -19,9 +19,4 @@ public class YellowObjectivePrivateCard extends ObjectivePrivateCard {
         super.setName("Sfumature Gialle");
         super.setDescription("Somma dei valori su tutti i dadi gialli");
     }
-
-    @Override
-    public int calculatePoint(WindowPatternCard windowPatternCard) {
-        return 0;
-    }
 }

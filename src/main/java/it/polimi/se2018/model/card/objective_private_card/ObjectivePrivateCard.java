@@ -1,7 +1,9 @@
 package it.polimi.se2018.model.card.objective_private_card;
 
+import it.polimi.se2018.model.card.windowPatternCard.Cell;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
 import it.polimi.se2018.model.dice.DiceColor;
+import it.polimi.se2018.model.dice.dice_factory.Dice;
 
 /**
  * Base class for objective private card.
@@ -62,7 +64,7 @@ public abstract class ObjectivePrivateCard {
     /**
      * Set card description.
      *
-     * @param  description String.
+     * @param description String.
      */
     public void setDescription(String description) {
         this.description = description;
@@ -80,7 +82,7 @@ public abstract class ObjectivePrivateCard {
     /**
      * Set card objective color.
      *
-     * @param  diceColor DiceColor.
+     * @param diceColor DiceColor.
      */
     public void setDiceColor(DiceColor diceColor) {
         this.diceColor = diceColor;
@@ -90,9 +92,21 @@ public abstract class ObjectivePrivateCard {
     /**
      * Calculate card point coming from objective.
      *
-     * @param  windowPatternCard WindowPatternCard.
+     * @param windowPatternCard WindowPatternCard.
      */
-    public abstract int calculatePoint(WindowPatternCard windowPatternCard);
+    public int calculatePoint(WindowPatternCard windowPatternCard) {
+        Cell[][] matrix = windowPatternCard.getMatrix();
+        int points = 0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 5; j++) {
+                Dice currentCellDice = matrix[i][j].getCellDice();
+                if (currentCellDice.getColor() == this.getDiceColor()) {
+                    points += currentCellDice.getValue();
+                }
+            }
+        }
+        return points;
+    }
 
 
 }

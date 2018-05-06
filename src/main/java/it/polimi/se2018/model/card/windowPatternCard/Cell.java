@@ -16,18 +16,34 @@ import it.polimi.se2018.model.dice.DiceColor;
 public class Cell {
 
     private Dice dice;
-    public int numberRestriction;
-    public DiceColor colorRestriction;
+    private int numberRestriction;
+    private DiceColor colorRestriction;
     private int value;
     private DiceColor color;
 
     public Cell() {
 
         Cell() {
-            value=0;
-            color=null;
+            value = 0;
+            color = null;
         }
 
+    }
+
+    public int getNumberRestriction() {
+        return numberRestriction;
+    }
+
+    public void setNumberRestriction(int numberRestriction) {
+        this.numberRestriction = numberRestriction;
+    }
+
+    public DiceColor getColorRestriction() {
+        return colorRestriction;
+    }
+
+    public void setColorRestriction(DiceColor colorRestriction) {
+        this.colorRestriction = colorRestriction;
     }
 
     /**
@@ -56,16 +72,15 @@ public class Cell {
      * Method <strong>getCellValue</strong>
      * <em>Description</em>
      * Get the value of the dice on the cell.
-     *
      */
     public int getCellValue() {
         return value;
     }
+
     /**
      * Method <strong>getCellColor</strong>
      * <em>Description</em>
      * Get the color of the dice on the cell.
-     *
      */
     public DiceColor getCellColor() {
         return color;
@@ -76,7 +91,9 @@ public class Cell {
      *
      * @return the dice
      */
-    public Dice getCellDice() { return this.dice; }
+    public Dice getCellDice() {
+        return this.dice;
+    }
 
     /**
      * Method <strong>checkCellRestriction</strong>
@@ -86,7 +103,7 @@ public class Cell {
      * @return true if the restriction is verified, false if the restriction is not verified.
      */
     public boolean checkCellRestriction(DiceColor diceColor, int diceNumber) {
-        if(numberRestriction==diceNumber || colorRestriction==diceColor){
+        if (numberRestriction == diceNumber || colorRestriction == diceColor) {
             return true;
         } else {
             return false;
@@ -97,13 +114,12 @@ public class Cell {
      * Method <strong>insertDice</strong>
      * <em>Description</em>
      * Insert the dice in the cell if the restriction of the cell are respected.
-     *
      */
     public void insertDice(Dice dice) {
         value = dice.getValue();
         color = dice.getColor();
 
-        if(checkCellRestriction(color,value)==true){
+        if (checkCellRestriction(color, value) == true) {
             System.out.print("You can't insert the Dice, it does not respect the restriction");
         } else {
             setCellColor(color);

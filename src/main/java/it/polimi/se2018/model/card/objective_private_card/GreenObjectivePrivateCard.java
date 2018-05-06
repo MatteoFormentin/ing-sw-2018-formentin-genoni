@@ -19,9 +19,4 @@ public class GreenObjectivePrivateCard extends ObjectivePrivateCard {
         super.setName("Sfumature Verdi");
         super.setDescription("Somma dei valori su tutti i dadi verdi");
     }
-
-    @Override
-    public int calculatePoint(WindowPatternCard windowPatternCard) {
-        return 0;
-    }
 }

@@ -19,10 +19,11 @@ public class WindowPatternCard {
     private int level;
     private int cellValue;
     private DiceColor cellColor;
+
     private Cell[][] Matrix;
 
     public WindowPatternCard() {
-        Matrix = new Cell[5][4];
+        Matrix = new Cell[4][5];
     }
 
     /**
@@ -181,3 +182,11 @@ public class WindowPatternCard {
     }
 
 }
+
+    public Cell[][] getMatrix() {
+        return Matrix;
+    }
+
+    public void setMatrix(Cell[][] matrix) {
+        Matrix = matrix;
+    }

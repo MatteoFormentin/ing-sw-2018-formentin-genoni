@@ -19,9 +19,4 @@ public class PurpleObjectivePrivateCard extends ObjectivePrivateCard {
         super.setName("Sfumature Viola");
         super.setDescription("Somma dei valori su tutti i dadi viola");
     }
-
-    @Override
-    public int calculatePoint(WindowPatternCard windowPatternCard) {
-        return 0;
-    }
 }
