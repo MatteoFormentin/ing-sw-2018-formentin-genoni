@@ -4,7 +4,9 @@ import it.polimi.se2018.model.card.objective_private_card.*;
 import it.polimi.se2018.model.card.objective_public_card.*;
 import it.polimi.se2018.model.card.tool_card.*;
 import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
+import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCardLoader;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -16,6 +18,7 @@ import java.util.TreeSet;
 
 public class Deck {
 
+    private ArrayList<WindowPatternCard> windowPatternCardsDeck;
     private TreeSet<Integer> extractedPublic;
     private TreeSet<Integer> extractedPrivate;
     private TreeSet<Integer> extractedTool;
@@ -24,6 +27,7 @@ public class Deck {
     //return windowPatternCard[extract(23, extractedWindow)];?
 
     public Deck() {
+        windowPatternCardsDeck = new WindowPatternCardLoader().initCard();
         extractedPublic = new TreeSet<>();
         extractedPrivate = new TreeSet<>();
         extractedTool = new TreeSet<>();
@@ -130,7 +134,8 @@ public class Deck {
      * @throws IndexOutOfBoundsException if random error.
      */
     public WindowPatternCard drawWindowPatternCard() {
-        return null;
+        int index = extractInt(windowPatternCardsDeck.size(), extractedWindow);
+        return windowPatternCardsDeck.get(index);
     }
 
     /**

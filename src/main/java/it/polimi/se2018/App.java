@@ -1,7 +1,5 @@
 package it.polimi.se2018;
 
-import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCardLoader;
-
 /**
  * Hello world!
  */
