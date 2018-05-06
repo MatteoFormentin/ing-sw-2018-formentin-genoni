@@ -2,8 +2,8 @@ package it.polimi.se2018.model;
 
 
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
-import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
-import it.polimi.se2018.model.dice.dice_factory.Dice;
+import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
+import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
 
 /**
@@ -53,7 +53,7 @@ public class Player {
         hasUsedDice=false;
         hasUsedToolCard=false;
     }
-
+    /* setter & getter*/
     public int getId() {
         return id;
     }
@@ -130,6 +130,28 @@ public class Player {
 
     public void setHasUsedToolCard(boolean hasUsedToolCard) {
         this.hasUsedToolCard = hasUsedToolCard;
+    }
+
+    /**
+     * return exeption can't inset dice
+     * @param line of the cell of the playerWindowPattern
+     * @param column of the cell of the playerWindowPattern
+     * @param indexDiceOfHandDice the index of the dice in the Hand of the player
+     * return exeption
+     */
+    public void insetDice (int line, int column, int indexDiceOfHandDice)throws Exception{
+        // check if the player has insert the dice
+        if(hasUsedDice) throw new Exception(); // new exception already inserted
+        // the player can insert the Dice
+        try{
+            playerWindowPattern.insertDice(line,column,handDice.removeDiceFromStack(indexDiceOfHandDice));
+        }catch (Exception Exception){
+            return;
+        }
+        hasUsedDice=true;
+    }
+    public void addDiceToHandDice(Dice dice){
+            handDice.addDice(dice);
     }
 
 }

@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.card.objective_public_card;
 
-import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
+import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 
 /**
  * Base class for objective public card.

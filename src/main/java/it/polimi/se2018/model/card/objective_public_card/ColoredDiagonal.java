@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.card.objective_public_card;
 
-import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
+import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 
 /**
  * Public objective card Diagonali Colorate.
@@ -8,7 +8,7 @@ import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
  * Description
  * Numero  di  dadi  dello  stesso  colore  diagonalmente  adiacenti
  *
- * @author Matteo Formentin
+ * @author Luca Genoni
  */
 public class ColoredDiagonal extends ObjectivePublicCard {
     public ColoredDiagonal() {

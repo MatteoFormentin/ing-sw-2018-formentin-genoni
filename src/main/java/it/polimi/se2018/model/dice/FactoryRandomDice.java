@@ -1,12 +1,8 @@
-package it.polimi.se2018.model.dice.dice_factory;
-
-import it.polimi.se2018.model.dice.DiceColor;
-import it.polimi.se2018.model.dice.dice_factory.Dice;
-import it.polimi.se2018.model.dice.dice_factory.DiceFactory;
+package it.polimi.se2018.model.dice;
 
 import java.util.Random;
 
-public class DiceRandomFactory extends DiceFactory {
+public class FactoryRandomDice extends FactoryDice {
     @Override
     public Dice createDice() {
         int random = new Random().nextInt(DiceColor.getNumberOfDiceColors());

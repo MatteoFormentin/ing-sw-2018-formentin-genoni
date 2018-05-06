@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.card.windowPatternCard;
+package it.polimi.se2018.model.card.window_pattern_card;
 
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
@@ -49,7 +49,7 @@ public class WindowPatternCardLoader {
             for (int m = 0; m < 4; m++) {
                 for (int n = 0; n < 5; n++) {
                     System.out.print(matrix[m][n].getColorRestriction());
-                    System.out.print(matrix[m][n].getNumberRestriction());
+                    System.out.print(matrix[m][n].getValueRestriction());
                     System.out.print(" ");
                 }
                 System.out.println();
@@ -75,7 +75,7 @@ public class WindowPatternCardLoader {
 
         String cardName = (String) card.get("name");
         Long cardLevelLong = (Long) card.get("difficult");
-        int cardLevel = cardLevelLong.intValue();
+        int cardDifficult = cardLevelLong.intValue();
 
         JSONArray row = (JSONArray) card.get("board");
         Iterator rowIterator = row.iterator();
@@ -94,22 +94,22 @@ public class WindowPatternCardLoader {
                     case "false":
                         break;
                     case "1":
-                        matrix[i][j].setNumberRestriction(1);
+                        matrix[i][j].setValueRestriction(1);
                         break;
                     case "2":
-                        matrix[i][j].setNumberRestriction(2);
+                        matrix[i][j].setValueRestriction(2);
                         break;
                     case "3":
-                        matrix[i][j].setNumberRestriction(3);
+                        matrix[i][j].setValueRestriction(3);
                         break;
                     case "4":
-                        matrix[i][j].setNumberRestriction(4);
+                        matrix[i][j].setValueRestriction(4);
                         break;
                     case "5":
-                        matrix[i][j].setNumberRestriction(5);
+                        matrix[i][j].setValueRestriction(5);
                         break;
                     case "6":
-                        matrix[i][j].setNumberRestriction(6);
+                        matrix[i][j].setValueRestriction(6);
                         break;
                     case "Red":
                         matrix[i][j].setColorRestriction(Red);
@@ -133,7 +133,7 @@ public class WindowPatternCardLoader {
         }
         WindowPatternCard windowPatternCard = new WindowPatternCard();
         windowPatternCard.setName(cardName);
-        windowPatternCard.setLevel(cardLevel);
+        windowPatternCard.setDifficulty(cardDifficult);
         windowPatternCard.setMatrix(matrix);
 
         return windowPatternCard;

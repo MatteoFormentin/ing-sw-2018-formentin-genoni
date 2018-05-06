@@ -1,8 +1,8 @@
 package it.polimi.se2018.model.card.objective_public_card;
 
-import it.polimi.se2018.model.card.windowPatternCard.Cell;
-import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
-import it.polimi.se2018.model.dice.dice_factory.Dice;
+import it.polimi.se2018.model.card.window_pattern_card.Cell;
+import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
+import it.polimi.se2018.model.dice.Dice;
 
 /**
  * Public objective card Colori diversi - Colonna.

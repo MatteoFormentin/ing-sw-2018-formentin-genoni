@@ -3,8 +3,8 @@ package it.polimi.se2018.model.card;
 import it.polimi.se2018.model.card.objective_private_card.*;
 import it.polimi.se2018.model.card.objective_public_card.*;
 import it.polimi.se2018.model.card.tool_card.*;
-import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
-import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCardLoader;
+import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
+import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCardLoader;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,7 +24,7 @@ public class Deck {
     private TreeSet<Integer> extractedTool;
     private TreeSet<Integer> extractedWindow;
 
-    //return windowPatternCard[extract(23, extractedWindow)];?
+    //return window_pattern_card[extract(23, extractedWindow)];?
 
     public Deck() {
         windowPatternCardsDeck = new WindowPatternCardLoader().initCard();

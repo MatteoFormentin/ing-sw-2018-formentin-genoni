@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.dice.dice_factory;
+package it.polimi.se2018.model.dice;
 
 import it.polimi.se2018.model.dice.DiceColor;
 
@@ -31,16 +31,6 @@ public class Dice {
      */
     public void setValue(int value) {
         this.value = value;
-    }
-    /**
-     * Method <strong>setColor</strong>
-     * <em>Description</em>
-     * set a color for the dice
-     *
-     * @param color to set on the dice
-     */
-    public void setColor(DiceColor color) {
-        this.color = color;
     }
     /**
      * Method <strong>getValue</strong>

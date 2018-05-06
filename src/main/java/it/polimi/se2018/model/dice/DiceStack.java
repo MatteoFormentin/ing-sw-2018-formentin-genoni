@@ -1,8 +1,5 @@
 package it.polimi.se2018.model.dice;
 
-import it.polimi.se2018.model.dice.dice_factory.Dice;
-import it.polimi.se2018.model.dice.dice_factory.DiceFactory;
-
 import java.util.LinkedList;
 
 /**
@@ -13,27 +10,27 @@ import java.util.LinkedList;
  */
 public class DiceStack {
     private  LinkedList<Dice> diceList;
-    private static DiceFactory diceFactory;
+    private static FactoryDice factoryDice;
     /**
      * Method <strong>DiceStack</strong>
      * <em>Description</em>: constructor for empty DiceStack
      */
-    public DiceStack(DiceFactory diceFactory){
+    public DiceStack(FactoryDice factoryDice){
         diceList = new LinkedList<>();
-        this.diceFactory= diceFactory;
+        this.factoryDice = factoryDice;
     }
     public DiceStack(int numberOfNewDice){
         diceList = new LinkedList<>();
         for(int i=0;i<numberOfNewDice;i++){
-            diceList.add((diceFactory.createDice()));
+            diceList.add((factoryDice.createDice()));
         }
     }
-    public void setDiceFactory(DiceFactory diceFactory) {
-        this.diceFactory = diceFactory;
+    public void setDiceFactory(FactoryDice factoryDice) {
+        this.factoryDice = factoryDice;
     }
     /**
      * Method <strong>addDice</strong>
-     * <em>Description</em>: can add dice to the stack
+     * <em>Description</em>: can add dice to the stack for Player and Tool Card
      *
      * @param Dice to add to the stack
      */
@@ -72,7 +69,7 @@ public class DiceStack {
      * @param index integer of the index of the dice
      */
     public void reinsertDiceToFactory(int index){
-        diceFactory.removeDice(removeDiceFromStack(index));
+        factoryDice.removeDice(removeDiceFromStack(index));
     }
     /**
      * Method <strong>DiceStack</strong>

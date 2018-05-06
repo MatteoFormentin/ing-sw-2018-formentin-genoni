@@ -1,6 +1,4 @@
-package it.polimi.se2018.model.dice.dice_factory;
-
-import it.polimi.se2018.model.dice.DiceColor;
+package it.polimi.se2018.model.dice;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -13,16 +11,16 @@ import java.util.Random;
  * @version 1.2 fix getDice() & getpoll removed
  * @since 1.0
  */
-public class DiceBalancedFactory extends DiceFactory {
+public class FactoryBalancedDice extends FactoryDice {
 
-    private static DiceBalancedFactory singleDiceBalancedFactory;
+    private static FactoryBalancedDice singleFactoryBalancedDice;
     private int currentNumberOfDice;
     //currentNumberOfEachDice stores the number of dice for each color. It is indexed with the ordinal number relative to each color
     private int[] currentNumberOfEachDice;
     //availableColours stores the ordinal number linked to the color
     private LinkedList <DiceColor> availableColours;
 
-    private DiceBalancedFactory(){
+    private FactoryBalancedDice(){
         int MaxNumberOfDice= 90;
         currentNumberOfDice=MaxNumberOfDice;
         currentNumberOfEachDice= new int[DiceColor.getNumberOfDiceColors()];
@@ -33,11 +31,11 @@ public class DiceBalancedFactory extends DiceFactory {
             availableColours.add(DiceColor.getDiceColor(i));
         }
     }
-    public static synchronized DiceBalancedFactory getBalancedDiceFactory(){
-        if(singleDiceBalancedFactory ==null){
-            singleDiceBalancedFactory = new DiceBalancedFactory();
+    public static synchronized FactoryBalancedDice getBalancedDiceFactory(){
+        if(singleFactoryBalancedDice ==null){
+            singleFactoryBalancedDice = new FactoryBalancedDice();
         }
-        return singleDiceBalancedFactory;
+        return singleFactoryBalancedDice;
     }
     /**
      * Method <strong>createDice</strong>
@@ -87,7 +85,7 @@ public class DiceBalancedFactory extends DiceFactory {
 
     }
     public static void reset(){
-        singleDiceBalancedFactory =null;
+        singleFactoryBalancedDice =null;
     }
     /**
      * Method <strong>getPoolDice</strong>

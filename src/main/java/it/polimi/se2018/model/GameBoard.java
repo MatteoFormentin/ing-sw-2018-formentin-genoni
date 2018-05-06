@@ -4,14 +4,13 @@ package it.polimi.se2018.model;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
-import it.polimi.se2018.model.card.windowPatternCard.WindowPatternCard;
-import it.polimi.se2018.model.dice.dice_factory.DiceBalancedFactory;
+import it.polimi.se2018.model.dice.FactoryBalancedDice;
 import it.polimi.se2018.model.dice.DiceStack;
-import it.polimi.se2018.model.dice.dice_factory.DiceRandomFactory;
+import it.polimi.se2018.model.dice.FactoryRandomDice;
 
 import java.util.LinkedList;
 
-import static it.polimi.se2018.model.dice.dice_factory.DiceBalancedFactory.getBalancedDiceFactory;
+import static it.polimi.se2018.model.dice.FactoryBalancedDice.getBalancedDiceFactory;
 
 
 /**
@@ -48,9 +47,9 @@ public class GameBoard {
      * @param roomPlayers a LinkedList of player
      */
     public void doGame(LinkedList<Player> roomPlayers, int indexFirstPlayer,boolean typeOfFactory ){
-        //init game of card arrays & DiceFactory
+        //init game of card arrays & FactoryDice
         if(typeOfFactory)poolDice.setDiceFactory(getBalancedDiceFactory());
-        else poolDice.setDiceFactory(new DiceRandomFactory());
+        else poolDice.setDiceFactory(new FactoryRandomDice());
         Deck deck = new Deck();
         for(int i=0;i<toolCard.length;i++) toolCard[i] = deck.drawToolCard();
         for(int i=0;i<objectivePublicCard.length;i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
@@ -77,7 +76,7 @@ public class GameBoard {
             doRound();
         }
         //clean up game
-        if(typeOfFactory) DiceBalancedFactory.reset();
+        if(typeOfFactory) FactoryBalancedDice.reset();
     }
 /*
     /**
@@ -93,7 +92,7 @@ public class GameBoard {
                          DiceStack[] roundTrack, int currentround, DiceStack poolDice,
                          ToolCard[] toolCard, ObjectivePublicCard[] objectivePublicCard){
         //init card & dice
-        DiceBalancedFactory diceBalancedFactory = getBalancedDiceFactory();
+        FactoryBalancedDice diceBalancedFactory = getBalancedDiceFactory();
         diceBalancedFactory.setcurrentNumberOfEachDice(currentNumberOfEachDiceInFactory);
         this.roundTrack=roundTrack;
         this.currentround=currentround;
