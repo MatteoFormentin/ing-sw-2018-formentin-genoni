@@ -20,7 +20,14 @@ public class Lathekin extends ToolCard {
      * Card effect.
      */
     public void effect() {
-
+    /*
+        ****** the Player use this card check state player need the favor token and hasusedtoolcard==false
+        select dice from window and go to hand of player
+        select dice from window and go to hand of player
+        inserDice one of the dice value restriction= false the other true
+        insertlast Dice in hand
+        end toolCard (reduce favor token of the player )
+         */
     }
 
 }

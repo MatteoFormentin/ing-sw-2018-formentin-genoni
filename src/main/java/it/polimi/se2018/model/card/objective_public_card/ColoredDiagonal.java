@@ -2,7 +2,6 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
-import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
 import java.util.LinkedList;
@@ -120,11 +119,9 @@ public class ColoredDiagonal extends ObjectivePublicCard {
             setWindowOfColor(windowOfColor);
         }
         //set the color of each ColorCell and HasBeenVisited to false
-        Dice currentCellDice;
         for (int line = 0; line < windowOfColor.length; line++) {
             for (int column = 0; column < windowOfColor[0].length; column++) {
-                currentCellDice = matrix[line][column].getCellDice();
-                windowOfColor[line][column].setColor(currentCellDice.getColor());
+                windowOfColor[line][column].setColor(matrix[line][column].getDice().getColor());
                 windowOfColor[line][column].setHasBeenVisited(false);
             }
         }
@@ -151,7 +148,7 @@ public class ColoredDiagonal extends ObjectivePublicCard {
         //setup of the 2 "windows"
         for (int line = 0; line < matrix.length; line++) {
             for (int column = 0; column < matrix[0].length; column++) {
-                currentCellDice=matrix[line][column].getCellDice();
+                currentCellDice=matrix[line][column].getDice();
                 windowOfColor[line][column]=currentCellDice.getColor();
                 composesAnExistingDiagonal[line][column]=false;
             }

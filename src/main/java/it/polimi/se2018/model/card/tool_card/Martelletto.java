@@ -29,7 +29,13 @@ public class Martelletto extends ToolCard {
      * @param diceStack DiceStack (Riserva).
      */
     public void effect(DiceStack diceStack) {
+      /*
+        Before:
 
+        ****** the Player use this card check state player need be in second trun and canusedtoolcard==true and hasUsedDice=false
+        reroll all the dice of the Dicepool
+        end toolCard (reduce favor token of the player )
+         */
     }
 
 }

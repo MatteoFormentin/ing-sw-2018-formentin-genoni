@@ -49,6 +49,9 @@ public class DiceStack {
         if(index>=diceList.size()) return null;
         return diceList.get(index);
     }
+    public void addADiceFromFactory(){
+        diceList.add(factoryDice.createDice());
+    }
     /**
      * Method <strong>removeDiceFromStack</strong>
      * <em>Description</em>: remove the dice from the stack.

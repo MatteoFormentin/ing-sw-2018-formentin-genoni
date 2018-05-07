@@ -22,6 +22,12 @@ public class AlesatoreLaminaRame extends ToolCard {
      * Card effect.
      */
     public void effect() {
+        /*
+        ****** the Player use this card check state player need the favor token and hasusedtoolcard==false
+        select dice from window and go to hand of player
+        inserDice value restriction= false the other true
+        end toolCard (reduce favor token of the player )
+         */
     }
 
 }

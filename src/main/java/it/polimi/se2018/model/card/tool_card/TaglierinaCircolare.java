@@ -26,6 +26,14 @@ public class TaglierinaCircolare extends ToolCard {
      * @param diceStack DiceStack (Riserva).
      */
     public void effect(DiceStack diceStack) {
-
+        /*
+        Before:
+        The Player Select One From DicePool(of the gameboard)
+        ****** the Player use this card check state player need to have one dice in hand and canusedtoolcard==true
+        select Dice from Roundtrank(number turn, index Diceof the dicestack)
+        siwtch the 2 dice the one in hand and the one selected
+        the Player Insert the dice
+        end toolCard (reduce favor token of the player )
+         */
     }
 }

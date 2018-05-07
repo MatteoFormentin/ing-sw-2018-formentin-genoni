@@ -29,10 +29,10 @@ public class DifferentNumberRow extends ObjectivePublicCard {
         Dice currentCellDice;
         Dice previousCellDice;
         for (int i = 0; i < 4; i++) {
-            previousCellDice = matrix[i][0].getCellDice();
+            previousCellDice = matrix[i][0].getDice();
             flag = true;
             for (int j = 1; j < 5; j++) {
-                currentCellDice = matrix[i][j].getCellDice();
+                currentCellDice = matrix[i][j].getDice();
                 if (currentCellDice.getValue() == previousCellDice.getValue()) {
                     flag = false;
                     break;

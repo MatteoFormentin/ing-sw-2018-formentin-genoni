@@ -42,13 +42,12 @@ public class Cell {
         this.colorRestriction = colorRestriction;
     }
 
-    /**
-     * Method <strong>getCellDice</strong>
-     *
-     * @return the dice
-     */
-    public Dice getCellDice() {
-        return this.dice;
+    public Dice getDice() {
+        return dice;
+    }
+
+    public void setDice(Dice dice) {
+        this.dice = dice;
     }
 
     /**

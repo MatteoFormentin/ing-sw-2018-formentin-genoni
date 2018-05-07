@@ -29,6 +29,12 @@ public class TaglierinaManuale extends ToolCard {
      * @param diceStack DiceStack (Riserva).
      */
     public void effect(DiceStack diceStack) {
-
+        /*
+        ****** the Player use this card check state player need to have one dice in hand and canusedtoolcard==true
+        get DiceColor from one dice Of Roundtrank(number turn, index Diceof the dicestack)
+        move 2 dice from windowPattern to handPlayer
+        insert 2 Dice
+        end toolCard (reduce favor token of the player )
+         */
     }
 }

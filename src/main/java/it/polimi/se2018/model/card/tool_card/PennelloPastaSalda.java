@@ -28,6 +28,14 @@ public class PennelloPastaSalda extends ToolCard {
      * @param diceStack DiceStack (Riserva).
      */
     public void effect(DiceStack diceStack) {
-
+        /*
+        Before:
+        The Player Select One From DicePool(of the gameboard)
+        ****** the Player use this card check state player need to have one dice in hand and canusedtoolcard==true
+        reroll the dice
+        insert dice or readd to dicepool
+        end toolCard (reduce favor token of the player )
+        (now the player can only call end turn)
+         */
     }
 }

@@ -29,10 +29,10 @@ public class DifferentNumberColumn extends ObjectivePublicCard {
         Dice currentCellDice;
         Dice previousCellDice;
         for (int j = 0; j < 5; j++) {
-            previousCellDice = matrix[0][j].getCellDice();
+            previousCellDice = matrix[0][j].getDice();
             flag = true;
             for (int i = 1; i < 4; i++) {
-                currentCellDice = matrix[i][j].getCellDice();
+                currentCellDice = matrix[i][j].getDice();
                 if (currentCellDice.getValue() == previousCellDice.getValue()) {
                     flag = false;
                     break;

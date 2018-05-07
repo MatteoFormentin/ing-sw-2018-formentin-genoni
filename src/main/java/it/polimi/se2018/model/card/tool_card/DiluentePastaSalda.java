@@ -28,7 +28,16 @@ public class DiluentePastaSalda extends ToolCard {
      * @param diceStack DiceStack (Riserva).
      */
     public void effect(DiceStack diceStack/*, DiceBag diceBag*/) {
-
+        /*
+        Before:
+        The Player Select One From DicePool(of the gameboard)
+        ****** the Player use this card check state player need to have one dice in hand and canusedtoolcard==true
+        remove from the game the Dice in hand
+        the Hand Dice add a dice from factoey
+        set the value of the dice
+        insert the dice
+        end toolCard (reduce favor token of the player )
+         */
     }
 
 }

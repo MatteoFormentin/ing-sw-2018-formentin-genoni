@@ -28,6 +28,11 @@ public class TenagliaRotelle extends ToolCard {
      * @param diceStack DiceStack (Riserva).
      */
     public void effect(DiceStack diceStack) {
-
+       /*
+        ****** the Player use this card check state player need to have canusedtoolcard==true
+        selectDice from DicePool
+        insertDice to WindowPattern
+        end toolCard (reduce favor token of the player & second turn=false);
+         */
     }
 }
