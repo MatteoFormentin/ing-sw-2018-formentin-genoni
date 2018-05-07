@@ -32,7 +32,6 @@ public enum DiceColor {
      *
      * @param ordinal number int associated with a DiceColor
      * @return DiceColor associated with the input number, null if there is no match.
-     * @require ordinal belong to domain [0,numberOfDiceColors] numberOfDiceColors=4 if the source code has not changed since version 1.0
      */
     public static DiceColor getDiceColor(int ordinal) {
         /* exchangeable with
@@ -41,7 +40,7 @@ public enum DiceColor {
         for (DiceColor p : values()) {
             if (p.ordinal() == ordinal) return p;
         }
-        throw new IndexOutOfBoundsException();
+        return null;
     }
 
     /**
