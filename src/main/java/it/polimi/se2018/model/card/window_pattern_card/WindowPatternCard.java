@@ -4,16 +4,9 @@ import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
 /**
- * <strong>Class WindowPatternCard</strong>
- * <em>Description</em>
  * Class that define the Window Pattern Card.
  *
- * @author Davide Mammarella *
- * @version 1.0
- * @since 1.0
- * @author Luca Genoni only for the version 1.1
- * @version 1.1
- * @since 1.1
+ * @author Davide Mammarella
  */
 
 public class WindowPatternCard {
@@ -27,13 +20,11 @@ public class WindowPatternCard {
      */
 
     /**
-     * Method <strong>Matrix</strong>
-     * <em>Description</em>
-     * create a WindowPatternCard given the name, difficulty and the matrix
+     * Create a WindowPatternCard given the name, difficulty and the matrix.
      *
-     * @param name of the WindowPatternCard
-     * @param difficulty of the WindowPatternCard
-     * @param matrix of Cell of the WindowPatternCard
+     * @param name of the Window Pattern Card
+     * @param difficulty of the Window Pattern Card
+     * @param matrix of Cell of the Window Pattern Card
      */
     WindowPatternCard(String name,int difficulty,Cell[][] matrix){
         this.name=name;
@@ -50,8 +41,6 @@ public class WindowPatternCard {
 
 
     /**
-     * Method <strong>getName</strong>
-     * <em>Description</em>
      * Get the name of the Window Pattern Card.
      */
     public String getName() {
@@ -59,8 +48,6 @@ public class WindowPatternCard {
     }
 
     /**
-     * Method <strong>setName</strong>
-     * <em>Description</em>
      * Set a name for the Window Pattern Card.
      *
      * @param name assigned to the Window Pattern Card
@@ -70,16 +57,13 @@ public class WindowPatternCard {
     }
 
     /**
-     * Method <strong>getDifficulty</strong>
-     * <em>Description</em>
-     * Get the getDifficulty of the Window Pattern Card.
+     * Get the difficulty of the Window Pattern Card.
      */
     public int getDifficulty() {
         return difficulty;
     }
+
     /**
-     * Method <strong>setDifficulty</strong>
-     * <em>Description</em>
      * Set a difficulty for the Window Pattern Card.
      *
      * @param difficulty assigned to the Window Pattern Card
@@ -87,43 +71,49 @@ public class WindowPatternCard {
     void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
     }
+
     /**
-     * Method <strong>getDifficulty</strong>
-     * <em>Description</em>
      * Get the matrix of the Window Pattern Card.
      */
     public Cell[][] getMatrix() {
         return matrix;
     }
+
     /**
-     * Method <strong>setDifficulty</strong>
-     * <em>Description</em>
      * Set a matrix for the Window Pattern Card.
      *
-     * @param matrix [4][5] to assigned to the Window Pattern Card
+     * @param matrix [4][5] assigned to the Window Pattern Card
      */
     void setMatrix(Cell[][] matrix) {
         this.matrix = matrix;
     }
+
     /**
-     * Method <strong>getDifficulty</strong>
-     * <em>Description</em>
-     * Get the matrix of the Window Pattern Card.
+     * Get a dice from specific cell.
+     *
+     * @param column from where you want to get the dice
+     * @param line from where you want to get the dice
      */
-    public Dice getDice(int line,int colum) {
-        return matrix[line][colum].getDice();
+    public Dice getDice(int line,int column) {
+        return matrix[line][column].getDice();
     }
-    public void removeDice(int line,int colum){
-        matrix[line][colum].setDice(null);
+
+    /**
+     * Remove a dice from specific cell.
+     *
+     * @param column from where you want to remove the dice
+     * @param line from where you want to remove the dice
+     */
+    public void removeDice(int line,int column){
+        matrix[line][column].setDice(null);
     }
     /**
-     * Method <strong>checkMatrixAdjacentRestriction</strong>
-     * <em>Description</em>
      * Check if the dice is allowed based on the restriction imposed from the adjacent cell.
      *
-     * @return true if the Adjacent is ok
+     * @param column of where you want to put the dice
+     * @param line of where you want to put the dice
+     * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
-
 
     private boolean checkMatrixAdjacentRestriction(int line, int column) {
         if (firstDice){
@@ -138,11 +128,11 @@ public class WindowPatternCard {
     }
 
     /**
-     * Method <strong>checkMatrixColorRestriction</strong>
-     * <em>Description</em>
      * Check if the dice is allowed based on the color restriction of the matrix.
      *
-     * @return true if the color is ok
+     * @param column of where you want to put the dice
+     * @param line of where you want to put the dice
+     * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     private boolean checkMatrixAdjacentColorRestriction(int line, int column, DiceColor diceColor) {
 
@@ -154,11 +144,11 @@ public class WindowPatternCard {
     }
 
     /**
-     * Method <strong>checkMatrixValueRestriction</strong>
-     * <em>Description</em>
      * Check if the dice is allowed based on the value restriction of the matrix.
      *
-     * @return true if the value is ok
+     * @param column of where you want to put the dice
+     * @param line of where you want to put the dice
+     * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     private boolean checkMatrixAdjacentValueRestriction(int line, int column, int diceValue) {
         if (column!=0) if(matrix[line][column - 1].getDice().getValue()==diceValue) return false;
@@ -169,11 +159,9 @@ public class WindowPatternCard {
     }
 
     /**
-     * /**
-     * Method <strong>insertDice</strong>
-     * <em>Description</em>
-     * insertDice for the player or all the restriction on
+     * InsertDice for the player or all the restriction on.
      *
+     * @autor Luca Genoni
      * @param line index [0,3] of the WindowsPattern
      * @param column index [0,4] of the WindowsPattern
      * @param dice to insert in the WindowsPattern
@@ -195,11 +183,9 @@ public class WindowPatternCard {
     }
 
     /**
-     * /**
-     * Method <strong>insertDice</strong>
-     * <em>Description</em>
-     * insertDice for the tool card or to negate some restriction
+     * InsertDice for the tool card or to negate some restriction.
      *
+     * @autor Luca Genoni
      * @param line index [0,3] of the WindowsPattern
      * @param column index [0,4] of the WindowsPattern
      * @param dice to insert in the WindowsPattern
@@ -229,6 +215,4 @@ public class WindowPatternCard {
         firstDice=false;
         return true;
     }
-
-
 }

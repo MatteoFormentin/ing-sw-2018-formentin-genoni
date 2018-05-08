@@ -4,16 +4,9 @@ import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
 /**
- * <strong>Class Cell</strong>
- * <em>Description</em>
  * Class that define a Cell of Window Pattern Card.
  *
  * @author Davide Mammarella
- * @version 1.0
- * @since 1.0
- * @author Luca Genoni only for the version 1.1
- * @version 1.1
- * @since 1.1
  */
 
 public class Cell {
@@ -26,54 +19,74 @@ public class Cell {
 
      */
 
+    /**
+     * Get the value restriction of the cell.
+     */
     public int getValueRestriction() {
         return valueRestriction;
     }
 
+    /**
+     * Set the value restriction of the cell.
+     *
+     * @param valueRestriction restriction assigned to the cell
+     */
     public void setValueRestriction(int valueRestriction) {
         this.valueRestriction = valueRestriction;
     }
 
+    /**
+     * Get the color restriction of the cell.
+     */
     public DiceColor getColorRestriction() {
         return colorRestriction;
     }
 
+    /**
+     * Set the color restriction of the cell.
+     *
+     * @param colorRestriction restriction assigned to the cell
+     */
     public void setColorRestriction(DiceColor colorRestriction) {
         this.colorRestriction = colorRestriction;
     }
 
+    /**
+     * Get the dice from the cell.
+     */
     public Dice getDice() {
         return dice;
     }
 
+    /**
+     * Set the dice on the cell.
+     *
+     * @param dice that i want to set
+     */
     public void setDice(Dice dice) {
         this.dice = dice;
     }
 
     /**
-     * Method <strong>checkColorRestriction</strong>
-     * <em>Description</em>
      * Check if the dice is allowed based on the color restriction of the cell.
      *
-     * @return false if the color is restricted
+     * @param color color of the dice that i wanna check
+     * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     boolean checkColorRestriction(DiceColor color) {
         return (color!=colorRestriction);
     }
+
     /**
-     * Method <strong>checkValueRestriction</strong>
-     * <em>Description</em>
      * Check if the dice is allowed based on the value restriction of the cell.
      *
-     * @return false if the value is restricted
+     * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     boolean checkValueRestriction(int value) {
         return (value!=valueRestriction);
     }
 
     /**
-     * Method <strong>insertDice</strong>
-     * <em>Description</em>
      * Insert the dice in the cell if the restriction of the cell are respected.
      *
      * @param dice to insert
@@ -86,8 +99,6 @@ public class Cell {
     }
 
     /**
-     * Method <strong>insertDice</strong>
-     * <em>Description</em>
      * Insert the dice in the cell if the restriction of the cell are respected.
      *
      * @param dice to insert in the cell
@@ -101,5 +112,4 @@ public class Cell {
         if (valueRestriction)if(!checkValueRestriction(dice.getValue())) throw new Exception();
         this.dice=dice;
     }
-
 }
