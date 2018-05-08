@@ -130,13 +130,13 @@ public class Player {
     }
 
     /**
-     * return exeption can't inset dice
+     * return exception can't inset dice
      * @param line of the cell of the playerWindowPattern
      * @param column of the cell of the playerWindowPattern
      * @param indexOfTheDiceInHand to insert in the WindowsPattern
-     * return exeption
+     * return exception
      */
-    public void insetDice (int line, int column, int indexOfTheDiceInHand)throws Exception{
+    public void insertDice (int line, int column, int indexOfTheDiceInHand)throws Exception{
         // check if the player has insert the dice
         if(hasUsedDice) throw new Exception(); // new exception already inserted
         // the player can insert the Dice
@@ -163,7 +163,7 @@ public class Player {
      *                            if this logic produce true can insert the dice
      * @throws Exception
      */
-    public void insetDice(int line, int column, int indexOfTheDiceInHand, boolean adjacentRestriction,
+    public void insertDice(int line, int column, int indexOfTheDiceInHand, boolean adjacentRestriction,
                            boolean colorRestriction, boolean valueRestriction)throws Exception{
         // check if the player has insert the dice
         if(hasUsedDice) throw new Exception(); // new exception already inserted
@@ -188,11 +188,11 @@ public class Player {
      * !HasUsedDice && favorToken>=0 both true for return true
      *
      */
-    public boolean canuseToolCard(int cost){
+    public boolean canUseToolCard(int cost){
         return(!hasUsedDice &&(favorToken-cost>=0));
 
     }
-    public void HasUsedToolCard(int cost){
+    public void hasUsedToolCard(int cost){
         hasUsedDice=true;
         favorToken=favorToken-cost;
     }
