@@ -1,0 +1,642 @@
+memberSearchIndex = [{
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceStack",
+    "l": "addADiceFromFactory()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceStack",
+    "l": "addDice(Dice)",
+    "url": "addDice-it.polimi.se2018.model.dice.Dice-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "AlesatoreLaminaRame",
+    "l": "AlesatoreLaminaRame()"
+}, {"p": "it.polimi.se2018", "c": "App", "l": "App()"}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "Blue"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "BlueObjectivePrivateCard",
+    "l": "BlueObjectivePrivateCard()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ColoredDiagonal",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DarkNumber",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentColor",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentColorColumn",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentColorRow",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentNumber",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentNumberColumn",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentNumberRow",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "LightNumber",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "MidNumber",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "calculatePoint(WindowPatternCard)",
+    "url": "calculatePoint-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "canUseToolCard(int)"
+}, {"p": "it.polimi.se2018.model.card.window_pattern_card", "c": "Cell", "l": "Cell()"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "changeSecondTurn()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ColoredDiagonal",
+    "l": "ColoredDiagonal()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryBalancedDice",
+    "l": "createDice()"
+}, {"p": "it.polimi.se2018.model.dice", "c": "FactoryDice", "l": "createDice()"}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryRandomDice",
+    "l": "createDice()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DarkNumber",
+    "l": "DarkNumber()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "Dice",
+    "l": "Dice(DiceColor)",
+    "url": "Dice-it.polimi.se2018.model.dice.DiceColor-"
+}, {"p": "it.polimi.se2018.model.dice", "c": "DiceStack", "l": "DiceStack(int)"}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceStack",
+    "l": "DiceStack(FactoryDice)",
+    "url": "DiceStack-it.polimi.se2018.model.dice.FactoryDice-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentColor",
+    "l": "DifferentColor()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentColorColumn",
+    "l": "DifferentColorColumn()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentColorRow",
+    "l": "DifferentColorRow()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentNumber",
+    "l": "DifferentNumber()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentNumberColumn",
+    "l": "DifferentNumberColumn()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "DifferentNumberRow",
+    "l": "DifferentNumberRow()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "DiluentePastaSalda",
+    "l": "DiluentePastaSalda()"
+}, {
+    "p": "it.polimi.se2018.model",
+    "c": "GameBoard",
+    "l": "doGame(LinkedList<Player>, int, boolean)",
+    "url": "doGame-java.util.LinkedList-int-boolean-"
+}, {
+    "p": "it.polimi.se2018.model.card",
+    "c": "Deck",
+    "l": "drawObjectivePrivateCard()"
+}, {
+    "p": "it.polimi.se2018.model.card",
+    "c": "Deck",
+    "l": "drawObjectivePublicCard()"
+}, {"p": "it.polimi.se2018.model.card", "c": "Deck", "l": "drawToolCard()"}, {
+    "p": "it.polimi.se2018.model.card",
+    "c": "Deck",
+    "l": "drawWindowPatternCard()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "AlesatoreLaminaRame",
+    "l": "effect()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "Lathekin",
+    "l": "effect()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "PennelloEglomise",
+    "l": "effect()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "DiluentePastaSalda",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "Martelletto",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "PennelloPastaSalda",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "PinzaSgrossatrice",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "RigaSughero",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "TaglierinaCircolare",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "TaglierinaManuale",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "TamponeDiamantato",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "TenagliaRotelle",
+    "l": "effect(DiceStack)",
+    "url": "effect-it.polimi.se2018.model.dice.DiceStack-"
+}, {"p": "it.polimi.se2018.model", "c": "GameBoard", "l": "endTurn()"}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryDice",
+    "l": "FactoryDice()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryRandomDice",
+    "l": "FactoryRandomDice()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryBalancedDice",
+    "l": "getBalancedDiceFactory()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "Dice",
+    "l": "getColor()"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "Cell",
+    "l": "getColorRestriction()"
+}, {
+    "p": "it.polimi.se2018.model.card",
+    "c": "Deck",
+    "l": "getDeck()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "getDescription()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "getDescription()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "ToolCard",
+    "l": "getDescription()"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "Cell",
+    "l": "getDice()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceStack",
+    "l": "getDice(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCard",
+    "l": "getDice(int, int)"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "getDiceColor()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "getDiceColor(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCard",
+    "l": "getDifficulty()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "ToolCard",
+    "l": "getFavorToken()"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "getFavorToken()"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "getHandDice(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "getId()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "getId()"
+}, {"p": "it.polimi.se2018.model.card.tool_card", "c": "ToolCard", "l": "getId()"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "getId()"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCard",
+    "l": "getMatrix()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "getName()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "getName()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "ToolCard",
+    "l": "getName()"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCard",
+    "l": "getName()"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "getNickname()"}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "getNumberOfDiceColors()"
+}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "getPlayerWindowPattern()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "getPoint()"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "getPoints()"}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryBalancedDice",
+    "l": "getPoolDice(int)"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "getPrivateObject()"}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "Dice",
+    "l": "getValue()"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "Cell",
+    "l": "getValueRestriction()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "Green"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "GreenObjectivePrivateCard",
+    "l": "GreenObjectivePrivateCard()"
+}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "hasUsedToolCard(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "ToolCard",
+    "l": "incrementFavorToken(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCardLoader",
+    "l": "initCard()"
+}, {"p": "it.polimi.se2018.model", "c": "GameBoard", "l": "insertDice()"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "insertDice(int, int, int)"
+}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "insertDice(int, int, int, boolean, boolean, boolean)"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCard",
+    "l": "insertDice(int, int, Dice)",
+    "url": "insertDice-int-int-it.polimi.se2018.model.dice.Dice-"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCard",
+    "l": "insertDice(int, int, Dice, boolean, boolean, boolean)",
+    "url": "insertDice-int-int-it.polimi.se2018.model.dice.Dice-boolean-boolean-boolean-"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "Cell",
+    "l": "insertDice(Dice)",
+    "url": "insertDice-it.polimi.se2018.model.dice.Dice-"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "Cell",
+    "l": "insertDice(Dice, boolean, boolean)",
+    "url": "insertDice-it.polimi.se2018.model.dice.Dice-boolean-boolean-"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "isHasUsedDice()"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "isHasUsedToolCard()"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "isSecondTurn()"}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "Lathekin",
+    "l": "Lathekin()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "LightNumber",
+    "l": "LightNumber()"
+}, {
+    "p": "it.polimi.se2018",
+    "c": "App",
+    "l": "main(String[])",
+    "url": "main-java.lang.String:A-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "Martelletto",
+    "l": "Martelletto()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "MidNumber",
+    "l": "MidNumber()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "ObjectivePrivateCard()"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "ObjectivePublicCard()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "Dice",
+    "l": "oppositeValue()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "PennelloEglomise",
+    "l": "PennelloEglomise()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "PennelloPastaSalda",
+    "l": "PennelloPastaSalda()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "PinzaSgrossatrice",
+    "l": "PinzaSgrossatrice()"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "Player()"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "Player(String, int)",
+    "url": "Player-java.lang.String-int-"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "Purple"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "PurpleObjectivePrivateCard",
+    "l": "PurpleObjectivePrivateCard()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "Red"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "RedObjectivePrivateCard",
+    "l": "RedObjectivePrivateCard()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceStack",
+    "l": "reinsertDiceToFactory(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCard",
+    "l": "removeDice(int, int)"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryBalancedDice",
+    "l": "removeDice(Dice)",
+    "url": "removeDice-it.polimi.se2018.model.dice.Dice-"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryDice",
+    "l": "removeDice(Dice)",
+    "url": "removeDice-it.polimi.se2018.model.dice.Dice-"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryRandomDice",
+    "l": "removeDice(Dice)",
+    "url": "removeDice-it.polimi.se2018.model.dice.Dice-"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceStack",
+    "l": "removeDiceFromStack(int)"
+}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "removeDiceFromWindowPattern(int, int)"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "FactoryBalancedDice",
+    "l": "reset()"
+}, {"p": "it.polimi.se2018.model.card", "c": "Deck", "l": "resetDeck()"}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "RigaSughero",
+    "l": "RigaSughero()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "Dice",
+    "l": "rollDice()"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "Cell",
+    "l": "setColorRestriction(DiceColor)",
+    "url": "setColorRestriction-it.polimi.se2018.model.dice.DiceColor-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "setDescription(String)",
+    "url": "setDescription-java.lang.String-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "setDescription(String)",
+    "url": "setDescription-java.lang.String-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "ToolCard",
+    "l": "setDescription(String)",
+    "url": "setDescription-java.lang.String-"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "Cell",
+    "l": "setDice(Dice)",
+    "url": "setDice-it.polimi.se2018.model.dice.Dice-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "setDiceColor(DiceColor)",
+    "url": "setDiceColor-it.polimi.se2018.model.dice.DiceColor-"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceStack",
+    "l": "setDiceFactory(FactoryDice)",
+    "url": "setDiceFactory-it.polimi.se2018.model.dice.FactoryDice-"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "setFavorToken(int)"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "setHandDice(DiceStack)",
+    "url": "setHandDice-it.polimi.se2018.model.dice.DiceStack-"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "setHasUsedDice(boolean)"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "setHasUsedToolCard(boolean)"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "setId(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "setId(int)"
+}, {"p": "it.polimi.se2018.model.card.tool_card", "c": "ToolCard", "l": "setId(int)"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "setId(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "ObjectivePrivateCard",
+    "l": "setName(String)",
+    "url": "setName-java.lang.String-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "setName(String)",
+    "url": "setName-java.lang.String-"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "ToolCard",
+    "l": "setName(String)",
+    "url": "setName-java.lang.String-"
+}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "setNickname(String)",
+    "url": "setNickname-java.lang.String-"
+}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "setPlayerWindowPattern(WindowPatternCard)",
+    "url": "setPlayerWindowPattern-it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard-"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_public_card",
+    "c": "ObjectivePublicCard",
+    "l": "setPoint(int)"
+}, {"p": "it.polimi.se2018.model", "c": "Player", "l": "setPoints(int)"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "Player",
+    "l": "setPrivateObject(ObjectivePrivateCard)",
+    "url": "setPrivateObject-it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard-"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "Dice",
+    "l": "setValue(int)"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "Cell",
+    "l": "setValueRestriction(int)"
+}, {"p": "it.polimi.se2018.model.dice", "c": "DiceStack", "l": "size()"}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "TaglierinaCircolare",
+    "l": "TaglierinaCircolare()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "TaglierinaManuale",
+    "l": "TaglierinaManuale()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "TamponeDiamantato",
+    "l": "TamponeDiamantato()"
+}, {
+    "p": "it.polimi.se2018.model.card.tool_card",
+    "c": "TenagliaRotelle",
+    "l": "TenagliaRotelle()"
+}, {"p": "it.polimi.se2018.model.card.tool_card", "c": "ToolCard", "l": "ToolCard()"}, {
+    "p": "it.polimi.se2018.model",
+    "c": "GameBoard",
+    "l": "useToolCard()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "valueOf(String)",
+    "url": "valueOf-java.lang.String-"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "values()"
+}, {
+    "p": "it.polimi.se2018.model.card.window_pattern_card",
+    "c": "WindowPatternCardLoader",
+    "l": "WindowPatternCardLoader()"
+}, {
+    "p": "it.polimi.se2018.model.dice",
+    "c": "DiceColor",
+    "l": "Yellow"
+}, {
+    "p": "it.polimi.se2018.model.card.objective_private_card",
+    "c": "YellowObjectivePrivateCard",
+    "l": "YellowObjectivePrivateCard()"
+}]

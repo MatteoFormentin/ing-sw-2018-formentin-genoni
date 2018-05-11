@@ -25,10 +25,17 @@ public class Deck {
     private TreeSet<Integer> extractedTool;
     private TreeSet<Integer> extractedWindow;
 
+    private final int objectivePublicCardNumber = 10;
+    private final int objectivePrivatedNumber = 5;
+    private final int toolCardNumber = 12;
+    private int windowPatternCardNumber;
+
+
     //return window_pattern_card[extract(23, extractedWindow)];?
 
     private Deck() {
         windowPatternCardsDeck = new WindowPatternCardLoader().initCard();
+        windowPatternCardNumber = windowPatternCardsDeck.size();
         extractedPublic = new TreeSet<>();
         extractedPrivate = new TreeSet<>();
         extractedTool = new TreeSet<>();
@@ -59,6 +66,41 @@ public class Deck {
         extractedWindow = new TreeSet<>();
     }
 
+    /**
+     * Get number of cards objective public available
+     *
+     * @return objectivePublicCardNumber.
+     */
+    public int getObjectivePublicCardNumber() {
+        return objectivePublicCardNumber;
+    }
+
+    /**
+     * Get number of cards objective private available
+     *
+     * @return objectivePublicCardNumber.
+     */
+    public int getObjectivePrivatedNumber() {
+        return objectivePrivatedNumber;
+    }
+
+    /**
+     * Get number of cards window pattern available
+     *
+     * @return objectivePublicCardNumber.
+     */
+    public int getWindowPatternCardNumber() {
+        return windowPatternCardNumber;
+    }
+
+    /**
+     * Get number of cards tool available
+     *
+     * @return objectivePublicCardNumber.
+     */
+    public int getToolCardNumber() {
+        return toolCardNumber;
+    }
 
     /**
      * Extract one random objective public card.
@@ -67,7 +109,7 @@ public class Deck {
      * @throws IndexOutOfBoundsException if random error.
      */
     public ObjectivePublicCard drawObjectivePublicCard() {
-        switch (extractInt(10, extractedPublic)) {
+        switch (extractInt(objectivePublicCardNumber, extractedPublic)) {
             case 0:
                 return new DifferentColorRow();
             case 1:
@@ -100,7 +142,7 @@ public class Deck {
      * @throws IndexOutOfBoundsException if random error.
      */
     public ObjectivePrivateCard drawObjectivePrivateCard() {
-        switch (extractInt(5, extractedPrivate)) {
+        switch (extractInt(objectivePrivatedNumber, extractedPrivate)) {
             case 0:
                 return new RedObjectivePrivateCard();
             case 1:
@@ -123,7 +165,7 @@ public class Deck {
      * @throws IndexOutOfBoundsException if random error.
      */
     public ToolCard drawToolCard() {
-        switch (extractInt(12, extractedTool)) {
+        switch (extractInt(toolCardNumber, extractedTool)) {
             case 0:
                 return new PinzaSgrossatrice();
             case 1:
@@ -160,7 +202,7 @@ public class Deck {
      * @throws IndexOutOfBoundsException if random error.
      */
     public WindowPatternCard drawWindowPatternCard() {
-        int index = extractInt(windowPatternCardsDeck.size(), extractedWindow);
+        int index = extractInt(windowPatternCardNumber, extractedWindow);
         return windowPatternCardsDeck.get(index);
     }
 
