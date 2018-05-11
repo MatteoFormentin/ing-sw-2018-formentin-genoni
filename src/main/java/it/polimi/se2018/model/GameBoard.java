@@ -4,6 +4,7 @@ package it.polimi.se2018.model;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
+import it.polimi.se2018.model.dice.DiceColor;
 import it.polimi.se2018.model.dice.FactoryBalancedDice;
 import it.polimi.se2018.model.dice.DiceStack;
 import it.polimi.se2018.model.dice.FactoryRandomDice;
@@ -20,6 +21,7 @@ import static it.polimi.se2018.model.dice.FactoryBalancedDice.getBalancedDiceFac
  * @since 1.0
  */
 public class GameBoard {
+    private static GameBoard singleGameBoard;
     private int currentround;
     private DiceStack[] roundTrack;
     private Player[] player;
@@ -27,7 +29,7 @@ public class GameBoard {
     private ObjectivePublicCard[] objectivePublicCard;
     private DiceStack poolDice; // can also be a DiceStack
     private Player currentPlayer;
-
+    private boolean endGame;
     /**
      * /**
      * Method <strong>GameBoard</strong>
@@ -40,6 +42,38 @@ public class GameBoard {
         objectivePublicCard = new ObjectivePublicCard[3];
 
     }
+
+    public static synchronized GameBoard getGameBoard() {
+        if (singleGameBoard == null) {
+            singleGameBoard = new GameBoard();
+        }
+        return singleGameBoard;
+    }
+
+    public boolean isEndGame() {
+        return endGame;
+    }
+
+    public void setEndGame(boolean endGame) {
+        this.endGame = endGame;
+    }
+
+    public Player[] getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player[] player) {
+        this.player = player;
+    }
+
+    public ObjectivePublicCard[] getObjectivePublicCard() {
+        return objectivePublicCard;
+    }
+
+    public void setObjectivePublicCard(ObjectivePublicCard[] objectivePublicCard) {
+        this.objectivePublicCard = objectivePublicCard;
+    }
+
     /**
      * Method <strong>doGame</strong>
      * <em>Description</em>: Setup,start and end of the game,
@@ -140,18 +174,6 @@ public class GameBoard {
         //finish turn
         currentPlayer.changeSecondTurn();
     }
-
-    public void insertDice(){
-
-    }
-    public void useToolCard() {
-
-    }
-
-    public void endTurn() {
-
-    }
-
 
 
 }
