@@ -1,8 +1,8 @@
-package it.polimi.se2018.model.player_moves;
+package it.polimi.se2018.event.player_moves;
 
 import it.polimi.se2018.model.GameBoard;
 
-public class CommandEndTurn implements ICommandPlayerMove {
+public class CommandRollDicePool implements ICommandPlayerMove {
     public boolean canPerform(GameBoard gameBoard){
         return false;
     }

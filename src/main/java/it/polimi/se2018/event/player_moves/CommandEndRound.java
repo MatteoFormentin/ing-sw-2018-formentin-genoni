@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.player_moves;
+package it.polimi.se2018.event.player_moves;
 
 import it.polimi.se2018.model.GameBoard;
 

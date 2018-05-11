@@ -1,4 +1,4 @@
-package it.polimi.se2018.model.player_moves;
+package it.polimi.se2018.event.player_moves;
 
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Player;
@@ -13,7 +13,7 @@ public class CommandCountPoint implements ICommandPlayerMove {
     public boolean canPerform(GameBoard gameBoard){
         return gameBoard.isEndGame();
     }
-    
+
     public void doMove(GameBoard gameBoard){
         int pointCounter;
         for (Player player : gameBoard.getPlayer()) {
