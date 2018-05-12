@@ -173,13 +173,12 @@ public class WindowPatternCard {
                     checkMatrixAdjacentValueRestriction(line,column,dice.getValue()) &&
                     checkMatrixAdjacentColorRestriction(line,column,dice.getColor()))
                 matrix[line][column].insertDice(dice);
-            //else there is an exception
+            firstDice=true;
+            return true;
         }catch(Exception Exception) {
             // can't place the dice
             return false;
         }
-        firstDice=false;
-        return true;
     }
 
     /**
@@ -208,11 +207,11 @@ public class WindowPatternCard {
             if (valueRestriction && !checkMatrixAdjacentValueRestriction(line,column,dice.getValue())) throw new Exception();
             //if All the restriction of the WindowPatter are ok then
             matrix[line][column].insertDice(dice);
+            firstDice=true;
+            return true;
             //else there is an exception insertDice can throw the exception of the cell
         }catch(Exception Exception) {
             return false;// can't place the dice
         }
-        firstDice=false;
-        return true;
     }
 }

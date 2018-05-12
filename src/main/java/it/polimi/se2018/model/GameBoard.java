@@ -35,7 +35,7 @@ public class GameBoard {
      * Method <strong>GameBoard</strong>
      * <em>Description</em>: constructor for the gameBoard. The preparation of the game
      */
-    private GameBoard() {
+    public GameBoard() {
         currentround =0;
         roundTrack = new DiceStack[10];
         toolCard = new ToolCard[3];

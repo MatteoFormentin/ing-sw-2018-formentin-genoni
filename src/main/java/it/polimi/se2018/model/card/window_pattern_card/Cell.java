@@ -93,7 +93,7 @@ public class Cell {
      * @throws Exception can't place the dice
      */
     public void insertDice(Dice dice) throws Exception {
-        if (this.dice==null) throw new Exception();// cell occupied
+        if (this.dice!=null) throw new Exception();// cell occupied
         if (checkColorRestriction(dice.getColor()) && checkValueRestriction(dice.getValue()))throw new Exception();//cell restricted
         this.dice=dice;
     }
@@ -107,7 +107,7 @@ public class Cell {
      * @throws Exception can't insert the dice
      */
     public void insertDice(Dice dice, boolean colorRestriction, boolean valueRestriction) throws Exception {
-        if (this.dice==null) throw new Exception();// cell occupied
+        if (this.dice!=null) throw new Exception();// cell occupied
         if (colorRestriction)if(!checkColorRestriction(dice.getColor())) throw new Exception();
         if (valueRestriction)if(!checkValueRestriction(dice.getValue())) throw new Exception();
         this.dice=dice;
