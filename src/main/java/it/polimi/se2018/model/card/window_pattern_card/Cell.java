@@ -12,7 +12,7 @@ import it.polimi.se2018.model.dice.DiceColor;
 public class Cell {
 
     private Dice dice;
-    private int valueRestriction;
+    private int valueRestriction = 0;
     private DiceColor colorRestriction;
 
 
@@ -71,7 +71,9 @@ public class Cell {
      * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     boolean checkColorRestriction(DiceColor color) {
-        return (color!=colorRestriction);
+        if (colorRestriction == null) return true;
+        else if (colorRestriction == color) return true;
+        else return false;
     }
 
     /**
@@ -80,7 +82,9 @@ public class Cell {
      * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     boolean checkValueRestriction(int value) {
-        return (value!=valueRestriction);
+        if (valueRestriction == 0) return true;
+        else if (valueRestriction == value) return true;
+        else return false;
     }
 
     /**
@@ -90,9 +94,10 @@ public class Cell {
      * @throws Exception can't place the dice
      */
     public void insertDice(Dice dice) throws Exception {
-        if (this.dice!=null) throw new Exception();// cell occupied
-        if (checkColorRestriction(dice.getColor()) && checkValueRestriction(dice.getValue())){
-            this.dice=dice;
+        if (this.dice != null) throw new Exception();// cell occupied
+        System.out.println(checkColorRestriction(dice.getColor()));
+        if (checkValueRestriction(dice.getValue()) && checkColorRestriction(dice.getColor())) {
+            this.dice = dice;
             return;
         }
         throw new Exception();//cell restricted
@@ -101,15 +106,15 @@ public class Cell {
     /**
      * Insert the dice in the cell if the restriction of the cell are respected.
      *
-     * @param dice to insert in the cell
+     * @param dice             to insert in the cell
      * @param colorRestriction true if i need to check the restriction
      * @param valueRestriction true if i need to check the restriction
      * @throws Exception can't insert the dice
      */
     public void insertDice(Dice dice, boolean colorRestriction, boolean valueRestriction) throws Exception {
-        if (this.dice!=null) throw new Exception();// cell occupied
-        if (colorRestriction)if(!checkColorRestriction(dice.getColor())) throw new Exception();
-        if (valueRestriction)if(!checkValueRestriction(dice.getValue())) throw new Exception();
-        this.dice=dice;
+        if (this.dice != null) throw new Exception();// cell occupied
+        if (colorRestriction && !checkColorRestriction(dice.getColor())) throw new Exception();
+        if (valueRestriction && !checkValueRestriction(dice.getValue())) throw new Exception();
+        this.dice = dice;
     }
 }

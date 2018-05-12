@@ -1,8 +1,7 @@
 package it.polimi.se2018.model.dice;
 
-import it.polimi.se2018.model.dice.DiceColor;
-
 import java.util.Random;
+
 /**
  * <strong>Class Dice</strong>
  * <em>Description</em>
@@ -16,7 +15,7 @@ public class Dice {
     private int value;
     private DiceColor color;
 
-    protected Dice(DiceColor color){
+    public Dice(DiceColor color) {
         value = rollDice();
         this.color = color;
     }
@@ -27,11 +26,12 @@ public class Dice {
      * set a value for the dice
      *
      * @param value to set on the dice
-     *              @require belong to domain [1,6]
+     * @require belong to domain [1,6]
      */
     public void setValue(int value) {
         this.value = value;
     }
+
     /**
      * Method <strong>getValue</strong>
      * <em>Description</em>
@@ -42,6 +42,7 @@ public class Dice {
     public int getValue() {
         return value;
     }
+
     /**
      * Method <strong>setColor</strong>
      * <em>Description</em>
@@ -54,25 +55,25 @@ public class Dice {
     }
 
     /**
-     *  Method <strong>rollDice</strong>
+     * Method <strong>rollDice</strong>
      * <em>Description</em>
      * generates a random number belonging to the right domain [1,6], this method don't set the value on the Dice.
      *
      * @return integer randomly generated
      */
     public int rollDice() {
-        Random r= new Random();
+        Random r = new Random();
         return r.nextInt(6) + 1;
     }
+
     /**
-     *  Method <strong>oppositeValue</strong>
+     * Method <strong>oppositeValue</strong>
      * <em>Description</em>
-     *
      *
      * @return the opposite value of one die
      */
     public int oppositeValue() {
-        int opposite= value;
+        int opposite = value;
         switch (opposite) {
             case 1:
                 opposite = 6;

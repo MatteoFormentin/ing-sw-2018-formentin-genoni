@@ -26,7 +26,7 @@ public class WindowPatternCard {
      * @param difficulty of the Window Pattern Card
      * @param matrix of Cell of the Window Pattern Card
      */
-    WindowPatternCard(String name,int difficulty,Cell[][] matrix){
+    public WindowPatternCard(String name, int difficulty, Cell[][] matrix) {
         this.name=name;
         this.difficulty=difficulty;
         this.matrix=matrix;
