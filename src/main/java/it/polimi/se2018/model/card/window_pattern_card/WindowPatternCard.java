@@ -13,7 +13,7 @@ public class WindowPatternCard {
     private String name;
     private int difficulty;
     private Cell[][] matrix;
-    private boolean firstDice;
+    private int numberOfCellwithDice;
     /* set/get matrix name level
         insertDice controlla restrizioni adiacenza (al suo interno controlla restrizione cella
         insertDice controlla 3 boolean per 3 restrizioni
@@ -30,13 +30,13 @@ public class WindowPatternCard {
         this.name=name;
         this.difficulty=difficulty;
         this.matrix=matrix;
-        this.firstDice=true;
+        this.numberOfCellwithDice=0;
     }
-    WindowPatternCard(){
+    public WindowPatternCard(){
         this.name=null;
         this.difficulty=0;
         this.matrix=null;
-        this.firstDice=true;
+        this.numberOfCellwithDice=0;
     }
 
 
@@ -106,6 +106,7 @@ public class WindowPatternCard {
      */
     public void removeDice(int line,int column){
         matrix[line][column].setDice(null);
+        numberOfCellwithDice--;
     }
     /**
      * Check if the dice is allowed based on the restriction imposed from the adjacent cell.
@@ -116,15 +117,18 @@ public class WindowPatternCard {
      */
 
     private boolean checkMatrixAdjacentRestriction(int line, int column) {
-        if (firstDice){
-            return(column==0||column==4||line==0||line==1);
+        boolean diceNearCell=false;
+        if (numberOfCellwithDice==0){
+            if ((column==0||column==4)&&(line==0||line==3)){
+                return true;
+            }
         }else{
             if (column!=0) if(matrix[line][column - 1].getDice()!=null) return true;
             if (column!=4) if(matrix[line][column + 1].getDice()!=null) return true;
             if (line!=0) if(matrix[line - 1][column].getDice()!=null) return true;
             if (line!=3) if(matrix[line + 1][column].getDice()!=null) return true;
-            return false;
         }
+        return false;
     }
 
     /**
@@ -173,7 +177,7 @@ public class WindowPatternCard {
                     checkMatrixAdjacentValueRestriction(line,column,dice.getValue()) &&
                     checkMatrixAdjacentColorRestriction(line,column,dice.getColor()))
                 matrix[line][column].insertDice(dice);
-            firstDice=true;
+            numberOfCellwithDice++;
             return true;
         }catch(Exception Exception) {
             // can't place the dice
@@ -207,7 +211,7 @@ public class WindowPatternCard {
             if (valueRestriction && !checkMatrixAdjacentValueRestriction(line,column,dice.getValue())) throw new Exception();
             //if All the restriction of the WindowPatter are ok then
             matrix[line][column].insertDice(dice);
-            firstDice=true;
+            numberOfCellwithDice++;
             return true;
             //else there is an exception insertDice can throw the exception of the cell
         }catch(Exception Exception) {

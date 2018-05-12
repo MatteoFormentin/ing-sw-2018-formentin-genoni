@@ -14,10 +14,7 @@ public class Cell {
     private Dice dice;
     private int valueRestriction;
     private DiceColor colorRestriction;
-    /* set/getRestriction and dice
-       insertDice che controlla restrizioni
 
-     */
 
     /**
      * Get the value restriction of the cell.
@@ -94,8 +91,11 @@ public class Cell {
      */
     public void insertDice(Dice dice) throws Exception {
         if (this.dice!=null) throw new Exception();// cell occupied
-        if (checkColorRestriction(dice.getColor()) && checkValueRestriction(dice.getValue()))throw new Exception();//cell restricted
-        this.dice=dice;
+        if (checkColorRestriction(dice.getColor()) && checkValueRestriction(dice.getValue())){
+            this.dice=dice;
+            return;
+        }
+        throw new Exception();//cell restricted
     }
 
     /**
