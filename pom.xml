@@ -47,13 +47,12 @@
             <version>1.1.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+        <!-- https://mvnrepository.com/artifact/org.fusesource.jansi/jansi -->
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>1.17.1</version>
         </dependency>
-
 
     </dependencies>
 

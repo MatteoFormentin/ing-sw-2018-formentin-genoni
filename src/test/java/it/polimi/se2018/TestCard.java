@@ -63,6 +63,7 @@ public class TestCard {
 
         //Correct move - Dice witch correct color and correct adj restriction
         dice = new Dice(DiceColor.Green);
+        dice.setValue(3);
         assertTrue(testWindowPatternCard.insertDice(0, 1, dice));
     }
 }
