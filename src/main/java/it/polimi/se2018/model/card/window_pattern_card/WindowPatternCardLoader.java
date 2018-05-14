@@ -33,30 +33,9 @@ public class WindowPatternCardLoader {
             try {
                 cards.add(jsonCardLoader(new FileReader(path + fileEntry.getName())));
             } catch (Exception ex) {
-                ex.printStackTrace();
+                return null;
             }
         }
-
-        /*
-        //Test lettura carte
-        for (WindowPatternCard card : cards) {
-            System.out.print(card.getName());
-            System.out.print(" - ");
-            System.out.println(card.getLevel());
-
-            Cell[][] matrix = card.getMatrix();
-
-            for (int m = 0; m < 4; m++) {
-                for (int n = 0; n < 5; n++) {
-                    System.out.print(matrix[m][n].getColorRestriction());
-                    System.out.print(matrix[m][n].getValueRestriction());
-                    System.out.print(" ");
-                }
-                System.out.println();
-            }
-        }
-        */
-
         return cards;
     }
 
