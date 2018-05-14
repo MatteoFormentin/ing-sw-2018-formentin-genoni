@@ -12,20 +12,32 @@ import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
  * @author Luca Genoni
  */
 public class CommandCountPoint implements ICommandPlayerMove {
-    public boolean canPerform(GameBoard gameBoard, EventView event){
+    public boolean canPerform(GameBoard gameBoard, EventView event) {
         if (!(event instanceof EndTurn)) return false;
         return gameBoard.isEndGame();
     }
 
-    public void doMove(GameBoard gameBoard, EventView event){
+    /**
+     * Method for set all the point accumulated
+     *
+     * @param gameBoard needs to be in state of endgame
+     * @param event don't know
+     */
+    public void doMove(GameBoard gameBoard, EventView event) {
         int pointCounter;
 
         for (Player player : gameBoard.getPlayer()) {
-            pointCounter=0;
-            for(ObjectivePublicCard objectivePublicCard: gameBoard.getObjectivePublicCard()){
-                pointCounter=pointCounter+objectivePublicCard.calculatePoint(player.getPlayerWindowPattern());
+            pointCounter = 0;
+            //calculate point for the public object
+            for (ObjectivePublicCard objectivePublicCard : gameBoard.getObjectivePublicCard()) {
+                pointCounter += objectivePublicCard.calculatePoint(player.getPlayerWindowPattern());
             }
-            pointCounter=player.getPrivateObject().calculatePoint(player.getPlayerWindowPattern());
+            //calculate point for the private object
+            pointCounter += player.getPrivateObject().calculatePoint(player.getPlayerWindowPattern());
+            //add the token left
+            pointCounter += player.getFavorToken();
+            //subtract the void cell
+            pointCounter = pointCounter - (20 - player.getPlayerWindowPattern().getNumberOfCellWithDice());
             player.setPoints(pointCounter);
         }
     }
