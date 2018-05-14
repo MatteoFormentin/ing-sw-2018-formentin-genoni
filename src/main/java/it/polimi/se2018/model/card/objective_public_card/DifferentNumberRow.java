@@ -25,22 +25,46 @@ public class DifferentNumberRow extends ObjectivePublicCard {
     public int calculatePoint(WindowPatternCard windowPatternCard) {
         Cell[][] matrix = windowPatternCard.getMatrix();
         int points = 0;
-        boolean flag;
+        int one = 0;
+        int two = 0;
+        int three = 0;
+        int four = 0;
+        int five = 0;
+        int six = 0;
         Dice currentCellDice;
-        Dice previousCellDice;
         for (int i = 0; i < 4; i++) {
-            previousCellDice = matrix[i][0].getDice();
-            flag = true;
-            for (int j = 1; j < 5; j++) {
+            for (int j = 0; j < 5; j++) {
                 currentCellDice = matrix[i][j].getDice();
-                if (currentCellDice.getValue() == previousCellDice.getValue()) {
-                    flag = false;
-                    break;
+                if (currentCellDice.getValue() == 1) {
+                    one++;
                 }
-                previousCellDice = currentCellDice;
+                if (currentCellDice.getValue() == 2) {
+                    two++;
+                }
+                if (currentCellDice.getValue() == 3) {
+                    three++;
+                }
+                if (currentCellDice.getValue() == 4) {
+                    four++;
+                }
+                if (currentCellDice.getValue() == 5) {
+                    five++;
+                }
+                if (currentCellDice.getValue() == 6) {
+                    six++;
+                }
             }
-            if (flag) points += this.getPoint();
+            if (one <= 1 && two <= 1 && three <= 1 && four <= 1 && five <= 1 && six <= 1) {
+                points += this.getPoint();
+            }
+            one = 0;
+            two = 0;
+            three = 0;
+            four = 0;
+            five = 0;
+            six = 0;
         }
+
         return points;
     }
 }

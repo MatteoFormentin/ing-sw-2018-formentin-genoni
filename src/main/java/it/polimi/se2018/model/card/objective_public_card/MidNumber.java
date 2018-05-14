@@ -29,7 +29,7 @@ public class MidNumber extends ObjectivePublicCard {
         int four = 0;
         Dice currentCellDice;
         for (int i = 0; i < 4; i++) {
-            for (int j = 1; j < 5; j++) {
+            for (int j = 0; j < 5; j++) {
                 currentCellDice = matrix[i][j].getDice();
                 if (currentCellDice.getValue() == 3) {
                     three++;

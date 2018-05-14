@@ -33,9 +33,9 @@ public class DifferentColor extends ObjectivePublicCard {
         int purple = 0;
         Dice currentCellDice;
         for (int i = 0; i < 4; i++) {
-            for (int j = 1; j < 5; j++) {
+            for (int j = 0; j < 5; j++) {
                 currentCellDice = matrix[i][j].getDice();
-                if (currentCellDice.getColor() == DiceColor.Purple) {
+                if (currentCellDice.getColor() == DiceColor.Red) {
                     red++;
                 }
                 if (currentCellDice.getColor() == DiceColor.Yellow) {

@@ -1,9 +1,12 @@
 package it.polimi.se2018;
 
+import it.polimi.se2018.model.card.objective_private_card.*;
+import it.polimi.se2018.model.card.objective_public_card.*;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
+import it.polimi.se2018.view.cli.Cli;
 import org.junit.*;
 
 import static org.junit.Assert.*;
@@ -49,7 +52,7 @@ public class TestCard {
         Dice dice = new Dice(DiceColor.Blue);
         dice.setValue(2);
         //Wrong move - First dice cant be placed on board center.
-        //assertFalse(testWindowPatternCard.insertDice(3, 3, dice));
+        assertFalse(testWindowPatternCard.insertDice(3, 3, dice));
 
         //Wrong move - Try to place a dice in a cell with number restriction but on correct position (board edge)
         assertFalse(testWindowPatternCard.insertDice(0, 0, dice));
@@ -59,11 +62,170 @@ public class TestCard {
         assertTrue(testWindowPatternCard.insertDice(0, 0, dice));
 
         //Wrong move - Try to place a dice in a cell with color restriction but on correct position (adj restr ok)
+        dice = new Dice(DiceColor.Blue);
+        dice.setValue(5);
         assertFalse(testWindowPatternCard.insertDice(0, 1, dice));
 
         //Correct move - Dice witch correct color and correct adj restriction
         dice = new Dice(DiceColor.Green);
         dice.setValue(3);
         assertTrue(testWindowPatternCard.insertDice(0, 1, dice));
+
+        //Wrong move - Try to place a dice in a cell away from last dice
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(3);
+        assertFalse(testWindowPatternCard.insertDice(1, 4, dice));
+
+        ///Wrong move - Try to place a dice in a cell with correct color restr but adjacent a dice with same value
+        dice = new Dice(DiceColor.Blue);
+        dice.setValue(3);
+        assertFalse(testWindowPatternCard.insertDice(0, 2, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Blue);
+        dice.setValue(4);
+        assertTrue(testWindowPatternCard.insertDice(0, 2, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Purple);
+        dice.setValue(1);
+        assertTrue(testWindowPatternCard.insertDice(0, 3, dice));
+
+        //Wrong move - Try to place a dice in a cell with correct number restr but adjacent a dice with same color
+        dice = new Dice(DiceColor.Purple);
+        dice.setValue(6);
+        assertFalse(testWindowPatternCard.insertDice(0, 4, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Green);
+        dice.setValue(2);
+        assertTrue(testWindowPatternCard.insertDice(0, 4, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Purple);
+        dice.setValue(3);
+        assertTrue(testWindowPatternCard.insertDice(1, 0, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(4);
+        assertTrue(testWindowPatternCard.insertDice(1, 1, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Green);
+        dice.setValue(5);
+        assertTrue(testWindowPatternCard.insertDice(1, 2, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Red);
+        dice.setValue(2);
+        assertTrue(testWindowPatternCard.insertDice(1, 3, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(4);
+        assertTrue(testWindowPatternCard.insertDice(1, 4, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(2);
+        assertTrue(testWindowPatternCard.insertDice(2, 0, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Red);
+        dice.setValue(5);
+        assertTrue(testWindowPatternCard.insertDice(2, 1, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Blue);
+        dice.setValue(6);
+        assertTrue(testWindowPatternCard.insertDice(2, 2, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(1);
+        assertTrue(testWindowPatternCard.insertDice(2, 3, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Purple);
+        dice.setValue(5);
+        assertTrue(testWindowPatternCard.insertDice(2, 4, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Purple);
+        dice.setValue(3);
+        assertTrue(testWindowPatternCard.insertDice(3, 0, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(1);
+        assertTrue(testWindowPatternCard.insertDice(3, 1, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Red);
+        dice.setValue(5);
+        assertTrue(testWindowPatternCard.insertDice(3, 2, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Green);
+        dice.setValue(2);
+        assertTrue(testWindowPatternCard.insertDice(3, 3, dice));
+
+        //Correct move - Dice witch correct color and correct adj restriction
+        dice = new Dice(DiceColor.Blue);
+        dice.setValue(4);
+        assertTrue(testWindowPatternCard.insertDice(3, 4, dice));
+
+        Cli cli = new Cli();
+        cli.showWindowPatternCard(testWindowPatternCard);
+
+        ObjectivePublicCard p_card = new ColoredDiagonal();
+        System.out.println("val: " + p_card.calculatePoint(testWindowPatternCard));
+        assertEquals(p_card.calculatePoint(testWindowPatternCard), 10);
+
+        //Test DifferentColorColumn card
+        p_card = new DifferentColorColumn();
+        assertEquals(10, p_card.calculatePoint(testWindowPatternCard));
+
+        //Test DifferentColorRow card
+        p_card = new DifferentColorRow();
+        assertEquals(6, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentColor();
+        assertEquals(12, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DarkNumber();
+        assertEquals(2, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new MidNumber();
+        assertEquals(6, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new LightNumber();
+        assertEquals(6, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentNumberColumn();
+        assertEquals(4, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentNumberRow();
+        assertEquals(10, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentNumber();
+        assertEquals(5, p_card.calculatePoint(testWindowPatternCard));
+
+        ObjectivePrivateCard pr_card = new BlueObjectivePrivateCard();
+        assertEquals(19, pr_card.calculatePoint(testWindowPatternCard));
+
+        pr_card = new GreenObjectivePrivateCard();
+        assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
+
+        pr_card = new PurpleObjectivePrivateCard();
+        assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
+
+        pr_card = new RedObjectivePrivateCard();
+        assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
+
+        pr_card = new YellowObjectivePrivateCard();
+        assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
+
     }
 }

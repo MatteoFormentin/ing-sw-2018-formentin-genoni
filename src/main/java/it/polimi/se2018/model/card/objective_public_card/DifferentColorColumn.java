@@ -3,6 +3,7 @@ package it.polimi.se2018.model.card.objective_public_card;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.DiceColor;
 
 /**
  * Public objective card Colori diversi - Colonna.
@@ -25,21 +26,40 @@ public class DifferentColorColumn extends ObjectivePublicCard {
     public int calculatePoint(WindowPatternCard windowPatternCard) {
         Cell[][] matrix = windowPatternCard.getMatrix();
         int points = 0;
-        boolean flag;
+        int red = 0;
+        int yellow = 0;
+        int green = 0;
+        int blue = 0;
+        int purple = 0;
         Dice currentCellDice;
-        Dice previousCellDice;
         for (int j = 0; j < 5; j++) {
-            previousCellDice = matrix[0][j].getDice();
-            flag = true;
-            for (int i = 1; i < 4; i++) {
+            for (int i = 0; i < 4; i++) {
                 currentCellDice = matrix[i][j].getDice();
-                if (currentCellDice.getColor() == previousCellDice.getColor()) {
-                    flag = false;
-                    break;
+                if (currentCellDice.getColor() == DiceColor.Red) {
+                    red++;
                 }
-                previousCellDice = currentCellDice;
+                if (currentCellDice.getColor() == DiceColor.Yellow) {
+                    yellow++;
+                }
+                if (currentCellDice.getColor() == DiceColor.Green) {
+                    green++;
+                }
+                if (currentCellDice.getColor() == DiceColor.Blue) {
+                    blue++;
+                }
+                if (currentCellDice.getColor() == DiceColor.Purple) {
+                    purple++;
+                }
             }
-            if (flag) points += this.getPoint();
+
+            if (red <= 1 && yellow <= 1 && green <= 1 && blue <= 1 && purple <= 1) {
+                points += this.getPoint();
+            }
+            red = 0;
+            yellow = 0;
+            green = 0;
+            blue = 0;
+            purple = 0;
         }
         return points;
     }

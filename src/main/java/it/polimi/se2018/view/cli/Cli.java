@@ -7,6 +7,7 @@ import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.DiceColor;
 import it.polimi.se2018.model.dice.FactoryBalancedDice;
 import org.fusesource.jansi.*;
 import org.fusesource.jansi.AnsiConsole;
@@ -23,7 +24,7 @@ public class Cli {
     public Cli() {
         System.setProperty("jansi.passthrough", "true");
         AnsiConsole.systemInstall();
-       /* splashScreen();
+        /*splashScreen();
         showWindowPatternCard(Deck.getDeck().drawWindowPatternCard());
         showObjectivePublicCard(Deck.getDeck().drawObjectivePublicCard());
         showObjectivePrivateCard(Deck.getDeck().drawObjectivePrivateCard());
@@ -33,7 +34,7 @@ public class Cli {
 
     public void splashScreen() {
         AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("WELCOME").fg(BLUE).a(" to").fg(GREEN).a(" SAGRADA").reset());
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("A game implemented by  Matteo Formentin, Luca Genoni and Davide Mammarella"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("A game implemented by").fg(GREEN).a(" Matteo Formentin").fg(BLUE).a(" Luca Genoni").fg(DEFAULT).a(" and").fg(RED).a(" Davide Mammarella"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Press a button to start"));
     }
 
@@ -58,7 +59,9 @@ public class Cli {
             for (int n = 0; n < 5; n++) {
                 AnsiConsole.out.print(ansi().fg(DEFAULT).a(" "));
 
-                if (matrix[m][n].getColorRestriction() != null) {
+                if (matrix[m][n].getDice() != null) {
+                    showDice(matrix[m][n].getDice());
+                } else if (matrix[m][n].getColorRestriction() != null) {
                     switch (matrix[m][n].getColorRestriction()) {
                         case Blue:
                             AnsiConsole.out.print(ansi().fg(BLUE).a("@"));
@@ -119,13 +122,11 @@ public class Cli {
     }
 
     public void showDice(Dice dice) {
-        AnsiConsole.out.println();
         Color color = DEFAULT;
         switch (dice.getColor()) {
             case Red:
                 color = RED;
                 break;
-
             case Green:
                 color = GREEN;
                 break;
@@ -140,7 +141,7 @@ public class Cli {
                 break;
         }
 
-        AnsiConsole.out.println(ansi().fg(color).a(dice.getValue()));
+        AnsiConsole.out.print(ansi().fg(color).a(dice.getValue()));
     }
 
 }
