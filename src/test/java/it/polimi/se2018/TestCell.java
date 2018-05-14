@@ -114,6 +114,16 @@ public class TestCell {
         assertFalse(testWindowPatternCard.getCell(2, 4).insertDice(dice));
         assertFalse(testWindowPatternCard.getCell(3, 0).insertDice(dice));
         assertFalse(testWindowPatternCard.getCell(3, 4).insertDice(dice));
+
+        assertTrue(testWindowPatternCard.getCell(0, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(1, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(1, 2).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(1, 4).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(2, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(2, 2).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(2, 4).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(3, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(3, 4).insertDice(dice, false, false));
     }
 
     @Test

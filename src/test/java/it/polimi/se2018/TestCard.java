@@ -48,7 +48,7 @@ public class TestCard {
     }
 
     @Test
-    public void testInsetDice() {
+    public void testCard() {
         Dice dice = new Dice(DiceColor.Blue);
         dice.setValue(2);
         //Wrong move - First dice cant be placed on board center.
@@ -176,12 +176,11 @@ public class TestCard {
         dice.setValue(4);
         assertTrue(testWindowPatternCard.insertDice(3, 4, dice));
 
-        Cli cli = new Cli();
-        cli.showWindowPatternCard(testWindowPatternCard);
+        //Cli cli = new Cli();
+        //cli.showWindowPatternCard(testWindowPatternCard);
 
         ObjectivePublicCard p_card = new ColoredDiagonal();
-        System.out.println("val: " + p_card.calculatePoint(testWindowPatternCard));
-        assertEquals(p_card.calculatePoint(testWindowPatternCard), 10);
+        assertEquals(9, p_card.calculatePoint(testWindowPatternCard));
 
         //Test DifferentColorColumn card
         p_card = new DifferentColorColumn();
@@ -226,6 +225,43 @@ public class TestCard {
 
         pr_card = new YellowObjectivePrivateCard();
         assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
+
+
+    }
+
+    @Test
+    public void testBoolInsertDice() {
+        Dice dice = new Dice(DiceColor.Green);
+        dice.setValue(2);
+        assertTrue(testWindowPatternCard.insertDice(2, 2, dice, false, false, false));
+
+        dice = new Dice(DiceColor.Blue);
+        dice.setValue(2);
+        assertTrue(testWindowPatternCard.insertDice(1, 1, dice, true, false, false));
+
+        testWindowPatternCard.removeDice(1, 1);
+
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(2);
+        assertTrue(testWindowPatternCard.insertDice(1, 1, dice, true, true, false));
+
+        testWindowPatternCard.removeDice(1, 1);
+
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(2);
+        assertTrue(testWindowPatternCard.insertDice(1, 1, dice, true, true, true));
+
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(2);
+        assertFalse(testWindowPatternCard.insertDice(0, 1, dice, true, true, true));
+
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(2);
+        assertFalse(testWindowPatternCard.insertDice(0, 0, dice, true, true, true));
+
+        dice = new Dice(DiceColor.Yellow);
+        dice.setValue(5);
+        assertTrue(testWindowPatternCard.insertDice(0, 0, dice, true, true, true));
 
     }
 }
