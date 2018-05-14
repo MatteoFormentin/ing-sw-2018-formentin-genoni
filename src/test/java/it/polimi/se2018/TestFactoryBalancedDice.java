@@ -2,18 +2,18 @@ package it.polimi.se2018;
 
 import static org.junit.Assert.*;
 
+import it.polimi.se2018.model.dice.BalancedFactoryDice;
 import it.polimi.se2018.model.dice.Dice;
-import it.polimi.se2018.model.dice.FactoryBalancedDice;
 import org.junit.*;
 
 public class TestFactoryBalancedDice {
-    private FactoryBalancedDice factoryBalancedDice;
+    private BalancedFactoryDice factoryBalancedDice;
     private int[] currentNumberOfEachColor;
 
 
     @Before
     public void initDeck() {
-        factoryBalancedDice = FactoryBalancedDice.getBalancedDiceFactory();
+        factoryBalancedDice = new BalancedFactoryDice();
         currentNumberOfEachColor = new int[factoryBalancedDice.getAvailableColours().size()];
     }
 

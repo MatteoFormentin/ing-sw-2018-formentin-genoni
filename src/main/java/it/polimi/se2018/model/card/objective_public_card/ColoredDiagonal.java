@@ -2,16 +2,12 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
-import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
 import java.util.LinkedList;
 
 /**
- * Public objective card Diagonali Colorate.
- * <p>
- * Description
- * Numero  di  dadi  dello  stesso  colore  diagonalmente  adiacenti
+ * Public objective card for colored diagonal, one point for each dice of the same color in a diagonal position
  *
  * @author Luca Genoni
  */
@@ -27,9 +23,6 @@ public class ColoredDiagonal extends ObjectivePublicCard {
         windowOfColor = null;
     }
 
-    /**
-     * Private Class for the graph relationship between the cell
-     */
     private class ColorCell {
         private DiceColor color;
         private boolean hasBeenVisited;
@@ -61,25 +54,19 @@ public class ColoredDiagonal extends ObjectivePublicCard {
             if (color == diagonalColorCell.get(diagonal).color) {
                 if (diagonalColorCell.get(diagonal).hasBeenVisited && this.hasBeenVisited) return 0;
                 if (!diagonalColorCell.get(diagonal).hasBeenVisited && !this.hasBeenVisited) {
-                    diagonalColorCell.get(diagonal).hasBeenVisited = true;
-                    this.hasBeenVisited = true;
+                    diagonalColorCell.get(diagonal).setHasBeenVisited(true);
+                    this.setHasBeenVisited(true);
                     return 2;
                 }
-                diagonalColorCell.get(diagonal).hasBeenVisited = true;
-                this.hasBeenVisited = true;
+                diagonalColorCell.get(diagonal).setHasBeenVisited(true);
+                this.setHasBeenVisited(true);
                 return 1;
             }
             return 0;
         }
     }
 
-    /**
-     * Method <strong>setWindowOfColor</strong>
-     * <em>Description</em>: Private, Set the relationship of the windowOfColor's cell
-     *
-     * @param windowOfColor for setting the relationship between the ColorCell
-     */
-    public void setRelationWindowOfColor(ColorCell[][] windowOfColor) {
+    private void setRelationWindowOfColor(ColorCell[][] windowOfColor) {
         for (int line = 0; line < windowOfColor.length; line++) {
             for (int column = 0; column < windowOfColor[0].length; column++) {
 
@@ -87,8 +74,8 @@ public class ColoredDiagonal extends ObjectivePublicCard {
                     if (column == 0)
                         windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column + 1]);
                     else {
-                        if (column == 4)
-                            windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column -1 ]);
+                        if (column == windowOfColor[0].length-1)
+                            windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column - 1]);
                         else {
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column + 1]);
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column - 1]);
@@ -100,25 +87,22 @@ public class ColoredDiagonal extends ObjectivePublicCard {
                         if (column == 0)
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column + 1]);
                         else {
-                            if (column == 4)
+                            if (column == windowOfColor[0].length-1)
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column - 1]);
                             else {
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column + 1]);
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column - 1]);
                             }
                         }
-                    }
-                    else{
-                        if (column == 0){
+                    } else {
+                        if (column == 0) {
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column + 1]);
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column + 1]);
-                        }
-                        else {
-                            if (column == 4){
+                        } else {
+                            if (column == windowOfColor[0].length-1) {
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column - 1]);
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column - 1]);
-                            }
-                            else {
+                            } else {
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column + 1]);
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column - 1]);
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column + 1]);
@@ -133,110 +117,42 @@ public class ColoredDiagonal extends ObjectivePublicCard {
         }
     }
 
-        /**
-         * Method <strong>calculatePoint</strong>
-         * <em>Description</em>
-         *
-         * @param windowPatternCard WindowPatternCard.
-         * @return point produced by this ObjectivePublicCard
-         * @author Luca Genoni
-         */
-        @Override
-        public int calculatePoint (WindowPatternCard windowPatternCard){
-            //variable declaration
-            int counter = 0;
-            Cell[][] matrix = windowPatternCard.getMatrix();
-            //set the relationship between the various ColorCell, requires only 1 setting
-            if (windowOfColor == null) {
-                windowOfColor = new ColorCell[matrix.length][matrix[0].length];
-                for (int line = 0; line < windowOfColor.length; line++) {
-                    for (int column = 0; column < windowOfColor[0].length; column++) {
-                        windowOfColor[line][column] = new ColorCell();
-                    }
-                }
-                setRelationWindowOfColor(windowOfColor);
-            }
-            //set the color of each ColorCell and HasBeenVisited to false
+    /**
+     * for calculate the point accumulated by this objective
+     *
+     * @param windowPatternCard WindowPatternCard.
+     * @return point produced by this ObjectivePublicCard
+     */
+    @Override
+    public int calculatePoint(WindowPatternCard windowPatternCard) {
+        //variable declaration
+        int counter = 0;
+        Cell[][] matrix = windowPatternCard.getMatrix();
+        //set the relationship between the various ColorCell, requires only 1 setting
+        if (windowOfColor == null) {
+            windowOfColor = new ColorCell[matrix.length][matrix[0].length];
             for (int line = 0; line < windowOfColor.length; line++) {
                 for (int column = 0; column < windowOfColor[0].length; column++) {
-                    windowOfColor[line][column].setColor(matrix[line][column].getDice().getColor());
-                    windowOfColor[line][column].setHasBeenVisited(false);
+                    windowOfColor[line][column] = new ColorCell();
                 }
             }
-            //check for each element of windowOfColor
-            for (int line = 0; line < windowOfColor.length; line++) {
-                for (int column = 0; column < windowOfColor[0].length; column++) {
-                    for (int diagonal = 0; diagonal < windowOfColor[line][column].numberOfDiagonal(); diagonal++)
-                        counter += windowOfColor[line][column].pointDiagonal(diagonal);
-                }
-            }
-            return counter * getPoint();
+            setRelationWindowOfColor(windowOfColor);
         }
-        /** the other method without the inner class
-         @Override public int calculatePoint(WindowPatternCard windowPatternCard) {
-         //variable declaration
-         int counter=0, secondLastLine,secondLastColumn;
-         Cell[][] matrix = windowPatternCard.getMatrix();
-         secondLastLine=matrix.length;
-         secondLastColumn= matrix[0].length;
-         DiceColor[][] windowOfColor= new DiceColor[matrix.length][matrix[0].length];
-         boolean[][] composesAnExistingDiagonal = new boolean[matrix.length][matrix.length];
-         Dice currentCellDice;
-         //setup of the 2 "windows"
-         for (int line = 0; line < matrix.length; line++) {
-         for (int column = 0; column < matrix[0].length; column++) {
-         currentCellDice=matrix[line][column].getDice();
-         windowOfColor[line][column]=currentCellDice.getColor();
-         composesAnExistingDiagonal[line][column]=false;
-         }
-         }
-         //check for the inner element if there is a diagonal element, the border element of the matrix are checked by the inner element
-         for (int line = 1; line < secondLastLine; line++) {
-         for (int column = 1; column < secondLastColumn; column++) {
-         if(windowOfColor[line-1][column-1]==windowOfColor[line][column]) {
-         if(composesAnExistingDiagonal[line - 1][column - 1]) {
-         composesAnExistingDiagonal[line][column] = true;
-         composesAnExistingDiagonal[line - 1][column - 1] = true;
-         counter = counter + 2;
-         }else {
-         composesAnExistingDiagonal[line - 1][column - 1] = true;
-         counter++;
-         }
-         }
-         if(windowOfColor[line - 1][column + 1]==windowOfColor[line][column]) {
-         if(composesAnExistingDiagonal[line - 1][column + 1]) {
-         composesAnExistingDiagonal[line][column] = true;
-         composesAnExistingDiagonal[line - 1][column - 1] = true;
-         counter = counter + 2;
-         }else {
-         composesAnExistingDiagonal[line - 1][column - 1] = true;
-         counter++;
-         }
-         }
-         if(windowOfColor[line + 1][column - 1]==windowOfColor[line][column]) {
-         if(composesAnExistingDiagonal[line + 1][column - 1]) {
-         composesAnExistingDiagonal[line][column] = true;
-         composesAnExistingDiagonal[line - 1][column - 1] = true;
-         counter = counter + 2;
-         }else {
-         composesAnExistingDiagonal[line - 1][column - 1] = true;
-         counter++;
-         }
-         }
-         if(windowOfColor[line + 1][column + 1]==windowOfColor[line][column]) {
-         if(composesAnExistingDiagonal[line + 1][column + 1]) {
-         composesAnExistingDiagonal[line][column] = true;
-         composesAnExistingDiagonal[line - 1][column - 1] = true;
-         counter = counter + 2;
-         }else {
-         composesAnExistingDiagonal[line - 1][column - 1] = true;
-         counter++;
-         }
-         }
-         }
-         }
-         return counter*getPoint();
-         }*/
-
-
+        //set the color of each ColorCell and HasBeenVisited to false
+        for (int line = 0; line < windowOfColor.length; line++) {
+            for (int column = 0; column < windowOfColor[0].length; column++) {
+                windowOfColor[line][column].setColor(matrix[line][column].getDice().getColor());
+                windowOfColor[line][column].setHasBeenVisited(false);
+            }
+        }
+        //check for each element of windowOfColor
+        for (ColorCell[] aWindowOfColor : windowOfColor) {
+            for (int column = 0; column < windowOfColor[0].length; column++) {
+                for (int diagonal = 0; diagonal < aWindowOfColor[column].numberOfDiagonal(); diagonal++)
+                    counter += aWindowOfColor[column].pointDiagonal(diagonal);
+            }
+        }
+        return counter * getPoint();
     }
+
+}

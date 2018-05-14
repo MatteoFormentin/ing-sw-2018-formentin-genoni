@@ -1,7 +1,7 @@
 package it.polimi.se2018.event.player_moves;
 
 import it.polimi.se2018.event.list_event.EventView;
-import it.polimi.se2018.event.list_event.SelectDiceFromDraftpool;
+
 import it.polimi.se2018.model.GameBoard;
 
 public class CommandDiceFromDraftPool implements ICommandPlayerMove {

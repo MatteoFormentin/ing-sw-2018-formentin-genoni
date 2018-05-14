@@ -4,24 +4,18 @@ package it.polimi.se2018.model;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
-import it.polimi.se2018.model.dice.DiceColor;
-import it.polimi.se2018.model.dice.FactoryBalancedDice;
-import it.polimi.se2018.model.dice.DiceStack;
-import it.polimi.se2018.model.dice.FactoryRandomDice;
+import it.polimi.se2018.model.dice.*;
 
 import java.util.LinkedList;
 
-import static it.polimi.se2018.model.dice.FactoryBalancedDice.getBalancedDiceFactory;
-
 
 /**
- * <strong>GameBoard</strong> singleton Class only one game at a time
+ * the game board for one game
  * @author Luca Genoni
  * @version 1.2 fix getDice() & getpoll removed
  * @since 1.0
  */
 public class GameBoard {
-    private static GameBoard singleGameBoard;
     private int currentround;
     private DiceStack[] roundTrack;
     private Player[] player;
@@ -30,24 +24,16 @@ public class GameBoard {
     private DiceStack poolDice; // can also be a DiceStack
     private Player currentPlayer;
     private boolean endGame;
+    private FactoryDice factoryDiceForThisGame;
     /**
-     * /**
-     * Method <strong>GameBoard</strong>
-     * <em>Description</em>: constructor for the gameBoard. The preparation of the game
+     * constructor for the gameBoard. The preparation of the game with a RandomFactoryDice
      */
     public GameBoard() {
         currentround =0;
-        roundTrack = new DiceStack[10];
+        roundTrack = new DiceStack[10];// don't need to be initialized, they take the reference of from the dicePool
         toolCard = new ToolCard[3];
         objectivePublicCard = new ObjectivePublicCard[3];
-
-    }
-
-    public static synchronized GameBoard getGameBoard() {
-        if (singleGameBoard == null) {
-            singleGameBoard = new GameBoard();
-        }
-        return singleGameBoard;
+        factoryDiceForThisGame = new RandomFactoryDice();
     }
 
     public boolean isEndGame() {
@@ -75,15 +61,15 @@ public class GameBoard {
     }
 
     /**
-     * Method <strong>doGame</strong>
-     * <em>Description</em>: Setup,start and end of the game,
+     * Setup,start and end of the game should be moved to the controller at least one part
      *
-     * @param roomPlayers a LinkedList of player
+     * @param roomPlayers the LinkedList of the players
+     * @param indexFirstPlayer the Index of the First player how should start to play
+     * @param balancedFactory if you want to use a balanced factory set true
      */
-    public void doGame(LinkedList<Player> roomPlayers, int indexFirstPlayer,boolean typeOfFactory ){
+    public void doGame(LinkedList<Player> roomPlayers, int indexFirstPlayer,boolean balancedFactory ){
         //init game of card arrays & FactoryDice
-        if(typeOfFactory)poolDice.setDiceFactory(getBalancedDiceFactory());
-        else poolDice.setDiceFactory(new FactoryRandomDice());
+        if (balancedFactory) factoryDiceForThisGame=new BalancedFactoryDice();
         Deck deck = Deck.getDeck();
         for(int i=0;i<toolCard.length;i++) toolCard[i] = deck.drawToolCard();
         for(int i=0;i<objectivePublicCard.length;i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
@@ -103,14 +89,12 @@ public class GameBoard {
             setwindowWindowPatternCard[]windowPatternCards
             favorToken=0;
         }*/
-
         currentPlayer=player[indexFirstPlayer];
         //now can proceed with the real game
         for(int i=currentround;i<10;i++){
             doRound();
         }
         //clean up game
-        if(typeOfFactory) FactoryBalancedDice.reset();
     }
 /*
     /**
@@ -126,7 +110,7 @@ public class GameBoard {
                          DiceStack[] roundTrack, int currentround, DiceStack poolDice,
                          ToolCard[] toolCard, ObjectivePublicCard[] objectivePublicCard){
         //init card & dice
-        FactoryBalancedDice diceBalancedFactory = getBalancedDiceFactory();
+        BalancedFactoryDice diceBalancedFactory = getBalancedDiceFactory();
         diceBalancedFactory.setcurrentNumberOfEachDice(currentNumberOfEachDiceInFactory);
         this.roundTrack=roundTrack;
         this.currentround=currentround;
@@ -136,16 +120,18 @@ public class GameBoard {
         //common start
         doGame(Players,indexCurrentPlayer);
     }*/
+
     private void doRound(){
         //init round
-        poolDice= new DiceStack(player.length*2+1);
-        for(int i=0;i<player.length;i++){
-            if(!currentPlayer.isSecondTurn()) doTurn();
+        poolDice= new DiceStack(factoryDiceForThisGame);
+        poolDice.createDice(player.length*2+1);
+        for (Player aPlayer : player) {
+            if (!currentPlayer.isSecondTurn()) doTurn();
             nextPlayer(true);
         }//now currentPLayer is the first player who played!
-        for(int i=0;i<player.length;i++){
+        for (Player aPlayer : player) {
             nextPlayer(false);
-            if(currentPlayer.isSecondTurn()) doTurn();
+            if (currentPlayer.isSecondTurn()) doTurn();
         }//now currentPLayer is the last player who played!
         //clean round
         nextPlayer(true);
@@ -153,9 +139,7 @@ public class GameBoard {
         currentround++;
     }
     /**
-     * /**
-     * Method private <strong>doRound</strong>
-     * <em>Description</em>: return the next player
+     * return the next player
      *
      * @param clockWise true if the rotation is clockwise, otherwise false
      */

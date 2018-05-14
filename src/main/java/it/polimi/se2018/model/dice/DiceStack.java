@@ -3,34 +3,44 @@ package it.polimi.se2018.model.dice;
 import java.util.LinkedList;
 
 /**
- * DiceDtack is a comfortable class to handle a stack of dice
+ * DiceStack is a comfortable class to handle a pile of dice
+ *
  * @author Luca Genoni
- * @version 1.0
- * @since 1.0
  */
 public class DiceStack {
     private  LinkedList<Dice> diceList;
-    private static FactoryDice factoryDice;
+    private FactoryDice factoryDice;
+
     /**
-     * Method <strong>DiceStack</strong>
-     * <em>Description</em>: constructor for empty DiceStack
+     * Create a stack of dice for convenient use of the dice, the factory must be the same as the game in which this stack is generated
      */
     public DiceStack(FactoryDice factoryDice){
         diceList = new LinkedList<>();
         this.factoryDice = factoryDice;
     }
-    public DiceStack(int numberOfNewDice){
+
+    /**
+     * the only legal public method for create a dice out of the package dice
+     *
+     * @param numberOfNewDice to create
+     */
+    public void createDice(int numberOfNewDice){
         diceList = new LinkedList<>();
         for(int i=0;i<numberOfNewDice;i++){
             diceList.add((factoryDice.createDice()));
         }
     }
+
+    /**
+     * set the factory
+     *
+     * @param factoryDice the type
+     */
     public void setDiceFactory(FactoryDice factoryDice) {
         this.factoryDice = factoryDice;
     }
     /**
-     * Method <strong>addDice</strong>
-     * <em>Description</em>: can add dice to the stack for Player and Tool Card
+     * can add dice to the stack for Player and Tool Card
      *
      * @param Dice to add to the stack
      */
@@ -39,11 +49,10 @@ public class DiceStack {
     }
 
     /**
-     * Method <strong>getDice</strong>
-     * <em>Description</em>: can return the dice for let them see the value or color
+     * return the dice for let them see the value or color, but the dice remain in the stack
      *
-     * @param index
-     * @return Dice  or null if there isn't any dice in that index
+     * @param index of the dice
+     * @return Dice or null if there isn't any dice in that index
      */
     public Dice getDice(int index) {
         if(index>=diceList.size()) return null;
@@ -53,8 +62,7 @@ public class DiceStack {
         diceList.add(factoryDice.createDice());
     }
     /**
-     * Method <strong>removeDiceFromStack</strong>
-     * <em>Description</em>: remove the dice from the stack.
+     * remove the dice from the stack.
      *
      * @param index integer of the index of the dice
      * @return the dice removed or null if there isn't any dice in that index
@@ -66,17 +74,16 @@ public class DiceStack {
         return dice;
     }
     /**
-     * Method <strong>removeDiceFromGame</strong>
-     * <em>Description</em>: remove the dice from the stack.
+     * remove the dice from the stack.
      *
      * @param index integer of the index of the dice
      */
     public void reinsertDiceToFactory(int index){
+
         factoryDice.removeDice(removeDiceFromStack(index));
     }
     /**
-     * Method <strong>DiceStack</strong>
-     * <em>Description</em>: remove the dice from the stack
+     * show the size of the stack
      *
      * @return integer, the size
      */

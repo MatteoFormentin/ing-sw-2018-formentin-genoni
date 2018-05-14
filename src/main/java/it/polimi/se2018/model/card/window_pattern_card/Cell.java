@@ -72,8 +72,7 @@ public class Cell {
      */
     private boolean checkColorRestriction(DiceColor color) {
         if (colorRestriction == null) return true;
-        else if (colorRestriction == color) return true;
-        else return false;
+        return colorRestriction == color;
     }
 
     /**
@@ -83,15 +82,13 @@ public class Cell {
      */
     private boolean checkValueRestriction(int value) {
         if (valueRestriction == 0) return true;
-        else if (valueRestriction == value) return true;
-        else return false;
+        return valueRestriction == value;
     }
 
     /**
      * Insert the dice in the cell if the restriction of the cell are respected.
      *
      * @param dice to insert
-     * @throws Exception can't place the dice
      */
     public boolean insertDice(Dice dice) {
         if (this.dice != null) return false;// cell occupied
@@ -108,7 +105,6 @@ public class Cell {
      * @param dice             to insert in the cell
      * @param colorRestriction true if i need to check the restriction
      * @param valueRestriction true if i need to check the restriction
-     * @throws Exception can't insert the dice
      */
     public boolean insertDice(Dice dice, boolean colorRestriction, boolean valueRestriction){
         if (this.dice != null) return false;// cell occupied

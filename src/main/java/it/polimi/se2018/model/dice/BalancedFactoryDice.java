@@ -5,15 +5,11 @@ import java.util.Random;
 
 
 /**
- * <strong>FactoryDice</strong> singleton Class only one BalancedDiceFactory
+ * factory that generate a balanced set of Dice during one game
  *
  * @author Luca Genoni
- * @version 1.2 fix getDice() & getpoll removed
- * @since 1.0
  */
-public class FactoryBalancedDice extends FactoryDice {
-
-    private static FactoryBalancedDice singleFactoryBalancedDice;
+public class BalancedFactoryDice extends FactoryDice {
     private int currentNumberOfDice;
     //currentNumberOfEachDice stores the number of dice for each color. It is indexed with the ordinal number relative to each color
     private int[] currentNumberOfEachDice;
@@ -21,7 +17,24 @@ public class FactoryBalancedDice extends FactoryDice {
     //availableColours stores the ordinal number linked to the color
     private LinkedList<DiceColor> availableColours;
 
-    private FactoryBalancedDice() {
+    /**
+     * Create a Balance Factory with only 90 Dice
+     */
+    public BalancedFactoryDice() {
+        currentNumberOfDice = MaxNumberOfDice;
+        currentNumberOfEachDice = new int[DiceColor.getNumberOfDiceColors()];
+        availableColours = new LinkedList<>();
+        int maxNumberOfEachDice = MaxNumberOfDice / DiceColor.getNumberOfDiceColors();
+        for (int i = 0; i < DiceColor.getNumberOfDiceColors(); i++) {
+            currentNumberOfEachDice[i] = maxNumberOfEachDice;
+            availableColours.add(DiceColor.getDiceColor(i));
+        }
+    }
+
+    /**
+     * reset the balanced factory as if it was a new one
+     */
+    public void reset() {
         currentNumberOfDice = MaxNumberOfDice;
         currentNumberOfEachDice = new int[DiceColor.getNumberOfDiceColors()];
         availableColours = new LinkedList<>();
@@ -32,21 +45,11 @@ public class FactoryBalancedDice extends FactoryDice {
         }
     }
 
-    public static synchronized FactoryBalancedDice getBalancedDiceFactory() {
-        if (singleFactoryBalancedDice == null) {
-            singleFactoryBalancedDice = new FactoryBalancedDice();
-        }
-        return singleFactoryBalancedDice;
-    }
-
-    public static void reset() {
-        singleFactoryBalancedDice = null;
-    }
 
     public int getMaxNumberOfDice() {
         return MaxNumberOfDice;
     }
-
+/*
     public int getCurrentNumberOfDice() {
         return currentNumberOfDice;
     }
@@ -54,14 +57,12 @@ public class FactoryBalancedDice extends FactoryDice {
     public int[] getCurrentNumberOfEachDice() {
         return currentNumberOfEachDice;
     }
-
+*/
     public LinkedList<DiceColor> getAvailableColours() {
         return availableColours;
     }
 
     /**
-     * Method <strong>createDice</strong>
-     * <em>Description</em>
      * constructor for dices.
      *
      * @return the new dice or null
@@ -92,8 +93,7 @@ public class FactoryBalancedDice extends FactoryDice {
     }
 
     /**
-     * Method <strong>getPoolDice</strong>
-     * <em>Description</em>: friendly method to reinsert a die in the factory (ie delete it from the game, without creating errors)
+     * method to reinsert a die in the factory
      *
      * @param dice to reinsert in the factory
      */
@@ -106,22 +106,4 @@ public class FactoryBalancedDice extends FactoryDice {
         currentNumberOfEachDice[dice.getColor().ordinal()]++;
 
     }
-
-    /**
-     * Method <strong>getPoolDice</strong>
-     * <em>Description</em>
-     * constructor for the poolDices.
-     *
-     * @param numberOfDice to draw from the factory
-     * @return array with numberOfDice Dice
-     */
-    public Dice[] getPoolDice(int numberOfDice) {
-        Dice[] arrayDice = new Dice[numberOfDice];
-        for (int i = 0; i < numberOfDice; i++) {
-            arrayDice[i] = createDice();
-        }
-        return arrayDice;
-    }
-
-
 }

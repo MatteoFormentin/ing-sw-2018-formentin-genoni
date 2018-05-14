@@ -8,7 +8,6 @@ import it.polimi.se2018.model.dice.DiceColor;
  *
  * @author Luca Genoni
  */
-
 public class WindowPatternCard {
     private String name;
     private int difficulty;
@@ -103,10 +102,6 @@ public class WindowPatternCard {
         return matrix[line][column];
     }
 
-    public void setNumberOfCellWithDice(int numberOfCellwithDice) {
-        this.numberOfCellWithDice = numberOfCellwithDice;
-    }
-
     public int getNumberOfCellWithDice() {
         return numberOfCellWithDice;
     }
@@ -131,11 +126,8 @@ public class WindowPatternCard {
      */
 
     private boolean checkMatrixAdjacentRestriction(int line, int column) {
-        boolean diceNearCell = false;
         if (numberOfCellWithDice == 0) {
-            if ((column == 0 || column == 4 || line == 0 || line == 3)) {
-                return true;
-            }
+            return (column == 0 || column == 4 || line == 0 || line == 3);
         } else {
             // one if for each near cell so 8 if
             if (line != 0 && column != 0) if (matrix[line - 1][column - 1].getDice() != null) return true;
@@ -146,7 +138,7 @@ public class WindowPatternCard {
             if (column != 4) if (matrix[line][column + 1].getDice() != null) return true;
             if (line != 3 && column != 0) if (matrix[line + 1][column - 1].getDice() != null) return true;
             if (line != 3) if (matrix[line + 1][column].getDice() != null) return true;
-            if (line != 3 && column != 4) if (matrix[line + 1][column + 1].getDice() != null) return true;
+            if (line != 3 && column != 4) return matrix[line + 1][column + 1].getDice() != null;
         }
         return false;
     }
@@ -163,7 +155,8 @@ public class WindowPatternCard {
         if (column !=0) if (matrix[line][column - 1].getDice()!=null) if (matrix[line][column - 1].getDice().getColor()==diceColor) return false;
         if (column!=4) if (matrix[line][column + 1].getDice()!=null) if (matrix[line][column + 1].getDice().getColor()==diceColor) return false;
         if (line !=0) if (matrix[line - 1][column].getDice()!=null) if (matrix[line - 1][column].getDice().getColor()==diceColor) return false;
-        if (line !=3) if (matrix[line + 1][column].getDice()!=null) if (matrix[line + 1][column].getDice().getColor()==diceColor) return false;
+        if (line !=3) if (matrix[line + 1][column].getDice()!=null)
+            return matrix[line + 1][column].getDice().getColor() != diceColor;
         return true;
     }
 
@@ -178,7 +171,8 @@ public class WindowPatternCard {
         if (column !=0) if (matrix[line][column - 1].getDice()!=null) if (matrix[line][column - 1].getDice().getValue()==diceValue) return false;
         if (column !=4) if (matrix[line][column + 1].getDice()!=null) if (matrix[line][column + 1].getDice().getValue()==diceValue) return false;
         if (line !=0) if (matrix[line - 1][column].getDice()!=null) if (matrix[line- 1][column ].getDice().getValue()==diceValue) return false;
-        if (line !=3) if (matrix[line + 1][column].getDice()!=null) if (matrix[line+ 1][column].getDice().getValue()==diceValue) return false;
+        if (line !=3) if (matrix[line + 1][column].getDice()!=null)
+            return matrix[line + 1][column].getDice().getValue() != diceValue;
         return true;
     }
 
@@ -189,7 +183,6 @@ public class WindowPatternCard {
      * @param column index [0,4] of the WindowsPattern
      * @param dice   to insert in the WindowsPattern
      * @return true if the insertDice is ok, false if can't insert the dice
-     * @throws Exception for color/value/adjacent/cell occupied
      */
     public boolean insertDice(int line, int column, Dice dice) {
         if (!(line >= 0 && line < 4 && column >= 0 && column < 5)) return false;
@@ -219,7 +212,6 @@ public class WindowPatternCard {
      *                            adjacentRestriction==the dice respect the restriction
      *                            if this logic produce true can insert the dice
      * @return true if the insertDice is ok, false if can't insert the dice
-     * @throws Exception for color/value/adjacent/cell occupied
      */
 
     public boolean insertDice(int line, int column, Dice dice, boolean adjacentRestriction,

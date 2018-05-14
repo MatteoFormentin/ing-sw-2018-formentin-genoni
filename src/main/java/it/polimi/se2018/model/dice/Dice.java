@@ -3,60 +3,53 @@ package it.polimi.se2018.model.dice;
 import java.util.Random;
 
 /**
- * <strong>Class Dice</strong>
- * <em>Description</em>
- * Class that define the dice
+ * Class that define the dice with a color and a value
  *
  * @author Luca Genoni
- * @version 1.0
- * @since 1.0
  */
 public class Dice {
     private int value;
     private DiceColor color;
 
+    /**
+     * create a dice, in a game this constructor shouldn't be called.
+     * Only the factory should create a dice!, but for testing reason it's public.
+     *
+     * @param color of the dice
+     */
     public Dice(DiceColor color) {
         value = rollDice();
         this.color = color;
     }
 
     /**
-     * Method <strong>setValue</strong>
-     * <em>Description</em>
      * set a value for the dice
      *
      * @param value to set on the dice
-     * @require belong to domain [1,6]
      */
     public void setValue(int value) {
-        this.value = value;
+        if(value>0&&value<7) this.value = value;
     }
 
     /**
-     * Method <strong>getValue</strong>
-     * <em>Description</em>
      * get the Value of the dice
      *
-     * @return value of the dice
+     * @return the value of the dice
      */
     public int getValue() {
         return value;
     }
 
     /**
-     * Method <strong>setColor</strong>
-     * <em>Description</em>
      * get the color of the dice
      *
-     * @return color of the dice
+     * @return the color of the dice
      */
     public DiceColor getColor() {
         return color;
     }
 
     /**
-     * Method <strong>rollDice</strong>
-     * <em>Description</em>
      * generates a random number belonging to the right domain [1,6], this method don't set the value on the Dice.
      *
      * @return integer randomly generated
@@ -67,10 +60,9 @@ public class Dice {
     }
 
     /**
-     * Method <strong>oppositeValue</strong>
-     * <em>Description</em>
+     * return the opposite value of the dice, this method don't set the value on the Dice.
      *
-     * @return the opposite value of one die
+     * @return the opposite value of the die
      */
     public int oppositeValue() {
         int opposite = value;

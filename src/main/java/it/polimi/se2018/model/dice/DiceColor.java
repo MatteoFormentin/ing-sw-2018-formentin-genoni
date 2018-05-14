@@ -3,10 +3,9 @@ package it.polimi.se2018.model.dice;
 import java.util.Arrays;
 
 /**
- * Enum <strong>DiceColor</strong>
+ * Enum for the color of the dice
+ *
  * @author Luca Genoni
- * @version 1.0
- * @since 1.0
  */
 public enum DiceColor {
     Red,
@@ -15,19 +14,11 @@ public enum DiceColor {
     Blue,
     Purple;
 
-    /**
-     * Class <strong>numberDiceColor</strong>
-     * private static inner class to calculate the number of colors available
-     *
-     * @author Luca Genoni
-     */
     private static class numberDiceColor {
         private static final int numberOfColors = (int) Arrays.stream(DiceColor.values()).count();
     }
 
     /**
-     * Method <strong>getDiceColor</strong>
-     * <em>Description</em>
      * return the DiceColor given the associated number
      *
      * @param ordinal number int associated with a DiceColor
@@ -44,8 +35,6 @@ public enum DiceColor {
     }
 
     /**
-     * Method <strong>getNumberOfDiceColors</strong>
-     * <em>Description</em>
      * return the number of color types available
      *
      * @return int number of color types
