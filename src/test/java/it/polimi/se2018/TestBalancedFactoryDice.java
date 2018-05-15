@@ -8,7 +8,7 @@ import org.junit.*;
 
 import java.util.ArrayList;
 
-public class TestFactoryBalancedDice {
+public class TestBalancedFactoryDice {
     private BalancedFactoryDice factoryBalancedDice;
     private int[] currentNumberOfEachColor;
 

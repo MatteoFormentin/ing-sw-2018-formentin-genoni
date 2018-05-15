@@ -49,7 +49,7 @@ public class BalancedFactoryDice extends FactoryDice {
     public int getMaxNumberOfDice() {
         return MaxNumberOfDice;
     }
-/*
+
     public int getCurrentNumberOfDice() {
         return currentNumberOfDice;
     }
@@ -57,7 +57,7 @@ public class BalancedFactoryDice extends FactoryDice {
     public int[] getCurrentNumberOfEachDice() {
         return currentNumberOfEachDice;
     }
-*/
+
     public LinkedList<DiceColor> getAvailableColours() {
         return availableColours;
     }

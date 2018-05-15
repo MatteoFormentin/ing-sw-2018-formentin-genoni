@@ -10,6 +10,6 @@ import it.polimi.se2018.view.cli.Cli;
  */
 public class App {
     public static void main(String[] args) {
-        //Cli cli = new Cli();
+        Cli cli = new Cli();
     }
 }
