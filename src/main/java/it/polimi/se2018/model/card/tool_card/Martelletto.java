@@ -1,7 +1,7 @@
 package it.polimi.se2018.model.card.tool_card;
 
 
-import it.polimi.se2018.model.dice.DiceStack;
+import it.polimi.se2018.model.GameBoard;
 
 /**
  * Tool card Martelletto.
@@ -13,6 +13,7 @@ import it.polimi.se2018.model.dice.DiceStack;
  * Require DiceStack.
  *
  * @author Matteo Formentin
+ * @author Luca Genoni
  */
 public class Martelletto extends ToolCard {
     public Martelletto() {
@@ -24,18 +25,21 @@ public class Martelletto extends ToolCard {
     }
 
     /**
-     * Card effect.
+     * card check
      *
-     * @param diceStack DiceStack (Riserva).
+     * @param gameBoard         where the card is used
+     * @param idPlayer          of the player who use the card
+     * @param indexOfCardInGame 0,1,2 needed to change the Flag true/false first USe ?????????????????? maybe better in GameBoard......
+     * @return true if the toolcard has been activated, false otherwise
      */
-    public void effect(DiceStack diceStack) {
-      /*
-        Before:
-
-        ****** the Player use this card check state player need be in second trun and canusedtoolcard==true and hasUsedDice=false
-        reroll all the dice of the Dicepool
-        end toolCard (reduce favor token of the player )
-         */
+    public boolean effect(GameBoard gameBoard, int idPlayer, int indexOfCardInGame) {
+        if (!noPreCondition(gameBoard, idPlayer)) return false;
+        if (gameBoard.getPlayer(idPlayer).isHasDrawNewDice())
+            return false; // before Place your dice in Hand ಠ_ಠ troller
+        if (gameBoard.getPlayer(idPlayer).isSecondTurn())
+            return false; // you can't use it in the first turn ಠ_ಠ troller
+        saveUsed(gameBoard, idPlayer, indexOfCardInGame);
+        gameBoard.getPoolDice().reRollAllDiceInStack();
+        return true; //immediate effect also end here so you should notify the views when you come back... it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
-
 }

@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.card.tool_card;
 
-import it.polimi.se2018.model.dice.DiceStack;
+import it.polimi.se2018.model.GameBoard;
 
 /**
  * Tool card Pinza Sgrossatrice.
@@ -12,6 +12,7 @@ import it.polimi.se2018.model.dice.DiceStack;
  * Require DiceStack.
  *
  * @author Matteo Formentin
+ * @author Luca Genoni
  */
 public class PinzaSgrossatrice extends ToolCard {
     public PinzaSgrossatrice() {
@@ -23,19 +24,26 @@ public class PinzaSgrossatrice extends ToolCard {
     }
 
     /**
-     * Card effect.
+     * card check
      *
-     * @param diceStack DiceStack (Riserva).
+     * @param gameBoard         where the card is used
+     * @param idPlayer          of the player who use the card
+     * @param indexOfCardInGame 0,1,2 needed to change the Flag true/false first USe ?????????????????? maybe better in GameBoard......
+     * @return true if the toolcard has been activated, false otherwise
      */
-    public void effect(DiceStack diceStack) {
-        /*
-        Before:
-        The Player Select One From DicePool(of the gameboard)
-        ****** the Player use this card check state player need to have one dice in hand and hasusedtoolcard==false
-        increase or decrease by 1 the value of the dice (6 can not become 1 and vice versa)
-        the Player Insert the dice
-        end toolCard(reduce favor token of the player )
-         */
-
+    public boolean effect(GameBoard gameBoard, int idPlayer, int indexOfCardInGame) {
+        if(!preConditionOfDicePool(gameBoard, idPlayer)) return false;
+        saveUsed(gameBoard, idPlayer, indexOfCardInGame);
+        return true; //no immediate effect it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
 }
+// controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))
+//----------------------------->controller
+/*      view.askIncrease()
+        wait response
+        control.handleCoordinateWindowForToolCard(boolean true/false)(true for increase flase decrease)
+        if false view.showMessage("Error, can't transform 6 in 1 or 1 in 6") ಠ_ಠ
+        if true modify model and model.notifyTheView()
+        if the timeout runs out Special End Turn ಠ_ಠ i hate you stupid player
+*/
+

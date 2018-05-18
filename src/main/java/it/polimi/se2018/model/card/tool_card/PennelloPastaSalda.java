@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.card.tool_card;
 
-import it.polimi.se2018.model.dice.DiceStack;
+import it.polimi.se2018.model.GameBoard;
 
 /**
  * Tool card Pennello per Pasta Salda.
@@ -12,6 +12,7 @@ import it.polimi.se2018.model.dice.DiceStack;
  * Require DiceStack.
  *
  * @author Matteo Formentin
+ * @author Luca Genoni
  */
 public class PennelloPastaSalda extends ToolCard {
     public PennelloPastaSalda() {
@@ -23,19 +24,28 @@ public class PennelloPastaSalda extends ToolCard {
     }
 
     /**
-     * Card effect..
+     * card check
      *
-     * @param diceStack DiceStack (Riserva).
+     * @param gameBoard         where the card is used
+     * @param idPlayer          of the player who use the card
+     * @param indexOfCardInGame 0,1,2 needed to change the Flag true/false first USe ?????????????????? maybe better in GameBoard......
+     * @return true if the toolcard has been activated, false otherwise
      */
-    public void effect(DiceStack diceStack) {
-        /*
-        Before:
-        The Player Select One From DicePool(of the gameboard)
-        ****** the Player use this card check state player need to have one dice in hand and canusedtoolcard==true
-        reroll the dice
-        insert dice or readd to dicepool
-        end toolCard (reduce favor token of the player )
-        (now the player can only call end turn)
-         */
+    public boolean effect(GameBoard gameBoard, int idPlayer, int indexOfCardInGame) {
+        if(!preConditionOfDicePool(gameBoard, idPlayer)) return false;
+        saveUsed(gameBoard, idPlayer, indexOfCardInGame);
+        gameBoard.getPlayer(idPlayer).getHandDice().reRollAllDiceInStack();
+        return true; // immediate effect. it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
 }
+    // controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))
+//----------------------------->controller
+/*      view.askTheCellOfWindow()
+        wait response
+        control.handleCoordinateWindow(row,column)
+        if false view.showMessage("Error") ಠ_ಠ
+        if true modify model and model.notifyTheView()
+        if the timeout runs out Normal End Turn (all dice in hand to the DraftPool) ಠ_ಠ i hate you stupid player
+*/
+
+

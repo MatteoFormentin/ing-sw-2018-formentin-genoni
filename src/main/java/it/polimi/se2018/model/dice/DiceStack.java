@@ -73,13 +73,27 @@ public class DiceStack {
         diceList.remove(index);
         return dice;
     }
+
+    /**
+     * method for select the dice in hand
+     *
+     * @param index of the dice to select, if out of bound don't do anything
+     */
+    public void moveDiceToTheTop(int index){
+        if(index==0 || index>=diceList.size()) return;
+        diceList.addFirst(diceList.remove(index));
+    }
+    public void reRollAllDiceInStack(){
+        for (Dice dice : diceList) {
+            dice.rollDice();
+        }
+    }
     /**
      * remove the dice from the stack.
      *
      * @param index integer of the index of the dice
      */
     public void reinsertDiceToFactory(int index){
-
         factoryDice.removeDice(removeDiceFromStack(index));
     }
     /**

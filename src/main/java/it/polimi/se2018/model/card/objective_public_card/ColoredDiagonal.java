@@ -5,6 +5,7 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.DiceColor;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Public objective card for colored diagonal, one point for each dice of the same color in a diagonal position
@@ -26,7 +27,7 @@ public class ColoredDiagonal extends ObjectivePublicCard {
     private class ColorCell {
         private DiceColor color;
         private boolean hasBeenVisited;
-        private LinkedList<ColorCell> diagonalColorCell;
+        private List<ColorCell> diagonalColorCell;
 
         private ColorCell() {
             color = null;

@@ -1,6 +1,6 @@
 package it.polimi.se2018.model.card.tool_card;
 
-import it.polimi.se2018.model.dice.DiceStack;
+import it.polimi.se2018.model.GameBoard;
 
 /**
  * Tool card Diluente per Pasta Salda.
@@ -12,6 +12,7 @@ import it.polimi.se2018.model.dice.DiceStack;
  * Require DiceStack and DiceBag.
  *
  * @author Matteo Formentin
+ * @author Luca Genoni
  */
 public class DiluentePastaSalda extends ToolCard {
     public DiluentePastaSalda() {
@@ -23,20 +24,35 @@ public class DiluentePastaSalda extends ToolCard {
     }
 
     /**
-     * Card effect.
+     * card check
      *
-     * @param diceStack DiceStack (Riserva).
+     * @param gameBoard         where the card is used
+     * @param idPlayer          of the player who use the card
+     * @param indexOfCardInGame 0,1,2 needed to change the Flag true/false first USe ?????????????????? maybe better in GameBoard......
+     * @return true if the toolcard has been activated, false otherwise
      */
-    public void effect(DiceStack diceStack/*, DiceBag diceBag*/) {
-        /*
-        Before:
-        The Player Select One From DicePool(of the gameboard)
-        ****** the Player use this card check state player need to have one dice in hand and canusedtoolcard==true
-        remove from the game the Dice in hand
-        the Hand Dice add a dice from factoey
-        set the value of the dice
-        insert the dice
-        end toolCard (reduce favor token of the player )
+    public boolean effect(GameBoard gameBoard, int idPlayer, int indexOfCardInGame) {
+        if(!preConditionOfDicePool(gameBoard, idPlayer)) return false;
+        saveUsed(gameBoard, idPlayer, indexOfCardInGame);
+        // begin of the effect
+        gameBoard.getPlayer(idPlayer).removeDiceFromHand(0);
+        gameBoard.getPlayer(idPlayer).addDiceToHandFromFactory();
+        return true; //continue the effect (first you should notify the views) it's too cool if return a number/string and the controller parsing this information know how to handle the card
+
+        // controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))
+        //----------------------------->controller
+        /*view.askTheValueOfTheDice()
+        wait response (if no response end turn) (dado rimesso nella DraftPool perchè nuovo Dado)
+        control.handleSetNewValueForDice(value)
+        if false view.showMessage("Error value of dice")ಠ_ಠ
+        if true modify model and model.notifyTheView()
+        if the timeout runs out Normal End Turn (all dice in hand to the DraftPool) ಠ_ಠ i hate you stupid player
+
+        view.askTheCellOfWindow() normal call for the placing
+        control.handleCoordinateWindow(row,column)   Scegli il valore del nuovo dado e piazzalo, rispettando tutte le restrizioni di piazzamento
+        if false view.showMessage("Error") ಠ_ಠ
+        if true modify model and model.notifyTheView()
+        if the timeout runs out Normal End Turn (all dice in hand to the DraftPool) ಠ_ಠ i hate you stupid player
          */
     }
 
