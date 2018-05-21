@@ -15,7 +15,7 @@ import it.polimi.se2018.model.dice.Dice;
 public class DifferentNumberRow extends ObjectivePublicCard {
     public DifferentNumberRow() {
         super();
-        super.setId(3);
+        super.setId(2);
         super.setName("Sfumature diverse - Riga");
         super.setDescription("Righe senza sfumature ripetute");
         super.setPoint(5);

@@ -13,7 +13,7 @@ import it.polimi.se2018.model.dice.DiceColor;
 public class YellowObjectivePrivateCard extends ObjectivePrivateCard {
     public YellowObjectivePrivateCard() {
         super();
-        super.setId(4);
+        super.setId(1);
         super.setDiceColor(DiceColor.Yellow);
         super.setName("Sfumature Gialle");
         super.setDescription("Somma dei valori su tutti i dadi gialli");

@@ -13,7 +13,7 @@ import it.polimi.se2018.model.dice.DiceColor;
 public class RedObjectivePrivateCard extends ObjectivePrivateCard {
     public RedObjectivePrivateCard() {
         super();
-        super.setId(4);
+        super.setId(0);
         super.setDiceColor(DiceColor.Red);
         super.setName("Sfumature Rosse");
         super.setDescription("Somma dei valori su tutti i dadi rossi");

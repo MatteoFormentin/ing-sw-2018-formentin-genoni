@@ -8,5 +8,5 @@ package it.polimi.se2018.event.list_event;
 public class SelectDiceFromHand extends EventView {
     //from EventView private String nicknamPlayer;
     //from EventView private Model model;
-
+    int index;
 }
