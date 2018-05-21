@@ -5,7 +5,7 @@ package it.polimi.se2018.network.client;
  *
  * @author Davide Mammarella
  */
-public class Client implements ClientController{
+public class Client {
 
     // Classe che rappresenta il client selezionato
     private AbstractClient client;
