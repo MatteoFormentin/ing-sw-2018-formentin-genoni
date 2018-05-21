@@ -16,7 +16,7 @@ public abstract class AbstractServer {
     private final ServerController serverController;
 
     /**
-     * Server abstract constructor.
+     * Server abstract constructor. (Socket or RMI)
      * Used to permit communication with server.
      *
      * @param serverController server interface, used as controller for the server.
@@ -26,9 +26,21 @@ public abstract class AbstractServer {
     }
 
     /**
-     * Start every server connection.
+     * Return Server Controller in order to handle request for communication.
+     * The server controller will handle request based on the different type of technologies (Socket or RMI)
      *
-     * @param port number of used port.
      */
+    public ServerController getServerController() {
+        return serverController;
+    }
+
+    /**
+     * Start every:
+     * RMI Connection
+     * Socket Connection
+     *
+     * @param port number of port that will be used.
+     */
+    // MANCA EXCEPTION
     public abstract void startServer(int port);
 }
