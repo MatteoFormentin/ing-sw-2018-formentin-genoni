@@ -9,6 +9,7 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 import it.polimi.se2018.model.dice.BalancedFactoryDice;
+import it.polimi.se2018.model.dice.DiceStack;
 import org.fusesource.jansi.*;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -19,9 +20,9 @@ import static org.fusesource.jansi.Ansi.Color.*;
 /**
  * @author Matteo Formentin
  */
-public class Cli {
+class CliMessage {
 
-    public Cli() {
+    CliMessage() {
         System.setProperty("jansi.passthrough", "true");
         AnsiConsole.systemInstall();
         showYourTurnScreen();
@@ -36,13 +37,17 @@ public class Cli {
         showDice(FactoryBalancedDice.getBalancedDiceFactory().createDice());*/
     }
 
-    public void splashScreen() {
+    void splashScreen() {
         AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("WELCOME").fg(BLUE).a(" to").fg(GREEN).a(" SAGRADA").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("A game implemented by").fg(GREEN).a(" Matteo Formentin").fg(BLUE).a(" Luca Genoni").fg(DEFAULT).a(" and").fg(RED).a(" Davide Mammarella"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Press a button to start"));
     }
 
-    public void showWindowPatternCard(WindowPatternCard card) {
+    void showInsertNickname() {
+        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci il tuo nome: "));
+    }
+
+    void showWindowPatternCard(WindowPatternCard card) {
         AnsiConsole.out().println();
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Nome: " + card.getName()));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Difficoltà: " + card.getDifficulty()));
@@ -99,7 +104,7 @@ public class Cli {
         }
     }
 
-    public void showObjectivePublicCard(ObjectivePublicCard card) {
+    void showObjectivePublicCard(ObjectivePublicCard card) {
         AnsiConsole.out.println();
 
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getId() + " - " + card.getName()));
@@ -108,14 +113,15 @@ public class Cli {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getDescription()));
     }
 
-    public void showObjectivePrivateCard(ObjectivePrivateCard card) {
+    void showObjectivePrivateCard(ObjectivePrivateCard card) {
         AnsiConsole.out.println();
 
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getId() + " - " + card.getName()));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getDescription()));
     }
 
-    public void showToolCard(ToolCard card) {
+
+    void showToolCard(ToolCard card) {
         AnsiConsole.out.println();
 
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getId() + " - " + card.getName()));
@@ -124,7 +130,7 @@ public class Cli {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getDescription()));
     }
 
-    public void showDice(Dice dice) {
+    void showDice(Dice dice) {
         Color color = DEFAULT;
         switch (dice.getColor()) {
             case Red:
@@ -147,25 +153,43 @@ public class Cli {
         AnsiConsole.out.print(ansi().fg(color).a(dice.getValue()));
     }
 
-    public void showYourTurnScreen() {
+    void showYourTurnScreen() {
         AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));
         AnsiConsole.out.println(ansi().fg(RED).a("|                ").fg(BLUE).a("Tocca a te!").fg(RED).a("                |"));
         AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));
     }
 
-    public void showMainMenu() {
+    void showMainMenu() {
         AnsiConsole.out.println();
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Cosa vuoi fare? Digita il numero corrispondente:"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Cosa vuoi fare?"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("1 - Posiziona un dado"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("2 - Utilizza una carta utensile"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("3 - Termina il turno"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("4 - Visualizza il tuo obiettivo privato"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("5 - Visualizza gli obiettivi pubblici"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("6 - Visualizza le vetrate degli avversari"));
+        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita il numero corrispondente: "));
     }
 
-    public void insertDiceMenu() {
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale riga vuoi "));
+    void showInsertDiceRow() {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale riga vuoi inserire il dado?"));
+    }
+
+    void showInsertDiceColumn() {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale colonna vuoi inserire il dado?"));
+    }
+
+    void showDiceStack(DiceStack diceStack) {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
+        for (int i = 0; i < diceStack.size(); i++) {
+            AnsiConsole.out.print(ansi().fg(RED).a(i + ": "));
+            this.showDice(diceStack.getDice(i));
+        }
+        AnsiConsole.out.println();
+    }
+
+    void showInputNotValid() {
+        AnsiConsole.out.print(ansi().fg(RED).a("Valore inserito non valido. Riprova: "));
     }
 
 }

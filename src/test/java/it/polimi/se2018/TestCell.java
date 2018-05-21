@@ -4,14 +4,8 @@ import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
-import it.polimi.se2018.view.cli.Cli;
 import org.junit.Before;
 import org.junit.Test;
-import it.polimi.se2018.model.card.window_pattern_card.Cell;
-import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
-import it.polimi.se2018.model.dice.Dice;
-import it.polimi.se2018.model.dice.DiceColor;
-import org.junit.*;
 
 import static org.junit.Assert.*;
 

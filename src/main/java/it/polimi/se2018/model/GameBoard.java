@@ -87,6 +87,10 @@ public class GameBoard {
         return toolCard;
     }
 
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
     public void setToolCard(ToolCard[] toolCard) {
         this.toolCard = toolCard;
     }

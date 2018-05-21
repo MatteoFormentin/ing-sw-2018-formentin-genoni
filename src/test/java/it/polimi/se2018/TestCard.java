@@ -6,7 +6,6 @@ import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
-import it.polimi.se2018.view.cli.Cli;
 import org.junit.*;
 
 import static org.junit.Assert.*;
@@ -176,7 +175,7 @@ public class TestCard {
         dice.setValue(4);
         assertTrue(testWindowPatternCard.insertDice(3, 4, dice));
 
-        //Cli cli = new Cli();
+        //CliMessage cli = new CliMessage();
         //cli.showWindowPatternCard(testWindowPatternCard);
 
         ObjectivePublicCard p_card = new ColoredDiagonal();

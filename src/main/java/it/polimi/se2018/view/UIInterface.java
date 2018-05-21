@@ -11,11 +11,15 @@ public interface UIInterface {
 
     //From model
     public void updatePlayer(Player player);
-    public void updateRoundTrack(DiceStack[] roundtrack);
+
+    public void updateDicePool(DiceStack dicePool);
+
+    public void updateRoundTrack(DiceStack[] roundTrack);
     public void updatePublicCard(ObjectivePublicCard[] publicCard);
-    public void updatePrivateCard(ObjectivePrivateCard[] privateCard);
-    public void updateToolCard(ToolCard[] ToolCard);
-    public void updateOpponentPlayer(Player[] opponentPlayer);
+
+    public void updateToolCard(ToolCard[] toolCard);
+
+    public void updateOpponentPlayer(Player[] opponentPlayers);
 
     //From Controller
 }
