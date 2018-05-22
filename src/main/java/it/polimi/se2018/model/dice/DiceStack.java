@@ -9,36 +9,16 @@ import java.util.LinkedList;
  */
 public class DiceStack {
     private  LinkedList<Dice> diceList;
-    private FactoryDice factoryDice;
+
 
     /**
-     * Create a stack of dice for convenient use of the dice, the factory must be the same as the game in which this stack is generated
+     * constructor of a list of dice that can't create the dice.
      */
-    public DiceStack(FactoryDice factoryDice){
+    public DiceStack(){
         diceList = new LinkedList<>();
-        this.factoryDice = factoryDice;
     }
 
-    /**
-     * the only legal public method for create a dice out of the package dice
-     *
-     * @param numberOfNewDice to create
-     */
-    public void createDice(int numberOfNewDice){
-        diceList = new LinkedList<>();
-        for(int i=0;i<numberOfNewDice;i++){
-            diceList.add((factoryDice.createDice()));
-        }
-    }
 
-    /**
-     * set the factory
-     *
-     * @param factoryDice the type
-     */
-    public void setDiceFactory(FactoryDice factoryDice) {
-        this.factoryDice = factoryDice;
-    }
     /**
      * can add dice to the stack for Player and Tool Card
      *
@@ -58,16 +38,14 @@ public class DiceStack {
         if(index>=diceList.size()) return null;
         return diceList.get(index);
     }
-    public void addADiceFromFactory(){
-        diceList.add(factoryDice.createDice());
-    }
+
     /**
      * remove the dice from the stack.
      *
      * @param index integer of the index of the dice
      * @return the dice removed or null if there isn't any dice in that index
      */
-    public Dice removeDiceFromStack(int index){
+    public Dice takeDiceFromStack(int index){
         if(index>=diceList.size()||index<0) return null;
         Dice dice=diceList.get(index);
         diceList.remove(index);
@@ -87,14 +65,6 @@ public class DiceStack {
         for (Dice dice : diceList) {
             dice.rollDice();
         }
-    }
-    /**
-     * remove the dice from the stack.
-     *
-     * @param index integer of the index of the dice
-     */
-    public void reinsertDiceToFactory(int index){
-        factoryDice.removeDice(removeDiceFromStack(index));
     }
     /**
      * show the size of the stack

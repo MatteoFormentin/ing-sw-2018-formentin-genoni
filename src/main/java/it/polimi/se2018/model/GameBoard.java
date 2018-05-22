@@ -7,41 +7,40 @@ import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
 
-import java.util.LinkedList;
-
 
 /**
  * the game board for one game
  *
  * @author Luca Genoni
- * @version 1.2 fix getDice() & getpoll removed
- * @since 1.0
  */
 public class GameBoard {
-    private int currentround;
-    private DiceStack[] roundTrack;
-    private Player[] player;
-    private ToolCard[] toolCard;
-    private ObjectivePublicCard[] objectivePublicCard;
-    private DiceStack poolDice; // can also be a DiceStack
-    private Player currentPlayer;
-    private boolean endGame;
-    private FactoryDice factoryDiceForThisGame;
+    private int currentround;//can have only the get
+    private int currentTurn;//can have only the get
+    private int indexCurrentPlayer;//can have only the get
+    private boolean endGame;//can have only the get
+    private DiceStack[] roundTrack;//can have only the get
+    private Player[] player; //can have only the get(they are created with the constructor )
+    private ToolCard[] toolCard;//can have only the get
+    private ObjectivePublicCard[] objectivePublicCard;//can have only the get
+    private DiceStack poolDice;//can have only the get
+    private FactoryDice factoryDiceForThisGame; //nobody can see it
 
     /**
-     * constructor for the gameBoard. The preparation of the game.
+     * constructor for the gameBoard. Contain the preparation of the game, need to set the name of each player.
      *
      * @param namePlayers      an array of String with the name
      * @param indexFirstPlayer int of the First player, his Id is set to 0
      */
     public GameBoard(String[] namePlayers, int indexFirstPlayer) {
         currentround = 0;
+        currentTurn = 0;
         roundTrack = new DiceStack[10];// don't need to be initialized, they take the reference of from the dicePool
         toolCard = new ToolCard[3];
         objectivePublicCard = new ObjectivePublicCard[3];
         factoryDiceForThisGame = new BalancedFactoryDice();// here for change the factory
         Deck deck = Deck.getDeck();
         player = new Player[namePlayers.length];
+        poolDice =new DiceStack();
 
         //setUp player
         for (int i = 0; i < namePlayers.length; i++) {
@@ -51,102 +50,206 @@ public class GameBoard {
             for (int n = 0; n < 4; n++) {
                 window[n] = deck.drawWindowPatternCard();
             }
-            player[i].setChoiceWindowPattern(window);
+            player[i].setThe4WindowPattern(window);
         }
-        currentPlayer = player[indexFirstPlayer];
+        indexCurrentPlayer = indexFirstPlayer;
         for (int i = 0; i < toolCard.length; i++) toolCard[i] = deck.drawToolCard();
         for (int i = 0; i < objectivePublicCard.length; i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
+        //create the first dicePool
+        for(int i=0;i<(2*player.length+1);i++){
+            poolDice.addDice(factoryDiceForThisGame.createDice());
+        }
         endGame = false;
     }
 
+    //************************************getter**********************************************
+    //************************************getter**********************************************
+    //************************************getter**********************************************
+
+    /**
+     *
+     * @return int for the current round
+     */
     public int getCurrentround() {
         return currentround;
     }
 
-    public void setCurrentround(int currentround) {
-        this.currentround = currentround;
+    /**
+     *
+     * @return the array of DiceStack belonging to the roundtrack
+     */
+    public DiceStack[] getRoundTrack() {
+        return roundTrack;
     }
 
+    /**
+     *
+     * @return array of all the Player
+     */
     public Player[] getPlayer() {
         return player;
     }
 
+    /**
+     *
+     * @param index of the player domain [0, n°player-1]
+     * @return the player relative to the index, null if the index is wrong
+     */
     public Player getPlayer(int index) {
+        if(index<0||index>player.length)return null;
         return player[index];
     }
 
-    public void setPlayer(Player[] player) {
-        this.player = player;
-    }
-
-    public DiceStack getPoolDice() {return poolDice;}
-
-    public void setPoolDice(DiceStack poolDice) {this.poolDice = poolDice;}
-
+    /**
+     *
+     * @return an array of Tool Card
+     */
     public ToolCard[] getToolCard() {
         return toolCard;
     }
 
-    public Player getCurrentPlayer() {
-        return currentPlayer;
+    /**
+     *
+     * @param index of the Tool card domain [0,2]
+     * @return the ToolCard relative to the index, null if the index is wrong
+     */
+    public ToolCard getToolCard(int index) {
+        if(index<0||index>toolCard.length)return null;
+        return toolCard[index];
     }
 
-    public void setToolCard(ToolCard[] toolCard) {
-        this.toolCard = toolCard;
-    }
-
+    /**
+     *
+     * @return an array of ObjectivePublicCard
+     */
     public ObjectivePublicCard[] getObjectivePublicCard() {
         return objectivePublicCard;
     }
 
-    public void setObjectivePublicCard(ObjectivePublicCard[] objectivePublicCard) {
-        this.objectivePublicCard = objectivePublicCard;
+    /**
+     *
+     * @return a DiceStack relative to the DicePool
+     */
+    public DiceStack getPoolDice(){return poolDice;}
+
+    /**
+     *
+     * @return the index relative to the current player [0, n°player-1]
+     */
+    public int getIndexCurrentPlayer() {
+        return indexCurrentPlayer;
     }
 
+    /**
+     *
+     * @return the number of the current round
+     */
+    public int getCurrentTurn() {
+        return currentTurn;
+    }
+
+    /**
+     *
+     * @return true if the game over, false otherwise
+     */
     public boolean isEndGame() {
         return endGame;
     }
 
-    public void setEndGame(boolean endGame) {
-        this.endGame = endGame;
-    }
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+
+    //no setter
+
+    //************************************class's method**********************************************
+    //************************************class's method**********************************************
+    //************************************class's method**********************************************
 
     /**
-     * method for know which tool card correspond to the index 0,1 or 2
+     * change the current player
      *
-     * @param indexOfTheToolInGame 0,1 or 2 the possible index of one card
-     * @return the ID of the card
+     * @param indexPlayer the index of the player who send the request (can also change to the nickname)
+     * @return true if the change was a success, false if there is a problem.
      */
-    public int RealIdOfToolCard(int indexOfTheToolInGame) {
-        if (indexOfTheToolInGame < 0 || indexOfTheToolInGame >= 3) return -1;
-        else return toolCard[indexOfTheToolInGame].getId();
+    public boolean nextPlayer(int indexPlayer){
+        if (endGame) return false;// the game is already over
+        if (indexPlayer!=indexCurrentPlayer) return false; //not your turn baby
+        if (currentTurn < player.length) {//clockwise +1
+            if(player[indexPlayer].isFirstTurn()) player[indexPlayer].setFirstTurn(false);//se no ha usato una tool
+            indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
+            currentTurn++;
+            if( !player[indexCurrentPlayer].isFirstTurn())  return nextPlayer(indexCurrentPlayer);
+
+        //se è uguale siamo nella fare tra il 1° e il 2° giro
+        } else if (currentTurn == player.length) {
+            if(player[indexPlayer].isFirstTurn()) player[indexPlayer].setFirstTurn(false);//se no ha usato una tool
+            currentTurn++;
+            if( player[indexCurrentPlayer].isFirstTurn())  return nextPlayer(indexCurrentPlayer);
+
+        //siamo in pieno 2°giro
+        } else if (currentTurn < (2 * player.length)) {
+            if(!player[indexPlayer].isFirstTurn()) player[indexPlayer].setFirstTurn(true); //se no ha usato carte tool
+            indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
+            currentTurn++;
+            if( player[indexCurrentPlayer].isFirstTurn())  return nextPlayer(indexCurrentPlayer);
+
+        //siamo tra il 2° e il 1° giro/endgame
+        } else if (currentTurn == (2 * player.length)) {
+            if(!player[indexPlayer].isFirstTurn()) player[indexPlayer].setFirstTurn(true); //se no ha usato carte tool
+            indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
+            currentTurn = 0;
+            currentround++;
+            //Ora potrebbe finire il gioco
+            if (currentround == roundTrack.length) {
+                endGame = true;
+                currentTurn = 2 * player.length + 1;
+                //method for the end game
+                calculatePoint();
+            } else {
+                roundTrack[currentround] = new DiceStack();
+                for (int i = 0; i < (2 * player.length + 1); i++) {
+                    Dice dice = factoryDiceForThisGame.createDice();
+                    if (dice == null) {
+                        System.err.println("Non ci sono abbastanza dadi, è strano perchè dovrebbero essere 90 esatti");
+                        return false;
+                    }
+                    roundTrack[currentround].addDice(dice);
+                }
+                if(!player[indexCurrentPlayer].isFirstTurn())  return nextPlayer(indexCurrentPlayer);
+            }
+        } else return false;
+
+        return true;
     }
 
-    /**
-     * method for change the status of the tool Card(maybe this should be here and not in ToolCard :/)
-     * specialmente per il controllo di alcune condizioni
-     */
-    public ToolCard getToolCard(int indexOfTheToolInGame) {
-        return toolCard[indexOfTheToolInGame];
-    }
-
-    /**
-     * return the next player
-     *
-     * @param clockWise true if the rotation is clockwise, otherwise false
-     */
-    private void nextPlayer(Boolean clockWise) {
-        if (clockWise) {
-            int indexCurrentPlayer = currentPlayer.getId() + 1;
-            if (indexCurrentPlayer == player.length)
-                currentPlayer = player[0];// or currentPlayer=player[currentPlayer-player.length];
-        } else {
-            int indexCurrentPlayer = currentPlayer.getId() - 1;
-            if (indexCurrentPlayer < 0) currentPlayer = player[player.length - 1];
+    private void calculatePoint() {
+        int pointCounter;
+        for (Player player : this.player) {
+            pointCounter = 0;
+            //calculate point for the public object
+            for (ObjectivePublicCard objectivePublicCard : this.objectivePublicCard) {
+                pointCounter += objectivePublicCard.calculatePoint(player.getPlayerWindowPattern());
+            }
+            //calculate point for the private object
+            pointCounter += player.getPrivateObject().calculatePoint(player.getPlayerWindowPattern());
+            //add the token left
+            pointCounter += player.getFavorToken();
+            //subtract the void cell
+            pointCounter = pointCounter - (20 - player.getPlayerWindowPattern().getNumberOfCellWithDice());
+            player.setPoints(pointCounter);
         }
     }
 
+    /**
+     * move for select the window Pattern
+     *
+     * @param indexOfThePlayer who want to set the window
+     * @param indexOfTheWindow of the window selected
+     * @return true if all is gone perfectly, false otherwise.
+     */
     public boolean setWindowOfPlayer(int indexOfThePlayer, int indexOfTheWindow) {
+        //useless check: if(currentround!=0 && currentTurn!=0)return false;//can't pick a window during a game.... troller
         if (indexOfThePlayer < 0 || indexOfThePlayer >= player.length) return false;//wrong index
         if (indexOfTheWindow < 0 || indexOfTheWindow > 3) return false;//wrong index
         if (player[indexOfThePlayer].getPlayerWindowPattern() != null) return false;//window already picked
@@ -155,23 +258,16 @@ public class GameBoard {
         return true;
     }
 
-/*
-    private void doRound() {
-        //init round
-        poolDice = new DiceStack(factoryDiceForThisGame);
-        poolDice.createDice(player.length * 2 + 1);
-        for (Player aPlayer : player) {
-            if (!currentPlayer.isSecondTurn()) doTurn();
-            nextPlayer(true);
-        }//now currentPLayer is the first player who played!
-        for (Player aPlayer : player) {
-            nextPlayer(false);
-            if (currentPlayer.isSecondTurn()) doTurn();
-        }//now currentPLayer is the last player who played!
-        //clean round
-        nextPlayer(true);
-        roundTrack[currentround] = poolDice;
-        currentround++;
-    }*/
-
+    /**
+     * move for take the active dice in hand and change it with a new one
+     *
+     * @param indexPlayer who send the request of the move
+     * @return true if is gone all ok, false otherwise
+     */
+    public boolean changeDiceInHandWithANewOne(int indexPlayer){
+        if(indexPlayer!=indexCurrentPlayer) return false;//not your turn
+        factoryDiceForThisGame.removeDice(player[indexPlayer].removeDiceFromHand(0));
+        player[indexPlayer].getHandDice().addDice(factoryDiceForThisGame.createDice());
+        return true;
+    }
 }

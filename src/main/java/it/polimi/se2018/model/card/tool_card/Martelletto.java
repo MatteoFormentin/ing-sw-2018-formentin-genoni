@@ -28,17 +28,17 @@ public class Martelletto extends ToolCard {
      * card check
      *
      * @param gameBoard         where the card is used
-     * @param idPlayer          of the player who use the card
+     * @param indexPlayer          of the player who use the card
      * @param indexOfCardInGame 0,1,2 needed to change the Flag true/false first USe ?????????????????? maybe better in GameBoard......
      * @return true if the toolcard has been activated, false otherwise
      */
-    public boolean effect(GameBoard gameBoard, int idPlayer, int indexOfCardInGame) {
-        if (!noPreCondition(gameBoard, idPlayer)) return false;
-        if (gameBoard.getPlayer(idPlayer).isHasDrawNewDice())
+    public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
+        if (!noPreCondition(gameBoard, indexPlayer)) return false;
+        if (gameBoard.getPlayer(indexPlayer).isHasDrawNewDice())
             return false; // before Place your dice in Hand ಠ_ಠ troller
-        if (gameBoard.getPlayer(idPlayer).isSecondTurn())
+        if (!gameBoard.getPlayer(indexPlayer).isFirstTurn())
             return false; // you can't use it in the first turn ಠ_ಠ troller
-        saveUsed(gameBoard, idPlayer, indexOfCardInGame);
+        saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
         gameBoard.getPoolDice().reRollAllDiceInStack();
         return true; //immediate effect also end here so you should notify the views when you come back... it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }

@@ -21,9 +21,9 @@ public class Player {
     private int points;
     private ObjectivePrivateCard privateObject;
     private WindowPatternCard playerWindowPattern;
-    private WindowPatternCard[] choiceWindowPattern = new WindowPatternCard[4];
+    private WindowPatternCard[] the4WindowPattern = new WindowPatternCard[4];
     private DiceStack handDice;
-    private boolean secondTurn;
+    private boolean firstTurn;
     private boolean hasDrawNewDice;
     private boolean hasPlaceANewDice;
     private boolean hasUsedToolCard;
@@ -36,7 +36,7 @@ public class Player {
         privateObject = null;
         playerWindowPattern = null;
         handDice = null;
-        secondTurn = false;
+        firstTurn = true;
         hasDrawNewDice = false;
         hasPlaceANewDice = false;
         hasUsedToolCard = false;
@@ -56,7 +56,7 @@ public class Player {
         privateObject = null;
         playerWindowPattern = null;
         handDice = null;
-        secondTurn = false;
+        firstTurn = true;
         hasDrawNewDice = false;
         hasPlaceANewDice = false;
         hasUsedToolCard = false;
@@ -121,11 +121,11 @@ public class Player {
     }
 
     public WindowPatternCard getChoiceWindowPattern(int index) {
-        return choiceWindowPattern[index];
+        return the4WindowPattern[index];
     }
 
-    public void setChoiceWindowPattern(WindowPatternCard[] choiceWindowPattern) {
-        this.choiceWindowPattern = choiceWindowPattern;
+    public void setThe4WindowPattern(WindowPatternCard[] the4WindowPattern) {
+        this.the4WindowPattern = the4WindowPattern;
     }
 
     /**
@@ -138,24 +138,20 @@ public class Player {
         handDice.addDice(dice);
     }
 
-    public void addDiceToHandFromFactory() {
-        handDice.createDice(1);
-    }
-
     public Dice removeDiceFromHand(int index) {
-        return handDice.removeDiceFromStack(index);
+        return handDice.takeDiceFromStack(index);
     }
 
     public DiceStack getHandDice() {
         return handDice;
     }
 
-    public void setSecondTurn(boolean secondTurn) {
-        this.secondTurn = secondTurn;
+    public void setFirstTurn(boolean firstTurn) {
+        this.firstTurn = firstTurn;
     }
 
-    public boolean isSecondTurn() {
-        return secondTurn;
+    public boolean isFirstTurn() {
+        return firstTurn;
     }
 
     public boolean isHasDrawNewDice() {
