@@ -34,7 +34,8 @@ public class TamponeDiamantato extends ToolCard {
     public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
         if(!preConditionOfDicePool(gameBoard, indexPlayer)) return false;
         saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
-        gameBoard.getPlayer(indexPlayer).getHandDice().getDice(0).oppositeValue();// there is only 1 dice :)
-        return true; //immediate effect also end here so you should notify the views when you come back... it's too cool if return a number/string and the controller parsing this information know how to handle the card
+        if(!gameBoard.getPlayer(indexPlayer).oppositeFaceDice())return false;
+        //immediate effect also end here so you should notify the views when you come back... deal with that :/
+        return true;
     }
 }

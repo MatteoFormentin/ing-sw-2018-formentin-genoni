@@ -40,7 +40,7 @@ public class GameBoard {
         factoryDiceForThisGame = new BalancedFactoryDice();// here for change the factory
         Deck deck = Deck.getDeck();
         player = new Player[namePlayers.length];
-        poolDice =new DiceStack();
+        poolDice = new DiceStack();
 
         //setUp player
         for (int i = 0; i < namePlayers.length; i++) {
@@ -56,8 +56,8 @@ public class GameBoard {
         for (int i = 0; i < toolCard.length; i++) toolCard[i] = deck.drawToolCard();
         for (int i = 0; i < objectivePublicCard.length; i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
         //create the first dicePool
-        for(int i=0;i<(2*player.length+1);i++){
-            poolDice.addDice(factoryDiceForThisGame.createDice());
+        for (int i = 0; i < (2 * player.length + 1); i++) {
+            poolDice.add(factoryDiceForThisGame.createDice());
         }
         endGame = false;
     }
@@ -67,7 +67,6 @@ public class GameBoard {
     //************************************getter**********************************************
 
     /**
-     *
      * @return int for the current round
      */
     public int getCurrentround() {
@@ -75,7 +74,6 @@ public class GameBoard {
     }
 
     /**
-     *
      * @return the array of DiceStack belonging to the roundtrack
      */
     public DiceStack[] getRoundTrack() {
@@ -83,7 +81,6 @@ public class GameBoard {
     }
 
     /**
-     *
      * @return array of all the Player
      */
     public Player[] getPlayer() {
@@ -91,17 +88,15 @@ public class GameBoard {
     }
 
     /**
-     *
      * @param index of the player domain [0, n°player-1]
      * @return the player relative to the index, null if the index is wrong
      */
     public Player getPlayer(int index) {
-        if(index<0||index>player.length)return null;
+        if (index < 0 || index > player.length) return null;
         return player[index];
     }
 
     /**
-     *
      * @return an array of Tool Card
      */
     public ToolCard[] getToolCard() {
@@ -109,17 +104,15 @@ public class GameBoard {
     }
 
     /**
-     *
      * @param index of the Tool card domain [0,2]
      * @return the ToolCard relative to the index, null if the index is wrong
      */
     public ToolCard getToolCard(int index) {
-        if(index<0||index>toolCard.length)return null;
+        if (index < 0 || index > toolCard.length) return null;
         return toolCard[index];
     }
 
     /**
-     *
      * @return an array of ObjectivePublicCard
      */
     public ObjectivePublicCard[] getObjectivePublicCard() {
@@ -127,13 +120,13 @@ public class GameBoard {
     }
 
     /**
-     *
      * @return a DiceStack relative to the DicePool
      */
-    public DiceStack getPoolDice(){return poolDice;}
+    public DiceStack getPoolDice() {
+        return poolDice;
+    }
 
     /**
-     *
      * @return the index relative to the current player [0, n°player-1]
      */
     public int getIndexCurrentPlayer() {
@@ -141,7 +134,6 @@ public class GameBoard {
     }
 
     /**
-     *
      * @return the number of the current round
      */
     public int getCurrentTurn() {
@@ -149,7 +141,6 @@ public class GameBoard {
     }
 
     /**
-     *
      * @return true if the game over, false otherwise
      */
     public boolean isEndGame() {
@@ -167,36 +158,45 @@ public class GameBoard {
     //************************************class's method**********************************************
 
     /**
-     * change the current player
+     * change the current player to the next.
+     * check the state of the player for the first/second turn
      *
      * @param indexPlayer the index of the player who send the request (can also change to the nickname)
      * @return true if the change was a success, false if there is a problem.
      */
-    public boolean nextPlayer(int indexPlayer){
+    public boolean nextPlayer(int indexPlayer) {
         if (endGame) return false;// the game is already over
-        if (indexPlayer!=indexCurrentPlayer) return false; //not your turn baby
-        if (currentTurn < player.length) {//clockwise +1
-            if(player[indexPlayer].isFirstTurn()) player[indexPlayer].setFirstTurn(false);//se no ha usato una tool
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn baby
+        if (currentTurn < player.length) {
+            if (player[indexPlayer].isFirstTurn()) {
+                player[indexPlayer].endTrun(false);
+            }//else he use a tool card that alter the normal circle
             indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
             currentTurn++;
-            if( !player[indexCurrentPlayer].isFirstTurn())  return nextPlayer(indexCurrentPlayer);
+            if (!player[indexCurrentPlayer].isFirstTurn()) return nextPlayer(indexCurrentPlayer);
 
-        //se è uguale siamo nella fare tra il 1° e il 2° giro
+            //se è uguale siamo nella fare tra il 1° e il 2° giro
         } else if (currentTurn == player.length) {
-            if(player[indexPlayer].isFirstTurn()) player[indexPlayer].setFirstTurn(false);//se no ha usato una tool
+            if (player[indexPlayer].isFirstTurn()) {
+                player[indexPlayer].endTrun(false);
+            }//else he use a tool card that alter the normal circle
             currentTurn++;
-            if( player[indexCurrentPlayer].isFirstTurn())  return nextPlayer(indexCurrentPlayer);
+            if (player[indexCurrentPlayer].isFirstTurn()) return nextPlayer(indexCurrentPlayer);
 
-        //siamo in pieno 2°giro
+            //siamo in pieno 2°giro
         } else if (currentTurn < (2 * player.length)) {
-            if(!player[indexPlayer].isFirstTurn()) player[indexPlayer].setFirstTurn(true); //se no ha usato carte tool
+            if (!player[indexPlayer].isFirstTurn()) {
+                player[indexPlayer].endTrun(true);
+            }//else he use a tool card that alter the normal circle
             indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
             currentTurn++;
-            if( player[indexCurrentPlayer].isFirstTurn())  return nextPlayer(indexCurrentPlayer);
+            if (player[indexCurrentPlayer].isFirstTurn()) return nextPlayer(indexCurrentPlayer);
 
-        //siamo tra il 2° e il 1° giro/endgame
+            //siamo tra il 2° e il 1° giro/endgame
         } else if (currentTurn == (2 * player.length)) {
-            if(!player[indexPlayer].isFirstTurn()) player[indexPlayer].setFirstTurn(true); //se no ha usato carte tool
+            if (!player[indexPlayer].isFirstTurn()) {
+                player[indexPlayer].endTrun(true);
+            }//else he use a tool card that alter the normal circle
             indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
             currentTurn = 0;
             currentround++;
@@ -214,12 +214,14 @@ public class GameBoard {
                         System.err.println("Non ci sono abbastanza dadi, è strano perchè dovrebbero essere 90 esatti");
                         return false;
                     }
-                    roundTrack[currentround].addDice(dice);
+                    roundTrack[currentround].add(dice);
                 }
-                if(!player[indexCurrentPlayer].isFirstTurn())  return nextPlayer(indexCurrentPlayer);
+                if (!player[indexCurrentPlayer].isFirstTurn()) return nextPlayer(indexCurrentPlayer);
             }
-        } else return false;
-
+        } else {
+            System.err.println("Gioco corrotto, impossibile proseguire i current turn non impazziti");
+            return false;
+        }
         return true;
     }
 
@@ -254,9 +256,16 @@ public class GameBoard {
         if (indexOfTheWindow < 0 || indexOfTheWindow > 3) return false;//wrong index
         if (player[indexOfThePlayer].getPlayerWindowPattern() != null) return false;//window already picked
         // ok i set your window
-        player[indexOfThePlayer].setPlayerWindowPattern(player[indexOfThePlayer].getChoiceWindowPattern(indexOfTheWindow));
+        player[indexOfThePlayer].setPlayerWindowPattern(indexOfTheWindow);
         return true;
     }
+
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
 
     /**
      * move for take the active dice in hand and change it with a new one
@@ -264,10 +273,42 @@ public class GameBoard {
      * @param indexPlayer who send the request of the move
      * @return true if is gone all ok, false otherwise
      */
-    public boolean changeDiceInHandWithANewOne(int indexPlayer){
-        if(indexPlayer!=indexCurrentPlayer) return false;//not your turn
-        factoryDiceForThisGame.removeDice(player[indexPlayer].removeDiceFromHand(0));
-        player[indexPlayer].getHandDice().addDice(factoryDiceForThisGame.createDice());
+    public boolean changeDiceBetweenHandAndFactory(int indexPlayer) {
+        if (indexPlayer != indexCurrentPlayer) return false;//not your turn
+        if (!player[indexPlayer].isHasUsedToolCard()) return false;//you didn't use a tool card
+        if (!player[indexPlayer].isHasDrawNewDice()) return false;
+        if (player[indexPlayer].isHasPlaceANewDice()) return false;
+        Dice dice = player[indexPlayer].removeDiceFromHand();
+        if (dice == null) return false;
+        factoryDiceForThisGame.removeDice(dice);
+        dice = factoryDiceForThisGame.createDice();
+        player[indexPlayer].addDiceToHand(dice);
         return true;
     }
+
+    public boolean changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) {
+        if (indexPlayer != indexCurrentPlayer) return false;//not your turn
+        if (round >= currentround || round < 0) return false;//can't select a round that didn't exist
+        if (indexStack >= roundTrack[round].size() || indexStack < 0) return false;// index wrong
+        if (!player[indexPlayer].isHasUsedToolCard()) return false;//you didn't use a tool card
+        if (!player[indexPlayer].isHasDrawNewDice()) return false;
+        if (player[indexPlayer].isHasPlaceANewDice()) return false;
+        Dice dice = player[indexPlayer].removeDiceFromHand();
+        if (dice == null) return false; // no dice in hand wtf
+        player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack));
+        roundTrack[round].add(indexStack, dice);
+        return true;
+    }
+
+    public boolean moveDiceFromWindowPatternToHandWithRestriction(int indexPlayer, int round, int indexStack, int line, int column) {
+        if (indexPlayer != indexCurrentPlayer) return false;//not your turn
+        if (round >= currentround || round < 0) return false;//can't select a round that didn't exist
+        if (indexStack >= roundTrack[round].size() || indexStack < 0) return false;// index wrong
+        if (!player[indexPlayer].isHasUsedToolCard()) return false;//you didn't use a tool card
+        Dice dHand= player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice();
+        if(dHand==null) return false;   //no dice in this cell
+        if (dHand.getColor() != roundTrack[round].get(indexStack).getColor()) return false; // color isn't the same
+        return player[indexPlayer].moveDiceFromWindowPatternToHand(line,column);
+    }
+
 }

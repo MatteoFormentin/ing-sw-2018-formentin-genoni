@@ -127,8 +127,7 @@ public abstract class ToolCard {
      * @param indexOfCardInGame index of the Card in the Game(0,1,2 only 3 card)
      */
     protected void saveUsed(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame){
-        gameBoard.getPlayer(indexPlayer).useFavorToken(this.getFavorToken());
+        gameBoard.getPlayer(indexPlayer).useToolCard(this.getFavorToken());
         gameBoard.getToolCard(indexOfCardInGame).incrementFavorToken();
-        gameBoard.getPlayer(indexPlayer).setHasUsedToolCard(true);
     }
 }

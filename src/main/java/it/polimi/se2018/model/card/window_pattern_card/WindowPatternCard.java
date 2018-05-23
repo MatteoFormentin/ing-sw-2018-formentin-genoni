@@ -38,84 +38,41 @@ public class WindowPatternCard {
         this.matrix = null;
         this.numberOfCellWithDice = 0;
     }
+    //************************************getter**********************************************
+    //************************************getter**********************************************
+    //************************************getter**********************************************
 
-
-    /**
-     * Get the name of the Window Pattern Card.
-     */
     public String getName() {
         return name;
     }
-
-    /**
-     * Set a name for the Window Pattern Card.
-     *
-     * @param name assigned to the Window Pattern Card
-     */
-    void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Get the difficulty of the Window Pattern Card.
-     */
     public int getDifficulty() {
         return difficulty;
     }
-
-    /**
-     * Set a difficulty for the Window Pattern Card.
-     *
-     * @param difficulty assigned to the Window Pattern Card
-     */
-    void setDifficulty(int difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    /**
-     * Get the matrix of the Window Pattern Card.
-     */
     public Cell[][] getMatrix() {
         return matrix;
     }
-
-    /**
-     * Set a matrix for the Window Pattern Card.
-     *
-     * @param matrix [4][5] assigned to the Window Pattern Card
-     */
-    void setMatrix(Cell[][] matrix) {
-        this.matrix = matrix;
-    }
-
-    /**
-     * Get a dice from specific cell.
-     *
-     * @param column from where you want to get the dice
-     * @param line   from where you want to get the dice
-     */
-    public Dice getDice(int line, int column) {
-        return matrix[line][column].getDice();
-    }
-
     public Cell getCell(int line, int column) {
         return matrix[line][column];
     }
-
     public int getNumberOfCellWithDice() {
         return numberOfCellWithDice;
     }
 
-    /**
-     * Remove a dice from specific cell.
-     *
-     * @param column from where you want to remove the dice
-     * @param line   from where you want to remove the dice
-     */
-    public void removeDice(int line, int column) {
-        matrix[line][column].setDice(null);
-        numberOfCellWithDice--;
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+    void setName(String name) {
+        this.name = name;
     }
+    void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
+    void setMatrix(Cell[][] matrix) {
+        this.matrix = matrix;
+    }
+    //************************************window's method**********************************************
+    //************************************window's method**********************************************
+    //************************************window's method**********************************************
 
     /**
      * Check if the dice is allowed based on the restriction imposed from the adjacent cell.
@@ -134,7 +91,7 @@ public class WindowPatternCard {
             if (line != 0) if (matrix[line - 1][column].getDice() != null) return true;
             if (line != 0 && column != 4) if (matrix[line - 1][column + 1].getDice() != null) return true;
             if (column != 0) if (matrix[line][column - 1].getDice() != null) return true;
-            //if(matrix[line][column].getDice()!=null) return false; occupided
+            //if(matrix[line][column].get()!=null) return false; occupided
             if (column != 4) if (matrix[line][column + 1].getDice() != null) return true;
             if (line != 3 && column != 0) if (matrix[line + 1][column - 1].getDice() != null) return true;
             if (line != 3) if (matrix[line + 1][column].getDice() != null) return true;
@@ -185,7 +142,7 @@ public class WindowPatternCard {
      * @return true if the insertDice is ok, false if can't insert the dice
      */
     public boolean insertDice(int line, int column, Dice dice) {
-        if (!(line >= 0 && line < 4 && column >= 0 && column < 5)) return false;
+        if (!(line >= 0 && line < matrix.length && column >= 0 && column < matrix[0].length)) return false;
         if (checkMatrixAdjacentRestriction(line, column) &&
                 checkMatrixAdjacentColorRestriction(line, column, dice.getColor()) &&
                 checkMatrixAdjacentValueRestriction(line, column, dice.getValue())){
@@ -231,5 +188,19 @@ public class WindowPatternCard {
         return true;
         //else there is an exception insertDice can throw the exception of the cell
 
+    }
+
+    /**
+     * remove a dice from the windowPattern
+     *
+     * @param line of the cell
+     * @param column of the cell
+     * @return the dice removed from the dell
+     */
+    public Dice removeDice(int line, int column) {
+        if (!(line >= 0 && line < matrix.length && column >= 0 && column < matrix[0].length)) return null;
+        Dice dice=matrix[line][column].removeDice();
+        numberOfCellWithDice--;
+        return dice;
     }
 }

@@ -1,42 +1,23 @@
 package it.polimi.se2018.model.dice;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
- * DiceStack is a comfortable class to handle a pile of dice
+ * DiceStack is a comfortable class that extends from LinkedList and have some utils
  *
  * @author Luca Genoni
  */
-public class DiceStack {
-    private  LinkedList<Dice> diceList;
-
-
-    /**
-     * constructor of a list of dice that can't create the dice.
-     */
-    public DiceStack(){
-        diceList = new LinkedList<>();
-    }
-
-
-    /**
-     * can add dice to the stack for Player and Tool Card
-     *
-     * @param Dice to add to the stack
-     */
-    public void addDice(Dice Dice) {
-        diceList.add(Dice);
-    }
-
+public class DiceStack extends LinkedList<Dice> {
     /**
      * return the dice for let them see the value or color, but the dice remain in the stack
      *
      * @param index of the dice
      * @return Dice or null if there isn't any dice in that index
      */
-    public Dice getDice(int index) {
-        if(index>=diceList.size()) return null;
-        return diceList.get(index);
+    public Dice get(int index) {
+        if(index>=this.size()) return null;
+        return this.get(index);
     }
 
     /**
@@ -46,9 +27,9 @@ public class DiceStack {
      * @return the dice removed or null if there isn't any dice in that index
      */
     public Dice takeDiceFromStack(int index){
-        if(index>=diceList.size()||index<0) return null;
-        Dice dice=diceList.get(index);
-        diceList.remove(index);
+        if(index>=this.size()||index<0) return null;
+        Dice dice=this.get(index);
+        this.remove(index);
         return dice;
     }
 
@@ -58,21 +39,12 @@ public class DiceStack {
      * @param index of the dice to select, if out of bound don't do anything
      */
     public void moveDiceToTheTop(int index){
-        if(index==0 || index>=diceList.size()) return;
-        diceList.addFirst(diceList.remove(index));
+        if(index==0 || index>=this.size()) return;
+        this.addFirst(this.remove(index));
     }
     public void reRollAllDiceInStack(){
-        for (Dice dice : diceList) {
+        for (Dice dice : this) {
             dice.rollDice();
         }
     }
-    /**
-     * show the size of the stack
-     *
-     * @return integer, the size
-     */
-    public int size(){
-        return diceList.size();
-    }
-
 }

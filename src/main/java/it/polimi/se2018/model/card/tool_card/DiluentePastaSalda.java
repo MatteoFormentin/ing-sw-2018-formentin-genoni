@@ -35,7 +35,7 @@ public class DiluentePastaSalda extends ToolCard {
         if(!preConditionOfDicePool(gameBoard, indexPlayer)) return false;
         saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
         // begin of the effect
-        if(!gameBoard.changeDiceInHandWithANewOne(indexPlayer))return false;
+        if(!gameBoard.changeDiceBetweenHandAndFactory(indexPlayer))return false;
         return true; //continue the effect (first you should notify the views) it's too cool if return a number/string and the controller parsing this information know how to handle the card
 
         // controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))
