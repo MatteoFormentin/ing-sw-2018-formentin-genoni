@@ -1,17 +1,21 @@
 package it.polimi.se2018.network;
 
 import it.polimi.se2018.model.Player;
-import it.polimi.se2018.network.server.game.Game;
 
 /**
- * Class that extends Player adding network communication.
+ * Class that extends Player adding a Network Level.
+ *
+ * @author DavideMammarella
  */
 public abstract class RemotePlayer extends Player {
 
     //Riferimento alla partita in cui è il giocatore
     private transient Game game;
 
-    //Costruttore astratto
+    //------------------------------------------------------------------------------------------------------------------
+    // CONSTRUCTOR
+    //------------------------------------------------------------------------------------------------------------------
+
     protected RemotePlayer(){}
 
     /**
@@ -30,9 +34,9 @@ public abstract class RemotePlayer extends Player {
         return this.game;
     }
 
-    //-----------------
-    //COMUNICAZIONI AL CLIENT
-    //-----------------
+    //------------------------------------------------------------------------------------------------------------------
+    // COMUNICAZIONI AL CLIENT
+    //------------------------------------------------------------------------------------------------------------------
 
     // ...
 }

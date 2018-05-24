@@ -1,46 +1,58 @@
 package it.polimi.se2018.network.server;
 
 /**
- * Class based on the Abstract Factory Design Pattern
+ * Abstract class based on the Abstract Factory Design Pattern.
  * (It provides an interface to create families of connected or dependent objects, so that there is no need for clients to specify the names of the concrete classes within their own code.)
- * Extending this class give the flexibility to connect the server to different technologies (RMI/Socket).
+ * This class give to the server the possibility to utilize different type of connection (RMI or Socket) without problem, like an Adapter.
+ * This class will be extended from RMI or Socket Server class.
  *
- * @author Davide Mammarella
+ * @author DavideMammarella
  */
 public abstract class AbstractServer {
 
-    /**
-     * Server Interface.
-     * Used to communicate with the server.
-     */
+    // Server Interface
+    // Used to communicate with the server
     private final ServerController serverController;
+
+    //------------------------------------------------------------------------------------------------------------------
+    // CONSTRUCTOR
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Server abstract constructor. (Socket or RMI)
      * Used to permit communication with server.
      *
-     * @param serverController server interface, used as controller for the server.
+     * @param serverController server interface, used as
+     *                         controller to communicate with the server.
      */
     public AbstractServer(ServerController serverController) {
         this.serverController = serverController;
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // GETTER
+    //------------------------------------------------------------------------------------------------------------------
+
     /**
-     * Return Server Controller in order to handle request for communication.
-     * The server controller will handle request based on the different type of technologies (Socket or RMI)
+     * Getter for Server Controller that will handle request based
+     * on the different type of technologies.
      *
+     * @return Server Controller in order to manage request for communication (RMI or Socket).
      */
     public ServerController getServerController() {
         return serverController;
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // CONNECTION STARTER
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Start every:
      * RMI Connection
      * Socket Connection
      *
-     * @param port number of port that will be used.
+     * @param port number of port that will be used on the connection.
      */
-    // MANCA EXCEPTION
-    public abstract void startServer(int port);
+    public abstract void startServer(int port) throws Exception;
 }

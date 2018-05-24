@@ -2,9 +2,9 @@ package it.polimi.se2018.network.server;
 /**
  * Interface based on the Abstract Factory Design Pattern.
  * This interface is used as server controller in AbstractServer.
- * Implemented by server in order to provide basic methods to RMI and SOCKET.
+ * Implemented by Server class in order to provide basic methods for RMI and Socket Server.
  *
- * @author Davide Mammarella
+ * @author DavideMammarella
  */
 public interface ServerController {
 
