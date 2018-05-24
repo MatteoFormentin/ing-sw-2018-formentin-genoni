@@ -15,6 +15,7 @@ public class DiceStack extends LinkedList<Dice> {
      * @param index of the dice
      * @return Dice or null if there isn't any dice in that index
      */
+    @Override
     public Dice get(int index) {
         if(index>=this.size()) return null;
         return this.get(index);

@@ -41,7 +41,7 @@ public class Server {
         this.players = new HashMap<>();
         this.gameList = new ArrayList<>();
 
-        this.socketServer = new SocketServer;
+        this.socketServer = new SocketServer();
         //this.rmiServer = new RMIServer;
     }
 
@@ -51,7 +51,7 @@ public class Server {
      * @param args parameters for the connection
      */
     // verifica EXCEPTION
-    public static void main(String[] args) {
+ /*   public static void main(String[] args) {
         int socketPort = SOCKET_PORT;
         //int rmiPort = RMI_PORT;
 
@@ -62,7 +62,7 @@ public class Server {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     /**
      * Start the server based on the technology selected from the client.
@@ -72,10 +72,9 @@ public class Server {
      */
     // int rmiPort
     // rmiServer.StartServer (rmiPort)
-    public void startServer(int socketPort){
+ /*   public void startServer(int socketPort){
         socketServer.startServer(socketPort);
-    }
-
+    }*/
     //-------------------------------------------
     // METODI DA INVOCARE SUL SERVER CONTROLLER
     //-------------------------------------------

@@ -1,6 +1,5 @@
 package it.polimi.se2018.view.cli;
 
-import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
@@ -22,16 +21,6 @@ class CliMessage {
     CliMessage() {
         System.setProperty("jansi.passthrough", "true");
         AnsiConsole.systemInstall();
-        showYourTurnScreen();
-        showWindowPatternCard(Deck.getDeck().drawWindowPatternCard());
-
-        showMainMenu();
-        /*splashScreen();
-        showWindowPatternCard(Deck.getDeck().drawWindowPatternCard());
-        showObjectivePublicCard(Deck.getDeck().drawObjectivePublicCard());
-        showObjectivePrivateCard(Deck.getDeck().drawObjectivePrivateCard());
-        showToolCard(Deck.getDeck().drawToolCard());
-        showDice(FactoryBalancedDice.getBalancedDiceFactory().createDice());*/
     }
 
     void splashScreen() {

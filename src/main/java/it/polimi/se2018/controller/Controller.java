@@ -27,7 +27,7 @@ public class Controller {
         }
 
         if (event instanceof EndTurn) {
-
+            gameBoard.nextPlayer(event.getPlayerId());
         }
     }
 
