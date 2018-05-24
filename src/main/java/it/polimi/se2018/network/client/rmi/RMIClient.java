@@ -76,8 +76,9 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      * @param username name used for the player.
      * @throws IOException
      */
-    public void Login(String username) throws Exception {
-        username = iRMIServer.Login(username, this);
+    @Override
+    public void login(String username) throws Exception {
+        username = iRMIServer.login(username, this);
     }
 
     /**

@@ -29,7 +29,7 @@ public interface IRMIServer extends Remote {
      * @throws IOException
      */
     // GESTISCI EXCEPTION
-    String Login(String username, IRMIClient iRMIClient) throws IOException;
+    String login(String username, IRMIClient iRMIClient) throws IOException;
 
     /**
      * Remote method used to send an object to the Server with request to set off an event.

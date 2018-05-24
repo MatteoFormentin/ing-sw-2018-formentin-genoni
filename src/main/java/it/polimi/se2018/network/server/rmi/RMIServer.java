@@ -78,7 +78,7 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     //MANCA JAVADOC
     //MANCA EXCEPTION
     @Override
-    public String Login(String username, IRMIClient iRMIClient){
+    public String login(String username, IRMIClient iRMIClient){
         return getServerController().login(username, new RMIPlayer(iRMIClient));
     }
 

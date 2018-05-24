@@ -70,7 +70,7 @@ public abstract class AbstractClient {
     // METHOD CALLED FROM CLIENT
     //------------------------------------------------------------------------------------------------------------------
 
-    public abstract void Login(String username) throws Exception;
+    public abstract void login(String username) throws Exception;
 
     public abstract void sendEvent(EventView eventView) throws Exception;
 }
