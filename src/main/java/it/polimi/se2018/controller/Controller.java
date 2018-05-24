@@ -23,15 +23,25 @@ public class Controller {
 
     public void update(EventView event) {
         if (event instanceof InsertDice) {
-
+            // gameBoard.
         }
 
         if (event instanceof EndTurn) {
             gameBoard.nextPlayer(event.getPlayerId());
+            //EventView packet = new EndTurn();
+        }
+
+        if (event instanceof UseToolCard) {
+
         }
     }
 
-    private void startNewGame(String[] roomPlayers, int indexFirstPlayer) {
+
+    public void init() {
+
+    }
+
+    public void startNewGame(String[] roomPlayers, int indexFirstPlayer) {
         //init game of card arrays & FactoryDice
         gameBoard = new GameBoard(roomPlayers, indexFirstPlayer); //crea il gioco fisico e prepara le 4 window pattern per ogni player
         model = new Model(gameBoard);

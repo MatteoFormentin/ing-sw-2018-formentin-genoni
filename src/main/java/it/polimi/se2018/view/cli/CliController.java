@@ -26,6 +26,7 @@ public class CliController implements UIInterface {
     public CliController() {
         cliMessage = new CliMessage();
         cliParser = new CliParser();
+
     }
 
     public void updatePlayer(Player player) {

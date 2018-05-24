@@ -16,6 +16,7 @@ public interface UIInterface {
     public void updateDicePool(DiceStack dicePool);
 
     public void updateRoundTrack(DiceStack[] roundTrack);
+
     public void updatePublicCard(ObjectivePublicCard[] publicCard);
 
     public void updateToolCard(ToolCard[] toolCard);

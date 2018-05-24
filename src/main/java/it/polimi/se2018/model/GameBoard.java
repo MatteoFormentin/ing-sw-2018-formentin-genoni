@@ -260,12 +260,11 @@ public class GameBoard {
         return true;
     }
 
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
+    //*****************************************Tool's method of Gameboard **********************************************
+    //*****************************************Tool's method of Gameboard **********************************************
+    //*****************************************Tool's method of Gameboard **********************************************
+    //*****************************************Tool's method of Gameboard **********************************************
+    //*****************************************Tool's method of Gameboard **********************************************
 
     /**
      * move for take the active dice in hand and change it with a new one
@@ -305,10 +304,90 @@ public class GameBoard {
         if (round >= currentround || round < 0) return false;//can't select a round that didn't exist
         if (indexStack >= roundTrack[round].size() || indexStack < 0) return false;// index wrong
         if (!player[indexPlayer].isHasUsedToolCard()) return false;//you didn't use a tool card
-        Dice dHand= player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice();
-        if(dHand==null) return false;   //no dice in this cell
+        Dice dHand = player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice();
+        if (dHand == null) return false;   //no dice in this cell
         if (dHand.getColor() != roundTrack[round].get(indexStack).getColor()) return false; // color isn't the same
-        return player[indexPlayer].moveDiceFromWindowPatternToHand(line,column);
+        return player[indexPlayer].moveDiceFromWindowPatternToHand(line, column);
     }
+
+    public boolean rollDicePool(int indexPlayer) {
+        if (indexPlayer != indexCurrentPlayer) return false;//not your turn
+        if (player[indexPlayer].isFirstTurn()) return false;
+        poolDice.reRollAllDiceInStack();
+        return true;
+
+    }
+//*****************************************reflessione dei metodi del player************************************************************************
+//*****************************************reflessione dei metodi del player************************************************************************
+//*****************************************reflessione dei metodi del player************************************************************************
+//*****************************************reflessione dei metodi del player************************************************************************
+//*****************************************reflessione dei metodi del player************************************************************************
+
+    public boolean addNormalDiceToHandFromDraftPool(int indexPlayer, int indexdiceDraftpool) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        if (indexdiceDraftpool >= poolDice.size() || indexdiceDraftpool < 0) return false;// index wrong
+        player[indexPlayer].addNormalDiceToHandFromDraftPool(poolDice.takeDiceFromStack(indexdiceDraftpool));
+        return true;
+    }
+
+
+    public boolean insertDice(int indexPlayer, int line, int column) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexPlayer].insertDice(line, column);//if true ok, false if something gone wrong
+    }
+
+    public boolean useToolCard(int indexPlayer, int cost) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexPlayer].useToolCard(cost);
+    }
+
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+
+    public boolean insertDice(int indexPlayer, int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction);
+    }
+
+    public boolean moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexPlayer].moveDiceFromWindowPatternToHand(line, column);
+    }
+
+    public boolean rollDiceInHand(int indexPlayer) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexPlayer].rollDiceInHand();
+    }
+
+    public boolean increaseOrDecrease(int indexPlayer, boolean increase) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexCurrentPlayer].increaseOrDecrease(increase);
+    }
+
+    public boolean oppositeFaceDice(int indexPlayer) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexCurrentPlayer].oppositeFaceDice();
+    }
+
+    public boolean endSpecialFirstTurn(int indexPlayer) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexCurrentPlayer].endSpecialFirstTurn();
+    }
+
+    //*********************************************Utils*************************************************
+    //*********************************************Utils*************************************************
+    //*********************************************Utils*************************************************
+    //*********************************************Utils*************************************************
+    //*********************************************Utils*************************************************
+
+    public boolean selectDiceInHand(int indexPlayer, int index) {
+        if (indexPlayer != indexCurrentPlayer) return false; //not your turn
+        return player[indexCurrentPlayer].selectDiceInHand(indexPlayer);
+    }
+
 
 }

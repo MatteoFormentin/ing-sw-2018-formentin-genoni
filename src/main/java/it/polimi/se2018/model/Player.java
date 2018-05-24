@@ -179,7 +179,7 @@ public class Player {
      * @param dice to add in hand
      * @return true if it's all ok, false otherwise
      */
-    public boolean addNewDiceFromDraftPool(Dice dice){
+    public boolean addNormalDiceToHandFromDraftPool(Dice dice) {
         if(hasDrawNewDice)return false;
         handDice.add(dice);
         hasDrawNewDice=true;
@@ -203,9 +203,10 @@ public class Player {
         return true;
     }
     /**
-     * method for use the tool card
+     * method for use the tool card. recieve the cost
      *
      * @param cost of the tool card
+     * @return true id it's all ok, false if player can't use toolcard
      */
     public boolean useToolCard(int cost) {
         if(hasUsedToolCard)return false;//already used
