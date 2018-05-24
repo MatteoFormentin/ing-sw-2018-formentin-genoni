@@ -30,9 +30,6 @@ public class Client implements ClientController{
 
     // MANCA TUTTO
     public Client(){
-        username = "zero";
-
-        // COSE (RISORSE, DADI, ECC) DEI GIOCATORI (AGGIORNATE ALL'ULTIMO AGGIORNAMENTO RICEVUTO DAL SERVER)
 
         this.turn = 0;
     }

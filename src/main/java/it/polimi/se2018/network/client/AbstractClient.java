@@ -1,5 +1,7 @@
 package it.polimi.se2018.network.client;
 
+import it.polimi.se2018.event.list_event.EventView;
+
 /**
  * Abstract class based on the Abstract Factory Design Pattern
  * (It provides an interface to create families of connected or dependent objects, so that there is no need for clients to specify the names of the concrete classes within their own code.)
@@ -64,6 +66,11 @@ public abstract class AbstractClient {
     // public abstract void ...(...);
     //------------------------------------------------------------------------------------------------------------------
 
-    // esempio
-    public abstract void connect();
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM CLIENT
+    //------------------------------------------------------------------------------------------------------------------
+
+    public abstract void Login(String username) throws Exception;
+
+    public abstract void sendEvent(EventView eventView) throws Exception;
 }

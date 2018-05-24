@@ -10,4 +10,6 @@ package it.polimi.se2018.network.client;
 public interface ClientController {
     // metodi invocati dal server ogni volta che l'azione richiesta dal player viene accettata
     // metodi che si scatenano quando il server autorizza un player
+
+
 }

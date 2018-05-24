@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.server;
 
-import it.polimi.se2018.network.Game;
+import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
@@ -28,7 +28,7 @@ public class Server implements ServerController{
     private RMIServer rmiServer;
 
     // Lista Partite
-    private ArrayList<Game> gameList;
+    private ArrayList<Controller> gameList;
     //Giocatori connessi al server <username, RemotePlayer>
     private HashMap<String,RemotePlayer> players;
 
@@ -72,7 +72,8 @@ public class Server implements ServerController{
     }
 
     /**
-     * Start the server on listen based on the technology selected from the client (RMI or Socket).
+     * Put the server on listen.
+     * The server will connect only with the technology selected from client.
      *
      * @param rmiPort port used on RMI connection
      */
@@ -83,12 +84,40 @@ public class Server implements ServerController{
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // METODI DA INVOCARE SUL SERVER CONTROLLER (RMIServer)
+    // METODI DA INVOCARE SUL SERVER CONTROLLER (RMI o Socket)
     //------------------------------------------------------------------------------------------------------------------
 
-    // LOGIN/AGGIUNTA GIOCATORE TRAMITE USERNAME (RemotePlayer)
+    /**
+     * Log the user to the Server with the username.
+     *  @param username name used for the player.
+     * @param remotePlayer reference to RMI or Socket Player
+     */
+    //CONSIDERA IL CASO DEL RI LOGIN ELSE IF
+    @Override
+    public String login(String username, RemotePlayer remotePlayer) {
+        synchronized (PLAYERS_MUTEX){
+            if(!players.containsKey(username)){
+                players.put(username, remotePlayer);
+                remotePlayer.setNickname(username);
+                this.joinRoom(remotePlayer);
+            }
+        }
+        return username;
+    }
 
-    // getPlayerByUsername (RemotePlayer)
+    @Override
+    public RemotePlayer getPlayer(String username) {
+        return players.get(username);
+    }
 
-    // CREAZIONE PARTITA
+
+    /**
+     * Add the player to the room.
+     *
+     * @param remotePlayer
+     */
+    public void joinRoom(RemotePlayer remotePlayer){
+        //
+    }
+
 }

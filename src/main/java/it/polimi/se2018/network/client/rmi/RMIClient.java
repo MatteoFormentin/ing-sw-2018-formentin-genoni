@@ -1,9 +1,11 @@
 package it.polimi.se2018.network.client.rmi;
 
+import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.network.server.rmi.IRMIServer;
 
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -19,7 +21,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class RMIClient extends AbstractClient implements IRMIClient {
 
-    //Interfaccia server dell'RMI, viene utilizzata per permettere l'invocazione remota di metodi
+    //Interfaccia client dell'RMI, viene utilizzata per permettere l'invocazione remota di metodi tramite server
     private IRMIServer iRMIServer;
 
     // Username del giocatore
@@ -46,17 +48,16 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Estabilish a connection with the RMI Registry
+     * Estabilish a connection with the RMI Registry (on the server).
      */
     // SISTEMA EXCEPTION
-    @Override
-    public void connect() {
+    public void connect(){
         Registry registry = null;
-
         try {
             registry = LocateRegistry.getRegistry(getIpAddress(), getPort());
             iRMIServer = (IRMIServer) registry.lookup("IRMIServer");
             UnicastRemoteObject.exportObject(this, 0);
+            System.out.println("RMI Client Connected");
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
@@ -65,8 +66,32 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // CHIAMATE DAL SERVER (METODI INVOCATI DAL SERVER)
-    // public void NOTIFICA(...)
+    // METHOD CALLED FROM CLIENT - CALL TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Log the user to the RMI Server with the username.
+     * The Username will be added to the map.
+     *
+     * @param username name used for the player.
+     * @throws IOException
+     */
+    public void Login(String username) throws Exception {
+        username = iRMIServer.Login(username, this);
+    }
+
+    /**
+     * Send to the Server the request to set off an event.
+     *
+     * @param eventView object that will use the server to set off the event associated.
+     */
+    // manca exception
+    public void sendEvent(EventView eventView) throws Exception{
+        iRMIServer.sendEvent(this.username,eventView);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - CALL TO THE CLIENT
+    // public void NOTIFICA(...)
+    //------------------------------------------------------------------------------------------------------------------
 }

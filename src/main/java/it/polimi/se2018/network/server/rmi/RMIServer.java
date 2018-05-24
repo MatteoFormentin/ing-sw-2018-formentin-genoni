@@ -1,5 +1,8 @@
 package it.polimi.se2018.network.server.rmi;
 
+import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.network.RemotePlayer;
+import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
 
@@ -17,7 +20,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class RMIServer extends AbstractServer implements IRMIServer {
 
-    //Cnstructor
+    //Constructor
     public RMIServer(ServerController serverController){
         super(serverController);
     }
@@ -52,6 +55,43 @@ public class RMIServer extends AbstractServer implements IRMIServer {
         }
     }
 
-    // METODI INVOCATI DAL CLIENT (quelli di IRMIServer)
+    /**
+     * Getter for RemotePlayer.
+     *
+     * @param username name of the player.
+     * @return RemotePlayer associated to the username.
+     */
+    private RemotePlayer getPlayer(String username){
+        return getServerController().getPlayer(username);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM CLIENT - CALL TO THE SERVER // RMI
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Remote method used to login.
+     * @param username name of the player.
+     * @param iRMIClient client associated to the player.
+     * @return
+     */
+    //MANCA JAVADOC
+    //MANCA EXCEPTION
+    @Override
+    public String Login(String username, IRMIClient iRMIClient){
+        return getServerController().login(username, new RMIPlayer(iRMIClient));
+    }
+
+    /**
+     * Remote method used to send to the Server a request to set off an event.
+     *
+     * @param username name of the player.
+     * @param eventView object that will use the server to set off the event associated.
+     */
+    @Override
+    public void sendEvent(String username, EventView eventView){
+        RemotePlayer remotePlayer=getPlayer(username);
+        //remotePlayer.getGame().performEvent(remotePlayer, eventView);
+    }
 
 }

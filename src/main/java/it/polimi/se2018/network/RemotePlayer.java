@@ -1,5 +1,6 @@
 package it.polimi.se2018.network;
 
+import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.model.Player;
 
 /**
@@ -10,7 +11,7 @@ import it.polimi.se2018.model.Player;
 public abstract class RemotePlayer extends Player {
 
     //Riferimento alla partita in cui è il giocatore
-    private transient Game game;
+    private transient Controller game;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -22,7 +23,7 @@ public abstract class RemotePlayer extends Player {
      * Create the reference on what game the player is in.
      * @param game game where the players is in.
      */
-    public void setGame(Game game){
+    public void setGame(Controller game){
         this.game=game;
     }
 
@@ -30,12 +31,12 @@ public abstract class RemotePlayer extends Player {
      * Return the reference on what game the player is in.
      * @return the game of the player, null otherwise
      */
-    public Game getGame(){
+    public Controller getGame(){
         return this.game;
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // COMUNICAZIONI AL CLIENT
+    // COMUNICAZIONI AL CLIENT - NOTIFY
     //------------------------------------------------------------------------------------------------------------------
 
     // ...
