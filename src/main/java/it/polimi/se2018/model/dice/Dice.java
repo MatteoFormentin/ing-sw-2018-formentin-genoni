@@ -89,5 +89,16 @@ public class Dice {
         return opposite;
     }
 
+    public boolean increaseOrDecrease(boolean increase){
+        if(increase){
+            if (value==6) return false;
+            value ++;
+        }else{//decrease
+            if(value==1) return false;
+            value--;
+        }
+        return true;
+    }
+
 
 }

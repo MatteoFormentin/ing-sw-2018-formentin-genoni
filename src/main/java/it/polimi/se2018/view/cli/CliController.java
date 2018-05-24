@@ -30,7 +30,6 @@ public class CliController implements UIInterface {
 
     public void updatePlayer(Player player) {
         this.player = player;
-
     }
 
     public void updateDicePool(DiceStack dicePool) {
@@ -53,6 +52,9 @@ public class CliController implements UIInterface {
         this.opponentPlayers = opponentPlayers;
     }
 
+    public void showMessage(EventView eventView) {
+
+    }
 
     private void insertPlayerData() {
         cliMessage.showInsertNickname();

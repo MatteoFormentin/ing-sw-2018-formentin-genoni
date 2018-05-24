@@ -1,16 +1,12 @@
 package it.polimi.se2018.view.cli;
 
-import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
-import it.polimi.se2018.model.dice.DiceColor;
-import it.polimi.se2018.model.dice.BalancedFactoryDice;
 import it.polimi.se2018.model.dice.DiceStack;
-import org.fusesource.jansi.*;
 import org.fusesource.jansi.AnsiConsole;
 
 import static org.fusesource.jansi.Ansi.*;
@@ -25,16 +21,6 @@ class CliMessage {
     CliMessage() {
         System.setProperty("jansi.passthrough", "true");
         AnsiConsole.systemInstall();
-        showYourTurnScreen();
-        showWindowPatternCard(Deck.getDeck().drawWindowPatternCard());
-
-        showMainMenu();
-        /*splashScreen();
-        showWindowPatternCard(Deck.getDeck().drawWindowPatternCard());
-        showObjectivePublicCard(Deck.getDeck().drawObjectivePublicCard());
-        showObjectivePrivateCard(Deck.getDeck().drawObjectivePrivateCard());
-        showToolCard(Deck.getDeck().drawToolCard());
-        showDice(FactoryBalancedDice.getBalancedDiceFactory().createDice());*/
     }
 
     void splashScreen() {
@@ -183,7 +169,7 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
         for (int i = 0; i < diceStack.size(); i++) {
             AnsiConsole.out.print(ansi().fg(RED).a(i + ": "));
-            this.showDice(diceStack.getDice(i));
+            this.showDice(diceStack.get(i));
         }
         AnsiConsole.out.println();
     }

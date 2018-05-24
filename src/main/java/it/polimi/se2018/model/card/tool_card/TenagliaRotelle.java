@@ -27,20 +27,20 @@ public class TenagliaRotelle extends ToolCard {
      * card check
      *
      * @param gameBoard         where the card is used
-     * @param idPlayer          of the player who use the card
+     * @param indexPlayer          of the player who use the card
      * @param indexOfCardInGame 0,1,2 needed to change the Flag true/false first USe ?????????????????? maybe better in GameBoard......
      * @return true if the toolcard has been activated, false otherwise
      */
-    public boolean effect(GameBoard gameBoard, int idPlayer, int indexOfCardInGame) {
-        if(!noPreCondition(gameBoard, idPlayer)) return false;
-        if (gameBoard.getPlayer(idPlayer).isSecondTurn()) return false; // you can't use this in second turn ಠ_ಠ troller
-        if (gameBoard.getPlayer(idPlayer).isHasDrawNewDice() &&!gameBoard.getPlayer(idPlayer).isHasPlaceANewDice()) return false;
+    public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
+        if(!noPreCondition(gameBoard, indexPlayer)) return false;
+        if (!gameBoard.getPlayer(indexPlayer).isFirstTurn()) return false; // you can't use this in second turn ಠ_ಠ troller
+        if (gameBoard.getPlayer(indexPlayer).isHasDrawNewDice() &&!gameBoard.getPlayer(indexPlayer).isHasPlaceANewDice()) return false;
         // ಠ_ಠ troller place your dice in hand or should i put it in Draftpool??? :D muahmuahmuahmuahmuagmuag
-        gameBoard.getPlayer(idPlayer).setSecondTurn(true);// this is your second turn
-        gameBoard.getPlayer(idPlayer).setHasDrawNewDice(false);
-        gameBoard.getPlayer(idPlayer).setHasUsedToolCard(true); // it's a special second turn ಠ_ಠ
-        gameBoard.getPlayer(idPlayer).setHasPlaceANewDice(false);
-        saveUsed(gameBoard, idPlayer, indexOfCardInGame);
+        gameBoard.getPlayer(indexPlayer).setFirstTurn(true);// this is your second turn so next time you play you play you first turn
+        gameBoard.getPlayer(indexPlayer).setHasDrawNewDice(false);
+        gameBoard.getPlayer(indexPlayer).setHasUsedToolCard(true); // it's a special second turn ಠ_ಠ
+        gameBoard.getPlayer(indexPlayer).setHasPlaceANewDice(false);
+        saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
         return true; //no immediate effect it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
 }

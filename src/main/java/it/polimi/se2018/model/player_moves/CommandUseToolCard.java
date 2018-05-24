@@ -1,10 +1,9 @@
-package it.polimi.se2018.event.player_moves;
+package it.polimi.se2018.model.player_moves;
 
 import it.polimi.se2018.event.list_event.EventView;
-
 import it.polimi.se2018.model.GameBoard;
 
-public class CommandDiceFromDraftPool implements ICommandPlayerMove {
+public class CommandUseToolCard implements ICommandPlayerMove {
     public boolean canPerform(GameBoard gameBoard, EventView event) {
         return false;
     }

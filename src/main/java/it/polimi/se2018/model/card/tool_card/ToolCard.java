@@ -91,12 +91,12 @@ public abstract class ToolCard {
      *
      * @author Luca Genoni
      * @param gameBoard the gameboard that store the data
-     * @param idPlayer the id of the player who want use the card
+     * @param indexPlayer the id of the player who want use the card
      * @return true if the player can use the card
      */
-    protected boolean noPreCondition(GameBoard gameBoard, int idPlayer){
-        if(gameBoard.getPlayer(idPlayer).isHasUsedToolCard()) return false; //tool card already used
-        if(gameBoard.getPlayer(idPlayer).getFavorToken()<this.getFavorToken()) return false; // not enough token
+    protected boolean noPreCondition(GameBoard gameBoard, int indexPlayer){
+        if(gameBoard.getPlayer(indexPlayer).isHasUsedToolCard()) return false; //tool card already used
+        if(gameBoard.getPlayer(indexPlayer).getFavorToken()<this.getFavorToken()) return false; // not enough token
         return true;
     }
 
@@ -105,15 +105,15 @@ public abstract class ToolCard {
      *
      * @author Luca Genoni
      * @param gameBoard the gameboard that store the data
-     * @param idPlayer the id of the player who want use the card
+     * @param indexPlayer the id of the player who want use the card
      * @return true if the player can use the card
      */
-    protected boolean preConditionOfDicePool(GameBoard gameBoard, int idPlayer){
+    protected boolean preConditionOfDicePool(GameBoard gameBoard, int indexPlayer){
         //need to activate the tool
-        if(gameBoard.getPlayer(idPlayer).isHasUsedToolCard()) return false; //tool card already used
-        if(gameBoard.getPlayer(idPlayer).getFavorToken()<this.getFavorToken()) return false; // not enough token
-        if (!gameBoard.getPlayer(idPlayer).isHasDrawNewDice()) return false; // don't have the a Dice in hand
-        if (gameBoard.getPlayer(idPlayer).isHasPlaceANewDice()) return false; //dice already placed
+        if(gameBoard.getPlayer(indexPlayer).isHasUsedToolCard()) return false; //tool card already used
+        if(gameBoard.getPlayer(indexPlayer).getFavorToken()<this.getFavorToken()) return false; // not enough token
+        if (!gameBoard.getPlayer(indexPlayer).isHasDrawNewDice()) return false; // don't have the a Dice in hand
+        if (gameBoard.getPlayer(indexPlayer).isHasPlaceANewDice()) return false; //dice already placed
         //the tool can be used
 
         return true;
@@ -123,12 +123,11 @@ public abstract class ToolCard {
      *
      * @author Luca Genoni
      * @param gameBoard the gameboard that store the data
-     * @param idPlayer the id of the player who want use the card
+     * @param indexPlayer the id of the player who want use the card
      * @param indexOfCardInGame index of the Card in the Game(0,1,2 only 3 card)
      */
-    protected void saveUsed(GameBoard gameBoard, int idPlayer, int indexOfCardInGame){
-        gameBoard.getPlayer(idPlayer).useFavorToken(this.getFavorToken());
+    protected void saveUsed(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame){
+        gameBoard.getPlayer(indexPlayer).useToolCard(this.getFavorToken());
         gameBoard.getToolCard(indexOfCardInGame).incrementFavorToken();
-        gameBoard.getPlayer(idPlayer).setHasUsedToolCard(true);
     }
 }

@@ -12,24 +12,14 @@ import java.io.Serializable;
  *
  * @author Luca Genoni
  */
-public abstract class EventView implements Serializable {
-    private String nicknamPlayer;
-    private Model model;
+public abstract class EventView {
+    private int playerId;
 
-    public void setNicknamPlayer(String nicknamPlayer) {
-        this.nicknamPlayer = nicknamPlayer;
+    public int getPlayerId() {
+        return playerId;
     }
 
-    public void setModel(Model model) {
-        this.model = model;
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
-
-    public Model getModel() {
-        return model;
-    }
-
-    public String getNicknamPlayer() {
-        return nicknamPlayer;
-    }
-
 }

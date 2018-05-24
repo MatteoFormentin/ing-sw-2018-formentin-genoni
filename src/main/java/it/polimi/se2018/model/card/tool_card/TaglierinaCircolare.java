@@ -25,13 +25,13 @@ public class TaglierinaCircolare extends ToolCard {
      * card check
      *
      * @param gameBoard         where the card is used
-     * @param idPlayer          of the player who use the card
+     * @param indexPlayer          of the player who use the card
      * @param indexOfCardInGame 0,1,2 needed to change the Flag true/false first USe ?????????????????? maybe better in GameBoard......
      * @return true if the toolcard has been activated, false otherwise
      */
-    public boolean effect(GameBoard gameBoard, int idPlayer, int indexOfCardInGame) {
-        if(!preConditionOfDicePool(gameBoard, idPlayer)) return false;
-        saveUsed(gameBoard, idPlayer, indexOfCardInGame);
+    public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
+        if(!preConditionOfDicePool(gameBoard, indexPlayer)) return false;
+        saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
         return true; //no immediate effect it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
 }

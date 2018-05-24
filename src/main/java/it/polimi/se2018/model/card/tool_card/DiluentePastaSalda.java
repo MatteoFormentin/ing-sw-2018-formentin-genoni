@@ -27,16 +27,15 @@ public class DiluentePastaSalda extends ToolCard {
      * card check
      *
      * @param gameBoard         where the card is used
-     * @param idPlayer          of the player who use the card
+     * @param indexPlayer          of the player who use the card
      * @param indexOfCardInGame 0,1,2 needed to change the Flag true/false first USe ?????????????????? maybe better in GameBoard......
      * @return true if the toolcard has been activated, false otherwise
      */
-    public boolean effect(GameBoard gameBoard, int idPlayer, int indexOfCardInGame) {
-        if(!preConditionOfDicePool(gameBoard, idPlayer)) return false;
-        saveUsed(gameBoard, idPlayer, indexOfCardInGame);
+    public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
+        if(!preConditionOfDicePool(gameBoard, indexPlayer)) return false;
+        saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
         // begin of the effect
-        gameBoard.getPlayer(idPlayer).removeDiceFromHand(0);
-        gameBoard.getPlayer(idPlayer).addDiceToHandFromFactory();
+        if(!gameBoard.changeDiceBetweenHandAndFactory(indexPlayer))return false;
         return true; //continue the effect (first you should notify the views) it's too cool if return a number/string and the controller parsing this information know how to handle the card
 
         // controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))

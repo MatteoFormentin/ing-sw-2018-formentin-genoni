@@ -14,55 +14,71 @@ public class Cell {
     private Dice dice;
     private int valueRestriction = 0;
     private DiceColor colorRestriction;
-
+    //************************************getter**********************************************
+    //************************************getter**********************************************
+    //************************************getter**********************************************
 
     /**
-     * Get the value restriction of the cell.
+     * if the value is 0 you can place a dice with any value, otherwise you must place a dice with the same value
+     *
+     * @return the required value to allow the insertion of the dice
      */
     public int getValueRestriction() {
         return valueRestriction;
     }
 
     /**
-     * Set the value restriction of the cell.
+     * if the color is null you can place a dice with any color, otherwise you must place a dice with the same color
      *
-     * @param valueRestriction restriction assigned to the cell
-     */
-    public void setValueRestriction(int valueRestriction) {
-        this.valueRestriction = valueRestriction;
-    }
-
-    /**
-     * Get the color restriction of the cell.
+     * @return the required color to allow the insertion of the dice
      */
     public DiceColor getColorRestriction() {
         return colorRestriction;
     }
 
     /**
-     * Set the color restriction of the cell.
+     * normal get for the dice in the cell, null if there is no dice
      *
-     * @param colorRestriction restriction assigned to the cell
+     * @return the dice in this cell
+     */
+    public Dice getDice() {
+        return dice;
+    }
+
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+
+    /**
+     * for setting a restriction of value
+     *
+     * @param valueRestriction a dice for being inserted here need to have this value
+     */
+    public void setValueRestriction(int valueRestriction) {
+        this.valueRestriction = valueRestriction;
+    }
+
+    /**
+     * for setting a restriction of color
+     *
+     * @param colorRestriction a dice for being inserted here need to have this color
      */
     public void setColorRestriction(DiceColor colorRestriction) {
         this.colorRestriction = colorRestriction;
     }
 
     /**
-     * Get the dice from the cell.
-     */
-    public Dice getDice() {
-        return dice;
-    }
-
-    /**
-     * Set the dice on the cell.
+     * for setting a dice (used for the load of a game)
      *
-     * @param dice that i want to set
+     * @param dice to set in this cell
      */
     public void setDice(Dice dice) {
         this.dice = dice;
     }
+
+    //************************************window's method**********************************************
+    //************************************window's method**********************************************
+    //************************************window's method**********************************************
 
     /**
      * Check if the dice is allowed based on the color restriction of the cell.
@@ -71,8 +87,7 @@ public class Cell {
      * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     private boolean checkColorRestriction(DiceColor color) {
-        if (colorRestriction == null) return true;
-        return colorRestriction == color;
+        return colorRestriction == null || colorRestriction == color;
     }
 
     /**
@@ -81,8 +96,7 @@ public class Cell {
      * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     private boolean checkValueRestriction(int value) {
-        if (valueRestriction == 0) return true;
-        return valueRestriction == value;
+        return valueRestriction == 0 || valueRestriction == value;
     }
 
     /**
@@ -112,5 +126,16 @@ public class Cell {
         if (valueRestriction) if(!checkValueRestriction(dice.getValue())) return false;//value restriction
         this.dice = dice;
         return true;
+    }
+
+    /**
+     * remove the dice from the Cell
+     *
+     * @return the dice removed
+     */
+    public Dice removeDice(){
+        Dice dice= this.dice;
+        this.dice=null;
+        return dice;
     }
 }

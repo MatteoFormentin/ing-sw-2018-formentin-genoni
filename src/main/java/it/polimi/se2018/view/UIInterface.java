@@ -1,5 +1,6 @@
 package it.polimi.se2018.view;
 
+import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
@@ -20,6 +21,8 @@ public interface UIInterface {
     public void updateToolCard(ToolCard[] toolCard);
 
     public void updateOpponentPlayer(Player[] opponentPlayers);
+
+    public void showMessage(EventView eventView);
 
     //From Controller
 }
