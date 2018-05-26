@@ -2,16 +2,19 @@ package it.polimi.se2018.network;
 
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.model.Player;
+import javafx.beans.Observable;
 
 /**
  * Class that extends Player adding a Network Level.
  *
  * @author DavideMammarella
  */
-public abstract class RemotePlayer extends Player {
+public abstract class RemotePlayer extends Player implements Observable {
 
     //Riferimento alla partita in cui è il giocatore
     private transient Controller game;
+
+    private String nickname;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR

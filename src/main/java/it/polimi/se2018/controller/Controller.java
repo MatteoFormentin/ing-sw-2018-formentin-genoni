@@ -1,25 +1,30 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.event.list_event.*;
+import it.polimi.se2018.event.list_event.EndTurn;
+import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.event.list_event.InsertDice;
+import it.polimi.se2018.event.list_event.UseToolCard;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Model;
-import it.polimi.se2018.model.Player;
-import it.polimi.se2018.model.card.Deck;
-import it.polimi.se2018.model.dice.BalancedFactoryDice;
-import it.polimi.se2018.model.dice.DiceStack;
 
-import javax.swing.text.View;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Observer;
 
-public class Controller {
+/**
+ *
+ * @author DavideMammarella
+ */
+
+public class Controller extends Model{
     private GameBoard gameBoard;
     private Model model; //the class that can call the view for
     private List<Observable> view;
     private int playerok;
     private boolean waitResponse;
+
+    public Controller(GameBoard gameboard) {
+        super(gameboard);
+    }
 
     public void update(EventView event) {
         if (event instanceof InsertDice) {

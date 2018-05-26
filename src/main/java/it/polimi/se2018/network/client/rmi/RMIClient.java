@@ -5,7 +5,6 @@ import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.network.server.rmi.IRMIServer;
 
-import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -25,7 +24,7 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     private IRMIServer iRMIServer;
 
     // Username del giocatore
-    private String username;
+    private String nickname;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -36,11 +35,11 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      *
      * @param clientController client interface, used as
      *                         controller to communicate with the client.
-     * @param ipAddress server address.
+     * @param serverIpAddress server address.
      * @param port port used from server to communicate.
      */
-    public RMIClient(ClientController clientController, String ipAddress, int port){
-        super(clientController, ipAddress, port);
+    public RMIClient(ClientController clientController, String serverIpAddress, int port){
+        super(clientController, serverIpAddress, port);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -51,13 +50,13 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      * Estabilish a connection with the RMI Registry (on the server).
      */
     // SISTEMA EXCEPTION
-    public void connect(){
+    public void connectToServer(){
         Registry registry = null;
         try {
-            registry = LocateRegistry.getRegistry(getIpAddress(), getPort());
+            registry = LocateRegistry.getRegistry(getServerIpAddress(), getServerPort());
             iRMIServer = (IRMIServer) registry.lookup("IRMIServer");
             UnicastRemoteObject.exportObject(this, 0);
-            System.out.println("RMI Client Connected");
+            System.out.println("RMI Client Connected!");
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
@@ -73,12 +72,17 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      * Log the user to the RMI Server with the username.
      * The Username will be added to the map.
      *
-     * @param username name used for the player.
-     * @throws IOException
+     * @param nickname name used for the player.
+     * @throws RemoteException
      */
     @Override
-    public void login(String username) throws Exception {
-        username = iRMIServer.login(username, this);
+    public void login(String nickname) throws RemoteException {
+        try {
+            iRMIServer.login(nickname, this);
+        } catch (RemoteException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -88,7 +92,7 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      */
     // manca exception
     public void sendEvent(EventView eventView) throws Exception{
-        iRMIServer.sendEvent(this.username,eventView);
+        iRMIServer.sendEvent(this.nickname,eventView);
     }
 
     //------------------------------------------------------------------------------------------------------------------

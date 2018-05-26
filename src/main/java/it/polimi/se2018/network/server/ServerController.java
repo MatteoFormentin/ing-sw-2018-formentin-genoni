@@ -13,19 +13,19 @@ public interface ServerController {
 
     /**
      * Log the user to the Server with the username.
-     *  @param username name used for the player.
+     * @param nickname name used for the player.
      * @param remotePlayer reference to RMI or Socket Player
      */
     // manca exception
-    String login (String username, RemotePlayer remotePlayer);
+    void login (String nickname, RemotePlayer remotePlayer);
 
     /**
      * Getter for RemotePlayer.
      *
-     * @param username name used for the player.
+     * @param nickname name used for the player.
      * @return RemotePlayer associated to the username.
      */
-    RemotePlayer getPlayer(String username);
+    RemotePlayer getPlayer(String nickname);
 
     // GAME CREATOR
 

@@ -2,6 +2,7 @@ package it.polimi.se2018.network.server.rmi;
 
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
+import javafx.beans.InvalidationListener;
 
 /**
  * Class that define the RMI Player.
@@ -10,10 +11,21 @@ import it.polimi.se2018.network.client.rmi.IRMIClient;
  */
 public class RMIPlayer extends RemotePlayer {
 
+    // Interfaccia del Client
     private transient IRMIClient iRMIClient;
 
     public RMIPlayer(IRMIClient iRMIClient) {
         this.iRMIClient=iRMIClient;
+    }
+
+    @Override
+    public void addListener(InvalidationListener listener) {
+
+    }
+
+    @Override
+    public void removeListener(InvalidationListener listener) {
+
     }
 
     //AGGIORNAMENTI (NOTIFY) DA INVIARE AL GIOCATORE (CLIENT)

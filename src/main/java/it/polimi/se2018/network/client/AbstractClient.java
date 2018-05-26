@@ -6,7 +6,7 @@ import it.polimi.se2018.event.list_event.EventView;
  * Abstract class based on the Abstract Factory Design Pattern
  * (It provides an interface to create families of connected or dependent objects, so that there is no need for clients to specify the names of the concrete classes within their own code.)
  * This class give to the client the possibility to utilize different type of connection (RMI or Socket) without problem, like an Adapter.
- * This class will be extended from RMI or Socket Cerver class.
+ * This class will be extended from RMI or Socket Server class.
  *
  * @author DavideMammarella
  */
@@ -16,10 +16,10 @@ public abstract class AbstractClient {
     private final ClientController clientController;
 
     //Server Address.
-    private final String ipAddress;
+    private final String serverIpAddress;
 
     //Port used from server to communicate.
-    private final int port;
+    private final int serverPort;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -30,13 +30,13 @@ public abstract class AbstractClient {
      *
      * @param clientController client interface, used as
      *                         controller to communicate with the client.
-     * @param ipAddress server address.
-     * @param port port used from server to communicate.
+     * @param serverIpAddress server address.
+     * @param serverPort port used from server to communicate.
      */
-    public AbstractClient(ClientController clientController, String ipAddress, int port) {
+    public AbstractClient(ClientController clientController, String serverIpAddress, int serverPort) {
         this.clientController = clientController;
-        this.ipAddress = ipAddress;
-        this.port = port;
+        this.serverIpAddress = serverIpAddress;
+        this.serverPort = serverPort;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -48,8 +48,8 @@ public abstract class AbstractClient {
      *
      * @return server address.
      */
-    public String getIpAddress(){
-        return ipAddress;
+    public String getServerIpAddress(){
+        return serverIpAddress;
     }
 
     /**
@@ -57,20 +57,26 @@ public abstract class AbstractClient {
      *
      * @return server port used to communicate.
      */
-    public int getPort(){
-        return port;
+    public int getServerPort(){
+        return serverPort;
+    }
+
+    /**
+     * Getter for the client controller.
+     *
+     * @return client controller used to manage the communication.
+     */
+    public ClientController getClientController(){
+        return clientController;
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // RICHIESTE DA INVIARE AL SERVER PER SVOLGERE UN'AZIONE DI GIOCO
-    // public abstract void ...(...);
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM CLIENT
-    //------------------------------------------------------------------------------------------------------------------
+    public abstract void connectToServer();
 
-    public abstract void login(String username) throws Exception;
+    public abstract void login(String nickname) throws Exception;
 
     public abstract void sendEvent(EventView eventView) throws Exception;
 }

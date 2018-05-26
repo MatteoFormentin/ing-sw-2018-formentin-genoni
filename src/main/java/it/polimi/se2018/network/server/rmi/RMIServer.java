@@ -6,6 +6,7 @@ import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
 
+import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -26,13 +27,25 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     }
 
     //RMI Server starter
+
+    /**
+     * Starter for RMI Server.
+     *
+     * @param port number of port that will be used on the connection.
+     * @throws Exception
+     */
     @Override
     public void startServer(int port) throws Exception {
         Registry registry = createOrLoadRegistry(port);
         try {
             registry.bind("IRMIServer", this);
             UnicastRemoteObject.exportObject(this, port);
+            System.out.println("Server running at "+port+" port...");
         } catch (RemoteException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        } catch (AlreadyBoundException e){
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -58,11 +71,11 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     /**
      * Getter for RemotePlayer.
      *
-     * @param username name of the player.
+     * @param nickname name of the player.
      * @return RemotePlayer associated to the username.
      */
-    private RemotePlayer getPlayer(String username){
-        return getServerController().getPlayer(username);
+    private RemotePlayer getPlayer(String nickname){
+        return getServerController().getPlayer(nickname);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -71,26 +84,32 @@ public class RMIServer extends AbstractServer implements IRMIServer {
 
     /**
      * Remote method used to login.
-     * @param username name of the player.
+     * @param nickname name of the player.
      * @param iRMIClient client associated to the player.
      * @return
      */
     //MANCA JAVADOC
     //MANCA EXCEPTION
     @Override
-    public String login(String username, IRMIClient iRMIClient){
-        return getServerController().login(username, new RMIPlayer(iRMIClient));
+    public boolean login(String nickname, IRMIClient iRMIClient){
+        try{
+            getServerController().login(nickname, new RMIPlayer(iRMIClient));
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return true;
     }
 
     /**
      * Remote method used to send to the Server a request to set off an event.
      *
-     * @param username name of the player.
+     * @param nickname name of the player.
      * @param eventView object that will use the server to set off the event associated.
      */
     @Override
-    public void sendEvent(String username, EventView eventView){
-        RemotePlayer remotePlayer=getPlayer(username);
+    public void sendEvent(String nickname, EventView eventView){
+        RemotePlayer remotePlayer=getPlayer(nickname);
         //remotePlayer.getGame().performEvent(remotePlayer, eventView);
     }
 

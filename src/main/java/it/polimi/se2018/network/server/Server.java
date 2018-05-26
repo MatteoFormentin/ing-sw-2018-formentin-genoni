@@ -89,27 +89,25 @@ public class Server implements ServerController{
 
     /**
      * Log the user to the Server with the username.
-     *  @param username name used for the player.
+     * @param nickname name used for the player.
      * @param remotePlayer reference to RMI or Socket Player
      */
     //CONSIDERA IL CASO DEL RI LOGIN ELSE IF
     @Override
-    public String login(String username, RemotePlayer remotePlayer) {
+    public void login(String nickname, RemotePlayer remotePlayer) {
         synchronized (PLAYERS_MUTEX){
-            if(!players.containsKey(username)){
-                players.put(username, remotePlayer);
-                remotePlayer.setNickName(username);
+            if(!players.containsKey(nickname)){
+                players.put(nickname, remotePlayer);
+                remotePlayer.setNickName(nickname);
                 this.joinRoom(remotePlayer);
             }
         }
-        return username;
     }
 
     @Override
-    public RemotePlayer getPlayer(String username) {
-        return players.get(username);
+    public RemotePlayer getPlayer(String nickname) {
+        return players.get(nickname);
     }
-
 
     /**
      * Add the player to the room.
