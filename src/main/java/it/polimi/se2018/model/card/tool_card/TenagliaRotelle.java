@@ -33,13 +33,8 @@ public class TenagliaRotelle extends ToolCard {
      */
     public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
         if(!noPreCondition(gameBoard, indexPlayer)) return false;
-        if (!gameBoard.getPlayer(indexPlayer).isFirstTurn()) return false; // you can't use this in second turn ಠ_ಠ troller
-        if (gameBoard.getPlayer(indexPlayer).isHasDrawNewDice() &&!gameBoard.getPlayer(indexPlayer).isHasPlaceANewDice()) return false;
         // ಠ_ಠ troller place your dice in hand or should i put it in Draftpool??? :D muahmuahmuahmuahmuagmuag
-        gameBoard.getPlayer(indexPlayer).setFirstTurn(true);// this is your second turn so next time you play you play you first turn
-        gameBoard.getPlayer(indexPlayer).setHasDrawNewDice(false);
-        gameBoard.getPlayer(indexPlayer).setHasUsedToolCard(true); // it's a special second turn ಠ_ಠ
-        gameBoard.getPlayer(indexPlayer).setHasPlaceANewDice(false);
+        if(gameBoard.endSpecialFirstTurn(indexPlayer));
         saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
         return true; //no immediate effect it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }

@@ -14,12 +14,12 @@ import it.polimi.se2018.model.dice.DiceStack;
  */
 public class Player {
     private int indexInGame;
-    private String nickname;
+    private String nickName;
     private int favorToken;
     private int points;
     private ObjectivePrivateCard privateObject;
     private WindowPatternCard playerWindowPattern;
-    private WindowPatternCard[] the4WindowPattern = new WindowPatternCard[4];//no getter
+    private WindowPatternCard[] the4WindowPattern;
     private DiceStack handDice;
     private boolean firstTurn;
     private boolean hasDrawNewDice;
@@ -29,7 +29,7 @@ public class Player {
 
     public Player() {
         indexInGame = 0;
-        nickname = "Mr. Nessuno";
+        nickName = "Mr. Nessuno, i don't deserve a hand";
         favorToken = 0;
         points = 0;
         privateObject = null;
@@ -45,16 +45,16 @@ public class Player {
      * Constructor for a new player
      *
      * @param nickname of the player
-     * @param id of the player if needed
+     * @param indexInGame of the player if needed
      */
-    public Player(String nickname, int id) {
-        this.indexInGame = id;
-        this.nickname = nickname;
+     Player(String nickname, int indexInGame) {
+        this.indexInGame = indexInGame;
+        this.nickName = nickname;
         favorToken = 0;
         points = 0;
         privateObject = null;
         playerWindowPattern = null;
-        handDice = null;
+        handDice = new DiceStack();
         firstTurn = true;
         hasDrawNewDice = false;
         hasPlaceANewDice = false;
@@ -68,8 +68,8 @@ public class Player {
         return indexInGame;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getNickName() {
+        return nickName;
     }
 
     public int getFavorToken() {
@@ -87,11 +87,10 @@ public class Player {
     public WindowPatternCard getPlayerWindowPattern() {
         return playerWindowPattern;
     }
-/*
 
     public DiceStack getHandDice() {
         return handDice;
-    }*/
+    }
 
     public boolean isFirstTurn() {
         return firstTurn;
@@ -113,23 +112,21 @@ public class Player {
     //************************************setter**********************************************
     //************************************setter**********************************************
 
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
     public void setIndexInGame(int indexInGame) {
         this.indexInGame = indexInGame;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
 
-    public void setFavorToken(int favorToken) {
-        this.favorToken = favorToken;
-    }
-
-    public void setPoints(int points) {
+    void setPoints(int points) {
         this.points = points;
     }
 
-    public void setPrivateObject(ObjectivePrivateCard privateObject) {
+    void setPrivateObject(ObjectivePrivateCard privateObject) {
         this.privateObject = privateObject;
     }
 
@@ -137,8 +134,9 @@ public class Player {
      * special setter for the windowPattern
      * @param index
      */
-    public void setPlayerWindowPattern(int index) {
+    void setPlayerWindowPattern(int index) {
         playerWindowPattern = the4WindowPattern[index];
+        favorToken = the4WindowPattern[index].getDifficulty();
     }
 
     public void setThe4WindowPattern(WindowPatternCard[] the4WindowPattern) {
@@ -149,19 +147,19 @@ public class Player {
         this.handDice = handDice;
     }*/
 
-    public void setFirstTurn(boolean firstTurn) {
+    void setFirstTurn(boolean firstTurn) {
         this.firstTurn = firstTurn;
     }
 
-    public void setHasDrawNewDice(boolean hasDrawNewDice) {
+    void setHasDrawNewDice(boolean hasDrawNewDice) {
         this.hasDrawNewDice = hasDrawNewDice;
     }
 
-    public void setHasPlaceANewDice(boolean hasPlaceANewDice) {
+    void setHasPlaceANewDice(boolean hasPlaceANewDice) {
         this.hasPlaceANewDice = hasPlaceANewDice;
     }
 
-    public void setHasUsedToolCard(boolean hasUsedToolCard) {
+    void setHasUsedToolCard(boolean hasUsedToolCard) {
         this.hasUsedToolCard = hasUsedToolCard;
     }
 
@@ -179,8 +177,9 @@ public class Player {
      * @param dice to add in hand
      * @return true if it's all ok, false otherwise
      */
-    public boolean addNormalDiceToHandFromDraftPool(Dice dice) {
+    boolean addNormalDiceToHandFromDraftPool(Dice dice) {
         if(hasDrawNewDice)return false;
+        if (dice== null) return false;
         handDice.add(dice);
         hasDrawNewDice=true;
         return true;
@@ -194,7 +193,7 @@ public class Player {
      * @param column of the cell of the playerWindowPattern
      * @return true if it's all ok, false if something gone wrong
      */
-    public boolean insertDice(int line, int column) {
+    boolean insertDice(int line, int column) {
         if (!hasDrawNewDice ||hasUsedToolCard) return false; //state wrong
         if(handDice.size()==0)return false;// no dice in hand
         if (!playerWindowPattern.insertDice(line, column, handDice.get(0))) return false; // can't insert the dice
@@ -208,14 +207,14 @@ public class Player {
      * @param cost of the tool card
      * @return true id it's all ok, false if player can't use toolcard
      */
-    public boolean useToolCard(int cost) {
+    boolean useToolCard(int cost) {
         if(hasUsedToolCard)return false;//already used
         if(cost>favorToken)return false;//no money
         hasUsedToolCard=true;
         favorToken -= cost;
         return true;
     }
-    public void endTrun(boolean nextTurnIsATypeFirstTurn){
+    void endTrun(boolean nextTurnIsATypeFirstTurn){
         hasUsedToolCard=false;
         hasDrawNewDice=false;
         hasPlaceANewDice=false;
@@ -227,7 +226,7 @@ public class Player {
      *
      * @return the dice in position 0, null if the player has no dice in hand
      */
-    public Dice removeDiceFromHand() {
+    Dice removeDiceFromHand() {
         if(handDice.size()==0) return null;
         return handDice.takeDiceFromStack(0);
     }
@@ -253,7 +252,7 @@ public class Player {
      *                            adjacentRestriction==the dice respect the restriction
      *                            if this logic produce true can insert the dice
      */
-    public boolean insertDice(int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
+    boolean insertDice(int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
         if (!hasUsedToolCard) return false; //didn't use toolcard
         if(handDice.size()==0)return false;// no dice in hand
         if (!playerWindowPattern.insertDice(line, column, handDice.get(0), adjacentRestriction, colorRestriction, valueRestriction)) return false; // can't insert the dice
@@ -270,7 +269,7 @@ public class Player {
      * @param column of cell
      * @return false if didn't select a tool card,true otherwise
      */
-    public boolean moveDiceFromWindowPatternToHand(int line, int column) {
+    boolean moveDiceFromWindowPatternToHand(int line, int column) {
         if(!hasUsedToolCard) return false;
         Dice dice=playerWindowPattern.getCell(line, column).getDice();
         if (dice==null) return false;
@@ -286,7 +285,7 @@ public class Player {
      *
      * @return true if it's all ok, false otherwise
      */
-    public boolean rollDiceInHand() {
+    boolean rollDiceInHand() {
         if(!hasUsedToolCard) return false;
         if(handDice.size()==0) return false;
         handDice.get(0).rollDice();
@@ -299,7 +298,7 @@ public class Player {
      * @param increase true if the player want to increase the value, false for decrease
      * @return true if it's all ok, false otherwise
      */
-    public boolean increaseOrDecrease(boolean increase){
+    boolean increaseOrDecrease(boolean increase){
         if(!hasUsedToolCard) return false;
         if(handDice.size()==0) return false;
         handDice.get(0).increaseOrDecrease(increase);
@@ -310,7 +309,7 @@ public class Player {
      *
      * @return true if it's all ok, false otherwise
      */
-    public boolean oppositeFaceDice(){
+    boolean oppositeFaceDice(){
         if(!hasUsedToolCard) return false;
         if(handDice.size()==0) return false;
         handDice.get(0).oppositeValue();
@@ -322,7 +321,7 @@ public class Player {
      *
      * @return true if it's all ok, false otherwise
      */
-    public boolean endSpecialFirstTurn (){
+    boolean endSpecialFirstTurn (){
         if(!hasUsedToolCard) return false;
         if(!firstTurn) return false;
         hasUsedToolCard=true;
@@ -344,7 +343,7 @@ public class Player {
      * @param index of the selected dice
      * @return true if it's all ok, false otherwise
      */
-    public boolean selectDiceInHand(int index){
+    boolean selectDiceInHand(int index){
         if(!hasUsedToolCard) return false;
         if(index>=handDice.size()||index<0) return false;
         handDice.moveDiceToTheTop(index);
@@ -357,7 +356,7 @@ public class Player {
      * @param dice the dice to add
      * @return true if it's all ok, false otherwise
      */
-    public boolean addDiceToHand(Dice dice){
+    boolean addDiceToHand(Dice dice){
         if(!hasUsedToolCard) return false;
         if(dice==null) return false;
         handDice.add(dice);
