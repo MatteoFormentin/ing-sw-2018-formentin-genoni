@@ -34,7 +34,7 @@ public class PennelloPastaSalda extends ToolCard {
     public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
         if(!preConditionOfDicePool(gameBoard, indexPlayer)) return false;
         saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
-        gameBoard.getPlayer(indexPlayer).rollDiceInHand();
+        gameBoard.rollDiceInHand(indexPlayer);
         return true; // immediate effect. it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
 }

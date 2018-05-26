@@ -98,7 +98,7 @@ public class Server implements ServerController{
         synchronized (PLAYERS_MUTEX){
             if(!players.containsKey(username)){
                 players.put(username, remotePlayer);
-                remotePlayer.setNickname(username);
+                remotePlayer.setNickName(username);
                 this.joinRoom(remotePlayer);
             }
         }

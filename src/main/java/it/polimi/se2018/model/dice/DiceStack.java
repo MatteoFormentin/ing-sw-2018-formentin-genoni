@@ -9,18 +9,17 @@ import java.util.List;
  * @author Luca Genoni
  */
 public class DiceStack extends LinkedList<Dice> {
+
     /**
-     * return the dice for let them see the value or color, but the dice remain in the stack
+     * the method right method for take a dice without exception
      *
      * @param index of the dice
-     * @return Dice or null if there isn't any dice in that index
+     * @return dice or null
      */
-    @Override
-    public Dice get(int index) {
+    public Dice getDice(int index) {
         if(index>=this.size()) return null;
         return this.get(index);
     }
-
     /**
      * remove the dice from the stack.
      *
