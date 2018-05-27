@@ -15,7 +15,7 @@ import java.util.Observable;
  * @author DavideMammarella
  */
 
-public class Controller extends Model{
+public class Controller extends Model implements Runnable{
     private GameBoard gameBoard;
     private Model model; //the class that can call the view for
     private List<Observable> view;
@@ -75,5 +75,10 @@ public class Controller extends Model{
                 //view.showMessage("input of the windowPattern wrong")
             }
         }
+    }
+
+    @Override
+    public void run() {
+
     }
 }

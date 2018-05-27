@@ -52,6 +52,7 @@ public class Client implements ClientController{
         try {
             serverIpAddress = args[0];
             rmiPort = Integer.parseInt(args[0]);
+            //ClientController.Client(serverIpAddress,rmiPort);
         } catch (Exception e){
             System.exit(0);
         }
@@ -63,10 +64,11 @@ public class Client implements ClientController{
         startRMIClient(serverIpAddress, rmiPort);
     }
 
-    private void startRMIClient (String serverIpAddress, int rmiPort){
+    private boolean startRMIClient (String serverIpAddress, int rmiPort){
         client=new RMIClient(this,serverIpAddress,rmiPort);
         client.connectToServer();
         System.out.println("RMI connection estabilished...");
+        return true;
     }
 
     //------------------------------------------------------------------------------------------------------------------

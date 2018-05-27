@@ -29,6 +29,8 @@ public class GameRoom implements Runnable{
 
     //STATO STANZA
     private boolean roomJoinable;
+    //MUTEX usato per gestire una stanza alla volta (senza questo potrebbe crearsi congestione durante il login)
+    private static final Object ROOMS_MUTEX = new Object();
 
     // LOAD FROM PROPERTIES
     Properties configProperties = new Properties();
@@ -43,9 +45,9 @@ public class GameRoom implements Runnable{
      * Room Timeout will be uploaded from config.propeties
      */
     public GameRoom(){
+        roomJoinable=true;
         roomCounter ++;
         players = new ArrayList<RemotePlayer>();
-        roomJoinable=true;
         //roomStartTimeout upload
             try {
                 // LOAD FROM PROPERTIES
@@ -77,10 +79,69 @@ public class GameRoom implements Runnable{
     // GAMEROOM MANAGING
     //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Room initializer.
+     * Thread that start the game after the timeout expires.
+     */
     @Override
     public void run(){
         System.out.println("Room started...");
         // FAR PARTIRE THREAD
+        while(roomWaitingTime<=roomStartTimeout) {
+            try {
+                if (this.roomStartTimeout > 0)
+                    Thread.sleep(this.roomStartTimeout);
+                if (!Thread.currentThread().isInterrupted())
+                    //ROOM STARTER
+                    GameRoom.this.startRoom();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Game initializer.
+     * Start the game thread closing the access to the room.
+     */
+    public void startRoom(){
+        System.out.println("Game started...");
+        // CREAZIONE SESSIONE DI GIOCO
+        System.out.println("Creating game session...");
+        // Dubbio su cosa passare al controller
+        //Controller game = new Controller();
+        roomJoinable=false;
+        //Thread threadGame=new Thread(game);
+        //threadGame.start();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // PLAYER MANAGING
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Add one player to the current room.
+     *
+     * @param player that will be added to the room.
+     */
+    public void addPlayer(RemotePlayer player){
+        synchronized (ROOMS_MUTEX){
+            if(roomJoinable){
+                this.players.add(player);
+                System.out.println("Player added...");
+                if (players.size()==minPlayers){
+                    // FAI PARTIRE IL TEMPO DI ATTESA
+                    roomWaitingTime=System.currentTimeMillis();
+                    System.out.println("Timeout started...");
+                    new Thread(this).start();
+                } else if (players.size()==maxPlayers){
+                    this.startRoom();
+                }
+            } else {
+                System.out.println("Sorry but the room is not joinable...");
+            }
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
