@@ -40,7 +40,7 @@ public class RMIServer extends AbstractServer implements IRMIServer {
         try {
             registry.bind("IRMIServer", this);
             UnicastRemoteObject.exportObject(this, port);
-            System.out.println("Server running at "+port+" port...");
+            System.out.println("RMI Server running at "+port+" port...");
         } catch (RemoteException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
@@ -79,16 +79,16 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM CLIENT - CALL TO THE SERVER // RMI
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Remote method used to login.
+     *
      * @param nickname name of the player.
      * @param iRMIClient client associated to the player.
-     * @return
+     * @return true if user is logged, false otherwise.
      */
-    //MANCA JAVADOC
     //MANCA EXCEPTION
     @Override
     public boolean login(String nickname, IRMIClient iRMIClient){
@@ -103,15 +103,15 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     }
 
     /**
-     * Remote method used to send to the Server a request to set off an event.
+     * Remote method used to send to the Server a request to unleash an event.
      *
      * @param nickname name of the player.
-     * @param eventView object that will use the server to set off the event associated.
+     * @param eventView object that will use the server to unleash the event associated.
      */
     @Override
     public void sendEvent(String nickname, EventView eventView){
         RemotePlayer remotePlayer=getPlayer(nickname);
-        //remotePlayer.getGame().performEvent(remotePlayer, eventView);
+        remotePlayer.getGameRoom().unleashEvent(remotePlayer, eventView);
     }
 
 }

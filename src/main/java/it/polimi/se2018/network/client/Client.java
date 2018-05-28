@@ -1,5 +1,6 @@
 package it.polimi.se2018.network.client;
 
+import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 
 /**
@@ -65,10 +66,16 @@ public class Client implements ClientController{
     }
 
     private boolean startRMIClient (String serverIpAddress, int rmiPort){
-        client=new RMIClient(this,serverIpAddress,rmiPort);
-        client.connectToServer();
-        System.out.println("RMI connection estabilished...");
-        return true;
+        try {
+            client = new RMIClient(this, serverIpAddress, rmiPort);
+            client.connectToServer();
+            System.out.println("RMI connection estabilished...");
+            return true;
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -81,11 +88,15 @@ public class Client implements ClientController{
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM CLIENT - CALL TO THE SERVER
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    // AGGIUNGI EXCEPTION
-    public void login(String nickname) throws Exception {
+    /**
+     * Log the user to the Server with the nickname
+     *
+     * @param nickname name used for the player.
+     */
+    public void login(String nickname){
         try {
             client.login(nickname);
             this.nickname = nickname;
@@ -96,6 +107,26 @@ public class Client implements ClientController{
         }
     }
 
-    // qui la perform game action
+    /**
+     * Send to the Server the request to unleash an event.
+     *
+     * @param eventView object that will use the server to unleash the event associated.
+     */
+    public void unleashEvent(EventView eventView){
+        try {
+            client.sendEvent(eventView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    // NOTIFY
+    //------------------------------------------------------------------------------------------------------------------
+
+    /*
+    public void notify(EventUpdate eventUpdate)
+     */
 
 }

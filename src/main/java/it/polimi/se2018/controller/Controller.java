@@ -49,7 +49,8 @@ public class Controller implements Runnable{
 
     }
 
-    public void update(EventView event) {
+    // EX UPDATE
+    public synchronized void unleashEvent(RemotePlayer player, EventView event) {
         if (event instanceof InsertDice) {
             // gameBoard.
         }
@@ -78,12 +79,6 @@ public class Controller implements Runnable{
         //To All views -> display which window pattern to Pick
     }
 
-    // metodo invocato dal client quando vuoi scatenare un evento
-    /*
-    public synchronized void performEvent(RemotePlayer remotePlayer, EventView eventView){
-
-    }
-    */
 
     /**
      * method to set the window chosen by the player

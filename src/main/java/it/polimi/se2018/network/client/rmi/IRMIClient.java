@@ -2,7 +2,18 @@ package it.polimi.se2018.network.client.rmi;
 
 import java.rmi.Remote;
 
-// INTERFACCIA REMOTA PER ESEGUIRE INVOCAZIONE A METODI REMOTI DA SERVER A CLIENT
+/**
+ * Remote interface used for the notify.
+ *
+ * @author DavideMammarella
+ */
 public interface IRMIClient extends Remote {
-    //NOTIFY
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    // NOTIFY
+    //------------------------------------------------------------------------------------------------------------------
+
+    /*
+    void notify(EventUpdate eventUpdate) throws RemoteException;
+    */
 }

@@ -1,6 +1,7 @@
 package it.polimi.se2018.network;
 
 import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.event.list_event.EventView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +16,9 @@ import java.util.Properties;
  */
 
 public class GameRoom implements Runnable{
+
+    // GAME DELLA ROOM
+    private Controller game;
 
     // NUM MINIMO DI GIOCATORI PER PARTITA
     public static final int minPlayers = 2;
@@ -112,7 +116,7 @@ public class GameRoom implements Runnable{
         // CREAZIONE SESSIONE DI GIOCO
         System.out.println("Creating game session...");
         // PASSAGGIO PARAMETRI AL CONTROLLER
-        Controller game = new Controller(this, players);
+        game = new Controller(this, players);
         System.out.println("Closing Room...");
         roomJoinable=false;
         Thread threadGame=new Thread(game);
@@ -145,6 +149,14 @@ public class GameRoom implements Runnable{
                 System.out.println("Sorry but the room is not joinable...");
             }
         }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // UNLEASH EVENT
+    //------------------------------------------------------------------------------------------------------------------
+
+    public void unleashEvent(RemotePlayer player, EventView eventView){
+        game.unleashEvent(player, eventView);
     }
 
     //------------------------------------------------------------------------------------------------------------------

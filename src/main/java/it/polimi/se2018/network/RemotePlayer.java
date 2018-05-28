@@ -1,6 +1,5 @@
 package it.polimi.se2018.network;
 
-import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.model.Player;
 import javafx.beans.Observable;
 
@@ -12,7 +11,7 @@ import javafx.beans.Observable;
 public abstract class RemotePlayer extends Player implements Observable {
 
     //Riferimento alla partita in cui è il giocatore
-    private transient Controller game;
+    private transient GameRoom gameRoom;
 
     private String nickname;
 
@@ -20,27 +19,31 @@ public abstract class RemotePlayer extends Player implements Observable {
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
-    protected RemotePlayer(){}
+    protected RemotePlayer(){super();}
 
     /**
      * Create the reference on what game the player is in.
-     * @param game game where the players is in.
+     * @param gameRoom game where the players is in.
      */
-    public void setGame(Controller game){
-        this.game=game;
+    public void setGameRoom(GameRoom gameRoom){
+        this.gameRoom=gameRoom;
     }
 
     /**
      * Return the reference on what game the player is in.
      * @return the game of the player, null otherwise
      */
-    public Controller getGame(){
-        return this.game;
+    public GameRoom getGameRoom(){
+        return this.gameRoom;
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // COMUNICAZIONI AL CLIENT - NOTIFY
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
 
-    // ...
+    /*
+    @Override
+    public abstract void notify(EventUpdate eventUpdate);
+    */
 }

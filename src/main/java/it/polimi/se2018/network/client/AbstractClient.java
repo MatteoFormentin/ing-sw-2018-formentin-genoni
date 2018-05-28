@@ -2,6 +2,8 @@ package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.event.list_event.EventView;
 
+import java.rmi.RemoteException;
+
 /**
  * Abstract class based on the Abstract Factory Design Pattern
  * (It provides an interface to create families of connected or dependent objects, so that there is no need for clients to specify the names of the concrete classes within their own code.)
@@ -76,7 +78,9 @@ public abstract class AbstractClient {
 
     public abstract void connectToServer();
 
-    public abstract void login(String nickname) throws Exception;
+    public abstract void login(String nickname) throws RemoteException;
 
-    public abstract void sendEvent(EventView eventView) throws Exception;
+    public abstract void sendEvent(EventView eventView) throws RemoteException;
+
+    // BASTA METODI
 }

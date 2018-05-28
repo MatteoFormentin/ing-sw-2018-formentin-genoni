@@ -85,7 +85,7 @@ public class Server implements ServerController{
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // METODI DA INVOCARE SUL SERVER CONTROLLER (RMI o Socket)
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -127,6 +127,5 @@ public class Server implements ServerController{
         return players.get(nickname);
     }
 
-
-
+    // TEORICAMENTE BASTA METODI
 }

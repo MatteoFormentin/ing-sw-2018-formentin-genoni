@@ -13,6 +13,10 @@ public interface ServerController {
 
     // MANCANO EXCEPTION
 
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
+    //------------------------------------------------------------------------------------------------------------------
+
     /**
      * Log the user to the Server with the username.
      * @param nickname name used for the player.

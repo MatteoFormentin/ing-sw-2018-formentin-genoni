@@ -36,10 +36,10 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      * @param clientController client interface, used as
      *                         controller to communicate with the client.
      * @param serverIpAddress server address.
-     * @param port port used from server to communicate.
+     * @param serverPort port used from server to communicate.
      */
-    public RMIClient(ClientController clientController, String serverIpAddress, int port){
-        super(clientController, serverIpAddress, port);
+    public RMIClient(ClientController clientController, String serverIpAddress, int serverPort){
+        super(clientController, serverIpAddress, serverPort);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -65,18 +65,17 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM CLIENT - CALL TO THE SERVER
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Log the user to the RMI Server with the username.
+     * Log the user to the RMI Server with the nickname.
      * The Username will be added to the map.
      *
      * @param nickname name used for the player.
-     * @throws RemoteException
      */
     @Override
-    public void login(String nickname) throws RemoteException {
+    public void login(String nickname){
         try {
             iRMIServer.login(nickname, this);
         } catch (RemoteException e){
@@ -86,17 +85,29 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     }
 
     /**
-     * Send to the Server the request to set off an event.
+     * Send to the Server the request to unleash an event.
      *
-     * @param eventView object that will use the server to set off the event associated.
+     * @param eventView object that will use the server to unleash the event associated.
      */
-    // manca exception
-    public void sendEvent(EventView eventView) throws Exception{
-        iRMIServer.sendEvent(this.nickname,eventView);
+    public void sendEvent(EventView eventView){
+        try{
+            iRMIServer.sendEvent(this.nickname,eventView);
+        } catch (RemoteException e){
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM SERVER - CALL TO THE CLIENT
-    // public void NOTIFICA(...)
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
+
+    /*
+    @Override
+    public void notify(EventUpdate eventUpdate){
+        getClientController().update(eventUpdate);
+    }
+    */
+
 }

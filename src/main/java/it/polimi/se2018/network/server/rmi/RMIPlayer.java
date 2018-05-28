@@ -28,5 +28,15 @@ public class RMIPlayer extends RemotePlayer {
 
     }
 
-    //AGGIORNAMENTI (NOTIFY) DA INVIARE AL GIOCATORE (CLIENT)
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    // NOTIFY
+    //------------------------------------------------------------------------------------------------------------------
+
+    /*
+    @Override
+    public void notify(EventUpdate eventUpdate){
+        ClientController.notify(eventUpdate);
+    }
+    */
 }

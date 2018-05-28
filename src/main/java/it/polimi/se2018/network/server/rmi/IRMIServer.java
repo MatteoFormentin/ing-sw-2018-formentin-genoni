@@ -18,6 +18,9 @@ import java.rmi.RemoteException;
  * @author DavideMammarella
  */
 public interface IRMIServer extends Remote {
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM CLIENT - REQUEST TO SERVER
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Remote method used to login.
@@ -25,9 +28,7 @@ public interface IRMIServer extends Remote {
      * @param nickname name of the player.
      * @param iRMIClient client associated to the player.
      * @return username that define the player.
-     * @throws RemoteException exception unleashed if the server is not attainable.
      */
-    // GESTISCI EXCEPTION
     boolean login(String nickname, IRMIClient iRMIClient) throws RemoteException;
 
     /**
@@ -35,7 +36,6 @@ public interface IRMIServer extends Remote {
      *
      * @param nickname name of the player.
      * @param eventView object that will use the server to set off the event associated.
-     * @throws RemoteException exception unleashed if the server is not attainable.
      */
     void sendEvent(String nickname, EventView eventView) throws RemoteException;
 }
