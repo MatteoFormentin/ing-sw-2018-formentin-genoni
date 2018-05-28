@@ -6,7 +6,10 @@ import it.polimi.se2018.event.list_event.InsertDice;
 import it.polimi.se2018.event.list_event.UseToolCard;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Model;
+import it.polimi.se2018.network.GameRoom;
+import it.polimi.se2018.network.RemotePlayer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
@@ -15,15 +18,35 @@ import java.util.Observable;
  * @author DavideMammarella
  */
 
-public class Controller extends Model implements Runnable{
+public class Controller implements Runnable{
     private GameBoard gameBoard;
     private Model model; //the class that can call the view for
     private List<Observable> view;
     private int playerok;
     private boolean waitResponse;
 
-    public Controller(GameBoard gameboard) {
-        super(gameboard);
+    //GameRoom in cui sta avvenendo la partita
+    private GameRoom gameRoom;
+
+    //Player
+    private ArrayList<RemotePlayer> players;
+
+    /**
+     * Controller constructor.
+     *
+     * @param gameRoom room where the game will be played.
+     * @param players array list of players in the room.
+     * @author DavideMammarella
+     */
+    public Controller(GameRoom gameRoom, ArrayList<RemotePlayer> players){
+        this.gameRoom=gameRoom;
+
+        this.players=new ArrayList<>();
+        for (int i=0; i<players.size();i++){
+            RemotePlayer player = this.gameRoom.getPlayersArrayList().get(i);
+            this.players.add(player);
+        }
+
     }
 
     public void update(EventView event) {
@@ -55,6 +78,12 @@ public class Controller extends Model implements Runnable{
         //To All views -> display which window pattern to Pick
     }
 
+    // metodo invocato dal client quando vuoi scatenare un evento
+    /*
+    public synchronized void performEvent(RemotePlayer remotePlayer, EventView eventView){
+
+    }
+    */
 
     /**
      * method to set the window chosen by the player

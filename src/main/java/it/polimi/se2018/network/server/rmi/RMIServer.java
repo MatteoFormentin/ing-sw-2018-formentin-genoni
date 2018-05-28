@@ -94,11 +94,12 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     public boolean login(String nickname, IRMIClient iRMIClient){
         try{
             getServerController().login(nickname, new RMIPlayer(iRMIClient));
+            return true;
         } catch(Exception e){
             System.out.println(e.getMessage());
             e.printStackTrace();
+            return false;
         }
-        return true;
     }
 
     /**

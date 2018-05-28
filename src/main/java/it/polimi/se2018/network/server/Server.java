@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.server;
 
-import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.network.GameRoom;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
@@ -28,7 +28,7 @@ public class Server implements ServerController{
     private RMIServer rmiServer;
 
     // Lista Partite
-    private ArrayList<Controller> gameList;
+    private ArrayList<GameRoom> gameRooms;
     //Giocatori connessi al server <username, RemotePlayer>
     private HashMap<String,RemotePlayer> players;
 
@@ -45,7 +45,7 @@ public class Server implements ServerController{
     // ORA SOLO RMI, MANCA EXCEPTION
     public Server(){
         this.players = new HashMap<>();
-        this.gameList = new ArrayList<>();
+        this.gameRooms = new ArrayList<>();
 
         rmiServer = new RMIServer(this);
         //socketServer = new SocketServer(this);
@@ -80,6 +80,7 @@ public class Server implements ServerController{
     // int socketPort
     // socketServer.StartServer (socketPort)
     public void startServer(int rmiPort) throws Exception{
+        System.out.println("RMI Server started...");
         rmiServer.startServer(rmiPort);
     }
 
@@ -91,17 +92,34 @@ public class Server implements ServerController{
      * Log the user to the Server with the username.
      * @param nickname name used for the player.
      * @param remotePlayer reference to RMI or Socket Player
+     * @return true if the user is logged, false otherwise
      */
     //CONSIDERA IL CASO DEL RI LOGIN ELSE IF
     @Override
-    public void login(String nickname, RemotePlayer remotePlayer) {
+    public boolean login(String nickname, RemotePlayer remotePlayer) {
         synchronized (PLAYERS_MUTEX){
             if(!players.containsKey(nickname)){
                 players.put(nickname, remotePlayer);
                 remotePlayer.setNickName(nickname);
                 this.joinRoom(remotePlayer);
+                System.out.println("Player logged to the room...");
+                return true;
+            } else {
+                return false;
             }
         }
+    }
+
+    /**
+     * Add the player to the room.
+     *
+     * @param remotePlayer player that will be added.
+     */
+    public void joinRoom(RemotePlayer remotePlayer){
+        GameRoom room=new GameRoom();
+        System.out.println("Room created...");
+        this.gameRooms.add(room);
+        room.addPlayer(remotePlayer);
     }
 
     @Override
@@ -109,13 +127,6 @@ public class Server implements ServerController{
         return players.get(nickname);
     }
 
-    /**
-     * Add the player to the room.
-     *
-     * @param remotePlayer
-     */
-    public void joinRoom(RemotePlayer remotePlayer){
-        //
-    }
+
 
 }

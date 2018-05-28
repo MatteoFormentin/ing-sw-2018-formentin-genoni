@@ -1,5 +1,7 @@
 package it.polimi.se2018.network;
 
+import it.polimi.se2018.controller.Controller;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -109,11 +111,12 @@ public class GameRoom implements Runnable{
         System.out.println("Game started...");
         // CREAZIONE SESSIONE DI GIOCO
         System.out.println("Creating game session...");
-        // Dubbio su cosa passare al controller
-        //Controller game = new Controller();
+        // PASSAGGIO PARAMETRI AL CONTROLLER
+        Controller game = new Controller(this, players);
+        System.out.println("Closing Room...");
         roomJoinable=false;
-        //Thread threadGame=new Thread(game);
-        //threadGame.start();
+        Thread threadGame=new Thread(game);
+        threadGame.start();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -175,4 +178,12 @@ public class GameRoom implements Runnable{
         return this.roomJoinable;
     }
 
+    /**
+     * Getter for Player Array List.
+     *
+     * @return list of player in the room.
+     */
+    public ArrayList<RemotePlayer> getPlayersArrayList() {
+        return this.players;
+    }
 }
