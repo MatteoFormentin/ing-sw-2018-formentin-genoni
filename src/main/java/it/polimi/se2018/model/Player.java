@@ -25,7 +25,7 @@ public class Player {
     private boolean hasDrawNewDice;
     private boolean hasPlaceANewDice;
     private boolean hasUsedToolCard;
-    //sarebbe carino uno state pattern.........
+    //sarebbe carino uno state pattern......... ma troppo sbatti
 
     public Player() {
         indexInGame = 0;
@@ -60,6 +60,25 @@ public class Player {
         hasPlaceANewDice = false;
         hasUsedToolCard = false;
     }
+    /*
+    public Player clone(){
+        Player copyPlayer =new Player();
+        copyPlayer.setIndexInGame(indexInGame);
+        copyPlayer.setNickName(nickName);
+        copyPlayer.setFavorToken(favorToken);
+        copyPlayer.setPoints(points);
+        /*
+        ObjectivePrivateCard privateObject;
+        WindowPatternCard playerWindowPattern;
+        WindowPatternCard[] the4WindowPattern;
+        DiceStack handDice;*/
+/*
+        copyPlayer.setFirstTurn(firstTurn);
+        copyPlayer.setHasDrawNewDice(hasDrawNewDice);
+        copyPlayer.setHasPlaceANewDice(hasPlaceANewDice);
+        copyPlayer.setHasUsedToolCard(hasUsedToolCard);
+        return copyPlayer;
+    }*/
     //************************************getter**********************************************
     //************************************getter**********************************************
     //************************************getter**********************************************
@@ -121,12 +140,23 @@ public class Player {
         this.indexInGame = indexInGame;
     }
 
+    public void setFavorToken(int favorToken) {
+        this.favorToken = favorToken;
+    }
 
-    void setPoints(int points) {
+    public void setPlayerWindowPattern(WindowPatternCard playerWindowPattern) {
+        this.playerWindowPattern = playerWindowPattern;
+    }
+
+    public void setHandDice(DiceStack handDice) {
+        this.handDice = handDice;
+    }
+
+    public void setPoints(int points) {
         this.points = points;
     }
 
-    void setPrivateObject(ObjectivePrivateCard privateObject) {
+    public void setPrivateObject(ObjectivePrivateCard privateObject) {
         this.privateObject = privateObject;
     }
 
@@ -134,7 +164,7 @@ public class Player {
      * special setter for the windowPattern
      * @param index
      */
-    void setPlayerWindowPattern(int index) {
+    public void choosePlayerWindowPattern(int index) {
         playerWindowPattern = the4WindowPattern[index];
         favorToken = the4WindowPattern[index].getDifficulty();
     }
@@ -147,21 +177,22 @@ public class Player {
         this.handDice = handDice;
     }*/
 
-    void setFirstTurn(boolean firstTurn) {
+    public void setFirstTurn(boolean firstTurn) {
         this.firstTurn = firstTurn;
     }
 
-    void setHasDrawNewDice(boolean hasDrawNewDice) {
+    public void setHasDrawNewDice(boolean hasDrawNewDice) {
         this.hasDrawNewDice = hasDrawNewDice;
     }
 
-    void setHasPlaceANewDice(boolean hasPlaceANewDice) {
+    public void setHasPlaceANewDice(boolean hasPlaceANewDice) {
         this.hasPlaceANewDice = hasPlaceANewDice;
     }
 
-    void setHasUsedToolCard(boolean hasUsedToolCard) {
+    public void setHasUsedToolCard(boolean hasUsedToolCard) {
         this.hasUsedToolCard = hasUsedToolCard;
     }
+
 
     //************************************window's method**********************************************
     //************************************window's method**********************************************
@@ -177,7 +208,7 @@ public class Player {
      * @param dice to add in hand
      * @return true if it's all ok, false otherwise
      */
-    boolean addNormalDiceToHandFromDraftPool(Dice dice) {
+    public boolean addNormalDiceToHandFromDraftPool(Dice dice) {
         if(hasDrawNewDice)return false;
         if (dice== null) return false;
         handDice.add(dice);
@@ -193,8 +224,8 @@ public class Player {
      * @param column of the cell of the playerWindowPattern
      * @return true if it's all ok, false if something gone wrong
      */
-    boolean insertDice(int line, int column) {
-        if (!hasDrawNewDice ||hasUsedToolCard) return false; //state wrong
+    public boolean insertDice(int line, int column) {
+        if (!hasDrawNewDice ||hasUsedToolCard) return false; //state wrong this method to place a die is only for a normal placed
         if(handDice.size()==0)return false;// no dice in hand
         if (!playerWindowPattern.insertDice(line, column, handDice.get(0))) return false; // can't insert the dice
         removeDiceFromHand();
@@ -207,7 +238,7 @@ public class Player {
      * @param cost of the tool card
      * @return true id it's all ok, false if player can't use toolcard
      */
-    boolean useToolCard(int cost) {
+    public boolean useToolCard(int cost) {
         if(hasUsedToolCard)return false;//already used
         if(cost>favorToken)return false;//no money
         hasUsedToolCard=true;
@@ -259,7 +290,6 @@ public class Player {
         removeDiceFromHand();
         hasPlaceANewDice = true;
         return true;
-
     }
 
     /**

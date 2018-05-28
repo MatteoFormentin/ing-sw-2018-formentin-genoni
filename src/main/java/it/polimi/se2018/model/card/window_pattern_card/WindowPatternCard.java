@@ -8,7 +8,7 @@ import it.polimi.se2018.model.dice.DiceColor;
  *
  * @author Luca Genoni
  */
-public class WindowPatternCard {
+public class WindowPatternCard{
     private String name;
     private int difficulty;
     private Cell[][] matrix;
@@ -203,4 +203,5 @@ public class WindowPatternCard {
         numberOfCellWithDice--;
         return dice;
     }
+
 }

@@ -14,17 +14,22 @@ import static org.junit.Assert.*;
 
 
 public class TestGameBoard {
-    private GameBoard gameBoard;
     private Cell[][] matrix;
     private WindowPatternCard[] testWindowPattern;
     private WindowPatternCard testWindowPatternCard;
     private TestFactory testFactory;
+    private GameBoard gameBoard;
 
     @Before
     public void setUp() {
-        String[] name= new String[4];
-        for(int i=0;i<4;i++) name[i]="tester"+i;
-        gameBoard= new GameBoard(name,0);
+        String[] name = new String[4];
+        for (int i = 0; i < 4; i++) name[i] = "tester" + i;
+        try{
+            gameBoard = new GameBoard(name);
+        } catch(Exception e){
+            System.err.println(e.getMessage());
+        }
+
         matrix = new Cell[4][5];
         for (int m = 0; m < 4; m++) {
             for (int n = 0; n < 5; n++) {
@@ -48,64 +53,101 @@ public class TestGameBoard {
         matrix[3][0].setValueRestriction(2);
 
         testWindowPatternCard = new WindowPatternCard("testKaleidoscopicDream", 4, matrix);
-        testWindowPattern = new WindowPatternCard[1];
-        testWindowPattern[0]=testWindowPatternCard;
-        testFactory= new TestFactory();
+
+        testWindowPattern = new WindowPatternCard[4];
+        for (int i = 0; i < 4; i++) {
+            testWindowPattern[i] = testWindowPatternCard;
+        }
+        for (int i = 0; i < 4; i++) {
+            gameBoard.getPlayer(i).setThe4WindowPattern(testWindowPattern);
+        }
+        testFactory = new TestFactory();
+        testFactory.setValue(1);
+        testFactory.setColor(DiceColor.Blue);
     }
+
     @Test
     public void testSetWindow() {
-        for(int i=0;i<4;i++){
-            assertEquals("tester"+i,gameBoard.getPlayer(i).getNickName());
-        }
+
         assertTrue(gameBoard.isStopGame());
-        assertFalse(gameBoard.changeDiceBetweenHandAndFactory(0));
-        assertFalse(gameBoard.oppositeFaceDice(0));
-        assertFalse(gameBoard.rollDiceInHand(0));
-        assertFalse(gameBoard.useToolCard(0,2));
-        assertFalse(gameBoard.selectDiceInHand(0,2));
-        assertFalse(gameBoard.endSpecialFirstTurn(0));
+        //normal move
+        assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(0, 0));
+        assertFalse(gameBoard.useToolCard(0, 0));
+        assertFalse(gameBoard.insertDice(0, 0, 0));
         assertFalse(gameBoard.nextPlayer(0));
-        assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(0,4));
+        //tool method
+        assertFalse(gameBoard.changeDiceBetweenHandAndFactory(0));
+        assertFalse(gameBoard.changeDiceBetweenHandAndRoundTrack(0, 0, 0));
+        assertFalse(gameBoard.moveDiceFromWindowPatternToHandWithRestriction(0,0,0,0,0));
+        assertFalse(gameBoard.rollDicePool(0));
+        //tool method of the player
+        assertFalse(gameBoard.insertDice(0, 0, 0, false, false, false));
+        assertFalse(gameBoard.moveDiceFromWindowPatternToHand(0, 0, 0));
+        assertFalse(gameBoard.rollDiceInHand(0));
+        assertFalse(gameBoard.increaseOrDecrease(0, true));
+        assertFalse(gameBoard.oppositeFaceDice(0));
+        assertFalse(gameBoard.endSpecialFirstTurn(0));
         assertTrue(gameBoard.isStopGame());
-        for(int i=1;i<4;i++){
-            assertTrue(gameBoard.isStopGame());
-            assertTrue(gameBoard.setWindowOfPlayer(i,0));
+        //start set up window
+        for(int i=0;i<4;i++){
+            gameBoard.setWindowOfPlayer(i,0);
         }
-        assertTrue(gameBoard.isStopGame());
-        gameBoard.getPlayer(0).setThe4WindowPattern(testWindowPattern);
-        assertTrue(gameBoard.setWindowOfPlayer(0,0));
         assertFalse(gameBoard.isStopGame());
 
-        for(int i=0;i<4;i++){
-            assertTrue(gameBoard.addNormalDiceToHandFromDraftPool(i,2));
-            System.out.println(gameBoard.getPlayer(i).getHandDice().getDice(0).getColor().toString()+" "+
-                    gameBoard.getPlayer(i).getHandDice().getDice(0).getValue());
+
+        for (int i = 0; i < 4; i++) {
+            //check player state
+            assertTrue(gameBoard.getPlayer(i).isFirstTurn());
+            assertFalse(gameBoard.getPlayer(i).isHasUsedToolCard());
+            assertFalse(gameBoard.getPlayer(i).isHasDrawNewDice());
+            assertFalse(gameBoard.getPlayer(i).isHasPlaceANewDice());
+            //mossa normale per pescare il dado
+            assertTrue(gameBoard.addNormalDiceToHandFromDraftPool(i, 0));
+
+            //check player state
+            assertTrue(gameBoard.getPlayer(i).isFirstTurn());
+            assertFalse(gameBoard.getPlayer(i).isHasUsedToolCard());
+            assertTrue(gameBoard.getPlayer(i).isHasDrawNewDice());
+            assertFalse(gameBoard.getPlayer(i).isHasPlaceANewDice());
             assertNotNull(gameBoard.getPlayer(i).getHandDice().getDice(0));
-            assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(i,2));
-            assertFalse(gameBoard.useToolCard(i,-1));
-            assertTrue(gameBoard.useToolCard(i,0));
+
+            //check player state
+
+            assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(i, 0));
+            assertFalse(gameBoard.useToolCard(i, -1));
+            assertFalse(gameBoard.getPlayer(i).isHasUsedToolCard());
+            assertFalse(gameBoard.useToolCard(i, 5));
+            assertTrue(gameBoard.useToolCard(i, 1));
+
+            assertTrue(gameBoard.insertDice(i, 0, 0, false, false, false));
+            //controlla se il dado è stato veramente inserito
+            assertNotNull(gameBoard.getPlayer(i).getPlayerWindowPattern().getCell(0,0).getDice());
+            assertTrue(gameBoard.moveDiceFromWindowPatternToHand(i, 0, 0));
+            assertTrue(gameBoard.rollDiceInHand(i));
+            assertTrue(gameBoard.increaseOrDecrease(i, true));
+            assertTrue(gameBoard.increaseOrDecrease(i, false));
+            assertTrue(gameBoard.oppositeFaceDice(i));
+            assertTrue(gameBoard.endSpecialFirstTurn(i));
+
             assertTrue(gameBoard.nextPlayer(i));
         }
-        for(int i=4;i<6;i++){
-            assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(i,2));
-            assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(i,2));
-            assertFalse(gameBoard.useToolCard(i,-1));
-            assertFalse(gameBoard.useToolCard(i,0));
+        for (int i = 4; i < 6; i++) {
+            assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(i, 2));
+            assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(i, 2));
+            assertFalse(gameBoard.useToolCard(i, -1));
+            assertFalse(gameBoard.useToolCard(i, 0));
             assertFalse(gameBoard.nextPlayer(i));
         }
-        for(int i=3;i>=0;i--){
-            assertTrue(gameBoard.addNormalDiceToHandFromDraftPool(i,0));
-            System.out.println(gameBoard.getPlayer(i).getHandDice().getDice(0).getColor().toString()+" "+
-                    gameBoard.getPlayer(i).getHandDice().getDice(0).getValue());
+        for (int i = 3; i > 0; i--) {
+            assertTrue(gameBoard.addNormalDiceToHandFromDraftPool(i, 0));
             assertNotNull(gameBoard.getPlayer(i).getHandDice().getDice(0));
-            assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(i,2));
-            assertFalse(gameBoard.useToolCard(i,-1));
-            assertTrue(gameBoard.useToolCard(i,0));
+            assertFalse(gameBoard.addNormalDiceToHandFromDraftPool(i, 2));
+            assertFalse(gameBoard.useToolCard(i, -1));
+            assertTrue(gameBoard.useToolCard(i, 0));
             assertTrue(gameBoard.nextPlayer(i));
         }
-        assertFalse(gameBoard.nextPlayer(0));
 
-
+        assertTrue(gameBoard.nextPlayer(0));
+        // for(int round=1;)
     }
-
 }

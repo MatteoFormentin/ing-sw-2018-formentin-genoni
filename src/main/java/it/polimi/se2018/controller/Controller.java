@@ -72,11 +72,15 @@ public class Controller implements Runnable{
 
     public void startNewGame(String[] roomPlayers, int indexFirstPlayer) {
         //init game of card arrays & FactoryDice
-        gameBoard = new GameBoard(roomPlayers, indexFirstPlayer); //crea il gioco fisico e prepara le 4 window pattern per ogni player
-        model = new Model(gameBoard);
-        playerok = 0;
-        waitResponse = true;
-        //To All views -> display which window pattern to Pick
+        try{
+            gameBoard = new GameBoard(roomPlayers); //crea il gioco fisico e prepara le 4 window pattern per ogni player
+            model = new Model(gameBoard);
+            playerok = 0;
+            waitResponse = true;
+            //To All views -> display which window pattern to Pick
+        }catch(Exception e){
+
+        }
     }
 
 

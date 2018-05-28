@@ -3,13 +3,11 @@ package it.polimi.se2018.view.prova_gui;
 
 import it.polimi.se2018.model.dice.DiceColor;
 
-import javafx.animation.FadeTransition;
 import javafx.application.Application;
 
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 
@@ -20,15 +18,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebEngine;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Random;
 
@@ -47,7 +41,8 @@ public class GUI extends Application {
 
     //for the roundTrack
 
-    private ComboBox<ImageView>[] comboBoxForDiceRound = new ComboBox[10];// dove inserire i dadi avanzati
+    private Button[] ButtonDiceRound = new Button[10];// dove inserire i dadi avanzati
+    private ImageView[][] diceStackRound = new ImageView[10][9];
     //for the Private Object
 
     private HBox toolBox = new HBox();
@@ -120,10 +115,10 @@ public class GUI extends Application {
         gridRoundTrack.setAlignment(Pos.CENTER);
         for (int i = 0; i < 10; i++) {
 
-            comboBoxForDiceRound[i] = new ComboBox();
-            gridRoundTrack.add(comboBoxForDiceRound[i], i, 1);
-            comboBoxForDiceRound[i].setMinSize(60,50);
-            comboBoxForDiceRound[i].setMaxSize(60,50);
+            ButtonDiceRound[i] = new Button();
+            gridRoundTrack.add(ButtonDiceRound[i], i, 1);
+            ButtonDiceRound[i].setMinSize(60,50);
+            ButtonDiceRound[i].setMaxSize(60,50);
             Random rand= new Random();
             for(int n=0; n<9;n++){
                 int  value = rand.nextInt(6) + 1;
@@ -134,43 +129,13 @@ public class GUI extends Application {
                     dice.setFitHeight(50);
                     dice.setFitWidth(50);
                     dice.setPreserveRatio(true);
-                    comboBoxForDiceRound[i].getItems().addAll(dice);
                 }catch (Exception exception){
 
                 }
             }
 
         }
-        comboBoxForDiceRound[0].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[0].getInsets());
-        });
-        comboBoxForDiceRound[1].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[1].getValue());
-        });
-        comboBoxForDiceRound[2].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[2].getValue());
-        });
-        comboBoxForDiceRound[3].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[3].getValue());
-        });
-        comboBoxForDiceRound[4].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[4].getValue());
-        });
-        comboBoxForDiceRound[5].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[5].getValue());
-        });
-        comboBoxForDiceRound[6].setOnAction((ActionEvent e) -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[6].getValue());
-        });
-        comboBoxForDiceRound[7].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[7].getValue());
-        });
-        comboBoxForDiceRound[8].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[8].getValue());
-        });
-        comboBoxForDiceRound[9].setOnAction(e -> {
-            System.out.println("Selezionato: " + comboBoxForDiceRound[9].getValue());
-        });
+
 
         //************************CARD*********************************************
         //************************CARD*********************************************
