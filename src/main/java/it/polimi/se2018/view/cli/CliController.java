@@ -9,6 +9,7 @@ import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
 import it.polimi.se2018.network.client.Client;
+import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
 import java.awt.*;
@@ -17,6 +18,7 @@ public class CliController implements UIInterface {
 
     private CliMessage cliMessage;
     private CliParser cliParser;
+    private ClientController client;
     private Player player;
     private ObjectivePublicCard[] publicCard;
 
@@ -26,7 +28,8 @@ public class CliController implements UIInterface {
     private Player[] opponentPlayers;
 
 
-    public CliController() {
+    public CliController(ClientController clientController) {
+        client = clientController;
         cliMessage = new CliMessage();
         cliParser = new CliParser();
         cliMessage.splashScreen();
@@ -64,26 +67,34 @@ public class CliController implements UIInterface {
     }
 
     private void initConnection() {
-        cliMessage.showIpRequest();
-        String ip = cliParser.parseIp();
+        boolean flag = false;
+        do {
+            cliMessage.showIpRequest();
+            String ip = cliParser.parseIp();
 
-        cliMessage.showPortRequest();
-        int port = cliParser.parseInt();
+            cliMessage.showPortRequest();
+            int port = cliParser.parseInt();
 
+            if (client.startRMIClient(ip, port)) {
+                flag = true;
+                cliMessage.showConnectionSuccessful();
+                cliMessage.println();
+            } else {
+                cliMessage.showConnectionFailed();
+            }
 
+        } while (!flag);
     }
 
     private void login() {
         boolean flag = false;
-
         String name = "";
         while (!flag) {
             cliMessage.showInsertNickname();
             name = cliParser.parseNickname();
-            try {
-                // client.login(name);
+            if (client.login(name)) {
                 flag = true;
-            } catch (Exception ex) {
+            } else {
                 cliMessage.showNicknameExists();
             }
         }

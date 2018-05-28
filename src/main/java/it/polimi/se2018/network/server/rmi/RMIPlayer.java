@@ -14,8 +14,9 @@ public class RMIPlayer extends RemotePlayer {
     // Interfaccia del Client
     private transient IRMIClient iRMIClient;
 
+
     public RMIPlayer(IRMIClient iRMIClient) {
-        this.iRMIClient=iRMIClient;
+        this.iRMIClient = iRMIClient;
     }
 
     @Override

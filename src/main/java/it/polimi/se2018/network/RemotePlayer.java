@@ -1,6 +1,5 @@
 package it.polimi.se2018.network;
 
-import it.polimi.se2018.model.Player;
 import javafx.beans.Observable;
 
 /**
@@ -8,33 +7,55 @@ import javafx.beans.Observable;
  *
  * @author DavideMammarella
  */
-public abstract class RemotePlayer extends Player implements Observable {
+public abstract class RemotePlayer implements Observable {
 
     //Riferimento alla partita in cui è il giocatore
     private transient GameRoom gameRoom;
 
     private String nickname;
 
+    private int playerId;
+
+    protected RemotePlayer() {
+        super();
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
-    protected RemotePlayer(){super();}
-
-    /**
-     * Create the reference on what game the player is in.
-     * @param gameRoom game where the players is in.
-     */
-    public void setGameRoom(GameRoom gameRoom){
-        this.gameRoom=gameRoom;
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
 
     /**
      * Return the reference on what game the player is in.
+     *
      * @return the game of the player, null otherwise
      */
-    public GameRoom getGameRoom(){
+    public GameRoom getGameRoom() {
         return this.gameRoom;
+    }
+
+    /**
+     * Create the reference on what game the player is in.
+     *
+     * @param gameRoom game where the players is in.
+     */
+    public void setGameRoom(GameRoom gameRoom) {
+        this.gameRoom = gameRoom;
     }
 
     //------------------------------------------------------------------------------------------------------------------

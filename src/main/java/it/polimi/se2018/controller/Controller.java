@@ -8,17 +8,18 @@ import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.network.GameRoom;
 import it.polimi.se2018.network.RemotePlayer;
+import it.polimi.se2018.network.server.ServerController;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
 /**
- *
- * @author DavideMammarella
+ * @author Matteo Formentin
+ * @author Davide Mammarella
  */
 
-public class Controller implements Runnable{
+public class Controller implements Runnable {
     private GameBoard gameBoard;
     private Model model; //the class that can call the view for
     private List<Observable> view;
@@ -26,7 +27,7 @@ public class Controller implements Runnable{
     private boolean waitResponse;
 
     //GameRoom in cui sta avvenendo la partita
-    private GameRoom gameRoom;
+    private ServerController server;
 
     //Player
     private ArrayList<RemotePlayer> players;
@@ -35,18 +36,12 @@ public class Controller implements Runnable{
      * Controller constructor.
      *
      * @param gameRoom room where the game will be played.
-     * @param players array list of players in the room.
-     * @author DavideMammarella
+     * @param players  array list of players in the room.
+     * @author Davide Mammarella
      */
-    public Controller(GameRoom gameRoom, ArrayList<RemotePlayer> players){
-        this.gameRoom=gameRoom;
-
-        this.players=new ArrayList<>();
-        for (int i=0; i<players.size();i++){
-            RemotePlayer player = this.gameRoom.getPlayersArrayList().get(i);
-            this.players.add(player);
-        }
-
+    public Controller(ServerController server) {
+        this.server = server;
+        System.out.println("CONTROLLER CREATED!!!!!!!!!!!");
     }
 
     // EX UPDATE
@@ -72,13 +67,13 @@ public class Controller implements Runnable{
 
     public void startNewGame(String[] roomPlayers, int indexFirstPlayer) {
         //init game of card arrays & FactoryDice
-        try{
+        try {
             gameBoard = new GameBoard(roomPlayers); //crea il gioco fisico e prepara le 4 window pattern per ogni player
             model = new Model(gameBoard);
             playerok = 0;
             waitResponse = true;
             //To All views -> display which window pattern to Pick
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
     }

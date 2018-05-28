@@ -1,12 +1,15 @@
 package it.polimi.se2018.network.server;
 
-import it.polimi.se2018.network.GameRoom;
+import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -15,25 +18,38 @@ import java.util.HashMap;
  *
  * @author DavideMammarella
  */
-public class Server implements ServerController{
+public class Server implements ServerController {
 
     //Porta su cui si appoggierà la comunicazione Socket
-    public static final int SOCKET_PORT=16180;
+    public static final int SOCKET_PORT = 16180;
     //Porta su cui si appoggierà la comunicazione RMI
-    public static final int RMI_PORT=31415;
+    public static final int RMI_PORT = 31415;
 
     // Socket Server
     private SocketServer socketServer;
     // RMI Server
     private RMIServer rmiServer;
 
-    // Lista Partite
-    private ArrayList<GameRoom> gameRooms;
-    //Giocatori connessi al server <username, RemotePlayer>
-    private HashMap<String,RemotePlayer> players;
-
     //MUTEX usato per gestire un login alla volta (senza questo potrebbe crearsi congestione durante il login)
     private static final Object PLAYERS_MUTEX = new Object();
+    // NUM MINIMO DI GIOCATORI PER PARTITA
+    public static final int minPlayers = 2;
+    // NUM MASSIMO DI GIOCATORI PER PARTITA
+    public static final int maxPlayers = 4;
+    // CONTATORE STANZA
+    private static int roomCounter = 0;
+    //GIOCATORI NELLA STANZA
+    private final ArrayList<RemotePlayer> players;
+    ServerController serverController;
+    boolean flag = true;
+    // GAME DELLA ROOM
+    private Controller game;
+    // TIME
+    private long timeout;
+
+    //STATO STANZA
+    private boolean roomJoinable;
+
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -43,12 +59,29 @@ public class Server implements ServerController{
      * Server Constructor.
      */
     // ORA SOLO RMI, MANCA EXCEPTION
-    public Server(){
-        this.players = new HashMap<>();
-        this.gameRooms = new ArrayList<>();
-
+    public Server() {
         rmiServer = new RMIServer(this);
         //socketServer = new SocketServer(this);
+        roomJoinable = true;
+        roomCounter++;
+        players = new ArrayList<RemotePlayer>();
+        //roomStartTimeout upload
+        try {
+            // LOAD FROM PROPERTIES
+            Properties configProperties = new Properties();
+
+            String config = "src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
+            FileInputStream input = new FileInputStream(config);
+
+            configProperties.load(input);
+            //*1000 per convertire in millisecondi
+            timeout = Long.parseLong(configProperties.getProperty("roomStartTimeout")) * 1000;
+            System.out.println(configProperties.getProperty("roomStartTimeout"));
+        } catch (IOException e) {
+            System.out.println("Sorry, file can't be found... Using default");
+            timeout = 120 * 1000;
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -79,7 +112,7 @@ public class Server implements ServerController{
      */
     // int socketPort
     // socketServer.StartServer (socketPort)
-    public void startServer(int rmiPort) throws Exception{
+    public void startServer(int rmiPort) throws Exception {
         System.out.println("RMI Server started...");
         rmiServer.startServer(rmiPort);
     }
@@ -90,41 +123,58 @@ public class Server implements ServerController{
 
     /**
      * Log the user to the Server with the username.
-     * @param nickname name used for the player.
+     *
      * @param remotePlayer reference to RMI or Socket Player
-     * @return true if the user is logged, false otherwise
+     * @return true if the user is logged, false otherwise (logged only if nickname doesn't exists)
      */
     //CONSIDERA IL CASO DEL RI LOGIN ELSE IF
     @Override
-    public boolean login(String nickname, RemotePlayer remotePlayer) {
-        synchronized (PLAYERS_MUTEX){
-            if(!players.containsKey(nickname)){
-                players.put(nickname, remotePlayer);
-                remotePlayer.setNickName(nickname);
-                this.joinRoom(remotePlayer);
-                System.out.println("Player logged to the room...");
+    public boolean login(RemotePlayer remotePlayer) {
+        synchronized (PLAYERS_MUTEX) {
+            if (roomJoinable && !checkPlayerNicknameExists(remotePlayer.getNickname())) {
+                players.add(remotePlayer);
+                System.out.println("Player added...");
+                if (players.size() == minPlayers) {
+                    // FAI PARTIRE IL TEMPO DI ATTESA
+                    startTimer();
+                } else if (players.size() == maxPlayers) {
+                    startGame();
+                }
                 return true;
             } else {
-                return false;
+                System.out.println("player esiste");
+                return false; //game is complete or nickname already exists
             }
+
         }
     }
 
-    /**
-     * Add the player to the room.
-     *
-     * @param remotePlayer player that will be added.
-     */
-    public void joinRoom(RemotePlayer remotePlayer){
-        GameRoom room=new GameRoom();
-        System.out.println("Room created...");
-        this.gameRooms.add(room);
-        room.addPlayer(remotePlayer);
+    public void startTimer() {
+        System.out.println("Timeout started...");
+        new Thread(new Timer(timeout, this)).start();
+
+    }
+
+    public void startGame() {
+        game = new Controller(this);
+        System.out.println("Closing Room...");
+        roomJoinable = false;
     }
 
     @Override
-    public RemotePlayer getPlayer(String nickname) {
-        return players.get(nickname);
+    public void sendEventToController(EventView eventView) {
+
+    }
+
+    private boolean checkPlayerNicknameExists(String nickname) {
+        for (RemotePlayer player : players) {
+            if (player.getNickname().equals(nickname)) {
+                return true;
+            }
+
+        }
+        return false;
+
     }
 
     // TEORICAMENTE BASTA METODI

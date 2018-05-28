@@ -23,18 +23,34 @@ class CliMessage {
         AnsiConsole.systemInstall();
     }
 
+    void println() {
+        AnsiConsole.out.println();
+    }
+
     void splashScreen() {
         AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("BENVENUTO").fg(BLUE).a(" su").fg(GREEN).a(" SAGRADA").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Un divertente gioco di dadi implementato da").fg(GREEN).a(" Matteo Formentin,").fg(BLUE).a(" Luca Genoni").fg(DEFAULT).a(" e").fg(RED).a(" Davide Mammarella"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per iniziare"));
     }
 
+    //--------------------------
+    //  CONNECTION MESSAGES
+    //--------------------------
     void showIpRequest() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci indirizzo ip del server: "));
     }
 
     void showPortRequest() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci porta del server: "));
+    }
+
+    void showConnectionSuccessful() {
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Connesso al Server!"));
+    }
+
+    void showConnectionFailed() {
+        AnsiConsole.out.println(ansi().fg(RED).a("Impossibile connettersi al server! Riprova"));
+
     }
 
     void showInsertNickname() {
@@ -44,13 +60,15 @@ class CliMessage {
     void showWelcomeNickname(String nickname) {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Benvenuto ").fg(BLUE).a(nickname));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Registrato nella lobby. Attendi che tutti i giocatori siano connessi. "));
-
     }
 
     void showNicknameExists() {
         AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("Esiste già un giocatore con il tuo nome. Scegline un altro."));
     }
 
+    //--------------------------
+    //  GAME MESSAGES
+    //--------------------------
     void showWindowPatternCard(WindowPatternCard card) {
         AnsiConsole.out().println();
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Nome: " + card.getName()));
@@ -156,6 +174,10 @@ class CliMessage {
 
         AnsiConsole.out.print(ansi().fg(color).a(dice.getValue()));
     }
+
+    //--------------------------
+    //  MENU MESSAGES
+    //--------------------------
 
     void showYourTurnScreen() {
         AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));

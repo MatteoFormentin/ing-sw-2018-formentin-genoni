@@ -2,6 +2,7 @@ package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.event.list_event.EventView;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 /**
@@ -76,7 +77,7 @@ public abstract class AbstractClient {
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    public abstract void connectToServer();
+    public abstract void connectToServer() throws RemoteException, NotBoundException;
 
     public abstract void login(String nickname) throws RemoteException;
 

@@ -29,13 +29,13 @@ public interface IRMIServer extends Remote {
      * @param iRMIClient client associated to the player.
      * @return username that define the player.
      */
-    boolean login(String nickname, IRMIClient iRMIClient) throws RemoteException;
+    void login(String nickname, IRMIClient iRMIClient) throws RemoteException;
 
     /**
      * Remote method used to send an object to the Server with request to set off an event.
      *
-     * @param nickname name of the player.
      * @param eventView object that will use the server to set off the event associated.
      */
-    void sendEvent(String nickname, EventView eventView) throws RemoteException;
+    void sendEventToController(EventView eventView) throws RemoteException;
 }
+

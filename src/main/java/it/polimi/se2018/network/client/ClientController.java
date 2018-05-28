@@ -20,7 +20,7 @@ public interface ClientController {
      *
      * @param nickname name used for the player.
      */
-    void login(String nickname);
+    boolean login(String nickname);
 
     /**
      * Send to the Server the request to unleash an event.
@@ -29,7 +29,8 @@ public interface ClientController {
      */
     void unleashEvent(EventView eventView);
 
-    //------------------------------------------------------------------------------------------------------------------
+
+    boolean startRMIClient(String serverIpAddress, int rmiPort);
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     // NOTIFY
     //------------------------------------------------------------------------------------------------------------------

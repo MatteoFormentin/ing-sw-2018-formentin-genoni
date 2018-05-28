@@ -35,10 +35,10 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      *
      * @param clientController client interface, used as
      *                         controller to communicate with the client.
-     * @param serverIpAddress server address.
-     * @param serverPort port used from server to communicate.
+     * @param serverIpAddress  server address.
+     * @param serverPort       port used from server to communicate.
      */
-    public RMIClient(ClientController clientController, String serverIpAddress, int serverPort){
+    public RMIClient(ClientController clientController, String serverIpAddress, int serverPort) {
         super(clientController, serverIpAddress, serverPort);
     }
 
@@ -50,18 +50,11 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      * Estabilish a connection with the RMI Registry (on the server).
      */
     // SISTEMA EXCEPTION
-    public void connectToServer(){
-        Registry registry = null;
-        try {
-            registry = LocateRegistry.getRegistry(getServerIpAddress(), getServerPort());
-            iRMIServer = (IRMIServer) registry.lookup("IRMIServer");
-            UnicastRemoteObject.exportObject(this, 0);
-            System.out.println("RMI Client Connected!");
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        }
+    public void connectToServer() throws RemoteException, NotBoundException {
+        Registry registry;
+        registry = LocateRegistry.getRegistry(getServerIpAddress(), getServerPort());
+        iRMIServer = (IRMIServer) registry.lookup("IRMIServer");
+        UnicastRemoteObject.exportObject(this, 0);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -75,13 +68,8 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      * @param nickname name used for the player.
      */
     @Override
-    public void login(String nickname){
-        try {
-            iRMIServer.login(nickname, this);
-        } catch (RemoteException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+    public void login(String nickname) throws RemoteException {
+        iRMIServer.login(nickname, this);
     }
 
     /**
@@ -89,13 +77,8 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      *
      * @param eventView object that will use the server to unleash the event associated.
      */
-    public void sendEvent(EventView eventView){
-        try{
-            iRMIServer.sendEvent(this.nickname,eventView);
-        } catch (RemoteException e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
+    public void sendEvent(EventView eventView) throws RemoteException {
+        iRMIServer.sendEventToController(eventView);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -111,3 +94,4 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     */
 
 }
+

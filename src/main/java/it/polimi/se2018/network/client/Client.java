@@ -2,6 +2,7 @@ package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
+import it.polimi.se2018.view.cli.CliController;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -13,7 +14,7 @@ import it.polimi.se2018.network.client.rmi.RMIClient;
 public class Client implements ClientController{
 
     // Classe che rappresenta il client selezionato
-    private AbstractClient client;
+    private AbstractClient abstractClient;
     // Interfaccia utilizzata per inviare eventi a CLI o GUI (a seconda del tipo di interfaccia utilizzata per il client)
     //private ClientController ui;
 
@@ -51,9 +52,11 @@ public class Client implements ClientController{
         int rmiPort = serverRMIPort;
 
         try {
-            serverIpAddress = args[0];
-            rmiPort = Integer.parseInt(args[0]);
-            //ClientController.Client(serverIpAddress,rmiPort);
+            /*serverIpAddress = args[0];
+            rmiPort = Integer.parseInt(args[0]);*/
+
+            ClientController client = new Client();
+            CliController cliController = new CliController(client);
         } catch (Exception e){
             System.exit(0);
         }
@@ -65,15 +68,12 @@ public class Client implements ClientController{
         startRMIClient(serverIpAddress, rmiPort);
     }
 
-    private boolean startRMIClient (String serverIpAddress, int rmiPort){
+    public boolean startRMIClient(String serverIpAddress, int rmiPort) {
         try {
-            client = new RMIClient(this, serverIpAddress, rmiPort);
-            client.connectToServer();
-            System.out.println("RMI connection estabilished...");
+            abstractClient = new RMIClient(this, serverIpAddress, rmiPort);
+            abstractClient.connectToServer();
             return true;
         }catch (Exception e){
-            System.out.println(e.getMessage());
-            e.printStackTrace();
             return false;
         }
     }
@@ -96,14 +96,13 @@ public class Client implements ClientController{
      *
      * @param nickname name used for the player.
      */
-    public void login(String nickname){
+    public boolean login(String nickname) {
         try {
-            client.login(nickname);
+            abstractClient.login(nickname);
             this.nickname = nickname;
-            System.out.println(nickname+"is logged.");
+            return true;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            return false;
         }
     }
 
@@ -114,7 +113,7 @@ public class Client implements ClientController{
      */
     public void unleashEvent(EventView eventView){
         try {
-            client.sendEvent(eventView);
+            abstractClient.sendEvent(eventView);
         } catch (Exception e) {
             e.printStackTrace();
         }

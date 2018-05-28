@@ -1,6 +1,9 @@
 package it.polimi.se2018.network.server;
 
+import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.RemotePlayer;
+
+import java.rmi.RemoteException;
 
 /**
  * Interface based on the Abstract Factory Design Pattern.
@@ -19,25 +22,14 @@ public interface ServerController {
 
     /**
      * Log the user to the Server with the username.
-     * @param nickname name used for the player.
-     * @param remotePlayer reference to RMI or Socket Player
-     */
-    boolean login (String nickname, RemotePlayer remotePlayer);
-
-    /**
-     * Getter for RemotePlayer.
      *
-     * @param nickname name used for the player.
-     * @return RemotePlayer associated to the username.
+     * @param remotePlayer reference to RMI or Socket Playerz
      */
-    RemotePlayer getPlayer(String nickname);
+    boolean login(RemotePlayer remotePlayer);
 
-    /**
-     * Add the player to the room.
-     *
-     * @param remotePlayer player that will be added.
-     */
-    void joinRoom(RemotePlayer remotePlayer);
+    void startGame();
+
+    void sendEventToController(EventView eventView);
 
     // BASTA METODI
 }
