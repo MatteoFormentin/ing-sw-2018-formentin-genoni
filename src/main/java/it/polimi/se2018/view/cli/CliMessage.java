@@ -24,13 +24,31 @@ class CliMessage {
     }
 
     void splashScreen() {
-        AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("WELCOME").fg(BLUE).a(" to").fg(GREEN).a(" SAGRADA").reset());
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("A game implemented by").fg(GREEN).a(" Matteo Formentin").fg(BLUE).a(" Luca Genoni").fg(DEFAULT).a(" and").fg(RED).a(" Davide Mammarella"));
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Press a button to start"));
+        AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("BENVENUTO").fg(BLUE).a(" su").fg(GREEN).a(" SAGRADA").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Un divertente gioco di dadi implementato da").fg(GREEN).a(" Matteo Formentin,").fg(BLUE).a(" Luca Genoni").fg(DEFAULT).a(" e").fg(RED).a(" Davide Mammarella"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per iniziare"));
+    }
+
+    void showIpRequest() {
+        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci indirizzo ip del server: "));
+    }
+
+    void showPortRequest() {
+        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci porta del server: "));
     }
 
     void showInsertNickname() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci il tuo nome: "));
+    }
+
+    void showWelcomeNickname(String nickname) {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Benvenuto ").fg(BLUE).a(nickname));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Registrato nella lobby. Attendi che tutti i giocatori siano connessi. "));
+
+    }
+
+    void showNicknameExists() {
+        AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("Esiste già un giocatore con il tuo nome. Scegline un altro."));
     }
 
     void showWindowPatternCard(WindowPatternCard card) {

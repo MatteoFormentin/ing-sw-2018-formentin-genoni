@@ -8,7 +8,10 @@ import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
+import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.view.UIInterface;
+
+import java.awt.*;
 
 public class CliController implements UIInterface {
 
@@ -26,7 +29,10 @@ public class CliController implements UIInterface {
     public CliController() {
         cliMessage = new CliMessage();
         cliParser = new CliParser();
-
+        cliMessage.splashScreen();
+        cliParser.readSplash();
+        initConnection();
+        login();
     }
 
     public void updatePlayer(Player player) {
@@ -55,6 +61,33 @@ public class CliController implements UIInterface {
 
     public void showMessage(EventView eventView) {
 
+    }
+
+    private void initConnection() {
+        cliMessage.showIpRequest();
+        String ip = cliParser.parseIp();
+
+        cliMessage.showPortRequest();
+        int port = cliParser.parseInt();
+
+
+    }
+
+    private void login() {
+        boolean flag = false;
+
+        String name = "";
+        while (!flag) {
+            cliMessage.showInsertNickname();
+            name = cliParser.parseNickname();
+            try {
+                // client.login(name);
+                flag = true;
+            } catch (Exception ex) {
+                cliMessage.showNicknameExists();
+            }
+        }
+        cliMessage.showWelcomeNickname(name);
     }
 
     private void insertPlayerData() {

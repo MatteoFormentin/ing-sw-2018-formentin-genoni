@@ -16,16 +16,10 @@ import static javafx.application.Application.launch;
 import static javafx.application.Platform.exit;
 
 public class Main{
-
-
-
     public static void main(String[] args) {
         System.out.println("Vuogi giocare con GUI o CLI?");
         //se GUI creami un'istanza dell'applicazione gui
         GUI gui= new GUI();
         gui.setUpGUI(args);
     }
-
-
-
 }

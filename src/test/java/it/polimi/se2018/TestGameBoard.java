@@ -1,6 +1,5 @@
 package it.polimi.se2018;
 
-import com.sun.xml.internal.ws.resources.ClientMessages;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
