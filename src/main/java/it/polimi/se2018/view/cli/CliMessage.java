@@ -67,6 +67,14 @@ class CliMessage {
     }
 
     //--------------------------
+    //  INIT MESSAGES
+    //--------------------------
+
+    void showInitialWindowPatternCardSelection() {
+        AnsiConsole.out.println(ansi().eraseScreen().fg(DEFAULT).a("Digita 0..3 per selezionare la tua card: "));
+    }
+
+    //--------------------------
     //  GAME MESSAGES
     //--------------------------
     void showWindowPatternCard(WindowPatternCard card) {

@@ -1,4 +1,4 @@
-package it.polimi.se2018;
+/*package it.polimi.se2018;
 
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
@@ -151,3 +151,4 @@ public class TestGameBoard {
         // for(int round=1;)
     }
 }
+*/

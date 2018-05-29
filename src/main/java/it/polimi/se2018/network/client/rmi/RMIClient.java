@@ -1,6 +1,7 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.list_event.event_controller.EventController;
+import it.polimi.se2018.list_event.event_view.EventView;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.network.server.rmi.IRMIServer;
@@ -79,7 +80,7 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      */
 
     @Override
-    public void sendEventToController(EventView eventView) throws RemoteException {
+    public void sendEventToController(EventController eventView) throws RemoteException {
         iRMIServer.sendEventToController(eventView);
     }
 

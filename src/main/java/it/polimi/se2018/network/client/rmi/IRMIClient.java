@@ -1,6 +1,7 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.list_event.event_controller.EventController;
+import it.polimi.se2018.list_event.event_view.EventView;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -18,4 +19,5 @@ public interface IRMIClient extends Remote {
 
 
     public void sendEventToView(EventView eventView) throws RemoteException;
+
 }

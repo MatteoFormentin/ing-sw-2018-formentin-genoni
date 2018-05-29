@@ -1,4 +1,6 @@
-package it.polimi.se2018.event.list_event;
+package it.polimi.se2018.list_event.event_view;
+
+import it.polimi.se2018.list_event.event_controller.VisitorEventFromController;
 
 /**
  * Extends EventView, describe the event "select dice from the round track" produced by the view
@@ -10,4 +12,9 @@ public class SelectDiceFromRoundTrack extends EventView {
     //from EventView private Model model;
     int round;
     int index;
+
+    public void accept(VisitorEventFromView visitor) {
+        visitor.visit(this);
+    }
+
 }

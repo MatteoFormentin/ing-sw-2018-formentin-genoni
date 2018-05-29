@@ -1,6 +1,7 @@
 package it.polimi.se2018.network.client;
 
-import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.list_event.event_controller.EventController;
+import it.polimi.se2018.list_event.event_view.EventView;
 
 import java.rmi.RemoteException;
 
@@ -29,7 +30,7 @@ public interface ClientController {
      *
      * @param eventView object that will use the server to unleash the event associated.
      */
-    void sendEventToController(EventView eventView);
+    void sendEventToController(EventController eventView);
 
     boolean startRMIClient(String serverIpAddress, int rmiPort);
 

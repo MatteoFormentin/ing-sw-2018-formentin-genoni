@@ -14,7 +14,6 @@ import it.polimi.se2018.model.dice.DiceStack;
  */
 public class Player {
     private int indexInGame;
-    private String nickName;
     private int favorToken;
     private int points;
     private ObjectivePrivateCard privateObject;
@@ -29,7 +28,6 @@ public class Player {
 
     public Player() {
         indexInGame = 0;
-        nickName = "Mr. Nessuno, i don't deserve a hand";
         favorToken = 0;
         points = 0;
         privateObject = null;
@@ -47,9 +45,8 @@ public class Player {
      * @param nickname of the player
      * @param indexInGame of the player if needed
      */
-     Player(String nickname, int indexInGame) {
+    Player(int indexInGame) {
         this.indexInGame = indexInGame;
-        this.nickName = nickname;
         favorToken = 0;
         points = 0;
         privateObject = null;
@@ -87,10 +84,6 @@ public class Player {
         return indexInGame;
     }
 
-    public String getNickName() {
-        return nickName;
-    }
-
     public int getFavorToken() {
         return favorToken;
     }
@@ -101,6 +94,10 @@ public class Player {
 
     public ObjectivePrivateCard getPrivateObject() {
         return privateObject;
+    }
+
+    public WindowPatternCard[] getThe4WindowPattern() {
+        return the4WindowPattern;
     }
 
     public WindowPatternCard getPlayerWindowPattern() {
@@ -132,9 +129,6 @@ public class Player {
     //************************************setter**********************************************
 
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
 
     public void setIndexInGame(int indexInGame) {
         this.indexInGame = indexInGame;

@@ -1,4 +1,6 @@
-package it.polimi.se2018.event.list_event;
+package it.polimi.se2018.list_event.event_view;
+
+import it.polimi.se2018.list_event.event_controller.VisitorEventFromController;
 
 /**
  * Extends EventView, describe the event "select dice from the draft pool" produced by the view
@@ -35,4 +37,9 @@ public class InsertDice extends EventView {
     public void setIndex(int index) {
         this.index = index;
     }
+
+    public void accept(VisitorEventFromView visitor) {
+        visitor.visit(this);
+    }
+
 }

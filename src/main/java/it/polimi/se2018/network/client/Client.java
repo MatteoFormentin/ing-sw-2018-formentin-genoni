@@ -1,11 +1,10 @@
 package it.polimi.se2018.network.client;
 
-import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.list_event.event_controller.EventController;
+import it.polimi.se2018.list_event.event_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
-
-import java.rmi.RemoteException;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -107,7 +106,7 @@ public class Client implements ClientController{
      *
      * @param eventView object that will use the server to unleash the event associated.
      */
-    public void sendEventToController(EventView eventView){
+    public void sendEventToController(EventController eventView) {
         try {
             abstractClient.sendEventToController(eventView);
         } catch (Exception e) {

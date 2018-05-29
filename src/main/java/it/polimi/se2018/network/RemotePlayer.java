@@ -1,6 +1,6 @@
 package it.polimi.se2018.network;
 
-import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.list_event.event_view.EventView;
 import it.polimi.se2018.network.server.Server;
 import javafx.beans.Observable;
 

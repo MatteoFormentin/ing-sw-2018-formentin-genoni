@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.server.rmi;
 
-import it.polimi.se2018.event.list_event.EventView;
-import it.polimi.se2018.network.RemotePlayer;
+import it.polimi.se2018.list_event.event_controller.EventController;
+import it.polimi.se2018.list_event.event_view.EventView;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
@@ -95,7 +95,7 @@ public class RMIServer extends AbstractServer implements IRMIServer {
      * @param eventView object that will use the server to unleash the event associated.
      */
     @Override
-    public void sendEventToController(EventView eventView) {
+    public void sendEventToController(EventController eventView) {
         getServerController().sendEventToController(eventView);
     }
 }

@@ -3,12 +3,14 @@ package it.polimi.se2018.model.card.window_pattern_card;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
+import java.io.Serializable;
+
 /**
  * Class that define the Window Pattern Card.
  *
  * @author Luca Genoni
  */
-public class WindowPatternCard{
+public class WindowPatternCard implements Serializable {
     private String name;
     private int difficulty;
     private Cell[][] matrix;

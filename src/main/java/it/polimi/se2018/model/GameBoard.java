@@ -36,16 +36,10 @@ public class GameBoard extends Observable {
     private FactoryDice factoryDiceForThisGame; //nobody can see it
 
     /**
-     * constructor for the gameBoard. Contain the preparation of the game, need to set the name of each player.
-     *
-     * @param nickNamePlayers  an array of String with the name of each player
+     * constructor for the gameBoard. Contain the preparation of the game, nee
      */
-    public GameBoard(String[] nickNamePlayers) throws NumberOfPlayerException, NickNameOfPlayerNullException {
+    public GameBoard(int number) {
         stopGame = true;
-        if (nickNamePlayers.length < 2 || nickNamePlayers.length > 4) throw new NumberOfPlayerException();
-        for (int i = 0; i < nickNamePlayers.length; i++) {
-            if (nickNamePlayers[i]==null) throw new NickNameOfPlayerNullException();
-        }
         currentRound = 0;
         currentTurn = 1;
         roundTrack = new DiceStack[10];// don't need to be initialized, they take the reference of from the dicePool
@@ -54,12 +48,12 @@ public class GameBoard extends Observable {
         factoryDiceForThisGame = new BalancedFactoryDice();// here for change the factory
         Deck deck = Deck.getDeck();
 
-        player = new Player[nickNamePlayers.length];
+        player = new Player[number];
 
 
         //setUp player
-        for (int i = 0; i < nickNamePlayers.length; i++) {
-            player[i] = new Player(nickNamePlayers[i], i);
+        for (int i = 0; i < number; i++) {
+            player[i] = new Player(i);
             player[i].setPrivateObject(deck.drawObjectivePrivateCard());
             WindowPatternCard[] window = new WindowPatternCard[4];
             for (int n = 0; n < 4; n++) {
