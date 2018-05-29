@@ -73,11 +73,11 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     }
 
     /**
-     * Send to the Server the request to unleash an event.
+     * Send to the server the request to unleash an event.
      *
      * @param eventView object that will use the server to unleash the event associated.
      */
-    public void sendEvent(EventView eventView) throws RemoteException {
+    public void sendEventToController(EventView eventView) throws RemoteException {
         iRMIServer.sendEventToController(eventView);
     }
 
@@ -88,8 +88,8 @@ public class RMIClient extends AbstractClient implements IRMIClient {
 
     /*
     @Override
-    public void notify(EventUpdate eventUpdate){
-        getClientController().update(eventUpdate);
+    public void notifyUpdateToView(EventUpdate eventUpdate){
+        getClientController().sendUpdateToView(eventUpdate);
     }
     */
 

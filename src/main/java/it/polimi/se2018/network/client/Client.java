@@ -79,15 +79,6 @@ public class Client implements ClientController{
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // GETTER
-    //------------------------------------------------------------------------------------------------------------------
-
-    // GETTER PER IL NICKNAME
-    public String getNickname(){
-        return this.nickname;
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
@@ -107,13 +98,13 @@ public class Client implements ClientController{
     }
 
     /**
-     * Send to the Server the request to unleash an event.
+     * Send to the server the request to unleash an event.
      *
      * @param eventView object that will use the server to unleash the event associated.
      */
-    public void unleashEvent(EventView eventView){
+    public void sendEventToController(EventView eventView){
         try {
-            abstractClient.sendEvent(eventView);
+            abstractClient.sendEventToController(eventView);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -125,7 +116,22 @@ public class Client implements ClientController{
     //------------------------------------------------------------------------------------------------------------------
 
     /*
-    public void notify(EventUpdate eventUpdate)
+    public void sendUpdateToView(EventUpdate eventUpdate){
+    // GESTIONE UPDATE
+    }
      */
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD FOR SUPPORT (GET, SET, CHECK)
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Getter for nickname.
+     *
+     * @return nickname of the player associated to the client
+     */
+    public String getNickname(){
+        return this.nickname;
+    }
 
 }

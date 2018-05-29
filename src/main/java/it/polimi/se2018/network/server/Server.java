@@ -15,6 +15,7 @@ import java.util.Properties;
  * Class based on the Abstract Factory Design Pattern.
  * This class define the server side of the game.
  * This class implements ServerController to have basic methods for RMI and Socket Server.
+ * This class is used like a Room on the server, it include one Game (Controller) and multiple players.
  *
  * @author DavideMammarella
  */
@@ -84,11 +85,15 @@ public class Server implements ServerController {
         }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // SERVER STARTER
+    //------------------------------------------------------------------------------------------------------------------
+
     /**
      * Starter for the server.
      * This method start the server and put it listen on the RMI port.
      *
-     * @param args parameters for the connection
+     * @param args parameters used for the connection.
      */
     // ORA SOLO RMI, MANCA EXCEPTION
     public static void main(String[] args) {
@@ -108,13 +113,38 @@ public class Server implements ServerController {
      * Put the server on listen.
      * The server will connect only with the technology selected from client.
      *
-     * @param rmiPort port used on RMI connection
+     * @param rmiPort port used on RMI connection.
      */
     // int socketPort
     // socketServer.StartServer (socketPort)
     public void startServer(int rmiPort) throws Exception {
         System.out.println("RMI Server started...");
         rmiServer.startServer(rmiPort);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // GAME STARTER
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Start the thread timer.
+     * Used as maximum time for each player to join the room.
+     */
+    public void startTimer() {
+        System.out.println("Timeout started...");
+        new Thread(new Timer(timeout, this)).start();
+
+    }
+
+    /**
+     * Starter for the game.
+     * This method start the game and close the room.
+     */
+    public void startGame() {
+        System.out.println("Starting game...");
+        game = new Controller(this);
+        System.out.println("Closing Room...");
+        roomJoinable = false;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -149,23 +179,27 @@ public class Server implements ServerController {
         }
     }
 
-    public void startTimer() {
-        System.out.println("Timeout started...");
-        new Thread(new Timer(timeout, this)).start();
-
-    }
-
-    public void startGame() {
-        game = new Controller(this);
-        System.out.println("Closing Room...");
-        roomJoinable = false;
-    }
-
+    /**
+     * Send to the server the request to unleash an event.
+     *
+     * @param eventView object that will use the server to unleash the event associated.
+     */
     @Override
     public void sendEventToController(EventView eventView) {
 
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD FOR SUPPORT (GET, SET, CHECK)
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Checker for player.
+     * This method check if exist a player with the submitted nickname.
+     *
+     * @param nickname name used for the player.
+     * @return true if the nickname already exists, false otherwise.
+     */
     private boolean checkPlayerNicknameExists(String nickname) {
         for (RemotePlayer player : players) {
             if (player.getNickname().equals(nickname)) {
@@ -176,6 +210,4 @@ public class Server implements ServerController {
         return false;
 
     }
-
-    // TEORICAMENTE BASTA METODI
 }

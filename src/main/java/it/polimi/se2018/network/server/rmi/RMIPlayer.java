@@ -36,8 +36,8 @@ public class RMIPlayer extends RemotePlayer {
 
     /*
     @Override
-    public void notify(EventUpdate eventUpdate){
-        ClientController.notify(eventUpdate);
+    public void sendUpdateToView(EventUpdate eventUpdate){
+        ClientController.notifyUpdateToView(eventUpdate);
     }
     */
 }

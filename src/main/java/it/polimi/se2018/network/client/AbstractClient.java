@@ -81,7 +81,5 @@ public abstract class AbstractClient {
 
     public abstract void login(String nickname) throws RemoteException;
 
-    public abstract void sendEvent(EventView eventView) throws RemoteException;
-
-    // BASTA METODI
+    public abstract void sendEventToController(EventView eventView) throws RemoteException;
 }

@@ -1,5 +1,6 @@
 package it.polimi.se2018.network;
 
+import it.polimi.se2018.network.server.Server;
 import javafx.beans.Observable;
 
 /**
@@ -10,52 +11,20 @@ import javafx.beans.Observable;
 public abstract class RemotePlayer implements Observable {
 
     //Riferimento alla partita in cui è il giocatore
-    private transient GameRoom gameRoom;
+    private transient Server serverRoom;
 
+    // Nickname del player
     private String nickname;
 
+    // ID del player
     private int playerId;
-
-    protected RemotePlayer() {
-        super();
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public int getPlayerId() {
-        return playerId;
-    }
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
-    }
-
-    /**
-     * Return the reference on what game the player is in.
-     *
-     * @return the game of the player, null otherwise
-     */
-    public GameRoom getGameRoom() {
-        return this.gameRoom;
-    }
-
-    /**
-     * Create the reference on what game the player is in.
-     *
-     * @param gameRoom game where the players is in.
-     */
-    public void setGameRoom(GameRoom gameRoom) {
-        this.gameRoom = gameRoom;
+    protected RemotePlayer() {
+        super();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -65,6 +34,63 @@ public abstract class RemotePlayer implements Observable {
 
     /*
     @Override
-    public abstract void notify(EventUpdate eventUpdate);
+    public abstract void sendUpdateToView(EventUpdate eventUpdate);
     */
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD FOR SUPPORT (GET, SET, CHECK)
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Setter for the server room.
+     *
+     * @param serverRoom game where the players is in.
+     */
+    public void setServerRoom(Server serverRoom) {
+        this.serverRoom = serverRoom;
+    }
+
+    /**
+     * Getter for the server room.
+     *
+     * @return reference on what game the player is in.
+     */
+    public Server getServerRoom() {
+        return this.serverRoom;
+    }
+
+    /**
+     * Setter for nickname.
+     *
+     * @param nickname name used for the player.
+     */
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    /**
+     * Getter for nickname.
+     *
+     * @return name used for the player.
+     */
+    public String getNickname() {
+        return nickname;
+    }
+
+    /**
+     * Setter for player ID.
+     * @param playerId id associated to the player.
+     */
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
+
+    /**
+     * Getter for player ID.
+     *
+     * @return player ID.
+     */
+    public int getPlayerId() {
+        return playerId;
+    }
 }

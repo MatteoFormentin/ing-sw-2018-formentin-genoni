@@ -27,16 +27,17 @@ public interface ClientController {
      *
      * @param eventView object that will use the server to unleash the event associated.
      */
-    void unleashEvent(EventView eventView);
-
+    void sendEventToController(EventView eventView);
 
     boolean startRMIClient(String serverIpAddress, int rmiPort);
+
+    //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
 
     /*
-    public void notify(EventUpdate eventUpdate)
+    public void sendUpdateToView(EventUpdate eventUpdate)
      */
 
 }

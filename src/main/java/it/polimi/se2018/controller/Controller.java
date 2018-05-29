@@ -6,7 +6,6 @@ import it.polimi.se2018.event.list_event.InsertDice;
 import it.polimi.se2018.event.list_event.UseToolCard;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Model;
-import it.polimi.se2018.network.GameRoom;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
 
@@ -26,7 +25,7 @@ public class Controller implements Runnable {
     private int playerok;
     private boolean waitResponse;
 
-    //GameRoom in cui sta avvenendo la partita
+    //Server in cui si setterà la partita
     private ServerController server;
 
     //Player
@@ -35,8 +34,7 @@ public class Controller implements Runnable {
     /**
      * Controller constructor.
      *
-     * @param gameRoom room where the game will be played.
-     * @param players  array list of players in the room.
+     * @param server server on when the game is on.
      * @author Davide Mammarella
      */
     public Controller(ServerController server) {
@@ -45,7 +43,7 @@ public class Controller implements Runnable {
     }
 
     // EX UPDATE
-    public synchronized void unleashEvent(RemotePlayer player, EventView event) {
+    public void sendEventToController(RemotePlayer player, EventView event) {
         if (event instanceof InsertDice) {
             // gameBoard.
         }

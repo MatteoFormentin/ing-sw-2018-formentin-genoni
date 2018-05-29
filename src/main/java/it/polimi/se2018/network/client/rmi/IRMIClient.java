@@ -14,6 +14,6 @@ public interface IRMIClient extends Remote {
     //------------------------------------------------------------------------------------------------------------------
 
     /*
-    void notify(EventUpdate eventUpdate) throws RemoteException;
+    void notifyUpdateToView(EventUpdate eventUpdate) throws RemoteException;
     */
 }
