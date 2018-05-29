@@ -2,7 +2,10 @@ package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
+import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
+
+import java.rmi.RemoteException;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -16,7 +19,6 @@ public class Client implements ClientController{
     // Classe che rappresenta il client selezionato
     private AbstractClient abstractClient;
     // Interfaccia utilizzata per inviare eventi a CLI o GUI (a seconda del tipo di interfaccia utilizzata per il client)
-    //private ClientController ui;
 
     // INDIRIZZI PER LA COMUNICAZIONE
 
@@ -31,6 +33,9 @@ public class Client implements ClientController{
     private String nickname;
     // Turno della partita (da 1 a 9)
     private int turn;
+
+
+    private static UIInterface view;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -56,7 +61,7 @@ public class Client implements ClientController{
             rmiPort = Integer.parseInt(args[0]);*/
 
             ClientController client = new Client();
-            CliController cliController = new CliController(client);
+            view = new CliController(client);
         } catch (Exception e){
             System.exit(0);
         }
@@ -108,6 +113,11 @@ public class Client implements ClientController{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void sendEventToView(EventView eventView) {
+        view.showMessage(eventView);
     }
 
     //------------------------------------------------------------------------------------------------------------------

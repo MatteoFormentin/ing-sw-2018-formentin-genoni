@@ -3,8 +3,6 @@ package it.polimi.se2018.network.server;
 import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 
-import java.rmi.RemoteException;
-
 /**
  * Interface based on the Abstract Factory Design Pattern.
  * This interface is used as server controller in AbstractServer.
@@ -30,6 +28,8 @@ public interface ServerController {
     void startGame();
 
     void sendEventToController(EventView eventView);
+
+    void sendEventToView(EventView eventView);
 
     // BASTA METODI
 }

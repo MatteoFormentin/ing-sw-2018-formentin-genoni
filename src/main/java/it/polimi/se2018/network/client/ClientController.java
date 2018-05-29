@@ -2,6 +2,8 @@ package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.event.list_event.EventView;
 
+import java.rmi.RemoteException;
+
 /**
  * Interface based on the Abstract Factory Design Pattern.
  * This interface is used as client controller in AbstractClient.
@@ -35,6 +37,8 @@ public interface ClientController {
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
+
+    public void sendEventToView(EventView eventView) throws RemoteException;
 
     /*
     public void sendUpdateToView(EventUpdate eventUpdate)

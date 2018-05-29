@@ -1,6 +1,9 @@
 package it.polimi.se2018.network.client.rmi;
 
+import it.polimi.se2018.event.list_event.EventView;
+
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * Remote interface used for the notify.
@@ -13,7 +16,6 @@ public interface IRMIClient extends Remote {
     // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
 
-    /*
-    void notifyUpdateToView(EventUpdate eventUpdate) throws RemoteException;
-    */
+
+    public void sendEventToView(EventView eventView) throws RemoteException;
 }

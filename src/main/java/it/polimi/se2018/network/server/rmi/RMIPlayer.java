@@ -1,8 +1,11 @@
 package it.polimi.se2018.network.server.rmi;
 
+import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 import javafx.beans.InvalidationListener;
+
+import java.rmi.RemoteException;
 
 /**
  * Class that define the RMI Player.
@@ -29,15 +32,19 @@ public class RMIPlayer extends RemotePlayer {
 
     }
 
+    public IRMIClient getiRMIClient() {
+        return iRMIClient;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
 
-    /*
+    // Chiamato da server -- Se sono un rmiPlayer
     @Override
-    public void sendUpdateToView(EventUpdate eventUpdate){
-        ClientController.notifyUpdateToView(eventUpdate);
+    public void sendEventToView(EventView eventView) throws RemoteException {
+        iRMIClient.sendEventToView(eventView);
     }
-    */
+
 }

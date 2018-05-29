@@ -1,6 +1,7 @@
 package it.polimi.se2018.network.server.rmi;
 
 import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
@@ -97,5 +98,4 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     public void sendEventToController(EventView eventView) {
         getServerController().sendEventToController(eventView);
     }
-
 }

@@ -1,6 +1,7 @@
 package it.polimi.se2018.network.server.rmi;
 
 import it.polimi.se2018.event.list_event.EventView;
+import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 
 import java.rmi.Remote;
@@ -9,7 +10,7 @@ import java.rmi.RemoteException;
 /**
  * Class used to permit remote method invocation.
  * CLIENT -> SERVER
- *
+ * <p>
  * The interface that define the class to export must:
  * Extends Remote Interface
  * Be Public
@@ -25,7 +26,7 @@ public interface IRMIServer extends Remote {
     /**
      * Remote method used to login.
      *
-     * @param nickname name of the player.
+     * @param nickname   name of the player.
      * @param iRMIClient client associated to the player.
      * @return username that define the player.
      */

@@ -73,12 +73,20 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     }
 
     /**
-     * Send to the server the request to unleash an event.
+     * Send to the Server the request to unleash an event.
      *
      * @param eventView object that will use the server to unleash the event associated.
      */
+
+    @Override
     public void sendEventToController(EventView eventView) throws RemoteException {
         iRMIServer.sendEventToController(eventView);
+    }
+
+    //Chiamato dal remotePlayer che è un rmiplayer  dinamico
+    @Override
+    public void sendEventToView(EventView eventView) throws RemoteException {
+        getClientController().sendEventToView(eventView);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -88,8 +96,8 @@ public class RMIClient extends AbstractClient implements IRMIClient {
 
     /*
     @Override
-    public void notifyUpdateToView(EventUpdate eventUpdate){
-        getClientController().sendUpdateToView(eventUpdate);
+    public void notify(EventUpdate eventUpdate){
+        getClientController().update(eventUpdate);
     }
     */
 

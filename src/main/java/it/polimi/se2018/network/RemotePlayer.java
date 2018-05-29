@@ -1,7 +1,10 @@
 package it.polimi.se2018.network;
 
+import it.polimi.se2018.event.list_event.EventView;
 import it.polimi.se2018.network.server.Server;
 import javafx.beans.Observable;
+
+import java.rmi.RemoteException;
 
 /**
  * Class that extends Player adding a Network Level.
@@ -79,6 +82,7 @@ public abstract class RemotePlayer implements Observable {
 
     /**
      * Setter for player ID.
+     *
      * @param playerId id associated to the player.
      */
     public void setPlayerId(int playerId) {
@@ -93,4 +97,6 @@ public abstract class RemotePlayer implements Observable {
     public int getPlayerId() {
         return playerId;
     }
+
+    public abstract void sendEventToView(EventView eventView) throws RemoteException;
 }
