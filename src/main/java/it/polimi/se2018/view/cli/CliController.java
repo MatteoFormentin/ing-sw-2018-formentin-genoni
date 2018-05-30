@@ -1,7 +1,7 @@
 package it.polimi.se2018.view.cli;
 
-import it.polimi.se2018.list_event.event_controller.*;
-import it.polimi.se2018.list_event.event_view.*;
+import it.polimi.se2018.list_event.event_received_by_controller.*;
+import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
@@ -10,7 +10,8 @@ import it.polimi.se2018.model.dice.DiceStack;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
-public class CliController implements UIInterface, ViewVisitor {
+
+public class CliController implements UIInterface,ViewVisitor {
 
     private CliMessage cliMessage;
     private CliParser cliParser;
@@ -36,18 +37,16 @@ public class CliController implements UIInterface, ViewVisitor {
         login();
     }
 
-
-    //VISITOR PATTERN
+    //*****************************************Visitor Pattern************************************************************************
+    //*****************************************Visitor Pattern************************************************************************
+    //*****************************************Visitor Pattern************************************************************************
+    //*****************************************Visitor Pattern************************************************************************
 
     public void showMessage(EventView EventView) {
         EventView.accept(this);
     }
 
-
-    @Override
-    public void visit(EndGame event) {
-
-    }
+    //*******************************************Visit *******************************************************************************
 
     @Override
     public void visit(InitialWindowPatternCard event) {
@@ -57,9 +56,9 @@ public class CliController implements UIInterface, ViewVisitor {
 
         cliMessage.showInitialWindowPatternCardSelection();
         int selection = cliParser.parseInt(4);
-        EventController packet = new SelectInitialWindowPatternCard();
+        EventController packet = new SelectInitialWindowPatternCardController();
         packet.setPlayerId(playerId);
-        ((SelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
+        ((SelectInitialWindowPatternCardController) packet).setSelectedIndex(selection);
         client.sendEventToController(packet);
     }
 
@@ -73,11 +72,65 @@ public class CliController implements UIInterface, ViewVisitor {
         cliMessage.showWaitYourTurnScreen();
     }
 
+    /**
+     * Method to handle the start of the turn
+     *
+     * maybe should receive and process some attribute for able/disable some options
+     * for example: when you place one die the next event from the controller
+     * set the event's boolean insert die to false and the menu won't show this option
+     *
+     * @param event of type startPlayer
+     */
     @Override
     public void visit(StartPlayerTurn event) {
         turn();
     }
 
+    @Override
+    public void visit(EndGame event) {
+        //TODO when the player received the update show the point of all the players
+        //it's cool too if we can make the point accumulated by each Player a class with 7 different fields:
+        // private object, the 3 public object, the remain favor token, the lost points and the total of all
+
+    }
+
+    /**
+     * Receive the Event for select which dice take from the draft pool and send the packet to the controller(throught)
+     * @param event
+     */
+    @Override
+    public void visit(SelectDiceFromDraftpool event){
+        cliMessage.showDiceStack(dicePool);
+        int diceIndex = cliParser.parseInt();
+        SelectDiceFromHandController packet = new SelectDiceFromHandController();
+        packet.setPlayerId(playerId);
+        packet.setIndex(diceIndex);
+        client.sendEventToController(packet);
+    };
+
+    @Override
+    public void visit(SelectCellOfWindowView event) {
+        cliMessage.showInsertDiceRow();
+        int row = cliParser.parseInt();
+        cliMessage.showInsertDiceColumn();
+        int column = cliParser.parseInt();
+        SelectCellOfWindowController packet = new SelectCellOfWindowController();
+        packet.setPlayerId(playerId);
+        packet.setLine(row);
+        packet.setColumn(column);
+        client.sendEventToController(packet);
+    }
+
+    @Override
+    public void visit(SelectToolCard event){
+        // TODO mostrare inserimento dell'indice da 0 a 2 (oppure se decrementato da 1 a 3)
+
+    }
+
+    @Override
+    public void visit(ShowErrorMessage event){
+        //TODO printare a schermo il messaggio d'errore l'evento contiene sia l'eccezione che il messagio scegli quale vuoi ed elimina l'altro
+      }
     //OPERATION HANDLER
     private void initConnection() {
         boolean flag = false;
@@ -130,7 +183,14 @@ public class CliController implements UIInterface, ViewVisitor {
         switch (option) {
             //Place dice
             case 1:
-                insertDice();
+                EventController packet = new InsertDiceController();
+                packet.setPlayerId(playerId);
+                client.sendEventToController(packet);
+                //invio evento piaza insert dice al controller
+                //controller flag Mossa normale
+                //rispondo con il visitor con select drafpool
+                //view da caontroller l'indice controlla flag in base a quello risponde alla view select Cell of window
+                //la view
                 break;
 
             //Use tool card
@@ -139,9 +199,9 @@ public class CliController implements UIInterface, ViewVisitor {
 
             //End turn
             case 3:
-                EventController packet = new EndTurn();
-                packet.setPlayerId(playerId);
-                client.sendEventToController(packet);
+                EventController packet2 = new EndTurnController();
+                packet2.setPlayerId(playerId);
+                client.sendEventToController(packet2);
                 cliMessage.showWaitYourTurnScreen();
                 break;
 
@@ -166,26 +226,4 @@ public class CliController implements UIInterface, ViewVisitor {
         }
     }
 
-    private void insertDice() {
-        cliMessage.showDiceStack(dicePool);
-        int diceIndex = cliParser.parseInt();
-
-        SelectDiceFromHand selectDiceFromHand = new SelectDiceFromHand();
-        selectDiceFromHand.setPlayerId(playerId);
-        selectDiceFromHand.setIndex(diceIndex);
-
-        cliMessage.showInsertDiceRow();
-        int row = cliParser.parseInt();
-        cliMessage.showInsertDiceColumn();
-        int column = cliParser.parseInt();
-
-        InsertDice insertDice = new InsertDice();
-        insertDice.setPlayerId(playerId);
-        insertDice.setRow(row);
-        insertDice.setColumn(column);
-
-        //send packet
-        //wait for server response
-        //show ok-failed
-    }
 }

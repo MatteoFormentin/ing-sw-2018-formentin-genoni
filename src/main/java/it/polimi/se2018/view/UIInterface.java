@@ -1,6 +1,6 @@
 package it.polimi.se2018.view;
 
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.EventView;
 
 public interface UIInterface {
 

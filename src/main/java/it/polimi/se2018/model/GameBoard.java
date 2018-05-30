@@ -6,13 +6,9 @@ import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
-import it.polimi.se2018.model.exception.NickNameOfPlayerNullException;
-import it.polimi.se2018.model.exception.NumberOfPlayerException;
+import it.polimi.se2018.exception.SettingWindowCompleteException;
 
-import java.util.LinkedList;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Vector;
+import java.io.Serializable;
 
 
 /**
@@ -20,7 +16,7 @@ import java.util.Vector;
  *
  * @author Luca Genoni
  */
-public class GameBoard extends Observable {
+public class GameBoard implements Serializable {
     private int currentRound;//can have only the get
     private int currentTurn;//can have only the get
     private int indexCurrentPlayer;//can have only the get
@@ -28,8 +24,6 @@ public class GameBoard extends Observable {
     private int countSetWindow;
     private DiceStack[] roundTrack;//can have only the get
     private Player[] player; //can have only the get(they are created with the constructor )
-    private Vector<Observer> obs;
-    private LinkedList<Observer> view;
     private ToolCard[] toolCard;//can have only the get
     private ObjectivePublicCard[] objectivePublicCard;//can have only the get
     private DiceStack poolDice;//can have only the get
@@ -195,7 +189,7 @@ public class GameBoard extends Observable {
                 if (player[indexPlayer].isFirstTurn()) {
                     player[indexPlayer].endTrun(false);
                 }//else he use a tool card that alter the normal circle
-                while (player[indexPlayer].getHandDice().size()!=0){
+                while (player[indexPlayer].getHandDice().size() != 0) {
                     poolDice.addLast(player[indexPlayer].removeDiceFromHand());
                 }
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
@@ -207,7 +201,7 @@ public class GameBoard extends Observable {
                 if (player[indexPlayer].isFirstTurn()) {
                     player[indexPlayer].endTrun(false);
                 }//else he use a tool card that alter the normal circle
-                while (player[indexPlayer].getHandDice().size()!=0){
+                while (player[indexPlayer].getHandDice().size() != 0) {
                     poolDice.addLast(player[indexPlayer].removeDiceFromHand());
                 }
                 currentTurn++;
@@ -218,7 +212,7 @@ public class GameBoard extends Observable {
                 if (!player[indexPlayer].isFirstTurn()) {
                     player[indexPlayer].endTrun(true);
                 }//else he use a tool card that alter the normal circle
-                while (player[indexPlayer].getHandDice().size()!=0){
+                while (player[indexPlayer].getHandDice().size() != 0) {
                     poolDice.addLast(player[indexPlayer].removeDiceFromHand());
                 }
                 indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
@@ -230,7 +224,7 @@ public class GameBoard extends Observable {
                 if (!player[indexPlayer].isFirstTurn()) {
                     player[indexPlayer].endTrun(true);
                 }//else he use a tool card that alter the normal circle
-                while (player[indexPlayer].getHandDice().size()!=0){
+                while (player[indexPlayer].getHandDice().size() != 0) {
                     poolDice.addLast(player[indexPlayer].removeDiceFromHand());
                 }
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
@@ -290,21 +284,19 @@ public class GameBoard extends Observable {
      * @param indexOfTheWindow of the window selected
      * @return true if all is gone perfectly, false otherwise.
      */
-    public boolean setWindowOfPlayer(int indexOfThePlayer, int indexOfTheWindow) {
-        try {
-
-            //useless check: if(currentRound!=0 && currentTurn!=0)return false;//can't pick a window during a game.... troller
-            if (indexOfThePlayer < 0 || indexOfThePlayer >= player.length) return false;//wrong index
-            if (indexOfTheWindow < 0 || indexOfTheWindow > 3) return false;//wrong index
-            if (player[indexOfThePlayer].getPlayerWindowPattern() != null) return false;//window already picked
-            // ok i set your window
-            player[indexOfThePlayer].choosePlayerWindowPattern(indexOfTheWindow);
-            countSetWindow++;
-            if (countSetWindow == player.length) stopGame = false;
-            return true;
-        } catch (Exception e) {
-            return false;
+    public boolean setWindowOfPlayer(int indexOfThePlayer, int indexOfTheWindow) throws Exception {
+        //useless check: if(currentRound!=0 && currentTurn!=0)return false;//can't pick a window during a game.... troller
+        if (indexOfThePlayer < 0 || indexOfThePlayer >= player.length) return false;//wrong index
+        if (indexOfTheWindow < 0 || indexOfTheWindow > 3) return false;//wrong index
+        if (player[indexOfThePlayer].getPlayerWindowPattern() != null) return false;//window already picked
+        // ok i set your window
+        player[indexOfThePlayer].choosePlayerWindowPattern(indexOfTheWindow);
+        countSetWindow++;
+        if (countSetWindow == player.length) {
+            stopGame = false;
+            throw new SettingWindowCompleteException();
         }
+        return true;
     }
 
 
@@ -315,9 +307,9 @@ public class GameBoard extends Observable {
 //*****************************************metodi del player************************************************************************
 
     /**
-     *  the normal draw of a die from the draftpool
+     * the normal draw of a die from the draftpool
      *
-     * @param indexPlayer who send the request of the move,(it should be the current player)
+     * @param indexPlayer        who send the request of the move,(it should be the current player)
      * @param indexdiceDraftpool
      * @return
      */
@@ -338,7 +330,6 @@ public class GameBoard extends Observable {
     }
 
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @param line
      * @param column
@@ -356,12 +347,11 @@ public class GameBoard extends Observable {
     }
 
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @param cost
      * @return
      */
-    public boolean useToolCard(int indexPlayer, int cost){
+    public boolean useToolCard(int indexPlayer, int cost) {
         try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
@@ -455,10 +445,7 @@ public class GameBoard extends Observable {
     }
 
 
-
-
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
@@ -482,8 +469,7 @@ public class GameBoard extends Observable {
     //*********************************************Tool's method*************************************************
 
     /**
-     *
-     * @param indexPlayer who send the request of the move,(it should be the current player)
+     * @param indexPlayer         who send the request of the move,(it should be the current player)
      * @param line
      * @param column
      * @param adjacentRestriction
@@ -503,7 +489,6 @@ public class GameBoard extends Observable {
     }
 
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @param line
      * @param column
@@ -541,7 +526,6 @@ public class GameBoard extends Observable {
     }*/
 
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
@@ -556,9 +540,8 @@ public class GameBoard extends Observable {
     }
 
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param increase if true increase by 1, if false decrease by 1 the value of the active dice in hand (index 0)
+     * @param increase    if true increase by 1, if false decrease by 1 the value of the active dice in hand (index 0)
      * @return
      */
     public boolean increaseOrDecrease(int indexPlayer, boolean increase) {
@@ -572,7 +555,6 @@ public class GameBoard extends Observable {
     }
 
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
@@ -587,7 +569,6 @@ public class GameBoard extends Observable {
     }
 
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
@@ -608,9 +589,8 @@ public class GameBoard extends Observable {
     //*********************************************Utils*************************************************
 
     /**
-     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param index of the die in hand
+     * @param index       of the die in hand
      * @return
      */
     public boolean selectDiceInHand(int indexPlayer, int index) {

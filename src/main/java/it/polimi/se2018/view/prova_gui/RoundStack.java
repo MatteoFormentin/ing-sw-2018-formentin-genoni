@@ -21,8 +21,16 @@ public class RoundStack {
 
     private ImageView[] diceStackThisRound;
     private static int index;
-/*
-    public static int displayDiceStack(ImageView[] diceStackThisRound){
+            /*StageStyle
+                        UTILITY only _ x
+                        TRANSPARENT NOTHING and no _ o x
+                        UNIFIED boh
+                        UNDECORATED simile a TRANSPARENT ma con sfondo
+              modality
+                        APPLICATION_MODAL can't turn to previus stage and can't move
+                        WINDOW_MODAL
+             */
+    public static void displayRound(ImageView[][] diceStackRound){
         Stage stageMessage = new Stage(StageStyle.UTILITY);
         stageMessage.initModality(Modality.APPLICATION_MODAL);
         Background confirmBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
@@ -30,11 +38,11 @@ public class RoundStack {
         stageMessage.setMinHeight(250);
 
         Label confirmMessage =new Label();
-        confirmMessage.setText(message);
+
         Button yesButton =new Button("Si");
         Button noButton =new Button("No");
         yesButton.setOnAction(e->{
-            return index;
+
             stageMessage.close();
         });
         noButton.setOnAction(e->{
@@ -57,11 +65,10 @@ public class RoundStack {
         stageMessage.showAndWait();
 
 
-        return answer;
     }
 
 
-
+/*
 
     public void activeCell( ImageView[])  {
         imageViewCell[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {

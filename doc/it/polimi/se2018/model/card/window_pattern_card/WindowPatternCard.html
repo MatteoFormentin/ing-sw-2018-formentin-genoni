@@ -236,7 +236,7 @@ extends java.lang.Object</pre>
                                 <td class="colFirst"><code>boolean</code></td>
                                 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a
                                         href="../../../../../../it/polimi/se2018/model/card/window_pattern_card/WindowPatternCard.html#insertDice-int-int-it.polimi.se2018.model.dice.Dice-">insertDice</a></span>&#8203;(int&nbsp;line,
-                                    int&nbsp;column,
+                                    int&nbsp;indexDraftpool,
                                     <a href="../../../../../../it/polimi/se2018/model/dice/Dice.html"
                                        title="class in it.polimi.se2018.model.dice">Dice</a>&nbsp;dice)</code></th>
                                 <td class="colLast">
@@ -251,7 +251,7 @@ extends java.lang.Object</pre>
                                 <td class="colFirst"><code>boolean</code></td>
                                 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a
                                         href="../../../../../../it/polimi/se2018/model/card/window_pattern_card/WindowPatternCard.html#insertDice-int-int-it.polimi.se2018.model.dice.Dice-boolean-boolean-boolean-">insertDice</a></span>&#8203;(int&nbsp;line,
-                                    int&nbsp;column,
+                                    int&nbsp;indexDraftpool,
                                     <a href="../../../../../../it/polimi/se2018/model/dice/Dice.html"
                                        title="class in it.polimi.se2018.model.dice">Dice</a>&nbsp;dice,
                                     boolean&nbsp;adjacentRestriction,
@@ -368,7 +368,7 @@ extends java.lang.Object</pre>
                             <li class="blockList">
                                 <h4>insertDice</h4>
                                 <pre>public&nbsp;boolean&nbsp;insertDice&#8203;(int&nbsp;line,
-                          int&nbsp;column,
+                          int&nbsp;indexDraftpool,
                           <a href="../../../../../../it/polimi/se2018/model/dice/Dice.html"
                              title="class in it.polimi.se2018.model.dice">Dice</a>&nbsp;dice)</pre>
                                 <div class="block">/**
@@ -379,7 +379,7 @@ extends java.lang.Object</pre>
                                 <dl>
                                     <dt><span class="paramLabel">Parameters:</span></dt>
                                     <dd><code>line</code> - index [0,3] of the WindowsPattern</dd>
-                                    <dd><code>column</code> - index [0,4] of the WindowsPattern</dd>
+                                    <dd><code>indexDraftpool</code> - index [0,4] of the WindowsPattern</dd>
                                     <dd><code>dice</code> - to insert in the WindowsPattern</dd>
                                     <dt><span class="returnLabel">Returns:</span></dt>
                                     <dd>true if the insertDice is ok, false if can't insert the dice</dd>
@@ -393,7 +393,7 @@ extends java.lang.Object</pre>
                             <li class="blockList">
                                 <h4>insertDice</h4>
                                 <pre>public&nbsp;boolean&nbsp;insertDice&#8203;(int&nbsp;line,
-                          int&nbsp;column,
+                          int&nbsp;indexDraftpool,
                           <a href="../../../../../../it/polimi/se2018/model/dice/Dice.html"
                              title="class in it.polimi.se2018.model.dice">Dice</a>&nbsp;dice,
                           boolean&nbsp;adjacentRestriction,
@@ -407,7 +407,7 @@ extends java.lang.Object</pre>
                                 <dl>
                                     <dt><span class="paramLabel">Parameters:</span></dt>
                                     <dd><code>line</code> - index [0,3] of the WindowsPattern</dd>
-                                    <dd><code>column</code> - index [0,4] of the WindowsPattern</dd>
+                                    <dd><code>indexDraftpool</code> - index [0,4] of the WindowsPattern</dd>
                                     <dd><code>dice</code> - to insert in the WindowsPattern</dd>
                                     <dd><code>colorRestriction</code> - true if the Restriction need to be respected,
                                         false if it is ignored:

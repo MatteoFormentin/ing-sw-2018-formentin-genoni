@@ -136,7 +136,7 @@ public class WindowPatternCard implements Serializable {
     }
 
     /**
-     * InsertDice for the player or all the restriction on.
+     * InsertDiceController for the player or all the restriction on.
      *
      * @param line   index [0,3] of the WindowsPattern
      * @param column index [0,4] of the WindowsPattern
@@ -156,7 +156,7 @@ public class WindowPatternCard implements Serializable {
     }
 
     /**
-     * InsertDice for the tool card or to negate some restriction.
+     * InsertDiceController for the tool card or to negate some restriction.
      *
      * @param line                index [0,3] of the WindowsPattern
      * @param column              index [0,4] of the WindowsPattern

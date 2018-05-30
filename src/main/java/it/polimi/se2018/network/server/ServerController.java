@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.server;
 
-import it.polimi.se2018.list_event.event_controller.EventController;
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_controller.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 
 /**
@@ -14,7 +14,7 @@ import it.polimi.se2018.network.RemotePlayer;
 public interface ServerController {
 
     //TODO: EXCEPTION
-
+    void startGame();
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------

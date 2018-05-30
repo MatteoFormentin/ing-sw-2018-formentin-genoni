@@ -306,7 +306,7 @@ extends java.lang.Object</pre>
                                 <td class="colFirst"><code>void</code></td>
                                 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a
                                         href="../../../../it/polimi/se2018/model/Player.html#insertDice-int-int-int-">insertDice</a></span>&#8203;(int&nbsp;line,
-                                    int&nbsp;column,
+                                    int&nbsp;indexDraftpool,
                                     int&nbsp;indexOfTheDiceInHand)</code></th>
                                 <td class="colLast">
                                     <div class="block">return exception can't inset dice</div>
@@ -316,7 +316,7 @@ extends java.lang.Object</pre>
                                 <td class="colFirst"><code>void</code></td>
                                 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a
                                         href="../../../../it/polimi/se2018/model/Player.html#insertDice-int-int-int-boolean-boolean-boolean-">insertDice</a></span>&#8203;(int&nbsp;line,
-                                    int&nbsp;column,
+                                    int&nbsp;indexDraftpool,
                                     int&nbsp;indexOfTheDiceInHand,
                                     boolean&nbsp;adjacentRestriction,
                                     boolean&nbsp;colorRestriction,
@@ -348,7 +348,7 @@ extends java.lang.Object</pre>
                                 <td class="colFirst"><code>void</code></td>
                                 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a
                                         href="../../../../it/polimi/se2018/model/Player.html#removeDiceFromWindowPattern-int-int-">removeDiceFromWindowPattern</a></span>&#8203;(int&nbsp;line,
-                                    int&nbsp;column)</code></th>
+                                    int&nbsp;indexDraftpool)</code></th>
                                 <td class="colLast">&nbsp;</td>
                             </tr>
                             <tr id="i16" class="altColor">
@@ -668,14 +668,14 @@ extends java.lang.Object</pre>
                             <li class="blockList">
                                 <h4>insertDice</h4>
                                 <pre>public&nbsp;void&nbsp;insertDice&#8203;(int&nbsp;line,
-                       int&nbsp;column,
+                       int&nbsp;indexDraftpool,
                        int&nbsp;indexOfTheDiceInHand)
                 throws java.lang.Exception</pre>
                                 <div class="block">return exception can't inset dice</div>
                                 <dl>
                                     <dt><span class="paramLabel">Parameters:</span></dt>
                                     <dd><code>line</code> - of the cell of the playerWindowPattern</dd>
-                                    <dd><code>column</code> - of the cell of the playerWindowPattern</dd>
+                                    <dd><code>indexDraftpool</code> - of the cell of the playerWindowPattern</dd>
                                     <dd><code>indexOfTheDiceInHand</code> - to insert in the WindowsPattern
                                         return exception
                                     </dd>
@@ -691,7 +691,7 @@ extends java.lang.Object</pre>
                             <li class="blockList">
                                 <h4>insertDice</h4>
                                 <pre>public&nbsp;void&nbsp;insertDice&#8203;(int&nbsp;line,
-                       int&nbsp;column,
+                       int&nbsp;indexDraftpool,
                        int&nbsp;indexOfTheDiceInHand,
                        boolean&nbsp;adjacentRestriction,
                        boolean&nbsp;colorRestriction,
@@ -700,7 +700,7 @@ extends java.lang.Object</pre>
                                 <dl>
                                     <dt><span class="paramLabel">Parameters:</span></dt>
                                     <dd><code>line</code> - index [0,3] of the WindowsPattern</dd>
-                                    <dd><code>column</code> - index [0,4] of the WindowsPattern</dd>
+                                    <dd><code>indexDraftpool</code> - index [0,4] of the WindowsPattern</dd>
                                     <dd><code>indexOfTheDiceInHand</code> - to insert in the WindowsPattern</dd>
                                     <dd><code>colorRestriction</code> - true if the Restriction need to be respected,
                                         false if it is ignored:
@@ -731,7 +731,7 @@ extends java.lang.Object</pre>
                             <li class="blockList">
                                 <h4>removeDiceFromWindowPattern</h4>
                                 <pre>public&nbsp;void&nbsp;removeDiceFromWindowPattern&#8203;(int&nbsp;line,
-                                        int&nbsp;column)</pre>
+                                        int&nbsp;indexDraftpool)</pre>
                             </li>
                         </ul>
                         <a name="canUseToolCard-int-">
