@@ -170,7 +170,17 @@ public class Controller implements ControllerVisitor {
 
     public void startGame() {
         for (int i = 0; i < playerNumber; i++) {
+<<<<<<< HEAD
             UpdateInitialWindowPatternCard packet = new UpdateInitialWindowPatternCard();
+=======
+            for (int j = 0; j < playerNumber; j++) {
+                if (j == gameBoard.getIndexCurrentPlayer()) continue;
+                EventView waitTurn = new WaitYourTurn();
+                waitTurn.setPlayerId(j);
+                server.sendEventToView(waitTurn);
+            }
+            InitialWindowPatternCard packet = new InitialWindowPatternCard();
+>>>>>>> 35b46c7027f466106547a73b798a330acb950a42
             packet.setInitialWindowPatternCard(gameBoard.getPlayer(i).getThe4WindowPattern());
             packet.setPlayerId(i);
             server.sendEventToView(packet);

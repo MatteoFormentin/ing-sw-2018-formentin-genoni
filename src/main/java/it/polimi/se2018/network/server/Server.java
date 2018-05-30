@@ -137,9 +137,18 @@ public class Server implements ServerController {
         game = new Controller(this, players.size());
         System.out.println("Closing Room...");
         roomJoinable = false;
+
+        String[] playersName = new String[players.size()];
+        int i = 0;
+        for (RemotePlayer player : players) {
+            playersName[i] = player.getNickname();
+            i++;
+        }
+        StartGame packet = new StartGame();
+        packet.setPlayersName(playersName);
         for (RemotePlayer player : players) {
             try {
-                EventView packet = new StartGame();
+
                 packet.setPlayerId(player.getPlayerId());
                 player.sendEventToView(packet);
             } catch (RemoteException ex) {

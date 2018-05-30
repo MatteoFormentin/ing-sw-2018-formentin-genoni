@@ -10,19 +10,22 @@ import it.polimi.se2018.model.dice.DiceStack;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
-
-public class CliController implements UIInterface,ViewVisitor {
+/**
+ * CLI
+ *
+ * @author Matteo Formentin
+ */
+public class CliController implements UIInterface, ViewVisitor {
 
     private CliMessage cliMessage;
     private CliParser cliParser;
     private ClientController client;
-    private Player player;
     private ObjectivePublicCard[] publicCard;
 
     private DiceStack dicePool;
     private DiceStack[] roundTrack;
     private ToolCard[] toolCard;
-    private Player[] opponentPlayers;
+    private String[] playersName;
 
     private int playerId;
 
@@ -53,8 +56,19 @@ public class CliController implements UIInterface,ViewVisitor {
 
 
     @Override
+<<<<<<< HEAD
     public void visit(UpdateInitialWindowPatternCard event) {
         for (WindowPatternCard card : ((UpdateInitialWindowPatternCard) event).getInitialWindowPatternCard()) {
+=======
+    public void visit(StartGame event) {
+        //TODO mostra info sul gioco (numeri giocatori, stato connessione)
+        cliMessage.showGameStarted(event.getPlayersName());
+    }
+
+    @Override
+    public void visit(InitialWindowPatternCard event) {
+        for (WindowPatternCard card : ((InitialWindowPatternCard) event).getInitialWindowPatternCard()) {
+>>>>>>> 35b46c7027f466106547a73b798a330acb950a42
             cliMessage.showWindowPatternCard(card);
         }
 
@@ -67,18 +81,13 @@ public class CliController implements UIInterface,ViewVisitor {
     }
 
     @Override
-    public void visit(StartGame event) {
-        //TODO mostra info sul gioco (numeri giocatori, stato connessione)
-    }
-
-    @Override
     public void visit(WaitYourTurn event) {
         cliMessage.showWaitYourTurnScreen();
     }
 
     /**
      * Method to handle the start of the turn
-     *
+     * <p>
      * maybe should receive and process some attribute for able/disable some options
      * for example: when you place one die the next event from the controller
      * set the event's boolean insert die to false and the menu won't show this option
@@ -100,17 +109,20 @@ public class CliController implements UIInterface,ViewVisitor {
 
     /**
      * Receive the Event for select which dice take from the draft pool and send the packet to the controller(throught)
+     *
      * @param event
      */
     @Override
-    public void visit(SelectDiceFromDraftpool event){
+    public void visit(SelectDiceFromDraftpool event) {
         cliMessage.showDiceStack(dicePool);
         int diceIndex = cliParser.parseInt();
         SelectDiceFromHandController packet = new SelectDiceFromHandController();
         packet.setPlayerId(playerId);
         packet.setIndex(diceIndex);
         client.sendEventToController(packet);
-    };
+    }
+
+    ;
 
     @Override
     public void visit(SelectCellOfWindowView event) {
@@ -126,14 +138,15 @@ public class CliController implements UIInterface,ViewVisitor {
     }
 
     @Override
-    public void visit(SelectToolCard event){
+    public void visit(SelectToolCard event) {
         // TODO mostrare inserimento dell'indice da 0 a 2 (oppure se decrementato da 1 a 3)
 
     }
 
     @Override
-    public void visit(ShowErrorMessage event){
+    public void visit(ShowErrorMessage event) {
         //TODO printare a schermo il messaggio d'errore l'evento contiene sia l'eccezione che il messagio scegli quale vuoi ed elimina l'altro
+<<<<<<< HEAD
       }
 
     //*******************************************Visit for model event*******************************************************************************
@@ -153,6 +166,9 @@ public class CliController implements UIInterface,ViewVisitor {
     public void visit(UpdateSingleTrunRoundTrack event);
     public void visit(UpdateSingleWindow event);*/
 
+=======
+    }
+>>>>>>> 35b46c7027f466106547a73b798a330acb950a42
 
     //OPERATION HANDLER
     private void initConnection() {
@@ -199,7 +215,7 @@ public class CliController implements UIInterface,ViewVisitor {
     private void turn() {
         //TODO far rivedere il menù dopo un azione con opzioni disabilitate
         cliMessage.showYourTurnScreen();
-        cliMessage.showWindowPatternCard(player.getPlayerWindowPattern());
+        //cliMessage.showWindowPatternCard( );
         cliMessage.showMainMenu();
         int option = cliParser.parseInt();
 
@@ -237,14 +253,14 @@ public class CliController implements UIInterface,ViewVisitor {
 
             //Show private object
             case 5:
-                cliMessage.showObjectivePrivateCard(player.getPrivateObject());
+                //cliMessage.showObjectivePrivateCard(player.getPrivateObject());
                 break;
 
             //Show opponents window pattern card
             case 6:
-                for (Player p : opponentPlayers) {
+                /*for (Player p : opponentPlayers) {
                     cliMessage.showWindowPatternCard(p.getPlayerWindowPattern());
-                }
+                }*/
                 break;
         }
     }
