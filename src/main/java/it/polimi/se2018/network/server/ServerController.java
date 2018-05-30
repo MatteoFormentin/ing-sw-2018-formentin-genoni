@@ -13,25 +13,36 @@ import it.polimi.se2018.network.RemotePlayer;
  */
 public interface ServerController {
 
-    // MANCANO EXCEPTION
+    //TODO: EXCEPTION
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Log the user to the Server with the username.
+     * Remote method used to log the user to the server with his nickname.
      *
-     * @param remotePlayer reference to RMI or Socket Playerz
+     * @param remotePlayer reference to RMI or Socket Player.
+     * @return true if the user is logged, false otherwise.
      */
     boolean login(RemotePlayer remotePlayer);
 
-    void startGame();
+    /**
+     * Remote method used to send to the server a request to unleash an event.
+     *
+     * @param eventController object that will use the server to unleash the event associated.
+     */
+    void sendEventToController(EventController eventController);
 
-    void sendEventToController(EventController eventView);
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    //------------------------------------------------------------------------------------------------------------------
 
-    void sendEventToView(EventView eventController);
-
-    // BASTA METODI
+    /**
+     * Remote method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
+     */
+    void sendEventToView(EventView eventView);
 }
 

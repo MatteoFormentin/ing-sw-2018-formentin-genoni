@@ -17,22 +17,18 @@ public class Client implements ClientController{
 
     // Classe che rappresenta il client selezionato
     private AbstractClient abstractClient;
-    // Interfaccia utilizzata per inviare eventi a CLI o GUI (a seconda del tipo di interfaccia utilizzata per il client)
-
-    // INDIRIZZI PER LA COMUNICAZIONE
 
     // Indirizzo su cui le comunicazioni sono aperte a lato server
-    private static final String serverAddress = "localhost";
+    private static final String SERVER_ADDRESS = "localhost";
     //Porta su cui si appoggierà la comunicazione socket
-    private static final int serverSocketPort = 16180;
+    private static final int SERVER_SOCKET_PORT = 16180;
     //Porta su cui si appoggierà la comunicazione RMI
-    private static final int serverRMIPort = 31415;
+    private static final int SERVER_RMI_PORT = 31415;
 
     // Nome del giocatore corrente
     private String nickname;
     // Turno della partita (da 1 a 9)
     private int turn;
-
 
     private static UIInterface view;
 
@@ -40,7 +36,9 @@ public class Client implements ClientController{
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
-    // MANCA TUTTO
+    /**
+     * Client constructor.
+     */
     public Client(){
         nickname="Mr.Nessuno";
         this.turn = 0;
@@ -50,10 +48,16 @@ public class Client implements ClientController{
     // CLIENT STARTER
     //------------------------------------------------------------------------------------------------------------------
 
-    // aggiungere porta socket se aggiungi socket
+    /**
+     * Starter for the client.
+     * This method start the client using the assigned address and port.
+     *
+     * @param args parameters used for the connection.
+     */
+    //TODO:aggiungere porta socket se aggiungi socket
     public static void main(String[] args){
-        String serverIpAddress = serverAddress;
-        int rmiPort = serverRMIPort;
+        String serverIpAddress = SERVER_ADDRESS;
+        int rmiPort = SERVER_RMI_PORT;
 
         try {
             /*serverIpAddress = args[0];
@@ -66,12 +70,24 @@ public class Client implements ClientController{
         }
     }
 
-    // AGGIUNGI int socketPort se aggiungi socket
-    // Se aggiungi socket qui ci dovrà essere la selezione, data da cli o gui fra RMI o Socket ed in base alla scelta bisogna far partire connessioni diverse
+    /**
+     * Starter for the client connection.
+     *
+     * @param rmiPort port used for RMI connection.
+     */
+    //TODO:AGGIUNGI int socketPort se aggiungi socket
+    //TODO:Se aggiungi socket qui ci dovrà essere la selezione, data da cli o gui fra RMI o Socket ed in base alla scelta bisogna far partire connessioni diverse
     public void startClient(String serverIpAddress, int rmiPort){
         startRMIClient(serverIpAddress, rmiPort);
     }
 
+    /**
+     * Starter for the RMI connection.
+     *
+     * @param serverIpAddress address on where the server side communication are open.
+     * @param rmiPort port used for RMI connection.
+     * @return true if the connection is established, false otherwise.
+     */
     public boolean startRMIClient(String serverIpAddress, int rmiPort) {
         try {
             abstractClient = new RMIClient(this, serverIpAddress, rmiPort);
@@ -87,9 +103,10 @@ public class Client implements ClientController{
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Log the user to the Server with the nickname
+     * Remote method used to log the user to the server with his nickname.
      *
-     * @param nickname name used for the player.
+     * @param nickname name of the player associated to the client.
+     * @return true if the user is logged, false otherwise.
      */
     public boolean login(String nickname) {
         try {
@@ -102,7 +119,7 @@ public class Client implements ClientController{
     }
 
     /**
-     * Send to the server the request to unleash an event.
+     * Remote method used to send to the server a request to unleash an event.
      *
      * @param eventController object that will use the server to unleash the event associated.
      */
@@ -114,30 +131,29 @@ public class Client implements ClientController{
         }
     }
 
-    @Override
-    public void sendEventToView(EventView eventView) {
-        view.showMessage(eventView);
-    }
-
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
-    // NOTIFY
-    //------------------------------------------------------------------------------------------------------------------
-
-    /*
-    public void sendUpdateToView(EventUpdate eventUpdate){
-    // GESTIONE UPDATE
-    }
-     */
-
-    //------------------------------------------------------------------------------------------------------------------
-    // METHOD FOR SUPPORT (GET, SET, CHECK)
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Getter for nickname.
+     * Remote method used to send to the client an update of the game.
      *
-     * @return nickname of the player associated to the client
+     * @param eventView object that will use the client to unleash the update associated.
+     */
+    @Override
+    public void sendEventToView(EventView eventView){
+        view.showMessage(eventView);
+        //TODO:gestisci update
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHODS
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Getter for the nickname.
+     *
+     * @return nickname of the player associated to the client.
      */
     public String getNickname(){
         return this.nickname;

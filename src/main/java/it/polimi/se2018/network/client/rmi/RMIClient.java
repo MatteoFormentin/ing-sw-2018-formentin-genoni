@@ -14,7 +14,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
- * The class define the RMI client for every single game.
+ * The class define the RMI client for every single player.
  * Extends AbstractClient class in order to implement and facilitate Client connection.
  *
  * @author DavideMammarella
@@ -32,10 +32,9 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Instantiate one RMIClient.
+     * RMI Client constructor.
      *
-     * @param clientController client interface, used as
-     *                         controller to communicate with the client.
+     * @param clientController client interface, used as controller to communicate with the client.
      * @param serverIpAddress  server address.
      * @param serverPort       port used from server to communicate.
      */
@@ -48,9 +47,9 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Estabilish a connection with the RMI Registry (on the server).
+     * Remote method used to establish a connection with the RMI Registry (on the server).
      */
-    // SISTEMA EXCEPTION
+    //TODO: EXCEPTION
     public void connectToServer() throws RemoteException, NotBoundException {
         Registry registry;
         registry = LocateRegistry.getRegistry(getServerIpAddress(), getServerPort());
@@ -63,10 +62,9 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Log the user to the RMI Server with the nickname.
-     * The Username will be added to the map.
+     * Remote method used to log the user to the server with his nickname.
      *
-     * @param nickname name used for the player.
+     * @param nickname name of the player associated to the client.
      */
     @Override
     public void login(String nickname) throws RemoteException {
@@ -74,33 +72,29 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     }
 
     /**
-     * Send to the Server the request to unleash an event.
+     * Remote method used to send to the server a request to unleash an event.
      *
      * @param eventController object that will use the server to unleash the event associated.
      */
-
     @Override
     public void sendEventToController(EventController eventController) throws RemoteException {
         iRMIServer.sendEventToController(eventController);
     }
 
-    //Chiamato dal remotePlayer che è un rmiplayer  dinamico
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Remote method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
+     */
+    //Called from remotePlayer who is a dynamic RMIPlayer
     @Override
     public void sendEventToView(EventView eventView) throws RemoteException {
         getClientController().sendEventToView(eventView);
     }
-
-    //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
-    // NOTIFY
-    //------------------------------------------------------------------------------------------------------------------
-
-    /*
-    @Override
-    public void notify(EventUpdate eventUpdate){
-        getClientController().update(eventUpdate);
-    }
-    */
 
 }
 

@@ -2,13 +2,12 @@ package it.polimi.se2018.network.server;
 
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.list_event.event_controller.EventView;
-import it.polimi.se2018.list_event.event_view.EventController;
 import it.polimi.se2018.list_event.event_controller.StartGame;
+import it.polimi.se2018.list_event.event_view.EventController;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
 
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -37,9 +36,9 @@ public class Server implements ServerController {
     //MUTEX usato per gestire un login alla volta (senza questo potrebbe crearsi congestione durante il login)
     private static final Object PLAYERS_MUTEX = new Object();
     // NUM MINIMO DI GIOCATORI PER PARTITA
-    public static final int minPlayers = 2;
+    public static final int MIN_PLAYERS = 2;
     // NUM MASSIMO DI GIOCATORI PER PARTITA
-    public static final int maxPlayers = 4;
+    public static final int MAX_PLAYERS = 4;
 
     //GIOCATORI NELLA STANZA
     private final ArrayList<RemotePlayer> players;
@@ -52,7 +51,7 @@ public class Server implements ServerController {
 
     //STATO STANZA
     private boolean roomJoinable;
-    int playerCounter = 0;
+    private int playerCounter = 0;
 
 
     //------------------------------------------------------------------------------------------------------------------
@@ -68,7 +67,8 @@ public class Server implements ServerController {
         //socketServer = new SocketServer(this);
         roomJoinable = true;
         players = new ArrayList<RemotePlayer>();
-        //roomStartTimeout upload
+
+        System.out.println("Setting room start timeout...");
         try {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
@@ -79,18 +79,26 @@ public class Server implements ServerController {
             configProperties.load(input);
             //*1000 per convertire in millisecondi
             timeout = Long.parseLong(configProperties.getProperty("roomStartTimeout")) * 1000;
+            System.out.println("Timeout setted!");
+            System.out.println("It's value (in ms) is: \n");
             System.out.println(configProperties.getProperty("roomStartTimeout"));
         } catch (IOException e) {
-            System.out.println("Sorry, file can't be found... Using default");
+            // LOAD FAILED
+            System.out.println("Sorry, timeout can't be setted! The game will use the default one.");
+            // Default timeout in case of exception.
             timeout = 120 * 1000;
         }
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // SERVER STARTER
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Starter for the server.
      * This method start the server and put it listen on the RMI port.
      *
-     * @param args parameters for the connection
+     * @param args parameters used for the connection.
      */
     // ORA SOLO RMI, MANCA EXCEPTION
     public static void main(String[] args) {
@@ -108,9 +116,9 @@ public class Server implements ServerController {
 
     /**
      * Put the server on listen.
-     * The server will connect only with the technology selected from client.
+     * The server will connect only with the technology selected from client (RMI or Socket).
      *
-     * @param rmiPort port used on RMI connection
+     * @param rmiPort port used on RMI connection.
      */
     // int socketPort
     // socketServer.StartServer (socketPort)
@@ -120,54 +128,14 @@ public class Server implements ServerController {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
+    // GAME STARTER (ONLY ONE GAME WITH MAXIMUM 4 PLAYERS)
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Log the user to the Server with the username.
-     *
-     * @param remotePlayer reference to RMI or Socket Player
-     * @return true if the user is logged, false otherwise (logged only if nickname doesn't exists)
-     */
-    //CONSIDERA IL CASO DEL RI LOGIN ELSE IF
-    @Override
-    public boolean login(RemotePlayer remotePlayer) {
-        synchronized (PLAYERS_MUTEX) {
-            if (roomJoinable && !checkPlayerNicknameExists(remotePlayer.getNickname())) {
-                remotePlayer.setPlayerId(playerCounter);
-                players.add(remotePlayer);
-                playerCounter++;
-                System.out.println("Player added...");
-                if (players.size() == minPlayers) {
-                    // FAI PARTIRE IL TEMPO DI ATTESA
-                    startTimer();
-                } else if (players.size() == maxPlayers) {
-                    //TODO Termninate thread !!! altrimenti parte due volte
-                    //TODO Problema: se giocatore si disconnette cosa succede? ora parte lo stesso
-                    startGame();
-                }
-                return true;
-            } else {
-                System.out.println("player esiste");
-                return false; //game is complete or nickname already exists
-            }
-        }
-    }
-
-    /**
-     * Start timer for room
-     */
-    public void startTimer() {
-        System.out.println("Timeout started...");
-        new Thread(new Timer(timeout, this)).start();
-
-    }
-
-    /**
-     *
-     *
+     * Starter for the game.
      */
     public void startGame() {
+        System.out.println("Game started!");
         game = new Controller(this, players.size());
         System.out.println("Closing Room...");
         roomJoinable = false;
@@ -178,28 +146,96 @@ public class Server implements ServerController {
                 player.sendEventToView(packet);
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                //Disconnessione
+                //TODO:Disconnessione
             }
         }
         game.startGame();
     }
 
+    /**
+     * Starter for the timeout.
+     */
+    public void startTimer() {
+        System.out.println("Timeout started!");
+        new Thread(new Timer(timeout, this)).start();
+
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Remote method used to log the user to the server with his nickname.
+     *
+     * @param remotePlayer reference to RMI or Socket Player.
+     * @return true if the user is logged, false otherwise.
+     */
+    //CONSIDERA IL CASO DEL RI LOGIN ELSE IF
+    @Override
+    public boolean login(RemotePlayer remotePlayer) {
+        synchronized (PLAYERS_MUTEX) {
+            System.out.println("Trying to log the player...");
+            if (roomJoinable && !checkPlayerNicknameExists(remotePlayer.getNickname())) {
+                remotePlayer.setPlayerId(playerCounter);
+                players.add(remotePlayer);
+                playerCounter++;
+                System.out.println("Player logged!");
+                if (players.size() == MIN_PLAYERS) {
+                    // FAI PARTIRE IL TEMPO DI ATTESA
+                    startTimer();
+                } else if (players.size() == MAX_PLAYERS) {
+                    //TODO Termninate thread !!! altrimenti parte due volte
+                    //TODO Problema: se giocatore si disconnette cosa succede? ora parte lo stesso
+                    startGame();
+                }
+                return true;
+            } else {
+                System.out.println("Player already logged!");
+                System.out.println("Please, use another nickname...");
+                return false; //game is complete or nickname already exists
+            }
+        }
+    }
+
+    /**
+     * Remote method used to send to the server a request to unleash an event.
+     *
+     * @param eventController object that will use the server to unleash the event associated.
+     */
     @Override
     public void sendEventToController(EventController eventController) {
         game.sendEventToController(eventController);
     }
 
-    //Chiamato dal controller -- indipendente dal tipo di connessione --si vede il tipo dinamico
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Remote method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
+     */
     @Override
     public void sendEventToView(EventView eventView) {
         try {
             searchPlayerById(eventView.getPlayerId()).sendEventToView(eventView);
         } catch (RemoteException ex) {
-            //Disconnessione
-
+            //TODO:Disconnessione
         }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHODS
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Checker for player nickname in the game.
+     *
+     * @param nickname name of the player associated to the client.
+     * @return true if the nickname exists, false otherwise.
+     */
     private boolean checkPlayerNicknameExists(String nickname) {
         for (RemotePlayer player : players) {
             if (player.getNickname().equals(nickname)) {
@@ -209,6 +245,12 @@ public class Server implements ServerController {
         return false;
     }
 
+    /**
+     * Searcher for player id in the game.
+     *
+     * @param id ID of the player associated to the client.
+     * @return player associated to the ID.
+     */
     private RemotePlayer searchPlayerById(int id) {
         for (RemotePlayer player : players) {
             if (player.getPlayerId() == id) {
@@ -217,7 +259,4 @@ public class Server implements ServerController {
         }
         return null; //Se arrivo qui qualcosa è sbagliato nel model
     }
-
-
-    // TEORICAMENTE BASTA METODI
 }
