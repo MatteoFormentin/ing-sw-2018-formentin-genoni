@@ -46,11 +46,15 @@ public class CliController implements UIInterface,ViewVisitor {
         EventView.accept(this);
     }
 
-    //*******************************************Visit *******************************************************************************
+    //*******************************************Visit for Controller event*******************************************************************************
+    //*******************************************Visit for Controller event*******************************************************************************
+    //*******************************************Visit for Controller event*******************************************************************************
+
+
 
     @Override
-    public void visit(InitialWindowPatternCard event) {
-        for (WindowPatternCard card : ((InitialWindowPatternCard) event).getInitialWindowPatternCard()) {
+    public void visit(UpdateInitialWindowPatternCard event) {
+        for (WindowPatternCard card : ((UpdateInitialWindowPatternCard) event).getInitialWindowPatternCard()) {
             cliMessage.showWindowPatternCard(card);
         }
 
@@ -131,6 +135,25 @@ public class CliController implements UIInterface,ViewVisitor {
     public void visit(ShowErrorMessage event){
         //TODO printare a schermo il messaggio d'errore l'evento contiene sia l'eccezione che il messagio scegli quale vuoi ed elimina l'altro
       }
+
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
+  /*  public void visit(UpdateAllToolCard event);
+    public void visit(UpdateSingleToolCard event);
+    public void visit(UpdateDicePool event);
+    public void visit(UpdateInitialWindowPatternCard event);
+
+    public void visit(UpdateSinglePlayerHand event);
+    public void visit(UpdateAllPublicObject event);
+    public void visit(UpdateSingleCell event);
+    public void visit(UpdateSinglePlayerTokenAndPoints event);
+    public void visit(UpdateSinglePrivateObject event);
+    public void visit(UpdateSingleTrunRoundTrack event);
+    public void visit(UpdateSingleWindow event);*/
+
+
     //OPERATION HANDLER
     private void initConnection() {
         boolean flag = false;

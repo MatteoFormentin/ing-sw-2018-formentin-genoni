@@ -42,16 +42,36 @@ public interface ViewVisitor {
 
     public void visit(EndGame event);
 
-    public void visit(InitialWindowPatternCard event);
+
 
     public void visit(StartGame event);
 
     public void visit(StartPlayerTurn event);
 
     public void visit(WaitYourTurn event);
+
     public void visit(SelectCellOfWindowView event);
+
     public void visit(SelectDiceFromDraftpool event);
+
     public void visit(SelectToolCard event);
+
     public void visit(ShowErrorMessage event);
+
+
+    //**********************************************from Model**************************************
+
+    public void visit(UpdateAllToolCard event);
+    public void visit(UpdateSingleToolCard event);
+    public void visit(UpdateDicePool event);
+    public void visit(UpdateInitialWindowPatternCard event);
+
+    public void visit(UpdateSinglePlayerHand event);
+    public void visit(UpdateAllPublicObject event);
+    public void visit(UpdateSingleCell event);
+    public void visit(UpdateSinglePlayerTokenAndPoints event);
+    public void visit(UpdateSinglePrivateObject event);
+    public void visit(UpdateSingleTrunRoundTrack event);
+    public void visit(UpdateSingleWindow event);
 
 }
