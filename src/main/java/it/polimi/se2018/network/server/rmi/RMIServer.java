@@ -91,7 +91,7 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     /**
      * Remote method used to log the user to the server with his nickname.
      *
-     * @param nickname name of the player.
+     * @param nickname   name of the player.
      * @param iRMIClient client associated to the player.
      */
     @Override

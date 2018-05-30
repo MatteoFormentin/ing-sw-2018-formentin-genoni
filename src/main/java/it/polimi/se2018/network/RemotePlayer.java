@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
  *
  * @author DavideMammarella
  */
-public abstract class RemotePlayer{
+public abstract class RemotePlayer {
 
     //Riferimento alla partita in cui è il giocatore
     private transient Server serverRoom;
@@ -49,15 +49,6 @@ public abstract class RemotePlayer{
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Setter for the server room.
-     *
-     * @param serverRoom game where the players is in.
-     */
-    public void setServerRoom(Server serverRoom) {
-        this.serverRoom = serverRoom;
-    }
-
-    /**
      * Getter for the server room.
      *
      * @return reference of the server room where the player is playing.
@@ -67,12 +58,12 @@ public abstract class RemotePlayer{
     }
 
     /**
-     * Setter for nickname.
+     * Setter for the server room.
      *
-     * @param nickname name used for the player.
+     * @param serverRoom game where the players is in.
      */
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
+    public void setServerRoom(Server serverRoom) {
+        this.serverRoom = serverRoom;
     }
 
     /**
@@ -85,12 +76,12 @@ public abstract class RemotePlayer{
     }
 
     /**
-     * Setter for player ID.
+     * Setter for nickname.
      *
-     * @param playerId ID associated to the player.
+     * @param nickname name used for the player.
      */
-    public void setPlayerId(int playerId) {
-        this.playerId = playerId;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     /**
@@ -100,5 +91,14 @@ public abstract class RemotePlayer{
      */
     public int getPlayerId() {
         return playerId;
+    }
+
+    /**
+     * Setter for player ID.
+     *
+     * @param playerId ID associated to the player.
+     */
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
 }

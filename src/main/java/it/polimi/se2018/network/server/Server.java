@@ -27,23 +27,20 @@ public class Server implements ServerController {
     public static final int SOCKET_PORT = 16180;
     //Porta su cui si appoggierà la comunicazione RMI
     public static final int RMI_PORT = 31415;
-
-    // Socket Server
-    private SocketServer socketServer;
-    // RMI Server
-    private RMIServer rmiServer;
-
-    //MUTEX usato per gestire un login alla volta (senza questo potrebbe crearsi congestione durante il login)
-    private static final Object PLAYERS_MUTEX = new Object();
     // NUM MINIMO DI GIOCATORI PER PARTITA
     public static final int MIN_PLAYERS = 2;
     // NUM MASSIMO DI GIOCATORI PER PARTITA
     public static final int MAX_PLAYERS = 4;
-
+    //MUTEX usato per gestire un login alla volta (senza questo potrebbe crearsi congestione durante il login)
+    private static final Object PLAYERS_MUTEX = new Object();
     //GIOCATORI NELLA STANZA
     private final ArrayList<RemotePlayer> players;
     ServerController serverController;
     boolean flag = true;
+    // Socket Server
+    private SocketServer socketServer;
+    // RMI Server
+    private RMIServer rmiServer;
     // GAME DELLA ROOM
     private Controller game;
     // TIME

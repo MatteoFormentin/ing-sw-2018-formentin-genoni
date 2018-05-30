@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.client;
 
-import it.polimi.se2018.list_event.event_view.EventView;
 import it.polimi.se2018.list_event.event_controller.EventController;
+import it.polimi.se2018.list_event.event_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
@@ -13,10 +13,7 @@ import it.polimi.se2018.view.cli.CliController;
  *
  * @author DavideMammarella
  */
-public class Client implements ClientController{
-
-    // Classe che rappresenta il client selezionato
-    private AbstractClient abstractClient;
+public class Client implements ClientController {
 
     // Indirizzo su cui le comunicazioni sono aperte a lato server
     private static final String SERVER_ADDRESS = "localhost";
@@ -24,13 +21,13 @@ public class Client implements ClientController{
     private static final int SERVER_SOCKET_PORT = 16180;
     //Porta su cui si appoggierà la comunicazione RMI
     private static final int SERVER_RMI_PORT = 31415;
-
+    private static UIInterface view;
+    // Classe che rappresenta il client selezionato
+    private AbstractClient abstractClient;
     // Nome del giocatore corrente
     private String nickname;
     // Turno della partita (da 1 a 9)
     private int turn;
-
-    private static UIInterface view;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -39,8 +36,8 @@ public class Client implements ClientController{
     /**
      * Client constructor.
      */
-    public Client(){
-        nickname="Mr.Nessuno";
+    public Client() {
+        nickname = "Mr.Nessuno";
         this.turn = 0;
     }
 
@@ -55,7 +52,7 @@ public class Client implements ClientController{
      * @param args parameters used for the connection.
      */
     //TODO:aggiungere porta socket se aggiungi socket
-    public static void main(String[] args){
+    public static void main(String[] args) {
         String serverIpAddress = SERVER_ADDRESS;
         int rmiPort = SERVER_RMI_PORT;
 
@@ -65,7 +62,7 @@ public class Client implements ClientController{
 
             ClientController client = new Client();
             view = new CliController(client);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.exit(0);
         }
     }
@@ -77,7 +74,7 @@ public class Client implements ClientController{
      */
     //TODO:AGGIUNGI int socketPort se aggiungi socket
     //TODO:Se aggiungi socket qui ci dovrà essere la selezione, data da cli o gui fra RMI o Socket ed in base alla scelta bisogna far partire connessioni diverse
-    public void startClient(String serverIpAddress, int rmiPort){
+    public void startClient(String serverIpAddress, int rmiPort) {
         startRMIClient(serverIpAddress, rmiPort);
     }
 
@@ -85,7 +82,7 @@ public class Client implements ClientController{
      * Starter for the RMI connection.
      *
      * @param serverIpAddress address on where the server side communication are open.
-     * @param rmiPort port used for RMI connection.
+     * @param rmiPort         port used for RMI connection.
      * @return true if the connection is established, false otherwise.
      */
     public boolean startRMIClient(String serverIpAddress, int rmiPort) {
@@ -93,7 +90,7 @@ public class Client implements ClientController{
             abstractClient = new RMIClient(this, serverIpAddress, rmiPort);
             abstractClient.connectToServer();
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -141,7 +138,7 @@ public class Client implements ClientController{
      * @param eventView object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView){
+    public void sendEventToView(EventView eventView) {
         view.showMessage(eventView);
         //TODO:gestisci update
     }
@@ -155,7 +152,7 @@ public class Client implements ClientController{
      *
      * @return nickname of the player associated to the client.
      */
-    public String getNickname(){
+    public String getNickname() {
         return this.nickname;
     }
 

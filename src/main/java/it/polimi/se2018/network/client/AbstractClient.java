@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.client;
 
-import it.polimi.se2018.list_event.event_view.EventController;
+import it.polimi.se2018.list_event.event_controller.EventController;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -31,8 +31,8 @@ public abstract class AbstractClient {
      * Client abstract constructor. (Socket or RMI)
      *
      * @param clientController client interface, used as controller to communicate with the client.
-     * @param serverIpAddress server address.
-     * @param serverPort port used from server to communicate.
+     * @param serverIpAddress  server address.
+     * @param serverPort       port used from server to communicate.
      */
     public AbstractClient(ClientController clientController, String serverIpAddress, int serverPort) {
         this.clientController = clientController;
@@ -72,7 +72,7 @@ public abstract class AbstractClient {
      *
      * @return server address.
      */
-    public String getServerIpAddress(){
+    public String getServerIpAddress() {
         return serverIpAddress;
     }
 
@@ -81,7 +81,7 @@ public abstract class AbstractClient {
      *
      * @return server port used to communicate.
      */
-    public int getServerPort(){
+    public int getServerPort() {
         return serverPort;
     }
 
@@ -90,7 +90,7 @@ public abstract class AbstractClient {
      *
      * @return client controller used to manage the communication.
      */
-    public ClientController getClientController(){
+    public ClientController getClientController() {
         return clientController;
     }
 }

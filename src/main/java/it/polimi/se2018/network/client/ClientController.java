@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.client;
 
-import it.polimi.se2018.list_event.event_view.EventView;
 import it.polimi.se2018.list_event.event_controller.EventController;
+import it.polimi.se2018.list_event.event_view.EventView;
 
 import java.rmi.RemoteException;
 
@@ -17,6 +17,9 @@ public interface ClientController {
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
+
+    public boolean startRMIClient(String serverIpAddress, int rmiPort);
+
 
     /**
      * Remote method used to log the user to the server with his nickname.

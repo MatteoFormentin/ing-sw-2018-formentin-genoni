@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.list_event.event_controller.EventView;
+import it.polimi.se2018.list_event.event_view.EventView;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
  * Class based on the Abstract Factory Design Pattern.
  * Class used to permit remote method invocation.
  * SERVER -> CLIENT
- *
+ * <p>
  * The interface that define the class to export must:
  * Extends Remote Interface
  * Be Public
