@@ -2,7 +2,7 @@ package it.polimi.se2018.view.cli;
 
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
-import it.polimi.se2018.model.Player;
+import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
@@ -20,10 +20,12 @@ public class CliController implements UIInterface, ViewVisitor {
     private CliMessage cliMessage;
     private CliParser cliParser;
     private ClientController client;
-    private ObjectivePublicCard[] publicCard;
 
     private DiceStack dicePool;
     private DiceStack[] roundTrack;
+    private ObjectivePublicCard[] objectivePublicCards;
+    private ObjectivePrivateCard objectivePrivateCard;
+    private WindowPatternCard[] windowPatternCard;
     private ToolCard[] toolCard;
     private String[] playersName;
 
@@ -54,21 +56,25 @@ public class CliController implements UIInterface, ViewVisitor {
     //*******************************************Visit for Controller event*******************************************************************************
 
 
-
-    @Override
-<<<<<<< HEAD
-    public void visit(UpdateInitialWindowPatternCard event) {
-        for (WindowPatternCard card : ((UpdateInitialWindowPatternCard) event).getInitialWindowPatternCard()) {
-=======
     public void visit(StartGame event) {
         //TODO mostra info sul gioco (numeri giocatori, stato connessione)
-        cliMessage.showGameStarted(event.getPlayersName());
+        playerId = event.getPlayerId();
+        playersName = event.getPlayersName();
+        cliMessage.showGameStarted(playersName);
     }
 
     @Override
-    public void visit(InitialWindowPatternCard event) {
-        for (WindowPatternCard card : ((InitialWindowPatternCard) event).getInitialWindowPatternCard()) {
->>>>>>> 35b46c7027f466106547a73b798a330acb950a42
+    public void visit(UpdateInitialWindowPatternCard event) {
+        //TODO aggiungere visualizzazione obiettivi prima della selezione carte
+       /* for (ObjectivePublicCard card : objectivePublicCards) {
+            cliMessage.showObjectivePublicCard(card);
+        }
+
+        cliMessage.showObjectivePrivateCard(objectivePrivateCard);
+
+        cliParser.readSplash();*/
+
+        for (WindowPatternCard card : event.getInitialWindowPatternCard()) {
             cliMessage.showWindowPatternCard(card);
         }
 
@@ -122,8 +128,6 @@ public class CliController implements UIInterface, ViewVisitor {
         client.sendEventToController(packet);
     }
 
-    ;
-
     @Override
     public void visit(SelectCellOfWindowView event) {
         cliMessage.showInsertDiceRow();
@@ -146,29 +150,49 @@ public class CliController implements UIInterface, ViewVisitor {
     @Override
     public void visit(ShowErrorMessage event) {
         //TODO printare a schermo il messaggio d'errore l'evento contiene sia l'eccezione che il messagio scegli quale vuoi ed elimina l'altro
-<<<<<<< HEAD
-      }
-
-    //*******************************************Visit for model event*******************************************************************************
-    //*******************************************Visit for model event*******************************************************************************
-    //*******************************************Visit for model event*******************************************************************************
-    //*******************************************Visit for model event*******************************************************************************
-  /*  public void visit(UpdateAllToolCard event);
-    public void visit(UpdateSingleToolCard event);
-    public void visit(UpdateDicePool event);
-    public void visit(UpdateInitialWindowPatternCard event);
-
-    public void visit(UpdateSinglePlayerHand event);
-    public void visit(UpdateAllPublicObject event);
-    public void visit(UpdateSingleCell event);
-    public void visit(UpdateSinglePlayerTokenAndPoints event);
-    public void visit(UpdateSinglePrivateObject event);
-    public void visit(UpdateSingleTrunRoundTrack event);
-    public void visit(UpdateSingleWindow event);*/
-
-=======
     }
->>>>>>> 35b46c7027f466106547a73b798a330acb950a42
+
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
+    public void visit(UpdateAllToolCard event) {
+        toolCard = event.getToolCard();
+    }
+
+    public void visit(UpdateSingleToolCard event) {
+        toolCard[event.getIndexToolCard()] = event.getToolCard();
+    }
+
+    public void visit(UpdateDicePool event) {
+        dicePool = event.getDicePool();
+    }
+
+    public void visit(UpdateSinglePlayerHand event) {
+    }
+
+    public void visit(UpdateAllPublicObject event) {
+        objectivePublicCards = event.getPublicCards();
+    }
+
+    public void visit(UpdateSingleCell event) {
+    }
+
+    public void visit(UpdateSinglePlayerTokenAndPoints event) {
+    }
+
+    public void visit(UpdateSinglePrivateObject event) {
+        objectivePrivateCard = event.getPrivateCard();
+    }
+
+    public void visit(UpdateSingleTurnRoundTrack event) {
+        roundTrack[event.getIndexRound()] = event.getDicePool();
+    }
+
+    public void visit(UpdateSingleWindow event) {
+        windowPatternCard[event.getIndexPlayer()] = event.getWindowPatternCard();
+    }
+
 
     //OPERATION HANDLER
     private void initConnection() {
@@ -206,12 +230,6 @@ public class CliController implements UIInterface, ViewVisitor {
         cliMessage.showWelcomeNickname(name);
     }
 
-    private void insertPlayerData() {
-        cliMessage.showInsertNickname();
-        String name = cliParser.parseNickname();
-        //invio al server
-    }
-
     private void turn() {
         //TODO far rivedere il menù dopo un azione con opzioni disabilitate
         cliMessage.showYourTurnScreen();
@@ -246,14 +264,14 @@ public class CliController implements UIInterface, ViewVisitor {
 
             //Show public object
             case 4:
-                for (ObjectivePublicCard card : publicCard) {
+                for (ObjectivePublicCard card : objectivePublicCards) {
                     cliMessage.showObjectivePublicCard(card);
                 }
                 break;
 
             //Show private object
             case 5:
-                //cliMessage.showObjectivePrivateCard(player.getPrivateObject());
+                cliMessage.showObjectivePrivateCard(objectivePrivateCard);
                 break;
 
             //Show opponents window pattern card

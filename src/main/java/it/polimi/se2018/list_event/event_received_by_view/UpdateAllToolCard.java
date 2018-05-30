@@ -7,11 +7,11 @@ public class UpdateAllToolCard {
 
     private ToolCard[] toolCards;
 
-    public ToolCard[] getPublicCards() {
+    public ToolCard[] getToolCard() {
         return toolCards;
     }
 
-    public void setPublicCards(ToolCard[] toolCards) {
+    public void setToolCard(ToolCard[] toolCards) {
         this.toolCards = toolCards;
     }
 

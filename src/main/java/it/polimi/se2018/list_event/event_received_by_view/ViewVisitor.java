@@ -71,7 +71,8 @@ public interface ViewVisitor {
     public void visit(UpdateSingleCell event);
     public void visit(UpdateSinglePlayerTokenAndPoints event);
     public void visit(UpdateSinglePrivateObject event);
-    public void visit(UpdateSingleTrunRoundTrack event);
+
+    public void visit(UpdateSingleTurnRoundTrack event);
     public void visit(UpdateSingleWindow event);
 
 }
