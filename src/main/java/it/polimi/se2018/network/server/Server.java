@@ -1,13 +1,14 @@
 package it.polimi.se2018.network.server;
 
 import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.list_event.event_controller.EventController;
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
+import it.polimi.se2018.list_event.event_view.EventController;
 import it.polimi.se2018.list_event.event_controller.StartGame;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
 
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -180,12 +181,12 @@ public class Server implements ServerController {
                 //Disconnessione
             }
         }
-        //game.start
+        game.startGame();
     }
 
     @Override
-    public void sendEventToController(EventView eventView) {
-        game.sendEventToController(eventView);
+    public void sendEventToController(EventController eventController) {
+        game.sendEventToController(eventController);
     }
 
     //Chiamato dal controller -- indipendente dal tipo di connessione --si vede il tipo dinamico

@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.server.rmi;
 
-import it.polimi.se2018.list_event.event_controller.EventController;
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
+import it.polimi.se2018.list_event.event_view.EventController;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 
 import java.rmi.Remote;
@@ -35,8 +35,8 @@ public interface IRMIServer extends Remote {
     /**
      * Remote method used to send an object to the Server with request to set off an event.
      *
-     * @param eventView object that will use the server to set off the event associated.
+     * @param eventController object that will use the server to set off the event associated.
      */
-    void sendEventToController(EventController eventView) throws RemoteException;
+    void sendEventToController(EventController eventController) throws RemoteException;
 }
 

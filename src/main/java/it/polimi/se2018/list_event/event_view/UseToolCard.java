@@ -1,15 +1,13 @@
 package it.polimi.se2018.list_event.event_view;
 
-import it.polimi.se2018.list_event.event_controller.VisitorEventFromController;
-
 /**
- * Extends EventView, describe the event "use of tool card" produced by the view
+ * Extends EventController, describe the event "use of tool card" produced by the view
  *
  * @author Luca Genoni
  */
-public class UseToolCard extends EventView {
-    //from EventView private String nicknamPlayer;
-    //from EventView private Model model;
+public class UseToolCard extends EventController {
+    //from EventController private String nicknamPlayer;
+    //from EventController private Model model;
     int index;
 
     public int getIndex() {
@@ -20,7 +18,7 @@ public class UseToolCard extends EventView {
         this.index = index;
     }
 
-    public void accept(VisitorEventFromView visitor) {
+    public void accept(ControllerVisitor visitor) {
         visitor.visit(this);
     }
 

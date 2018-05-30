@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.list_event.event_controller.EventController;
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
+import it.polimi.se2018.list_event.event_view.EventController;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

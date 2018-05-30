@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.list_event.event_controller.EventController;
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
+import it.polimi.se2018.list_event.event_view.EventController;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.network.server.rmi.IRMIServer;
@@ -76,12 +76,12 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     /**
      * Send to the Server the request to unleash an event.
      *
-     * @param eventView object that will use the server to unleash the event associated.
+     * @param eventController object that will use the server to unleash the event associated.
      */
 
     @Override
-    public void sendEventToController(EventController eventView) throws RemoteException {
-        iRMIServer.sendEventToController(eventView);
+    public void sendEventToController(EventController eventController) throws RemoteException {
+        iRMIServer.sendEventToController(eventController);
     }
 
     //Chiamato dal remotePlayer che è un rmiplayer  dinamico

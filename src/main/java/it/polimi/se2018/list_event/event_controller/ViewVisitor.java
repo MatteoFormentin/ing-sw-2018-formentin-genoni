@@ -1,7 +1,7 @@
 package it.polimi.se2018.list_event.event_controller;
 
 
-public interface VisitorEventFromController {
+public interface ViewVisitor {
 
     /*
 
@@ -19,7 +19,7 @@ public interface VisitorEventFromController {
         if (event instanceof EndTurn) {
             System.out.println("Arrivato pacchetto");
             // gameBoard.nextPlayer(event.getPlayerId());
-            //EventView packet = new EndTurn();
+            //EventController packet = new EndTurn();
         }
 
         if (event instanceof UseToolCard) {

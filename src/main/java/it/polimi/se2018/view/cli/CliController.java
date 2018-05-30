@@ -10,7 +10,7 @@ import it.polimi.se2018.model.dice.DiceStack;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
-public class CliController implements UIInterface, VisitorEventFromController {
+public class CliController implements UIInterface, ViewVisitor {
 
     private CliMessage cliMessage;
     private CliParser cliParser;
@@ -39,8 +39,8 @@ public class CliController implements UIInterface, VisitorEventFromController {
 
     //VISITOR PATTERN
 
-    public void showMessage(EventController eventController) {
-        eventController.accept(this);
+    public void showMessage(EventView EventView) {
+        EventView.accept(this);
     }
 
 
@@ -57,7 +57,7 @@ public class CliController implements UIInterface, VisitorEventFromController {
 
         cliMessage.showInitialWindowPatternCardSelection();
         int selection = cliParser.parseInt(4);
-        EventView packet = new SelectInitialWindowPatternCard();
+        EventController packet = new SelectInitialWindowPatternCard();
         packet.setPlayerId(playerId);
         ((SelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
         client.sendEventToController(packet);
@@ -128,7 +128,7 @@ public class CliController implements UIInterface, VisitorEventFromController {
 
             //End turn
             case 3:
-                EventView packet = new EndTurn();
+                EventController packet = new EndTurn();
                 //send packet
                 break;
 

@@ -1,6 +1,7 @@
 package it.polimi.se2018.network.server.rmi;
 
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
+import it.polimi.se2018.list_event.event_view.EventController;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 import javafx.beans.InvalidationListener;

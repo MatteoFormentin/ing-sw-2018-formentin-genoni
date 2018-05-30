@@ -1,15 +1,13 @@
 package it.polimi.se2018.list_event.event_view;
 
-import it.polimi.se2018.list_event.event_controller.VisitorEventFromController;
-
 /**
- * Extends EventView, describe the event "end of the turn" produced by the view
+ * Extends EventController, describe the event "end of the turn" produced by the view
  *
  * @author Luca Genoni
  */
-public class SelectInitialWindowPatternCard extends EventView {
-    //from EventView private String nicknamPlayer;
-    //from EventView private Model model;
+public class SelectInitialWindowPatternCard extends EventController {
+    //from EventController private String nicknamPlayer;
+    //from EventController private Model model;
     private int selectedIndex;
 
     public int getSelectedIndex() {
@@ -20,7 +18,7 @@ public class SelectInitialWindowPatternCard extends EventView {
         this.selectedIndex = selectedIndex;
     }
 
-    public void accept(VisitorEventFromView visitor) {
+    public void accept(ControllerVisitor visitor) {
         visitor.visit(this);
     }
 

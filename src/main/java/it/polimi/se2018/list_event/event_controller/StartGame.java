@@ -1,15 +1,15 @@
 package it.polimi.se2018.list_event.event_controller;
 
 /**
- * Extends EventView, describe the event "login" produced by the view
+ * Extends EventController, describe the event "login" produced by the view
  *
  * @author Luca Genoni
  */
-public class StartGame extends EventController {
-    //from EventView private String nicknamPlayer;
-    //from EventView private Model model;
+public class StartGame extends EventView {
+    //from EventController private String nicknamPlayer;
+    //from EventController private Model model;
 
-    public void accept(VisitorEventFromController visitor) {
+    public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
 

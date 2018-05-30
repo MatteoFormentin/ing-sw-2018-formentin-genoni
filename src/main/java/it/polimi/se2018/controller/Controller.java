@@ -1,9 +1,6 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.event.list_event.*;
 import it.polimi.se2018.list_event.event_controller.InitialWindowPatternCard;
-import it.polimi.se2018.list_event.event_controller.StartGame;
-import it.polimi.se2018.list_event.event_controller.Visitor;
 import it.polimi.se2018.list_event.event_view.*;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Model;
@@ -19,7 +16,7 @@ import java.util.Observable;
  * @author Davide Mammarella
  */
 
-public class Controller implements Visitor {
+public class Controller implements ControllerVisitor {
     private GameBoard gameBoard;
     private Model model; //the class that can call the view for
     private List<Observable> view;
@@ -48,45 +45,10 @@ public class Controller implements Visitor {
     }
 
     // EX UPDATE
-    public void sendEventToController(EventView event) {
-        if (event instanceof StartGame) {
-            //TODO controllre se id pacchetto presente nel server
-            init();
-        }
-
-
-        if (event instanceof InsertDice) {
-            // gameBoard.
-        }
-
-        if (event instanceof EndTurn) {
-            System.out.println("Arrivato pacchetto");
-            // gameBoard.nextPlayer(event.getPlayerId());
-            //EventView packet = new EndTurn();
-        }
-
-        if (event instanceof UseToolCard) {
-
-        }
-
-        if (event instanceof SelectWindow) {
-            System.out.println("Arrivato SelectWindow da " + event.getPlayerId());
-        }
-
-        if (event instanceof Logout) {
-            System.out.println("Arrivato Logout da " + event.getPlayerId());
-        }
-
-        if (event instanceof SelectInitialWindowPatternCard) {
-            gameBoard.setWindowOfPlayer(event.getPlayerId(), ((SelectInitialWindowPatternCard) event).getSelectedIndex());
-        }
-
+    public void sendEventToController(EventController event) {
+        event.accept(this);
     }
 
-    @Override
-    public void visit(StartGame event) {
-
-    }
 
     @Override
     public void visit(InsertDice event) {
@@ -95,11 +57,42 @@ public class Controller implements Visitor {
 
     @Override
     public void visit(SelectInitialWindowPatternCard event) {
+        gameBoard.setWindowOfPlayer(event.getPlayerId(), ((SelectInitialWindowPatternCard) event).getSelectedIndex());
+    }
+
+    @Override
+    public void visit(SelectDiceFromHand event) {
 
     }
 
+    @Override
+    public void visit(EndTurn event) {
 
-    public void init() {
+
+    }
+
+    @Override
+    public void visit(UseToolCard event) {
+
+    }
+
+    @Override
+    public void visit(SelectCellOfWindow event) {
+
+
+    }
+
+    @Override
+    public void visit(SelectDiceFromDraftpool event) {
+
+    }
+
+    @Override
+    public void visit(SelectDiceFromRoundTrack event) {
+
+    }
+
+    public void startGame() {
         for (int i = 0; i < playerNumber; i++) {
             InitialWindowPatternCard packet = new InitialWindowPatternCard();
             packet.setInitialWindowPatternCard(gameBoard.getPlayer(i).getThe4WindowPattern());

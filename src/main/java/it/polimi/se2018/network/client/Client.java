@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.client;
 
-import it.polimi.se2018.list_event.event_controller.EventController;
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
+import it.polimi.se2018.list_event.event_view.EventController;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
@@ -104,11 +104,11 @@ public class Client implements ClientController{
     /**
      * Send to the server the request to unleash an event.
      *
-     * @param eventView object that will use the server to unleash the event associated.
+     * @param eventController object that will use the server to unleash the event associated.
      */
-    public void sendEventToController(EventController eventView) {
+    public void sendEventToController(EventController eventController) {
         try {
-            abstractClient.sendEventToController(eventView);
+            abstractClient.sendEventToController(eventController);
         } catch (Exception e) {
             e.printStackTrace();
         }

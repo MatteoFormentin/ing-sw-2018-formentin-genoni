@@ -1,10 +1,10 @@
 package it.polimi.se2018.list_event.event_controller;
 
-public class EndGame extends EventController {
-    //from EventView private String nicknamPlayer;
-    //from EventView private Model model;
+public class EndGame extends EventView {
+    //from EventController private String nicknamPlayer;
+    //from EventController private Model model;
     @Override
-    public void accept(VisitorEventFromController visitor) {
+    public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
 }

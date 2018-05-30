@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.client;
 
-import it.polimi.se2018.list_event.event_controller.EventController;
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
+import it.polimi.se2018.list_event.event_view.EventController;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -82,7 +82,7 @@ public abstract class AbstractClient {
 
     public abstract void login(String nickname) throws RemoteException;
 
-    public abstract void sendEventToController(EventController eventView) throws RemoteException;
+    public abstract void sendEventToController(EventController eventController) throws RemoteException;
 
     // BASTA METODI
 }

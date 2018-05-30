@@ -5,7 +5,7 @@ import it.polimi.se2018.list_event.event_controller.EndGame;
 import it.polimi.se2018.list_event.event_controller.InitialWindowPatternCard;
 import it.polimi.se2018.list_event.event_controller.StartGame;
 
-public interface VisitorEventFromView {
+public interface ControllerVisitor {
 
     /*
 
@@ -23,7 +23,7 @@ public interface VisitorEventFromView {
         if (event instanceof EndTurn) {
             System.out.println("Arrivato pacchetto");
             // gameBoard.nextPlayer(event.getPlayerId());
-            //EventView packet = new EndTurn();
+            //EventController packet = new EndTurn();
         }
 
         if (event instanceof UseToolCard) {
@@ -57,6 +57,8 @@ public interface VisitorEventFromView {
     public void visit(SelectDiceFromRoundTrack event);
 
     public void visit(UseToolCard event);
+
+    public void visit(SelectInitialWindowPatternCard event);
 
 
 }
