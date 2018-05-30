@@ -1,17 +1,17 @@
 package it.polimi.se2018.network;
 
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
 import it.polimi.se2018.network.server.Server;
-import javafx.beans.Observable;
 
 import java.rmi.RemoteException;
 
 /**
- * Class that extends Player adding a Network Level.
+ * Class that give to the player the possibility to utilize different type of connection (RMI or Socket).
+ * This class will be extended from RMI or Socket Player class.
  *
  * @author DavideMammarella
  */
-public abstract class RemotePlayer implements Observable {
+public abstract class RemotePlayer{
 
     //Riferimento alla partita in cui è il giocatore
     private transient Server serverRoom;
@@ -26,22 +26,26 @@ public abstract class RemotePlayer implements Observable {
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Remote Player constructor.
+     */
     protected RemotePlayer() {
         super();
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
-    // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
 
-    /*
-    @Override
-    public abstract void sendUpdateToView(EventUpdate eventUpdate);
-    */
+    /**
+     * Remote method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
+     */
+    public abstract void sendEventToView(EventView eventView) throws RemoteException;
 
     //------------------------------------------------------------------------------------------------------------------
-    // METHOD FOR SUPPORT (GET, SET, CHECK)
+    // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -56,7 +60,7 @@ public abstract class RemotePlayer implements Observable {
     /**
      * Getter for the server room.
      *
-     * @return reference on what game the player is in.
+     * @return reference of the server room where the player is playing.
      */
     public Server getServerRoom() {
         return this.serverRoom;
@@ -74,7 +78,7 @@ public abstract class RemotePlayer implements Observable {
     /**
      * Getter for nickname.
      *
-     * @return name used for the player.
+     * @return name associated to the player.
      */
     public String getNickname() {
         return nickname;
@@ -83,7 +87,7 @@ public abstract class RemotePlayer implements Observable {
     /**
      * Setter for player ID.
      *
-     * @param playerId id associated to the player.
+     * @param playerId ID associated to the player.
      */
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
@@ -97,6 +101,4 @@ public abstract class RemotePlayer implements Observable {
     public int getPlayerId() {
         return playerId;
     }
-
-    public abstract void sendEventToView(EventView eventView) throws RemoteException;
 }

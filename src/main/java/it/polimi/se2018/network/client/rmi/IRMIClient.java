@@ -1,22 +1,33 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_controller.EventView;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * Remote interface used for the notify.
+ * Class based on the Abstract Factory Design Pattern.
+ * Class used to permit remote method invocation.
+ * SERVER -> CLIENT
+ *
+ * The interface that define the class to export must:
+ * Extends Remote Interface
+ * Be Public
+ * Every method must start the RemoteException
  *
  * @author DavideMammarella
  */
 public interface IRMIClient extends Remote {
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
-    // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
 
-
-    public void sendEventToView(EventView eventView) throws RemoteException;
+    /**
+     * Remote method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
+     */
+    void sendEventToView(EventView eventView) throws RemoteException;
 
 }

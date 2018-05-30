@@ -2,7 +2,6 @@ package it.polimi.se2018.network.server;
 
 /**
  * Abstract class based on the Abstract Factory Design Pattern.
- * (It provides an interface to create families of connected or dependent objects, so that there is no need for clients to specify the names of the concrete classes within their own code.)
  * This class give to the server the possibility to utilize different type of connection (RMI or Socket) without problem, like an Adapter.
  * This class will be extended from RMI or Socket Server class.
  *
@@ -19,11 +18,10 @@ public abstract class AbstractServer {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Server abstract constructor. (Socket or RMI)
-     * Used to permit communication with server.
+     * Server abstract constructor.
+     * Used to permit communication (Socket or RMI) with server.
      *
-     * @param serverController server interface, used as
-     *                         controller to communicate with the server.
+     * @param serverController server interface, used as controller to communicate with the server.
      */
     public AbstractServer(ServerController serverController) {
         this.serverController = serverController;
@@ -34,8 +32,7 @@ public abstract class AbstractServer {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Getter for Server Controller that will handle request based
-     * on the different type of technologies.
+     * Getter for Server Controller that will handle request based on the different type of technologies.
      *
      * @return Server Controller in order to manage request for communication (RMI or Socket).
      */
@@ -44,7 +41,7 @@ public abstract class AbstractServer {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // CONNECTION STARTER
+    // SERVER STARTER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -56,5 +53,5 @@ public abstract class AbstractServer {
      */
     public abstract void startServer(int port) throws Exception;
 
-    // BASTA METODI
+    // END
 }

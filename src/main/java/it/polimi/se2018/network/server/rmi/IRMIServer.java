@@ -1,15 +1,16 @@
 package it.polimi.se2018.network.server.rmi;
 
-import it.polimi.se2018.list_event.event_controller.EventController;
+import it.polimi.se2018.list_event.event_view.EventController;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
+ * Class based on the Abstract Factory Design Pattern.
  * Class used to permit remote method invocation.
  * CLIENT -> SERVER
- * <p>
+ *
  * The interface that define the class to export must:
  * Extends Remote Interface
  * Be Public
@@ -18,16 +19,16 @@ import java.rmi.RemoteException;
  * @author DavideMammarella
  */
 public interface IRMIServer extends Remote {
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO SERVER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Remote method used to login.
+     * Remote method used to log the user to the server with his nickname.
      *
-     * @param nickname   name of the player.
+     * @param nickname name of the player.
      * @param iRMIClient client associated to the player.
-     * @return username that define the player.
      */
     void login(String nickname, IRMIClient iRMIClient) throws RemoteException;
 

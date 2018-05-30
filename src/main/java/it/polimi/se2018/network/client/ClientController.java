@@ -19,30 +19,28 @@ public interface ClientController {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Log the user to the Server with the nickname
+     * Remote method used to log the user to the server with his nickname.
      *
-     * @param nickname name used for the player.
+     * @param nickname name of the player associated to the client.
+     * @return true if the user is logged, false otherwise.
      */
     boolean login(String nickname);
 
     /**
-     * Send to the Server the request to unleash an event.
+     * Remote method used to send to the server a request to unleash an event.
      *
      * @param eventController object that will use the server to unleash the event associated.
      */
     void sendEventToController(EventController eventController);
 
-    boolean startRMIClient(String serverIpAddress, int rmiPort);
-
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
-    // NOTIFY
     //------------------------------------------------------------------------------------------------------------------
 
-    public void sendEventToView(EventView eventView) throws RemoteException;
-
-    /*
-    public void sendUpdateToView(EventUpdate eventUpdate)
+    /**
+     * Remote method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
      */
-
+    void sendEventToView(EventView eventView) throws RemoteException;
 }
