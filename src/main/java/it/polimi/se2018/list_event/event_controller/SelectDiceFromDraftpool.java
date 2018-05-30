@@ -1,11 +1,11 @@
-package it.polimi.se2018.list_event.event_view;
+package it.polimi.se2018.list_event.event_controller;
 
 /**
- * Extends EventController, describe the event "use of tool card" produced by the view
+ * Extends EventController, describe the event "select dice from the draft pool" produced by the view
  *
  * @author Luca Genoni
  */
-public class UseToolCard extends EventController {
+public class SelectDiceFromDraftpool extends EventController {
     //from EventController private String nicknamPlayer;
     //from EventController private Model model;
     int index;

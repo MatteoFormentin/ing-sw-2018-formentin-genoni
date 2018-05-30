@@ -1,4 +1,4 @@
-package it.polimi.se2018.list_event.event_view;
+package it.polimi.se2018.list_event.event_controller;
 
 /**
  * Extends EventController, describe the event "end of the turn" produced by the view

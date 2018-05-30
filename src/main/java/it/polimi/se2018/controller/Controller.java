@@ -1,7 +1,10 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.list_event.event_controller.InitialWindowPatternCard;
-import it.polimi.se2018.list_event.event_view.*;
+import it.polimi.se2018.list_event.event_controller.*;
+import it.polimi.se2018.list_event.event_view.EventView;
+import it.polimi.se2018.list_event.event_view.InitialWindowPatternCard;
+import it.polimi.se2018.list_event.event_view.StartPlayerTurn;
+import it.polimi.se2018.list_event.event_view.WaitYourTurn;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Model;
 import it.polimi.se2018.network.RemotePlayer;
@@ -57,7 +60,21 @@ public class Controller implements ControllerVisitor {
 
     @Override
     public void visit(SelectInitialWindowPatternCard event) {
-        gameBoard.setWindowOfPlayer(event.getPlayerId(), ((SelectInitialWindowPatternCard) event).getSelectedIndex());
+        try {
+            gameBoard.setWindowOfPlayer(event.getPlayerId(), ((SelectInitialWindowPatternCard) event).getSelectedIndex());
+            //TODO mandare agli altri giocatori la carta scelta
+        } catch (SettingWindowCompleteException ex) {
+            EventView turnPacket = new StartPlayerTurn();
+            turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
+
+            for (int i = 0; i < playerNumber; i++) {
+                if (i == gameBoard.getIndexCurrentPlayer()) continue;
+                EventView waitPacket = new WaitYourTurn();
+                waitPacket.setPlayerId(i);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

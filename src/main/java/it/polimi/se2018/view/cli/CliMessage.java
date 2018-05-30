@@ -213,6 +213,12 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));
     }
 
+    void showWaitYourTurnScreen() {
+        AnsiConsole.out.println(ansi().fg(RED).a("Tocca a un altro giocatore!"));
+        AnsiConsole.out.println(ansi().fg(RED).a("Aspetta che finisca il suo turno!"));
+    }
+
+
     void showMainMenu() {
         AnsiConsole.out.println();
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Cosa vuoi fare?"));

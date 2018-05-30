@@ -5,13 +5,12 @@ package it.polimi.se2018.list_event.event_view;
  *
  * @author Luca Genoni
  */
-public class EndTurn extends EventController {
+public class StartPlayerTurn extends EventView {
     //from EventController private String nicknamPlayer;
     //from EventController private Model model;
 
     @Override
-    public void accept(ControllerVisitor visitor) {
+    public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
-
 }

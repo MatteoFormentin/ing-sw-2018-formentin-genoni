@@ -1,4 +1,4 @@
-package it.polimi.se2018.list_event.event_controller;
+package it.polimi.se2018.list_event.event_view;
 
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 

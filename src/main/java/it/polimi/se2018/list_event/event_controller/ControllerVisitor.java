@@ -1,7 +1,7 @@
 package it.polimi.se2018.list_event.event_controller;
 
 
-public interface ViewVisitor {
+public interface ControllerVisitor {
 
     /*
 
@@ -40,11 +40,21 @@ public interface ViewVisitor {
 
     }*/
 
-    public void visit(EndGame event);
+    public void visit(EndTurn event);
 
-    public void visit(InitialWindowPatternCard event);
+    public void visit(InsertDice event);
 
-    public void visit(StartGame event);
+    public void visit(SelectCellOfWindow event);
+
+    public void visit(SelectDiceFromDraftpool event);
+
+    public void visit(SelectDiceFromHand event);
+
+    public void visit(SelectDiceFromRoundTrack event);
+
+    public void visit(UseToolCard event);
+
+    public void visit(SelectInitialWindowPatternCard event);
 
 
 }

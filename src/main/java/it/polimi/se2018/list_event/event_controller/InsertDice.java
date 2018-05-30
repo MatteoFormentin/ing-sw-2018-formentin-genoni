@@ -1,4 +1,4 @@
-package it.polimi.se2018.list_event.event_view;
+package it.polimi.se2018.list_event.event_controller;
 
 /**
  * Extends EventController, describe the event "select dice from the draft pool" produced by the view
@@ -8,7 +8,6 @@ package it.polimi.se2018.list_event.event_view;
 public class InsertDice extends EventController {
     //from EventController private String nicknamePlayer;
     //from EventController private Model model;
-    int index;
     int row;
     int column;
 
@@ -28,13 +27,6 @@ public class InsertDice extends EventController {
         this.column = column;
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
 
     public void accept(ControllerVisitor visitor) {
         visitor.visit(this);

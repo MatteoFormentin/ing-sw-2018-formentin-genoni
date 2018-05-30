@@ -65,7 +65,17 @@ public class CliController implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(StartGame event) {
+        //TODO mostra info sul gioco (numeri giocatori, stato connessione)
+    }
 
+    @Override
+    public void visit(WaitYourTurn event) {
+        cliMessage.showWaitYourTurnScreen();
+    }
+
+    @Override
+    public void visit(StartPlayerTurn event) {
+        turn();
     }
 
     //OPERATION HANDLER
@@ -111,6 +121,7 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     private void turn() {
+        //TODO far rivedere il menù dopo un azione con opzioni disabilitate
         cliMessage.showYourTurnScreen();
         cliMessage.showWindowPatternCard(player.getPlayerWindowPattern());
         cliMessage.showMainMenu();
@@ -129,7 +140,9 @@ public class CliController implements UIInterface, ViewVisitor {
             //End turn
             case 3:
                 EventController packet = new EndTurn();
-                //send packet
+                packet.setPlayerId(playerId);
+                client.sendEventToController(packet);
+                cliMessage.showWaitYourTurnScreen();
                 break;
 
             //Show public object
@@ -156,15 +169,20 @@ public class CliController implements UIInterface, ViewVisitor {
     private void insertDice() {
         cliMessage.showDiceStack(dicePool);
         int diceIndex = cliParser.parseInt();
+
+        SelectDiceFromHand selectDiceFromHand = new SelectDiceFromHand();
+        selectDiceFromHand.setPlayerId(playerId);
+        selectDiceFromHand.setIndex(diceIndex);
+
         cliMessage.showInsertDiceRow();
         int row = cliParser.parseInt();
         cliMessage.showInsertDiceColumn();
         int column = cliParser.parseInt();
 
-        InsertDice packet = new InsertDice();
-        packet.setIndex(diceIndex);
-        packet.setRow(row);
-        packet.setColumn(column);
+        InsertDice insertDice = new InsertDice();
+        insertDice.setPlayerId(playerId);
+        insertDice.setRow(row);
+        insertDice.setColumn(column);
 
         //send packet
         //wait for server response

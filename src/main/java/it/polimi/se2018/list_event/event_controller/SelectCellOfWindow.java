@@ -1,4 +1,4 @@
-package it.polimi.se2018.list_event.event_view;
+package it.polimi.se2018.list_event.event_controller;
 
 /**
  * Extends EventController, describe the event "select a cell of window" produced by the view
