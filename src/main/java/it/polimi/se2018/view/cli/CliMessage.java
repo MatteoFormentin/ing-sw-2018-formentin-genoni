@@ -9,8 +9,9 @@ import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
 import org.fusesource.jansi.AnsiConsole;
 
-import static org.fusesource.jansi.Ansi.*;
+import static org.fusesource.jansi.Ansi.Color;
 import static org.fusesource.jansi.Ansi.Color.*;
+import static org.fusesource.jansi.Ansi.ansi;
 
 
 /**
@@ -28,8 +29,27 @@ class CliMessage {
     }
 
     void splashScreen() {
-        AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("BENVENUTO").fg(BLUE).a(" su").fg(GREEN).a(" SAGRADA").reset());
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Un divertente gioco di dadi implementato da").fg(GREEN).a(" Matteo Formentin,").fg(BLUE).a(" Luca Genoni").fg(DEFAULT).a(" e").fg(RED).a(" Davide Mammarella"));
+
+        // AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("BENVENUTO").fg(BLUE).a(" su"));
+        AnsiConsole.out().println();
+        AnsiConsole.out.println(ansi().fg(YELLOW).a(
+                "        | | |           |   |   |   |   |            |  |\n" +
+                        "    \\   | | |   /    \\  |   |   |   |   |  /       \\ |  | /\n" +
+                        "     \\  | | |  /      \\ |   |   |   |   | /         \\|  |/"));
+
+        AnsiConsole.out.println(ansi().fg(RED).a(
+                "        _____         _____ _____            _____       \n" +
+                        "       / ____|  /\\   / ____|  __ \\     /\\   |  __ \\   /\\    \n" +
+                        "      | (___   /  \\ | |  __| |__) |   /  \\  | |  | | /  \\   \n" +
+                        "       \\___ \\ / /\\ \\| | |_ |  _  /   / /\\ \\ | |  | |/ /\\ \\  \n" +
+                        "       ____) / ____ \\ |__| | | \\ \\  / ____ \\| |__| / ____ \\ \n" +
+                        "      |_____/_/    \\_\\_____|_|  \\_\\/_/    \\_\\_____/_/    \\_\\\n"));
+        AnsiConsole.out.println(ansi().fg(YELLOW).a(
+                "     /  | | | \\       / |   |   |   |   | \\         /|  |\\\n" +
+                        "    /   | | |  \\     /  |   |   |   |   |  \\       / |  | \\                        \n" +
+                        "        | | |           |   |   |   |   |            |  |  "));
+        AnsiConsole.out().println();
+        AnsiConsole.out.println(ansi().fg(BLUE).a("Un divertente gioco di dadi implementato da").fg(GREEN).a(" Matteo Formentin,").fg(MAGENTA).a(" Luca Genoni").fg(DEFAULT).a(" e").fg(RED).a(" Davide Mammarella"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per iniziare"));
     }
 
