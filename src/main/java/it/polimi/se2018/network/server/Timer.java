@@ -1,4 +1,4 @@
-package it.polimi.se2018.network.server;
+/*package it.polimi.se2018.network.server;
 
 public class Timer implements Runnable {
 
@@ -22,4 +22,4 @@ public class Timer implements Runnable {
         server.startGame();
 
     }
-}
+}*/

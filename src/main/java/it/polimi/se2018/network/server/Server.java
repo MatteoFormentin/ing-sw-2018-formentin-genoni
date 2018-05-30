@@ -1,7 +1,6 @@
 package it.polimi.se2018.network.server;
 
 import it.polimi.se2018.controller.Controller;
-
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.StartGame;
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.concurrent.*;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -44,7 +44,10 @@ public class Server implements ServerController {
     private RMIServer rmiServer;
     // GAME DELLA ROOM
     private Controller game;
-    // TIME
+
+    // TODO: TIME
+    private Timer timeoutExecutor;
+    private ExecutorService timeoutExecutorService;
     private long timeout;
 
     //STATO STANZA
@@ -86,6 +89,9 @@ public class Server implements ServerController {
             // Default timeout in case of exception.
             timeout = 120 * 1000;
         }
+
+        // TODO: TIME
+        this.timeoutExecutor=null;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -137,18 +143,9 @@ public class Server implements ServerController {
         game = new Controller(this, players.size());
         System.out.println("Closing Room...");
         roomJoinable = false;
-
-        String[] playersName = new String[players.size()];
-        int i = 0;
-        for (RemotePlayer player : players) {
-            playersName[i] = player.getNickname();
-            i++;
-        }
-        StartGame packet = new StartGame();
-        packet.setPlayersName(playersName);
         for (RemotePlayer player : players) {
             try {
-
+                EventView packet = new StartGame();
                 packet.setPlayerId(player.getPlayerId());
                 player.sendEventToView(packet);
             } catch (RemoteException ex) {
@@ -164,8 +161,11 @@ public class Server implements ServerController {
      */
     public void startTimer() {
         System.out.println("Timeout started!");
-        new Thread(new Timer(timeout, this)).start();
-
+        // INIZIALIZZA TIMER PASSANDOGLI IL TIMEOUT IMPORTATO DA PROPRETIES
+        this.timeoutExecutor=new Timer(timeout);
+        timeoutExecutorService = Executors.newSingleThreadExecutor();
+        // FAI PARTIRE IL TIMER
+        timeoutExecutorService.execute((Runnable) this.timeoutExecutor);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -192,8 +192,9 @@ public class Server implements ServerController {
                     // FAI PARTIRE IL TEMPO DI ATTESA
                     startTimer();
                 } else if (players.size() == MAX_PLAYERS) {
-                    //TODO Termninate thread !!! altrimenti parte due volte
                     //TODO Problema: se giocatore si disconnette cosa succede? ora parte lo stesso
+                    // TERMINA THREAD
+                    timeoutExecutorService.shutdownNow();
                     startGame();
                 }
                 return true;
@@ -265,5 +266,35 @@ public class Server implements ServerController {
             }
         }
         return null; //Se arrivo qui qualcosa è sbagliato nel model
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHODS
+    //------------------------------------------------------------------------------------------------------------------
+
+    public class Timer {
+
+        private final long timeout;
+
+        /**
+         * Constructor for Timer.
+         * @param timeout timeout passed on
+         */
+        public Timer(long timeout) {
+            this.timeout = timeout;
+        }
+
+        public void main(String[] args) {
+            Runnable timerTask = ()->{
+                boolean flag = true;
+                long startTimerTime = System.currentTimeMillis();
+                while (flag) {
+                    if (System.currentTimeMillis() - startTimerTime >= timeout) {
+                        flag = false;
+                    }
+                }
+                Server.this.startGame();
+            };
+        }
     }
 }
