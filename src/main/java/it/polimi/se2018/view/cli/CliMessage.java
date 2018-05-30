@@ -83,20 +83,41 @@ class CliMessage {
     }
 
     void showNicknameExists() {
-        AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("Esiste già un giocatore con il tuo nome. Scegline un altro."));
+        AnsiConsole.out.println(ansi().fg(RED).a("Esiste già un giocatore con il tuo nome. Scegline un altro."));
     }
 
     //--------------------------
     //  INIT MESSAGES
     //--------------------------
 
+    void showGameStarted(String[] playersName) {
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Tutti i giocatori sono connessi, la partita inizierà a breve!"));
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Partecipano " + playersName.length + " giocatori:"));
+        for (int i = 0; i < playersName.length; i++) {
+            AnsiConsole.out.println(ansi().fg(DEFAULT).a("- Giocatore " + (i + 1) + ": " + playersName[i]));
+        }
+        AnsiConsole.out.println();
+    }
+
     void showInitialWindowPatternCardSelection() {
-        AnsiConsole.out.println(ansi().eraseScreen().fg(DEFAULT).a("Digita 0..3 per selezionare la tua card: "));
+        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita 0..3 per selezionare la tua card: "));
     }
 
     //--------------------------
     //  GAME MESSAGES
     //--------------------------
+
+    void showYourTurnScreen() {
+        AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));
+        AnsiConsole.out.println(ansi().fg(RED).a("|                ").fg(BLUE).a("Tocca a te!").fg(RED).a("                |"));
+        AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));
+    }
+
+    void showWaitYourTurnScreen() {
+        AnsiConsole.out.println(ansi().fg(RED).a("Tocca a un altro giocatore!"));
+        AnsiConsole.out.println(ansi().fg(RED).a("Aspetta che finisca il suo turno!"));
+    }
+
     void showWindowPatternCard(WindowPatternCard card) {
         AnsiConsole.out().println();
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Nome: " + card.getName()));
@@ -203,21 +224,10 @@ class CliMessage {
         AnsiConsole.out.print(ansi().fg(color).a(dice.getValue()));
     }
 
+
     //--------------------------
     //  MENU MESSAGES
     //--------------------------
-
-    void showYourTurnScreen() {
-        AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));
-        AnsiConsole.out.println(ansi().fg(RED).a("|                ").fg(BLUE).a("Tocca a te!").fg(RED).a("                |"));
-        AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));
-    }
-
-    void showWaitYourTurnScreen() {
-        AnsiConsole.out.println(ansi().fg(RED).a("Tocca a un altro giocatore!"));
-        AnsiConsole.out.println(ansi().fg(RED).a("Aspetta che finisca il suo turno!"));
-    }
-
 
     void showMainMenu() {
         AnsiConsole.out.println();
