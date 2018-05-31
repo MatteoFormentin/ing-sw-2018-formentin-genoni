@@ -68,6 +68,7 @@ public class Timer implements Runnable {
 
             System.out.println("Time is over, starting the game...");
             server.startGame();
+            shutdown();
         }
     }
 

@@ -140,17 +140,17 @@ public class Server implements ServerController {
         System.out.println("Closing Room...");
         roomJoinable = false;
 
-                        String[] playersName = new String[players.size()];
-                int i = 0;
-                for (RemotePlayer player : players) {
-                       playersName[i] = player.getNickname();
-                       i++;
-                   }
-              StartGame packet = new StartGame();
-               packet.setPlayersName(playersName);
+        String[] playersName = new String[players.size()];
+        int i = 0;
+        for (RemotePlayer player : players) {
+            playersName[i] = player.getNickname();
+            i++;
+        }
+        StartGame packet = new StartGame();
+        packet.setPlayersName(playersName);
         for (RemotePlayer player : players) {
             try {
-                        packet.setPlayerId(player.getPlayerId());
+                packet.setPlayerId(player.getPlayerId());
                 player.sendEventToView(packet);
             } catch (RemoteException ex) {
                 ex.printStackTrace();
@@ -166,7 +166,7 @@ public class Server implements ServerController {
     public void startTimer() {
         System.out.println("Timeout started!");
         // creo nuovo timer
-        timerThread = new Timer(this,this.timeout);
+        timerThread = new Timer(this, this.timeout);
         //faccio partire il thread
         timerThread.startThread();
     }
@@ -188,7 +188,7 @@ public class Server implements ServerController {
             System.out.println("Trying to log the player...");
 
             // SE LA STANZA è ACCESSIBILE
-            if(roomJoinable) {
+            if (roomJoinable) {
 
                 // NON ESISTE PLAYER CON QUEL NICKNAME
                 if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
@@ -225,15 +225,15 @@ public class Server implements ServerController {
             }
 
             // SE LA STANZA NON è ACCESSIBILE
-            else if(!roomJoinable){
+            else if (!roomJoinable) {
 
                 // NON ESISTE PLAYER CON QUEL NICKNAME
-                if (!checkPlayerNicknameExists(remotePlayer.getNickname())){
+                if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
                     System.out.println("Sorry, room is full... You can't access...");
                     return false;
                 }
                 // ESISTEVA IL PLAYER CON QUEL NICKNAME
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname())){
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
                     // GESTISCO LA SOSTITUZIONE
 
                 }
