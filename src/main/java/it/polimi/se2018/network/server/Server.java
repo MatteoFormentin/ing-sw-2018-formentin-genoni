@@ -146,10 +146,10 @@ public class Server implements ServerController {
             playersName[i] = player.getNickname();
             i++;
         }
-        StartGame packet = new StartGame();
-        packet.setPlayersName(playersName);
         for (RemotePlayer player : players) {
             try {
+                StartGame packet = new StartGame();
+                packet.setPlayersName(playersName);
                 packet.setPlayerId(player.getPlayerId());
                 player.sendEventToView(packet);
             } catch (RemoteException ex) {
