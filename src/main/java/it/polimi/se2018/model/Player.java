@@ -1,6 +1,14 @@
 package it.polimi.se2018.model;
 
 
+import it.polimi.se2018.exception.GameboardException.NoDiceException;
+import it.polimi.se2018.exception.*;
+import it.polimi.se2018.exception.PlayerException.NoDiceInHandException;
+import it.polimi.se2018.exception.PlayerException.NoEnoughTokenException;
+import it.polimi.se2018.exception.WindowException.RestrictionAdjacentViolatedException;
+import it.polimi.se2018.exception.WindowException.RestrictionCellOccupiedException;
+import it.polimi.se2018.exception.WindowException.RestrictionColorViolatedException;
+import it.polimi.se2018.exception.WindowException.RestrictionValueViolatedException;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
@@ -42,7 +50,6 @@ public class Player {
     /**
      * Constructor for a new player
      *
-     * @param nickname of the player
      * @param indexInGame of the player if needed
      */
     Player(int indexInGame) {
@@ -129,7 +136,6 @@ public class Player {
     //************************************setter**********************************************
 
 
-
     public void setIndexInGame(int indexInGame) {
         this.indexInGame = indexInGame;
     }
@@ -156,6 +162,7 @@ public class Player {
 
     /**
      * special setter for the windowPattern
+     *
      * @param index
      */
     public void choosePlayerWindowPattern(int index) {
@@ -195,66 +202,52 @@ public class Player {
     //************************************window's method**********************************************
     //************************************window's method**********************************************
 
-
     /**
-     * add the dice from the DicePool, set hasDrawNewDice to true
+     * add a die to hand, without check.
      *
-     * @param dice to add in hand
+     * @param dice the dice to add
      * @return true if it's all ok, false otherwise
      */
-    public boolean addNormalDiceToHandFromDraftPool(Dice dice) {
-        if(hasDrawNewDice)return false;
-        if (dice== null) return false;
+    void addDiceToHand(Dice dice) throws NoDiceException {
+        if (dice == null) throw new NoDiceException();
         handDice.add(dice);
-        hasDrawNewDice=true;
-        return true;
     }
 
     /**
-     * the dice in hand with the index 0 is inserted in the window,
-     * if the player hasn't draw a new dice or use a tool card he can't place a dice with this method
+     * A method for insert the Dice (in position 0 in hand) in the player's window with all the window restriction activated
      *
      * @param line   of the cell of the playerWindowPattern
      * @param column of the cell of the playerWindowPattern
-     * @return true if it's all ok, false if something gone wrong
      */
-    public boolean insertDice(int line, int column) {
-        if (!hasDrawNewDice ||hasUsedToolCard) return false; //state wrong this method to place a die is only for a normal placed
-        if(handDice.size()==0)return false;// no dice in hand
-        if (!playerWindowPattern.insertDice(line, column, handDice.get(0))) return false; // can't insert the dice
-        removeDiceFromHand();
-        hasPlaceANewDice = true;
-        return true;
+    public void insertDice(int line, int column) throws RestrictionCellOccupiedException, RestrictionValueViolatedException,
+            RestrictionColorViolatedException, RestrictionAdjacentViolatedException, NoDiceInHandException {
+        if (handDice.get(0) == null) throw new NoDiceInHandException();
+        playerWindowPattern.insertDice(line, column, handDice.get(0)); // can't insert the dice
+        handDice.remove(0);
     }
+
     /**
-     * method for use the tool card. recieve the cost
+     * A method for activated the use of the toolCard methods
+     * Check the state of the player and his money.
      *
      * @param cost of the tool card
      * @return true id it's all ok, false if player can't use toolcard
      */
-    public boolean useToolCard(int cost) {
-        if(hasUsedToolCard)return false;//already used
-        if(cost>favorToken)return false;//no money
-        hasUsedToolCard=true;
+    public void useToolCard(int cost) throws StatePlayerException,NoEnoughTokenException{
+        if (hasUsedToolCard) throw new StatePlayerException();
+        if (cost > favorToken) throw new NoEnoughTokenException();
+        hasUsedToolCard = true;
         favorToken -= cost;
-        return true;
-    }
-    void endTrun(boolean nextTurnIsATypeFirstTurn){
-        hasUsedToolCard=false;
-        hasDrawNewDice=false;
-        hasPlaceANewDice=false;
-        this.firstTurn=nextTurnIsATypeFirstTurn;
     }
 
-    /**
-     * remove the Dice 0 in hand
-     *
-     * @return the dice in position 0, null if the player has no dice in hand
-     */
-    Dice removeDiceFromHand() {
-        if(handDice.size()==0) return null;
-        return handDice.takeDiceFromStack(0);
+    void endTrun(boolean nextTurnIsATypeFirstTurn) {
+        hasUsedToolCard = false;
+        hasDrawNewDice = false;
+        hasPlaceANewDice = false;
+        firstTurn = nextTurnIsATypeFirstTurn;
     }
+
+
 
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
@@ -262,6 +255,7 @@ public class Player {
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
+
     /**
      * Insert the dice. Available when using a tool card
      *
@@ -279,9 +273,10 @@ public class Player {
      */
     boolean insertDice(int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
         if (!hasUsedToolCard) return false; //didn't use toolcard
-        if(handDice.size()==0)return false;// no dice in hand
-        if (!playerWindowPattern.insertDice(line, column, handDice.get(0), adjacentRestriction, colorRestriction, valueRestriction)) return false; // can't insert the dice
-        removeDiceFromHand();
+        if (handDice.size() == 0) return false;// no dice in hand
+        if (!playerWindowPattern.insertDice(line, column, handDice.get(0), adjacentRestriction, colorRestriction, valueRestriction))
+            return false; // can't insert the dice
+       // removeDiceFromHand();
         hasPlaceANewDice = true;
         return true;
     }
@@ -289,19 +284,18 @@ public class Player {
     /**
      * move the dice from the indicated coordinate by hand. Available when using a tool card
      *
-     * @param line of cell
+     * @param line   of cell
      * @param column of cell
      * @return false if didn't select a tool card,true otherwise
      */
     boolean moveDiceFromWindowPatternToHand(int line, int column) {
-        if(!hasUsedToolCard) return false;
-        Dice dice=playerWindowPattern.getCell(line, column).getDice();
-        if (dice==null) return false;
+        if (!hasUsedToolCard) return false;
+        Dice dice = playerWindowPattern.getCell(line, column).getDice();
+        if (dice == null) return false;
         playerWindowPattern.removeDice(line, column);
         handDice.add(dice);
         return true;
     }
-
 
 
     /**
@@ -310,8 +304,8 @@ public class Player {
      * @return true if it's all ok, false otherwise
      */
     boolean rollDiceInHand() {
-        if(!hasUsedToolCard) return false;
-        if(handDice.size()==0) return false;
+        if (!hasUsedToolCard) return false;
+        if (handDice.size() == 0) return false;
         handDice.get(0).rollDice();
         return true;
     }
@@ -322,20 +316,21 @@ public class Player {
      * @param increase true if the player want to increase the value, false for decrease
      * @return true if it's all ok, false otherwise
      */
-    boolean increaseOrDecrease(boolean increase){
-        if(!hasUsedToolCard) return false;
-        if(handDice.size()==0) return false;
+    boolean increaseOrDecrease(boolean increase) {
+        if (!hasUsedToolCard) return false;
+        if (handDice.size() == 0) return false;
         handDice.get(0).increaseOrDecrease(increase);
         return true;
     }
+
     /**
      * the player change the face of the dice. Available when using a tool card
      *
      * @return true if it's all ok, false otherwise
      */
-    boolean oppositeFaceDice(){
-        if(!hasUsedToolCard) return false;
-        if(handDice.size()==0) return false;
+    boolean oppositeFaceDice() {
+        if (!hasUsedToolCard) return false;
+        if (handDice.size() == 0) return false;
         handDice.get(0).oppositeValue();
         return true;
     }
@@ -345,13 +340,13 @@ public class Player {
      *
      * @return true if it's all ok, false otherwise
      */
-    boolean endSpecialFirstTurn (){
-        if(!hasUsedToolCard) return false;
-        if(!firstTurn) return false;
-        hasUsedToolCard=true;
-        hasDrawNewDice=false;
-        hasPlaceANewDice=false;
-        this.firstTurn=true;
+    boolean endSpecialFirstTurn() {
+        if (!hasUsedToolCard) return false;
+        if (!firstTurn) return false;
+        hasUsedToolCard = true;
+        hasDrawNewDice = false;
+        hasPlaceANewDice = false;
+        this.firstTurn = true;
         return true;
     }
 
@@ -367,26 +362,10 @@ public class Player {
      * @param index of the selected dice
      * @return true if it's all ok, false otherwise
      */
-    boolean selectDiceInHand(int index){
-        if(!hasUsedToolCard) return false;
-        if(index>=handDice.size()||index<0) return false;
+    boolean selectDiceInHand(int index) {
+        if (!hasUsedToolCard) return false;
+        if (index >= handDice.size() || index < 0) return false;
         handDice.moveDiceToTheTop(index);
         return true;
     }
-
-    /**
-     * add a die to hand. Available when using a tool card
-     *
-     * @param dice the dice to add
-     * @return true if it's all ok, false otherwise
-     */
-    boolean addDiceToHand(Dice dice){
-        if(!hasUsedToolCard) return false;
-        if(dice==null) return false;
-        handDice.add(dice);
-        return true;
-    }
-
-
-
 }

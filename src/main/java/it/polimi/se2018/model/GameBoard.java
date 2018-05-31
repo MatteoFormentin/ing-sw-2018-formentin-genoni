@@ -1,12 +1,16 @@
 package it.polimi.se2018.model;
 
 
+import it.polimi.se2018.exception.GameboardException.*;
+import it.polimi.se2018.exception.PlayerException.*;
+import it.polimi.se2018.exception.WindowException.*;
+import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
-import it.polimi.se2018.exception.SettingWindowCompleteException;
+import it.polimi.se2018.network.server.ServerController;
 
 import java.io.Serializable;
 
@@ -26,12 +30,11 @@ public class GameBoard implements Serializable {
     private Player[] player; //can have only the get(they are created with the constructor )
     private ToolCard[] toolCard;//can have only the get
     private ObjectivePublicCard[] objectivePublicCard;//can have only the get
-    private DiceStack poolDice;//can have only the get
+    private DiceStack dicePool;//can have only the get
     private FactoryDice factoryDiceForThisGame; //nobody can see it
+    private ServerController server;
 
-    /**
-     * constructor for the gameBoard. Contain the preparation of the game, nee
-     */
+
     public GameBoard(int number) {
         stopGame = true;
         currentRound = 0;
@@ -41,14 +44,14 @@ public class GameBoard implements Serializable {
         objectivePublicCard = new ObjectivePublicCard[3];
         factoryDiceForThisGame = new BalancedFactoryDice();// here for change the factory
         Deck deck = Deck.getDeck();
-
         player = new Player[number];
-
-
         //setUp player
         for (int i = 0; i < number; i++) {
             player[i] = new Player(i);
             player[i].setPrivateObject(deck.drawObjectivePrivateCard());
+            UpdateSinglePrivateObject packet = new UpdateSinglePrivateObject(i, player[i].getPrivateObject());
+            packet.setPlayerId(i);
+            server.sendEventToView(packet);
             WindowPatternCard[] window = new WindowPatternCard[4];
             for (int n = 0; n < 4; n++) {
                 window[n] = deck.drawWindowPatternCard();
@@ -57,15 +60,19 @@ public class GameBoard implements Serializable {
         }
         indexCurrentPlayer = 0;
         for (int i = 0; i < toolCard.length; i++) toolCard[i] = deck.drawToolCard();
+        UpdateAllToolCard packetTool = new UpdateAllToolCard(toolCard);
+        broadCast(packetTool);
         for (int i = 0; i < objectivePublicCard.length; i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
-        //create the first dicePool
-        poolDice = new DiceStack();
-        for (int i = 0; i < (2 * player.length + 1); i++) {
-            poolDice.add(factoryDiceForThisGame.createDice());
-        }
-
+        UpdateAllPublicObject packetPublic = new UpdateAllPublicObject(objectivePublicCard);
+        broadCast(packetPublic);
     }
 
+    private void broadCast(EventView packet) {
+        for (int i = 0; i < player.length; i++) {
+            packet.setPlayerId(i);
+            server.sendEventToView(packet);
+        }
+    }
     //************************************getter**********************************************
     //************************************getter**********************************************
     //************************************getter**********************************************
@@ -135,8 +142,8 @@ public class GameBoard implements Serializable {
     /**
      * @return a DiceStack relative to the DicePool
      */
-    public DiceStack getPoolDice() {
-        return poolDice;
+    public DiceStack getDicePool() {
+        return dicePool;
     }
 
     /**
@@ -164,6 +171,10 @@ public class GameBoard implements Serializable {
     //************************************setter**********************************************
     //************************************setter**********************************************
 
+    public void setServer(ServerController server) {
+        this.server = server;
+    }
+
     //no setter
 
     //**************************************Observer/observable**************************************************
@@ -172,94 +183,106 @@ public class GameBoard implements Serializable {
     //************************************class's method**********************************************
     //************************************class's method**********************************************
     //************************************class's method**********************************************
+    private void setUpFirstRound() {
+        //create the First Round
+        dicePool = new DiceStack();
+        for (int i = 0; i < (2 * player.length + 1); i++) {
+            dicePool.add(factoryDiceForThisGame.createDice());
+        }
+        UpdateDicePool packetDicePool = new UpdateDicePool(dicePool);
+        broadCast(packetDicePool);
+        stopGame = false;
+    }
+
+    private void freeHandPlayer(int indexPlayer) {
+        while (player[indexPlayer].getHandDice().size() != 0) {
+            dicePool.addLast(player[indexPlayer].getHandDice().remove(0));
+        }
+        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
+        broadCast(packet);
+        UpdateDicePool packetDicePool = new UpdateDicePool(dicePool);
+        broadCast(packetDicePool);
+    }
 
     /**
-     * change the current player to the next.
+     * change the current player to the next and end the game.
      * check the state of the player for the first/second turn
-     * move the dice in hand to the draftpool.
+     * move the dice in hand to the DicePool.
      *
-     * @param indexPlayer the index of the player who send the request (can also change to the nickname)
-     * @return true if the change was a success, false if there is a problem.
+     * @param indexPlayer that request the move
+     * @throws GameIsBlockedException  if the game can't be modified
+     * @throws CurrentPlayerException  if the requester isn't the current player
+     * @throws GameIsOverException     if the game is over
+     * @throws FatalGameErrorException if the game is corrupted
      */
-    public boolean nextPlayer(int indexPlayer) {
-        try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn baby
-            if (currentTurn < player.length) {
-                if (player[indexPlayer].isFirstTurn()) {
-                    player[indexPlayer].endTrun(false);
-                }//else he use a tool card that alter the normal circle
-                while (player[indexPlayer].getHandDice().size() != 0) {
-                    poolDice.addLast(player[indexPlayer].removeDiceFromHand());
-                }
+    public void nextPlayer(int indexPlayer) throws GameIsBlockedException, CurrentPlayerException,
+            GameIsOverException, FatalGameErrorException {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (currentTurn < player.length) {
+            if (player[indexPlayer].isFirstTurn()) {
+                player[indexPlayer].endTrun(false);
+            }//else he use a tool card that alter the normal circle
+            freeHandPlayer(indexPlayer);
+            indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
+            currentTurn++;
+            if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
+            //se è uguale siamo nella fare tra il 1° e il 2° giro
+        } else if (currentTurn == player.length) {
+            if (player[indexPlayer].isFirstTurn()) {
+                player[indexPlayer].endTrun(false);
+            }//else he use a tool card that alter the normal circle
+            freeHandPlayer(indexPlayer);
+            currentTurn++;
+            if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
+            //siamo in pieno 2°giro
+        } else if (currentTurn < (2 * player.length)) {
+            if (!player[indexPlayer].isFirstTurn()) {
+                player[indexPlayer].endTrun(true);
+            }//else he use a tool card that alter the normal circle
+            freeHandPlayer(indexPlayer);
+            indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
+            currentTurn++;
+            if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
+            //siamo tra il 2° e il 1° giro/endgame
+        } else if (currentTurn == (2 * player.length)) { //fine round
+            if (!player[indexPlayer].isFirstTurn()) {
+                player[indexPlayer].endTrun(true);
+            }//else he use a tool card that alter the normal circle
+            freeHandPlayer(indexPlayer);//rimette dadi rimanenti in mano nella draftpool
+            roundTrack[currentRound] = dicePool;
+            dicePool = null;
+            UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
+            broadCast(packetRound);
+            currentRound++;
+            if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
-                currentTurn++;
-                if (!player[indexCurrentPlayer].isFirstTurn()) return nextPlayer(indexCurrentPlayer);
-
-                //se è uguale siamo nella fare tra il 1° e il 2° giro
-            } else if (currentTurn == player.length) {
-                if (player[indexPlayer].isFirstTurn()) {
-                    player[indexPlayer].endTrun(false);
-                }//else he use a tool card that alter the normal circle
-                while (player[indexPlayer].getHandDice().size() != 0) {
-                    poolDice.addLast(player[indexPlayer].removeDiceFromHand());
-                }
-                currentTurn++;
-                if (player[indexCurrentPlayer].isFirstTurn()) return nextPlayer(indexCurrentPlayer);
-
-                //siamo in pieno 2°giro
-            } else if (currentTurn < (2 * player.length)) {
-                if (!player[indexPlayer].isFirstTurn()) {
-                    player[indexPlayer].endTrun(true);
-                }//else he use a tool card that alter the normal circle
-                while (player[indexPlayer].getHandDice().size() != 0) {
-                    poolDice.addLast(player[indexPlayer].removeDiceFromHand());
-                }
-                indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
-                currentTurn++;
-                if (player[indexCurrentPlayer].isFirstTurn()) return nextPlayer(indexCurrentPlayer);
-
-                //siamo tra il 2° e il 1° giro/endgame
-            } else if (currentTurn == (2 * player.length)) {
-                if (!player[indexPlayer].isFirstTurn()) {
-                    player[indexPlayer].endTrun(true);
-                }//else he use a tool card that alter the normal circle
-                while (player[indexPlayer].getHandDice().size() != 0) {
-                    poolDice.addLast(player[indexPlayer].removeDiceFromHand());
-                }
-                indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
-                currentTurn = 0;
-                currentRound++;
-                //Ora potrebbe finire il gioco
-                if (currentRound == roundTrack.length) {
-                    stopGame = true;
-                    currentTurn = 2 * player.length + 1;
-                    //method for the end game
-                    calculatePoint();
-                } else {
-                    roundTrack[currentRound] = new DiceStack();
-                    for (int i = 0; i < (2 * player.length + 1); i++) {
-                        Dice dice = factoryDiceForThisGame.createDice();
-                        if (dice == null) {
-                            System.err.println("Non ci sono abbastanza dadi, è strano perchè dovrebbero essere 90 esatti");
-                            return false;
-                        }
-                        roundTrack[currentRound].add(dice);
+                currentTurn = 1;
+                for (int i = 0; i < (2 * player.length + 1); i++) {
+                    Dice dice = factoryDiceForThisGame.createDice();
+                    if (dice == null) {
+                        System.err.println("Non ci sono abbastanza dadi, è strano perchè dovrebbero essere 90 esatti");
+                        throw new FatalGameErrorException();
                     }
-                    if (!player[indexCurrentPlayer].isFirstTurn()) return nextPlayer(indexCurrentPlayer);
+                    dicePool.add(dice);
                 }
-            } else {
-                System.err.println("Gioco corrotto, impossibile proseguire i current turn non impazziti");
-                return false;
+                UpdateDicePool packetPool = new UpdateDicePool(dicePool);
+                broadCast(packetPool);
+                if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
+            } else {//il gioco è finito
+                stopGame = true;
+                currentTurn = 2 * player.length + 1;
+                //method for the end game
+                calculatePoint();
+                throw new GameIsOverException();
             }
-            return true;
-        } catch (Exception e) {
-            return false;
+        } else {
+            System.err.println("I turni sono impazziti.");
+            throw new FatalGameErrorException();
         }
     }
 
     private void calculatePoint() {
-
         int pointCounter;
         for (Player player : this.player) {
             pointCounter = 0;
@@ -271,9 +294,15 @@ public class GameBoard implements Serializable {
             pointCounter += player.getPrivateObject().calculatePoint(player.getPlayerWindowPattern());
             //add the token left
             pointCounter += player.getFavorToken();
+            player.setFavorToken(0);
             //subtract the void cell
             pointCounter = pointCounter - (20 - player.getPlayerWindowPattern().getNumberOfCellWithDice());
             player.setPoints(pointCounter);
+        }
+        //inolra a tutti il punteggio
+        for (int i = 0; i < player.length; i++) {
+            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
+            broadCast(packet);
         }
     }
 
@@ -284,21 +313,17 @@ public class GameBoard implements Serializable {
      * @param indexOfTheWindow of the window selected
      * @return true if all is gone perfectly, false otherwise.
      */
-    public boolean setWindowOfPlayer(int indexOfThePlayer, int indexOfTheWindow) throws Exception {
-        //useless check: if(currentRound!=0 && currentTurn!=0)return false;//can't pick a window during a game.... troller
-        if (indexOfThePlayer < 0 || indexOfThePlayer >= player.length) return false;//wrong index
-        if (indexOfTheWindow < 0 || indexOfTheWindow > 3) return false;//wrong index
-        if (player[indexOfThePlayer].getPlayerWindowPattern() != null) return false;//window already picked
-        // ok i set your window
+    public void setWindowOfPlayer(int indexOfThePlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException {
+        if (player[indexOfThePlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
         player[indexOfThePlayer].choosePlayerWindowPattern(indexOfTheWindow);
+        UpdateSingleWindow packet = new UpdateSingleWindow(indexOfThePlayer, player[indexOfThePlayer].getPlayerWindowPattern());
+        broadCast(packet);
         countSetWindow++;
         if (countSetWindow == player.length) {
-            stopGame = false;
-            throw new SettingWindowCompleteException();
+            setUpFirstRound();
+            throw new WindowSettingCompleteException();
         }
-        return true;
     }
-
 
 //*****************************************metodi del player************************************************************************
 //*****************************************metodi del player************************************************************************
@@ -307,43 +332,34 @@ public class GameBoard implements Serializable {
 //*****************************************metodi del player************************************************************************
 
     /**
-     * the normal draw of a die from the draftpool
      *
-     * @param indexPlayer        who send the request of the move,(it should be the current player)
-     * @param indexdiceDraftpool
-     * @return
+     * @param indexPlayer index of the player that request the move
+     * @param indexDicePool index of the dice chosen
+     * @throws NoDiceException there is no dice in the selected position
      */
-    public boolean addNormalDiceToHandFromDraftPool(int indexPlayer, int indexdiceDraftpool) {
-        try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            if (indexdiceDraftpool >= poolDice.size() || indexdiceDraftpool < 0) return false;// index wrong
-            Dice dice = poolDice.getDice(indexdiceDraftpool);
-            if (dice == null) return false;
-            if (!player[indexPlayer].addNormalDiceToHandFromDraftPool(dice)) return false;
-            poolDice.takeDiceFromStack(indexdiceDraftpool);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
+    public void addNewDiceToHandFromDicePool(int indexPlayer, int indexDicePool) throws NoDiceException {
+        Dice dice = dicePool.getDice(indexDicePool);
+        if (dice == null) throw new NoDiceException();
+        player[indexPlayer].addDiceToHand(dice);
+        dicePool.remove(indexDicePool);
+        UpdateDicePool packetPool = new UpdateDicePool(dicePool);
+        broadCast(packetPool);
+        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
+        broadCast(packet);
     }
 
     /**
+     * method for insert the a new Dice in the Window Pattern
+     *
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @param line
      * @param column
      * @return
      */
-    public boolean insertDice(int indexPlayer, int line, int column) {
-        try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            if (!player[indexPlayer].isHasPlaceANewDice()) return false;
-            return player[indexPlayer].insertDice(line, column);//if true ok, false if something gone wrong
-        } catch (Exception e) {
-            return false;
-        }
+    public void insertDice(int indexPlayer, int line, int column) throws RestrictionCellOccupiedException, RestrictionValueViolatedException,
+            RestrictionColorViolatedException, RestrictionAdjacentViolatedException, NoDiceInHandException, AlreadyPlaceANewDiceException {
+        if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
+        player[indexPlayer].insertDice(line, column);
     }
 
     /**
@@ -351,16 +367,13 @@ public class GameBoard implements Serializable {
      * @param cost
      * @return
      */
-    public boolean useToolCard(int indexPlayer, int cost) {
-        try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            if (cost < 0) return false;
-            if (!player[indexPlayer].useToolCard(cost)) return false;
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public void useToolCard(int indexPlayer, int cost) throws Exception {
+/*
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (cost < 0) throw new NegativeCostException();
+        player[indexPlayer].useToolCard(cost);*/
+
     }
     //*****************************************Tool's method of Gameboard **********************************************
     //*****************************************Tool's method of Gameboard **********************************************
@@ -374,22 +387,19 @@ public class GameBoard implements Serializable {
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return true if is gone all ok, false otherwise
      */
-    public boolean changeDiceBetweenHandAndFactory(int indexPlayer) {
-        try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false;//not your turn
-            if (!player[indexPlayer].isHasUsedToolCard()) return false;//you didn't use a tool card
-            if (!player[indexPlayer].isHasDrawNewDice()) return false;
-            if (player[indexPlayer].isHasPlaceANewDice()) return false;
-            Dice dice = player[indexPlayer].removeDiceFromHand();
-            if (dice == null) return false;
-            factoryDiceForThisGame.removeDice(dice);
-            dice = factoryDiceForThisGame.createDice();
-            player[indexPlayer].addDiceToHand(dice);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    public void changeDiceBetweenHandAndFactory(int indexPlayer) throws Exception {
+/*
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (!player[indexPlayer].isHasUsedToolCard()) throw new NoToolCardInUseException();
+        if (!player[indexPlayer].isHasDrawNewDice()) throw new NoDiceException();
+        if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
+        Dice dice = player[indexPlayer].removeDiceFromHand();
+        if (dice == null) throw new NoDiceException();
+        factoryDiceForThisGame.removeDice(dice);
+        dice = factoryDiceForThisGame.createDice();
+        player[indexPlayer].addDiceToHand(dice);*/
+
     }
 
     /**
@@ -400,22 +410,20 @@ public class GameBoard implements Serializable {
      * @param indexStack
      * @return
      */
-    public boolean changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) {
-        try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false;//not your turn
-            if (round >= currentRound || round < 0) return false;//can't select a round that didn't exist
+    public void changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) throws Exception {
+       /*
+            if (stopGame) throw new GameIsBlockedException();
+            if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+            if (!player[indexPlayer].isHasUsedToolCard()) throw new NoToolCardInUseException();
+           if (round >= currentRound || round < 0) throw new NoDiceStackException();//can't select a round that didn't exist
             if (indexStack >= roundTrack[round].size() || indexStack < 0) return false;// index wrong
-            if (!player[indexPlayer].isHasDrawNewDice()) return false;
+            if (!player[indexPlayer].isHasDrawNewDice()) throw new NoDiceException();
             if (player[indexPlayer].isHasPlaceANewDice()) return false;
             Dice dice = player[indexPlayer].removeDiceFromHand();
             if (dice == null) return false; // no dice in hand wtf
-            if (player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack))) return false;
-            roundTrack[round].add(indexStack, dice);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+            player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack));
+            roundTrack[round].add(indexStack, dice);*/
+
     }
 
     /**
@@ -428,8 +436,9 @@ public class GameBoard implements Serializable {
      * @param column
      * @return
      */
-    public boolean moveDiceFromWindowPatternToHandWithRestriction(int indexPlayer, int round, int indexStack, int line, int column) {
-        try {
+    public void moveDiceFromWindowPatternToHandWithRestriction(int indexPlayer, int round, int indexStack,
+                                                               int line, int column) throws Exception {
+       /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false;//not your turn
             if (round >= currentRound || round < 0) return false;//can't select a round that didn't exist
@@ -441,7 +450,7 @@ public class GameBoard implements Serializable {
             return player[indexPlayer].moveDiceFromWindowPatternToHand(line, column);
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
 
@@ -449,16 +458,16 @@ public class GameBoard implements Serializable {
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
-    public boolean rollDicePool(int indexPlayer) {
-        try {
+    public void rollDicePool(int indexPlayer) throws Exception {
+       /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false;//not your turn
             if (player[indexPlayer].isFirstTurn()) return false;
-            poolDice.reRollAllDiceInStack();
+            dicePool.reRollAllDiceInStack();
             return true;
         } catch (Exception e) {
             return false;
-        }
+        }*/
 
     }
     //*********************************************Tool's method*************************************************
@@ -477,15 +486,16 @@ public class GameBoard implements Serializable {
      * @param valueRestriction
      * @return
      */
-    public boolean insertDice(int indexPlayer, int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
-        try {
+    public void insertDice(int indexPlayer, int line, int column, boolean adjacentRestriction,
+                           boolean colorRestriction, boolean valueRestriction) throws Exception {
+       /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
             if (player[indexPlayer].isHasPlaceANewDice()) return false;
             return player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction);
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
     /**
@@ -494,14 +504,14 @@ public class GameBoard implements Serializable {
      * @param column
      * @return
      */
-    public boolean moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column) {
-        try {
+    public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column) throws Exception {
+      /*  try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
             return player[indexPlayer].moveDiceFromWindowPatternToHand(line, column);
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
     /**
@@ -515,7 +525,7 @@ public class GameBoard implements Serializable {
      * @param valueRestriction
      * @return
      */
- /*   public boolean moveOldDiceFromHandToWindowPattern(int indexPlayer, int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
+ /*   public void moveOldDiceFromHandToWindowPattern(int indexPlayer, int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
         try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false;//not your turn
@@ -529,14 +539,14 @@ public class GameBoard implements Serializable {
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
-    public boolean rollDiceInHand(int indexPlayer) {
-        try {
+    public void rollDiceInHand(int indexPlayer) throws Exception {
+       /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
             return player[indexPlayer].rollDiceInHand();
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
     /**
@@ -544,42 +554,42 @@ public class GameBoard implements Serializable {
      * @param increase    if true increase by 1, if false decrease by 1 the value of the active dice in hand (index 0)
      * @return
      */
-    public boolean increaseOrDecrease(int indexPlayer, boolean increase) {
-        try {
+    public void increaseOrDecrease(int indexPlayer, boolean increase) throws Exception {
+      /*  try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
             return player[indexCurrentPlayer].increaseOrDecrease(increase);
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
     /**
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
-    public boolean oppositeFaceDice(int indexPlayer) {
-        try {
+    public void oppositeFaceDice(int indexPlayer) throws Exception {
+      /*  try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
             return player[indexCurrentPlayer].oppositeFaceDice();
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
     /**
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
-    public boolean endSpecialFirstTurn(int indexPlayer) {
-        try {
+    public void endSpecialFirstTurn(int indexPlayer) throws Exception {
+       /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
             return player[indexCurrentPlayer].endSpecialFirstTurn();
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
     //*********************************************Utils*************************************************
@@ -593,14 +603,14 @@ public class GameBoard implements Serializable {
      * @param index       of the die in hand
      * @return
      */
-    public boolean selectDiceInHand(int indexPlayer, int index) {
-        try {
+    public void selectDiceInHand(int indexPlayer, int index) throws Exception {
+     /*   try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
             return player[indexCurrentPlayer].selectDiceInHand(indexPlayer);
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
 

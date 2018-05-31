@@ -160,8 +160,8 @@ public class CliController implements UIInterface, ViewVisitor {
         toolCard = event.getToolCard();
     }
 
-    public void visit(UpdateSingleToolCard event) {
-        toolCard[event.getIndexToolCard()] = event.getToolCard();
+    public void visit(UpdateSingleToolCardCost event) {
+       // toolCard[event.getIndexToolCard()] = event.getToolCard();
     }
 
     public void visit(UpdateDicePool event) {

@@ -1,5 +1,6 @@
 package it.polimi.se2018.model.card.window_pattern_card;
 
+import it.polimi.se2018.exception.WindowException.*;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
@@ -47,15 +48,19 @@ public class WindowPatternCard implements Serializable {
     public String getName() {
         return name;
     }
+
     public int getDifficulty() {
         return difficulty;
     }
+
     public Cell[][] getMatrix() {
         return matrix;
     }
+
     public Cell getCell(int line, int column) {
         return matrix[line][column];
     }
+
     public int getNumberOfCellWithDice() {
         return numberOfCellWithDice;
     }
@@ -66,9 +71,11 @@ public class WindowPatternCard implements Serializable {
     void setName(String name) {
         this.name = name;
     }
+
     void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
     }
+
     void setMatrix(Cell[][] matrix) {
         this.matrix = matrix;
     }
@@ -111,10 +118,13 @@ public class WindowPatternCard implements Serializable {
      */
     private boolean checkMatrixAdjacentColorRestriction(int line, int column, DiceColor diceColor) {
         //
-        if (column !=0) if (matrix[line][column - 1].getDice()!=null) if (matrix[line][column - 1].getDice().getColor()==diceColor) return false;
-        if (column!=4) if (matrix[line][column + 1].getDice()!=null) if (matrix[line][column + 1].getDice().getColor()==diceColor) return false;
-        if (line !=0) if (matrix[line - 1][column].getDice()!=null) if (matrix[line - 1][column].getDice().getColor()==diceColor) return false;
-        if (line !=3) if (matrix[line + 1][column].getDice()!=null)
+        if (column != 0) if (matrix[line][column - 1].getDice() != null)
+            if (matrix[line][column - 1].getDice().getColor() == diceColor) return false;
+        if (column != 4) if (matrix[line][column + 1].getDice() != null)
+            if (matrix[line][column + 1].getDice().getColor() == diceColor) return false;
+        if (line != 0) if (matrix[line - 1][column].getDice() != null)
+            if (matrix[line - 1][column].getDice().getColor() == diceColor) return false;
+        if (line != 3) if (matrix[line + 1][column].getDice() != null)
             return matrix[line + 1][column].getDice().getColor() != diceColor;
         return true;
     }
@@ -127,10 +137,13 @@ public class WindowPatternCard implements Serializable {
      * @return true if the dice respect the restriction so it can be insert, false otherwise
      */
     private boolean checkMatrixAdjacentValueRestriction(int line, int column, int diceValue) {
-        if (column !=0) if (matrix[line][column - 1].getDice()!=null) if (matrix[line][column - 1].getDice().getValue()==diceValue) return false;
-        if (column !=4) if (matrix[line][column + 1].getDice()!=null) if (matrix[line][column + 1].getDice().getValue()==diceValue) return false;
-        if (line !=0) if (matrix[line - 1][column].getDice()!=null) if (matrix[line- 1][column ].getDice().getValue()==diceValue) return false;
-        if (line !=3) if (matrix[line + 1][column].getDice()!=null)
+        if (column != 0) if (matrix[line][column - 1].getDice() != null)
+            if (matrix[line][column - 1].getDice().getValue() == diceValue) return false;
+        if (column != 4) if (matrix[line][column + 1].getDice() != null)
+            if (matrix[line][column + 1].getDice().getValue() == diceValue) return false;
+        if (line != 0) if (matrix[line - 1][column].getDice() != null)
+            if (matrix[line - 1][column].getDice().getValue() == diceValue) return false;
+        if (line != 3) if (matrix[line + 1][column].getDice() != null)
             return matrix[line + 1][column].getDice().getValue() != diceValue;
         return true;
     }
@@ -143,16 +156,14 @@ public class WindowPatternCard implements Serializable {
      * @param dice   to insert in the WindowsPattern
      * @return true if the insertDice is ok, false if can't insert the dice
      */
-    public boolean insertDice(int line, int column, Dice dice) {
-        if (!(line >= 0 && line < matrix.length && column >= 0 && column < matrix[0].length)) return false;
-        if (checkMatrixAdjacentRestriction(line, column) &&
-                checkMatrixAdjacentColorRestriction(line, column, dice.getColor()) &&
-                checkMatrixAdjacentValueRestriction(line, column, dice.getValue())){
-            if(!matrix[line][column].insertDice(dice))return false;
-            numberOfCellWithDice++;
-            return true;
-        }
-        return false;
+    public void insertDice(int line, int column, Dice dice) throws RestrictionCellOccupiedException,RestrictionValueViolatedException,
+            RestrictionColorViolatedException,RestrictionAdjacentViolatedException {
+     //   if (!(line >= 0 && line < matrix.length && column >= 0 && column < matrix[0].length)) return false;
+        if (!checkMatrixAdjacentRestriction(line, column)) throw new RestrictionAdjacentViolatedException();
+        if (!checkMatrixAdjacentColorRestriction(line, column, dice.getColor())) throw new RestrictionColorViolatedException();
+        if (!checkMatrixAdjacentValueRestriction(line, column, dice.getValue()))throw new RestrictionValueViolatedException();
+        matrix[line][column].insertDice(dice); //can throws exceptions
+        numberOfCellWithDice++;
     }
 
     /**
@@ -177,13 +188,18 @@ public class WindowPatternCard implements Serializable {
                               boolean colorRestriction, boolean valueRestriction) {
         //se devo controllare la restrizione di colore
         if (!(line >= 0 && line < 4 && column >= 0 && column < 5)) return false;
-        if (adjacentRestriction) {if (!checkMatrixAdjacentRestriction(line, column)) return false;}
+        if (adjacentRestriction) {
+            if (!checkMatrixAdjacentRestriction(line, column)) return false;
+        }
         //altrimenti non deve avere dadi vicini (all'inizio del turno posso piazzarlo dove voglio anche in mezzo o ai bordi)
-        else if (numberOfCellWithDice != 0) if (!checkMatrixAdjacentRestriction(line, column)) return false; // ha qualche dado vicino
+        else if (numberOfCellWithDice != 0)
+            if (!checkMatrixAdjacentRestriction(line, column)) return false; // ha qualche dado vicino
         //se deve controllare il colore
-        if (colorRestriction) if (!checkMatrixAdjacentColorRestriction(line, column, dice.getColor())) return false; //se check è false è eccezione
+        if (colorRestriction) if (!checkMatrixAdjacentColorRestriction(line, column, dice.getColor()))
+            return false; //se check è false è eccezione
         //se deve controllare il valore
-        if (valueRestriction) if (!checkMatrixAdjacentValueRestriction(line, column, dice.getValue())) return false; // se check è false è eccezioni
+        if (valueRestriction) if (!checkMatrixAdjacentValueRestriction(line, column, dice.getValue()))
+            return false; // se check è false è eccezioni
         //if All the restriction of the WindowPatter are ok then call the special insert dice of the cell
         if (!matrix[line][column].insertDice(dice, colorRestriction, valueRestriction)) return false;
         numberOfCellWithDice++;
@@ -195,13 +211,13 @@ public class WindowPatternCard implements Serializable {
     /**
      * remove a dice from the windowPattern
      *
-     * @param line of the cell
+     * @param line   of the cell
      * @param column of the cell
      * @return the dice removed from the dell
      */
     public Dice removeDice(int line, int column) {
         if (!(line >= 0 && line < matrix.length && column >= 0 && column < matrix[0].length)) return null;
-        Dice dice=matrix[line][column].removeDice();
+        Dice dice = matrix[line][column].removeDice();
         numberOfCellWithDice--;
         return dice;
     }

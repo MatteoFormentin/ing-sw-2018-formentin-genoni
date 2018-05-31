@@ -5,10 +5,15 @@ import it.polimi.se2018.model.card.tool_card.ToolCard;
 /**
  * forse inutile meglio fare l'update solo del costo della toolcard
  */
-public class UpdateSingleToolCard {
+public class UpdateSingleToolCardCost extends EventView{
 
     private int indexToolCard;
-    private ToolCard toolCard;
+    private int costToolCard;
+
+    public UpdateSingleToolCardCost(int indexToolCard, int costToolCard) {
+        this.indexToolCard = indexToolCard;
+        this.costToolCard = costToolCard;
+    }
 
     public int getIndexToolCard() {
         return indexToolCard;
@@ -18,12 +23,12 @@ public class UpdateSingleToolCard {
         this.indexToolCard = indexToolCard;
     }
 
-    public ToolCard getToolCard() {
-        return toolCard;
+    public int getToolCard() {
+        return costToolCard;
     }
 
-    public void setToolCard(ToolCard toolCard) {
-        this.toolCard = toolCard;
+    public void setToolCard(int costToolCard) {
+        this.costToolCard = costToolCard;
     }
 
     public void accept(ViewVisitor visitor) {

@@ -1,4 +1,4 @@
-package it.polimi.se2018.exception;
+package it.polimi.se2018.exception.GameboardException;
 
 /**
  * The class {@code GameIsBlockedException} is a subclass of {@code Exception}
@@ -9,7 +9,7 @@ package it.polimi.se2018.exception;
  * the method or constructor boundary.
  */
 public class GameIsBlockedException extends Exception{
-    public  GameIsBlockedException(String cause){
-        super("The game is blocked."+cause);
+    public  GameIsBlockedException(){
+        super("The game is blocked.");
     }
 }

@@ -1,5 +1,8 @@
 package it.polimi.se2018.model.card.window_pattern_card;
 
+import it.polimi.se2018.exception.WindowException.RestrictionCellOccupiedException;
+import it.polimi.se2018.exception.WindowException.RestrictionColorViolatedException;
+import it.polimi.se2018.exception.WindowException.RestrictionValueViolatedException;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
@@ -106,13 +109,11 @@ public class Cell implements Serializable {
      *
      * @param dice to insert
      */
-    public boolean insertDice(Dice dice) {
-        if (this.dice != null) return false;// cell occupied
-        if (checkValueRestriction(dice.getValue()) && checkColorRestriction(dice.getColor())) {
-            this.dice = dice;
-            return true;
-        }
-        return false;//cell restricted
+    public void insertDice(Dice dice) throws RestrictionCellOccupiedException,RestrictionValueViolatedException,RestrictionColorViolatedException{
+        if (this.dice != null) throw new RestrictionCellOccupiedException();
+        if (!checkValueRestriction(dice.getValue())) throw new RestrictionValueViolatedException();
+        if (!checkColorRestriction(dice.getColor())) throw new RestrictionColorViolatedException();
+        this.dice = dice;
     }
 
     /**

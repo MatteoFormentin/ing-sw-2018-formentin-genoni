@@ -3,7 +3,7 @@ package it.polimi.se2018.list_event.event_received_by_view;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 
-public class UpdateSingleCell {
+public class UpdateSingleCell extends EventView{
     private int indexPlayer;//in other word the index of the window
     private int line;
     private int column;

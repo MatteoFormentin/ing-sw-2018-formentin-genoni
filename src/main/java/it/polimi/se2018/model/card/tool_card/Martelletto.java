@@ -39,7 +39,7 @@ public class Martelletto extends ToolCard {
         if (!gameBoard.getPlayer(indexPlayer).isFirstTurn())
             return false; // you can't use it in the first turn ಠ_ಠ troller
         saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
-        gameBoard.getPoolDice().reRollAllDiceInStack();
+        gameBoard.getDicePool().reRollAllDiceInStack();
         return true; //immediate effect also end here so you should notify the views when you come back... it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
 }

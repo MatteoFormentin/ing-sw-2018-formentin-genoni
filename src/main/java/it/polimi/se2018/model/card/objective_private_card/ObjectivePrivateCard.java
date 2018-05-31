@@ -5,12 +5,14 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.DiceColor;
 import it.polimi.se2018.model.dice.Dice;
 
+import java.io.Serializable;
+
 /**
  * Base class for objective private card.
  *
  * @author Matteo Formentin
  */
-public abstract class ObjectivePrivateCard {
+public abstract class ObjectivePrivateCard implements Serializable {
     private int id;
     private String name;
     private String description;

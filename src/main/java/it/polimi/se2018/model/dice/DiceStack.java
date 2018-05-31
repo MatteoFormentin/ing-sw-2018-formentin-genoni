@@ -20,18 +20,7 @@ public class DiceStack extends LinkedList<Dice> {
         if(index>=this.size()) return null;
         return this.get(index);
     }
-    /**
-     * remove the dice from the stack.
-     *
-     * @param index integer of the index of the dice
-     * @return the dice removed or null if there isn't any dice in that index
-     */
-    public Dice takeDiceFromStack(int index){
-        if(index>=this.size()||index<0) return null;
-        Dice dice=this.get(index);
-        this.remove(index);
-        return dice;
-    }
+
 
     /**
      * method for select the dice in hand

@@ -5,10 +5,16 @@ import it.polimi.se2018.model.Player;
 /**
  * event for update the favor token and the point of the Player with the index contain in the event
  */
-public class UpdateSinglePlayerTokenAndPoints {
+public class UpdateSinglePlayerTokenAndPoints extends EventView{
     private int indexInGame;
     private int favorToken;
     private int points;
+
+    public UpdateSinglePlayerTokenAndPoints(int indexInGame, int favorToken, int points) {
+        this.indexInGame = indexInGame;
+        this.favorToken = favorToken;
+        this.points = points;
+    }
 
     public int getIndexInGame() {
         return indexInGame;

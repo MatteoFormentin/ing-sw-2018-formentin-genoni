@@ -34,7 +34,7 @@ public class TenagliaRotelle extends ToolCard {
     public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
         if(!noPreCondition(gameBoard, indexPlayer)) return false;
         // ಠ_ಠ troller place your dice in hand or should i put it in Draftpool??? :D muahmuahmuahmuahmuagmuag
-        if(gameBoard.endSpecialFirstTurn(indexPlayer));
+       // if(gameBoard.endSpecialFirstTurn(indexPlayer));
         saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
         return true; //no immediate effect it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }

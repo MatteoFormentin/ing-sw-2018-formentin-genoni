@@ -1,5 +1,6 @@
 package it.polimi.se2018.controller;
 
+import it.polimi.se2018.exception.GameboardException.WindowSettingCompleteException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.SelectDiceFromDraftpool;
@@ -46,6 +47,7 @@ public class Controller implements ControllerVisitor {
         this.playerNumber = playerNumber;
         System.out.println("CONTROLLER CREATED!!!!!!!!!!!");
         gameBoard = new GameBoard(playerNumber);
+        gameBoard.setServer(server);
         toolcard = false;
     }
 
@@ -65,7 +67,7 @@ public class Controller implements ControllerVisitor {
         try {
             gameBoard.setWindowOfPlayer(event.getPlayerId(), ((SelectInitialWindowPatternCardController) event).getSelectedIndex());
             //TODO mandare agli altri giocatori la carta scelta
-        } catch (SettingWindowCompleteException ex) {
+        } catch (WindowSettingCompleteException ex) {
             EventView turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
@@ -112,7 +114,7 @@ public class Controller implements ControllerVisitor {
         if (toolcard) ;//pass to handler toolcard
         else {
             try {
-                gameBoard.addNormalDiceToHandFromDraftPool(event.getPlayerId(), event.getIndex());
+                gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(), event.getIndex());
                 SelectCellOfWindowView packet = new SelectCellOfWindowView();
                 packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
                 server.sendEventToView(packet);

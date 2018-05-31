@@ -6,17 +6,12 @@ import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 /**
  * used only for the init and it's personalized
  */
-public class UpdateAllPublicObject {
-    private int indexPlayer;
+public class UpdateAllPublicObject extends EventView{
+
     private ObjectivePublicCard[] publicCards;
-    private ObjectivePrivateCard privateCard;
 
-    public ObjectivePrivateCard getPrivateCard() {
-        return privateCard;
-    }
-
-    public void setPrivateCard(ObjectivePrivateCard privateCard) {
-        this.privateCard = privateCard;
+    public UpdateAllPublicObject(ObjectivePublicCard[] publicCards) {
+        this.publicCards = publicCards;
     }
 
     public ObjectivePublicCard[] getPublicCards() {

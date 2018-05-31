@@ -1,4 +1,4 @@
-package it.polimi.se2018.exception;
+package it.polimi.se2018.exception.GameboardException;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}

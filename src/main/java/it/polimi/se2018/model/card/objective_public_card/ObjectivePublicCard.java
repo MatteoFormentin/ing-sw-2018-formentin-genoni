@@ -2,12 +2,14 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 
+import java.io.Serializable;
+
 /**
  * Base class for objective public card.
  *
  * @author Matteo Formentin
  */
-public abstract class ObjectivePublicCard {
+public abstract class ObjectivePublicCard implements Serializable {
     private int id;
     private String name;
     private String description;

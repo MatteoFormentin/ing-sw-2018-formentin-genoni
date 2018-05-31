@@ -34,7 +34,7 @@ public class TamponeDiamantato extends ToolCard {
     public boolean effect(GameBoard gameBoard, int indexPlayer, int indexOfCardInGame) {
         if(!preConditionOfDicePool(gameBoard, indexPlayer)) return false;
         saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
-        if(!gameBoard.oppositeFaceDice(indexPlayer))return false;
+      //  if(!gameBoard.oppositeFaceDice(indexPlayer))return false;
         //immediate effect also end here so you should notify the views when you come back... deal with that :/
         return true;
     }

@@ -2,13 +2,15 @@ package it.polimi.se2018.model.card.tool_card;
 
 import it.polimi.se2018.model.GameBoard;
 
+import java.io.Serializable;
+
 /**
  * Base class for tool card.
  * Card id starts form 0 instead of 1.
  *
  * @author Matteo Formentin
  */
-public abstract class ToolCard {
+public abstract class ToolCard implements Serializable {
     private int id;
     private String name;
     private String description;

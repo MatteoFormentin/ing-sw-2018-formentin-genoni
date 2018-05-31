@@ -62,7 +62,7 @@ public interface ViewVisitor {
     //**********************************************from Model**************************************
 
     public void visit(UpdateAllToolCard event);
-    public void visit(UpdateSingleToolCard event);
+    public void visit(UpdateSingleToolCardCost event);
     public void visit(UpdateDicePool event);
     public void visit(UpdateInitialWindowPatternCard event);
 
