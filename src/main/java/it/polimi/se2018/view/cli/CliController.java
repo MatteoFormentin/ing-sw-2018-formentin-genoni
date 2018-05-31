@@ -198,11 +198,19 @@ public class CliController implements UIInterface, ViewVisitor {
     private void initConnection() {
         boolean flag = false;
         do {
-            cliMessage.showIpRequest();
-            String ip = cliParser.parseIp();
+            String ip;
+            int port;
 
-            cliMessage.showPortRequest();
-            int port = cliParser.parseInt();
+            cliMessage.showIpRequest();
+            ip = cliParser.parseIp();
+
+            if (ip.equals("0")) {
+                ip = "127.0.0.1";
+                port = 31415;
+            } else {
+                cliMessage.showPortRequest();
+                port = cliParser.parseInt();
+            }
 
             if (client.startRMIClient(ip, port)) {
                 flag = true;
@@ -233,7 +241,7 @@ public class CliController implements UIInterface, ViewVisitor {
     private void turn() {
         //TODO far rivedere il menù dopo un azione con opzioni disabilitate
         cliMessage.showYourTurnScreen();
-        //cliMessage.showWindowPatternCard( );
+        cliMessage.showWindowPatternCard(getMyWindowPatternCard());
         cliMessage.showMainMenu();
         int option = cliParser.parseInt();
 
@@ -281,6 +289,15 @@ public class CliController implements UIInterface, ViewVisitor {
                 }*/
                 break;
         }
+    }
+
+    private WindowPatternCard getMyWindowPatternCard() {
+        return windowPatternCard[playerId];
+    }
+
+    private String getMyName() {
+        return playersName[playerId];
+
     }
 
 }

@@ -6,6 +6,8 @@ import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
 
+import java.rmi.RemoteException;
+
 /**
  * Class based on the Abstract Factory Design Pattern.
  * This class define the client side of the game.
@@ -110,7 +112,7 @@ public class Client implements ClientController {
             abstractClient.login(nickname);
             this.nickname = nickname;
             return true;
-        } catch (Exception e) {
+        } catch (RemoteException e) {
             return false;
         }
     }

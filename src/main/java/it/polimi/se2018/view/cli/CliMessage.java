@@ -57,7 +57,7 @@ class CliMessage {
     //  CONNECTION MESSAGES
     //--------------------------
     void showIpRequest() {
-        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci indirizzo ip del server: "));
+        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci indirizzo ip del server (0 per default): "));
     }
 
     void showPortRequest() {
