@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.concurrent.*;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -45,10 +44,10 @@ public class Server implements ServerController {
     // GAME DELLA ROOM
     private Controller game;
 
-    // TODO: TIME
-    private Timer timeoutExecutor;
-    private ExecutorService timeoutExecutorService;
+    // Timeout uploaded from properties file
     private long timeout;
+    // Thread for the timeout in order to fix a time for the user login
+    private Timer timerThread;
 
     //STATO STANZA
     private boolean roomJoinable;
@@ -79,19 +78,16 @@ public class Server implements ServerController {
 
             configProperties.load(input);
             //*1000 per convertire in millisecondi
-            timeout = Long.parseLong(configProperties.getProperty("roomStartTimeout")) * 1000;
+            timeout = Long.parseLong(configProperties.getProperty("roomTimeout")) * 1000;
             System.out.println("Timeout setted!");
-            System.out.println("It's value (in ms) is: \n");
-            System.out.println(configProperties.getProperty("roomStartTimeout"));
+            System.out.println("It's value (in ms) is:");
+            System.out.println(configProperties.getProperty("roomTimeout"));
         } catch (IOException e) {
             // LOAD FAILED
             System.out.println("Sorry, timeout can't be setted! The game will use the default one.");
             // Default timeout in case of exception.
             timeout = 120 * 1000;
         }
-
-        // TODO: TIME
-        this.timeoutExecutor=null;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -143,10 +139,18 @@ public class Server implements ServerController {
         game = new Controller(this, players.size());
         System.out.println("Closing Room...");
         roomJoinable = false;
+
+                        String[] playersName = new String[players.size()];
+                int i = 0;
+                for (RemotePlayer player : players) {
+                       playersName[i] = player.getNickname();
+                       i++;
+                   }
+              StartGame packet = new StartGame();
+               packet.setPlayersName(playersName);
         for (RemotePlayer player : players) {
             try {
-                EventView packet = new StartGame();
-                packet.setPlayerId(player.getPlayerId());
+                        packet.setPlayerId(player.getPlayerId());
                 player.sendEventToView(packet);
             } catch (RemoteException ex) {
                 ex.printStackTrace();
@@ -161,11 +165,10 @@ public class Server implements ServerController {
      */
     public void startTimer() {
         System.out.println("Timeout started!");
-        // INIZIALIZZA TIMER PASSANDOGLI IL TIMEOUT IMPORTATO DA PROPRETIES
-        this.timeoutExecutor=new Timer(timeout);
-        timeoutExecutorService = Executors.newSingleThreadExecutor();
-        // FAI PARTIRE IL TIMER
-        timeoutExecutorService.execute((Runnable) this.timeoutExecutor);
+        // creo nuovo timer
+        timerThread = new Timer(this,this.timeout);
+        //faccio partire il thread
+        timerThread.startThread();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -183,26 +186,60 @@ public class Server implements ServerController {
     public boolean login(RemotePlayer remotePlayer) {
         synchronized (PLAYERS_MUTEX) {
             System.out.println("Trying to log the player...");
-            if (roomJoinable && !checkPlayerNicknameExists(remotePlayer.getNickname())) {
-                remotePlayer.setPlayerId(playerCounter);
-                players.add(remotePlayer);
-                playerCounter++;
-                System.out.println("Player logged!");
-                if (players.size() == MIN_PLAYERS) {
-                    // FAI PARTIRE IL TEMPO DI ATTESA
-                    startTimer();
-                } else if (players.size() == MAX_PLAYERS) {
-                    //TODO Problema: se giocatore si disconnette cosa succede? ora parte lo stesso
-                    // TERMINA THREAD
-                    timeoutExecutorService.shutdownNow();
-                    startGame();
+
+            // SE LA STANZA è ACCESSIBILE
+            if(roomJoinable) {
+
+                // NON ESISTE PLAYER CON QUEL NICKNAME
+                if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
+
+                    // AGGIUNGI IL PLAYER
+                    remotePlayer.setPlayerId(playerCounter);
+                    players.add(remotePlayer);
+                    playerCounter++;
+                    System.out.println("Player logged!");
+
+                    // APPENA RAGGIUNGI IL NUMERO MINIMO PLAYER FAI PARTIRE TIMER
+                    if (this.players.size() == MIN_PLAYERS) {
+                        // FAI PARTIRE IL TEMPO DI ATTESA
+                        startTimer();
+                    }
+
+                    // APPENA RAGGIUNGI NUMERO MASSIMO FAI PARTIRE IL GIOCO
+                    else if (this.players.size() == MAX_PLAYERS) {
+                        //TODO Problema: se giocatore si disconnette cosa succede? ora parte lo stesso
+                        // TERMINA THREAD SICCOME LA ROOM è PIENA
+                        this.timerThread.shutdown();
+                        // FA PARTIRE IL GIOCO
+                        this.startGame();
+                    }
+                    return true;
+                }
+
+                // ESISTE PLAYER CON QUEL NICKNAME
+                else {
+                    System.out.println("Player already logged!");
+                    System.out.println("Please, use another nickname...");
+                    return false; //game is complete or nickname already exists
+                }
+            }
+
+            // SE LA STANZA NON è ACCESSIBILE
+            else if(!roomJoinable){
+
+                // NON ESISTE PLAYER CON QUEL NICKNAME
+                if (!checkPlayerNicknameExists(remotePlayer.getNickname())){
+                    System.out.println("Sorry, room is full... You can't access...");
+                    return false;
+                }
+                // ESISTEVA IL PLAYER CON QUEL NICKNAME
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname())){
+                    // GESTISCO LA SOSTITUZIONE
+
                 }
                 return true;
-            } else {
-                System.out.println("Player already logged!");
-                System.out.println("Please, use another nickname...");
-                return false; //game is complete or nickname already exists
             }
+            return true;
         }
     }
 
@@ -266,35 +303,5 @@ public class Server implements ServerController {
             }
         }
         return null; //Se arrivo qui qualcosa è sbagliato nel model
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-    // SUPPORTER METHODS
-    //------------------------------------------------------------------------------------------------------------------
-
-    public class Timer {
-
-        private final long timeout;
-
-        /**
-         * Constructor for Timer.
-         * @param timeout timeout passed on
-         */
-        public Timer(long timeout) {
-            this.timeout = timeout;
-        }
-
-        public void main(String[] args) {
-            Runnable timerTask = ()->{
-                boolean flag = true;
-                long startTimerTime = System.currentTimeMillis();
-                while (flag) {
-                    if (System.currentTimeMillis() - startTimerTime >= timeout) {
-                        flag = false;
-                    }
-                }
-                Server.this.startGame();
-            };
-        }
     }
 }
