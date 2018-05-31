@@ -46,8 +46,7 @@ public class Controller implements ControllerVisitor {
         this.server = server;
         this.playerNumber = playerNumber;
         System.out.println("CONTROLLER CREATED!!!!!!!!!!!");
-        gameBoard = new GameBoard(playerNumber);
-        gameBoard.setServer(server);
+        gameBoard = new GameBoard(playerNumber,server);
         toolcard = false;
     }
 

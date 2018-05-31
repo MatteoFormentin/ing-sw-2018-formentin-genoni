@@ -35,7 +35,7 @@ public class GameBoard implements Serializable {
     private ServerController server;
 
 
-    public GameBoard(int number) {
+    public GameBoard(int number, ServerController setServer) {
         stopGame = true;
         currentRound = 0;
         currentTurn = 1;
@@ -45,6 +45,7 @@ public class GameBoard implements Serializable {
         factoryDiceForThisGame = new BalancedFactoryDice();// here for change the factory
         Deck deck = Deck.getDeck();
         player = new Player[number];
+        server=setServer;
         //setUp player
         for (int i = 0; i < number; i++) {
             player[i] = new Player(i);

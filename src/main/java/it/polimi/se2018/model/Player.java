@@ -14,13 +14,15 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
 
+import java.io.Serializable;
+
 /**
  * Player state and data. his active dice in hand is in position 0, convention
  *
  * @author Matteo Formentin
  * @author Luca Genoni
  */
-public class Player {
+public class Player implements Serializable {
     private int indexInGame;
     private int favorToken;
     private int points;
