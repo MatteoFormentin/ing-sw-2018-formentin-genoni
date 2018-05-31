@@ -10,15 +10,7 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 public class InitialWindowPatternCard extends EventView  {
     //from EventController private String nicknamPlayer;
     //from EventController private Model model;
-    WindowPatternCard[] initialWindowPatternCard;
 
-    public WindowPatternCard[] getInitialWindowPatternCard() {
-        return initialWindowPatternCard;
-    }
-
-    public void setInitialWindowPatternCard(WindowPatternCard[] initialWindowPatternCard) {
-        this.initialWindowPatternCard = initialWindowPatternCard;
-    }
 
     @Override
     public void accept(ViewVisitor visitor) {

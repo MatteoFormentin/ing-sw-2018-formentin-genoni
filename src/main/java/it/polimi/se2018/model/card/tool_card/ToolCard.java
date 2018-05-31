@@ -80,6 +80,10 @@ public abstract class ToolCard implements Serializable {
         return favorToken;
     }
 
+    public void setFavorToken(int favorToken) {
+        this.favorToken = favorToken;
+    }
+
     /**
      * Increment by one card Favor Token.
      * Call after first use.

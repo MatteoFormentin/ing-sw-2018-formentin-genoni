@@ -87,37 +87,37 @@ public class TestCell {
         dice.setValue(1);
         //no window check
 /*
-        assertTrue(testWindowPatternCard.getCell(0, 1).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(0, 2).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(0, 3).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(1, 1).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(1, 3).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(2, 1).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(2, 3).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(3, 1).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(3, 2).insertDice(dice));
-        assertTrue(testWindowPatternCard.getCell(3, 3).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(0, 1).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(0, 2).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(0, 3).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(1, 1).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(1, 3).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(2, 1).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(2, 3).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(3, 1).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(3, 2).insertDice(dice));
+        assertTrue(testWindowPatternCard.getDice(3, 3).insertDice(dice));
 
 
-        assertFalse(testWindowPatternCard.getCell(0, 0).insertDice(dice));
-        assertFalse(testWindowPatternCard.getCell(1, 0).insertDice(dice));
-        assertFalse(testWindowPatternCard.getCell(1, 2).insertDice(dice));
-        assertFalse(testWindowPatternCard.getCell(1, 4).insertDice(dice));
-        assertFalse(testWindowPatternCard.getCell(2, 0).insertDice(dice));
-        assertFalse(testWindowPatternCard.getCell(2, 2).insertDice(dice));
-        assertFalse(testWindowPatternCard.getCell(2, 4).insertDice(dice));
-        assertFalse(testWindowPatternCard.getCell(3, 0).insertDice(dice));
-        assertFalse(testWindowPatternCard.getCell(3, 4).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(0, 0).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(1, 0).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(1, 2).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(1, 4).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(2, 0).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(2, 2).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(2, 4).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(3, 0).insertDice(dice));
+        assertFalse(testWindowPatternCard.getDice(3, 4).insertDice(dice));
 
-        assertTrue(testWindowPatternCard.getCell(0, 0).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getCell(1, 0).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getCell(1, 2).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getCell(1, 4).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getCell(2, 0).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getCell(2, 2).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getCell(2, 4).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getCell(3, 0).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getCell(3, 4).insertDice(dice, false, false));*/
+        assertTrue(testWindowPatternCard.getDice(0, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getDice(1, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getDice(1, 2).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getDice(1, 4).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getDice(2, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getDice(2, 2).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getDice(2, 4).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getDice(3, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getDice(3, 4).insertDice(dice, false, false));*/
     }
 
     @Test

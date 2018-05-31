@@ -68,17 +68,22 @@ public class Controller implements ControllerVisitor {
             int nextPlayer = event.getPlayerId()+1;
             sendWaitTurnToAllTheNonCurrent(nextPlayer);
             InitialWindowPatternCard packet = new InitialWindowPatternCard();
-            packet.setInitialWindowPatternCard(gameBoard.getPlayer(nextPlayer).getThe4WindowPattern());
             packet.setPlayerId(nextPlayer);
             server.sendEventToView(packet);
-            System.out.println("inviato pacchetto init");
+            System.err.println("inviato pacchetto init");
             //TODO mandare agli altri giocatori la carta scelta
         } catch (WindowSettingCompleteException ex) {
+            sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             EventView turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
+            System.err.println("iniziato il gioco");
         } catch (Exception ex) {
             ex.printStackTrace();
+            showErrorMessage(ex,event.getPlayerId());
+            InitialWindowPatternCard packet = new InitialWindowPatternCard();
+            packet.setPlayerId(event.getPlayerId());
+            server.sendEventToView(packet);
         }
     }
 
@@ -102,7 +107,7 @@ public class Controller implements ControllerVisitor {
                 server.sendEventToView(packet);
             }
         } else {
-            showErrorMessage(new ToolCardInUseException());
+            showErrorMessage(new ToolCardInUseException(),event.getPlayerId());
         }
 
     }
@@ -118,7 +123,7 @@ public class Controller implements ControllerVisitor {
                 packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
                 server.sendEventToView(packet);
             } catch (Exception ex) {
-                showErrorMessage(ex);
+                showErrorMessage(ex,event.getPlayerId());
 
             }
         }
@@ -135,7 +140,7 @@ public class Controller implements ControllerVisitor {
                 server.sendEventToView(packet);
             } catch (Exception ex) {
                 //TODO implementare errori specifici da mostrare (colore / valore)????? non basta usare showErrorMessage?
-                showErrorMessage(ex);
+                showErrorMessage(ex,event.getPlayerId());
             }
         }
     }
@@ -170,9 +175,11 @@ public class Controller implements ControllerVisitor {
     }
 
     public void startGame() {
+        for(int i=0;i<playerNumber;i++){
+            gameBoard.notifyAllCards(i);
+        }
         sendWaitTurnToAllTheNonCurrent(0);
         InitialWindowPatternCard packet = new InitialWindowPatternCard();
-        packet.setInitialWindowPatternCard(gameBoard.getPlayer(0).getThe4WindowPattern());
         packet.setPlayerId(0);
         server.sendEventToView(packet);
         System.out.println("inviato pacchetto init");
@@ -183,9 +190,9 @@ public class Controller implements ControllerVisitor {
      *
      * @param ex
      */
-    public void showErrorMessage(Exception ex) {
+    public void showErrorMessage(Exception ex,int indexPlayer) {
         ShowErrorMessage packet = new ShowErrorMessage();
-        packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
+        packet.setPlayerId(indexPlayer);
         packet.setErrorMessage(ex.getMessage());
         packet.setTypeException(ex);
         server.sendEventToView(packet);

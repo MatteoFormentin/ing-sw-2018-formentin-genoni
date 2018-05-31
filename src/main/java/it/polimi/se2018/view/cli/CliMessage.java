@@ -50,7 +50,7 @@ class CliMessage {
                         "        | | |           |   |   |   |   |            |  |  "));
         AnsiConsole.out().println();
         AnsiConsole.out.println(ansi().fg(BLUE).a("Un divertente gioco di dadi implementato da").fg(GREEN).a(" Matteo Formentin,").fg(MAGENTA).a(" Luca Genoni").fg(DEFAULT).a(" e").fg(RED).a(" Davide Mammarella"));
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per iniziare"));
+
     }
 
     //--------------------------
@@ -113,8 +113,8 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(RED).a("---------------------------------------------"));
     }
 
-    void showWaitYourTurnScreen() {
-        AnsiConsole.out.println(ansi().fg(RED).a("Tocca a un altro giocatore!"));
+    void showWaitYourTurnScreen(String name) {
+        AnsiConsole.out.println(ansi().fg(RED).a("Tocca a "+name));
         AnsiConsole.out.println(ansi().fg(RED).a("Aspetta che finisca il suo turno!"));
     }
 
@@ -238,6 +238,8 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("4 - Visualizza il tuo obiettivo privato"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("5 - Visualizza gli obiettivi pubblici"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("6 - Visualizza le vetrate degli avversari"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("7 - Visualizza la riserva dei dadi"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("8 - Visualizza il tracciato del round"));
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita il numero corrispondente: "));
     }
 
@@ -249,11 +251,20 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale colonna vuoi inserire il dado?"));
     }
 
+    void showDicePool(DiceStack diceStack){
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Questi sono i dadi presenti attualemnte nella riserva :"));
+        for (int i = 0; i < diceStack.size(); i++) {
+            AnsiConsole.out.print(ansi().fg(RED).a(i + ": "));
+            showDice(diceStack.get(i));
+        }
+        AnsiConsole.out.println();
+    }
+
     void showDiceStack(DiceStack diceStack) {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
         for (int i = 0; i < diceStack.size(); i++) {
             AnsiConsole.out.print(ansi().fg(RED).a(i + ": "));
-            this.showDice(diceStack.get(i));
+            showDice(diceStack.get(i));
         }
         AnsiConsole.out.println();
     }
@@ -261,5 +272,7 @@ class CliMessage {
     void showInputNotValid() {
         AnsiConsole.out.print(ansi().fg(RED).a("Valore inserito non valido. Riprova: "));
     }
-
+    void showWaitInput(){
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per iniziare"));
+    }
 }

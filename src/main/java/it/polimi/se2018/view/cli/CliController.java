@@ -21,14 +21,20 @@ public class CliController implements UIInterface, ViewVisitor {
     private CliParser cliParser;
     private ClientController client;
 
-    private DiceStack dicePool;
     private DiceStack[] roundTrack;
-    private ObjectivePublicCard[] objectivePublicCards;
-    private ObjectivePrivateCard objectivePrivateCard;
-    private WindowPatternCard[] windowPatternCard;
     private ToolCard[] toolCard;
-    private String[] playersName;
+    private DiceStack dicePool;
+    private ObjectivePublicCard[] objectivePublicCards;
+    // need for 1/2 times
+    private WindowPatternCard[] windowPatternCardsToChoose;
 
+    //the players
+    private String[] playersName;
+    private WindowPatternCard[] windowPatternCardOfEachPlayer;
+    private DiceStack[] handOfEachPlayer;
+    private int[] FavorTokenOfEachPlayer;
+    private int[] PointsOfEachPlayer;
+    private ObjectivePrivateCard[] objectivePrivateCardOfEachPlayers;//almost all null until the end game
     private int playerId;
 
 
@@ -60,6 +66,13 @@ public class CliController implements UIInterface, ViewVisitor {
         //TODO mostra info sul gioco (numeri giocatori, stato connessione)
         playerId = event.getPlayerId();
         playersName = event.getPlayersName();
+        windowPatternCardOfEachPlayer = new WindowPatternCard[playersName.length];
+        objectivePrivateCardOfEachPlayers = new ObjectivePrivateCard[playersName.length];
+        handOfEachPlayer = new DiceStack[playersName.length];
+        FavorTokenOfEachPlayer = new int[playersName.length];
+        PointsOfEachPlayer = new int[playersName.length];
+        objectivePrivateCardOfEachPlayers = new ObjectivePrivateCard[playersName.length];
+
         cliMessage.showGameStarted(playersName);
     }
 
@@ -74,7 +87,7 @@ public class CliController implements UIInterface, ViewVisitor {
 
         cliParser.readSplash();*/
 
-        for (WindowPatternCard card : event.getInitialWindowPatternCard()) {
+        for (WindowPatternCard card : windowPatternCardsToChoose) {
             cliMessage.showWindowPatternCard(card);
         }
 
@@ -88,7 +101,7 @@ public class CliController implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(WaitYourTurn event) {
-        cliMessage.showWaitYourTurnScreen();
+        cliMessage.showWaitYourTurnScreen(playersName[event.getIndexCurrentPlayer()]);
     }
 
     /**
@@ -156,12 +169,24 @@ public class CliController implements UIInterface, ViewVisitor {
     //*******************************************Visit for model event*******************************************************************************
     //*******************************************Visit for model event*******************************************************************************
     //*******************************************Visit for model event*******************************************************************************
+    public void visit(UpdateInitialWindowPatternCard event) {
+        windowPatternCardsToChoose = event.getInitialWindowPatternCard();
+    }
+
     public void visit(UpdateAllToolCard event) {
         toolCard = event.getToolCard();
     }
 
+    public void visit(UpdateAllPublicObject event) {
+        objectivePublicCards = event.getPublicCards();
+    }
+
+    public void visit(UpdateInitDimRound event) {
+        roundTrack = event.getRoundTrack();
+    }
+
     public void visit(UpdateSingleToolCardCost event) {
-       // toolCard[event.getIndexToolCard()] = event.getToolCard();
+        toolCard[event.getIndexToolCard()].setFavorToken(event.getCostToolCard());
     }
 
     public void visit(UpdateDicePool event) {
@@ -169,20 +194,20 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     public void visit(UpdateSinglePlayerHand event) {
-    }
-
-    public void visit(UpdateAllPublicObject event) {
-        objectivePublicCards = event.getPublicCards();
+        handOfEachPlayer[event.getIndexPlayer()] = event.getHandPlayer();
     }
 
     public void visit(UpdateSingleCell event) {
+        windowPatternCardOfEachPlayer[event.getIndexPlayer()].getCell(event.getLine(), event.getColumn()).setDice(event.getDice());
     }
 
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
+        FavorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
+        PointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
     }
 
     public void visit(UpdateSinglePrivateObject event) {
-        objectivePrivateCard = event.getPrivateCard();
+        objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = event.getPrivateCard();
     }
 
     public void visit(UpdateSingleTurnRoundTrack event) {
@@ -190,7 +215,7 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     public void visit(UpdateSingleWindow event) {
-//        windowPatternCard[event.getIndexPlayer()] = event.getWindowPatternCard();
+        windowPatternCardOfEachPlayer[event.getIndexPlayer()] = event.getWindowPatternCard();
     }
 
 
@@ -267,32 +292,37 @@ public class CliController implements UIInterface, ViewVisitor {
                 EventController packet2 = new EndTurnController();
                 packet2.setPlayerId(playerId);
                 client.sendEventToController(packet2);
-                cliMessage.showWaitYourTurnScreen();
                 break;
-
-            //Show public object
+            //Show private object
             case 4:
+                cliMessage.showObjectivePrivateCard(objectivePrivateCardOfEachPlayers[playerId]);
+                cliParser.readSplash();
+                turn();
+                break;
+            //Show public object
+            case 5:
                 for (ObjectivePublicCard card : objectivePublicCards) {
                     cliMessage.showObjectivePublicCard(card);
                 }
+                cliParser.readSplash();
+                turn();
                 break;
-
-            //Show private object
-            case 5:
-                cliMessage.showObjectivePrivateCard(objectivePrivateCard);
-                break;
-
             //Show opponents window pattern card
             case 6:
                 /*for (Player p : opponentPlayers) {
                     cliMessage.showWindowPatternCard(p.getPlayerWindowPattern());
                 }*/
                 break;
+            case 7:
+                cliMessage.showDicePool(dicePool);
+                cliParser.readSplash();
+                turn();
+                break;
         }
     }
 
     private WindowPatternCard getMyWindowPatternCard() {
-        return windowPatternCard[playerId];
+        return windowPatternCardOfEachPlayer[playerId];
     }
 
     private String getMyName() {

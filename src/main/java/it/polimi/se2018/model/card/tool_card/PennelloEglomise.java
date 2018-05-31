@@ -37,7 +37,7 @@ public class PennelloEglomise extends ToolCard {
         return true; //no immediate effect it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
 }//
-// controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))
+// controller.useToolCard(gameBoard.getCostToolCard(indexOfCardInGame))
 //----------------------------->controller
 /*      view.askTheCellOfWindowForToolCard()
         wait response

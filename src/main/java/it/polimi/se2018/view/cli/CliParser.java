@@ -19,6 +19,7 @@ public class CliParser {
     }
 
     public void readSplash() {
+        cliMessage.showWaitInput();
         in.next();
     }
 

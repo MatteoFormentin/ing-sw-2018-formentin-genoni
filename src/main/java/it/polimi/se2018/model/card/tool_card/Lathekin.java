@@ -36,7 +36,7 @@ public class Lathekin extends ToolCard {
     }
 
 }
-// controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))
+// controller.useToolCard(gameBoard.getCostToolCard(indexOfCardInGame))
 //----------------------------->controller
 /*
        view.askTheCellOfWindowForToolCard() x2 times consecutive you can't use while or for ಠ_ಠ use a counter 1th dice and then 2nd dice

@@ -34,7 +34,7 @@ public class AlesatoreLaminaRame extends ToolCard {
         saveUsed(gameBoard, indexPlayer, indexOfCardInGame);
         return true; //no immediate effect it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
-    //controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame)) call this effect
+    //controller.useToolCard(gameBoard.getCostToolCard(indexOfCardInGame)) call this effect
     //----------------------------->controller
         /*view.askTheCellOfWindowForToolCard()
         wait response (if no response end turn)

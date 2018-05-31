@@ -74,5 +74,9 @@ public interface ViewVisitor {
 
     public void visit(UpdateSingleTurnRoundTrack event);
     public void visit(UpdateSingleWindow event);
+    public void visit(UpdateInitialWindowPatternCard event);
+    public void visit(UpdateInitDimRound event);
+
+
 
 }

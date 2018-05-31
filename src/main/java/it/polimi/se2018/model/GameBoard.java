@@ -6,6 +6,7 @@ import it.polimi.se2018.exception.PlayerException.*;
 import it.polimi.se2018.exception.WindowException.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.model.card.Deck;
+import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
@@ -51,9 +52,6 @@ public class GameBoard implements Serializable {
         for (int i = 0; i < number; i++) {
             player[i] = new Player(i);
             player[i].setPrivateObject(deck.drawObjectivePrivateCard());
-            UpdateSinglePrivateObject packet = new UpdateSinglePrivateObject(i, player[i].getPrivateObject());
-            packet.setPlayerId(i);
-            server.sendEventToView(packet);
             WindowPatternCard[] window = new WindowPatternCard[4];
             for (int n = 0; n < 4; n++) {
                 window[n] = deck.drawWindowPatternCard();
@@ -62,18 +60,30 @@ public class GameBoard implements Serializable {
         }
         indexCurrentPlayer = 0;
         for (int i = 0; i < toolCard.length; i++) toolCard[i] = deck.drawToolCard();
-        for (int i = 0; i < player.length; i++) {
-            UpdateAllToolCard packet = new UpdateAllToolCard(toolCard);
-            packet.setPlayerId(i);
-            server.sendEventToView(packet);
-        }
+
         for (int i = 0; i < objectivePublicCard.length; i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
-        for (int i = 0; i < player.length; i++) {
-            UpdateAllPublicObject packet = new UpdateAllPublicObject(objectivePublicCard);
-            packet.setPlayerId(i);
-            server.sendEventToView(packet);
-        }
+
         System.err.println("Gameboard Creata con " + number + " giocatori");
+    }
+
+    public void notifyAllCards(int indexPlayer) {
+        ObjectivePrivateCard send = player[indexPlayer].getPrivateObject();
+        UpdateSinglePrivateObject packet = new UpdateSinglePrivateObject(indexPlayer, send);
+        packet.setPlayerId(indexPlayer);
+        server.sendEventToView(packet);
+        UpdateInitialWindowPatternCard packetWindows = new UpdateInitialWindowPatternCard(player[indexPlayer].getThe4WindowPattern());
+        packetWindows.setPlayerId(indexPlayer);
+        server.sendEventToView(packetWindows);
+        UpdateAllToolCard packetTool = new UpdateAllToolCard(toolCard);
+        packetTool.setPlayerId(indexPlayer);
+        server.sendEventToView(packetTool);
+        UpdateAllPublicObject packetObject = new UpdateAllPublicObject(objectivePublicCard);
+        packetObject.setPlayerId(indexPlayer);
+        server.sendEventToView(packetObject);
+        UpdateInitDimRound packetRound =new UpdateInitDimRound(roundTrack);
+        packetRound.setPlayerId(indexPlayer);
+        server.sendEventToView(packetRound);
+        System.err.println("inviati tutti le info iniziali a "+indexPlayer);
     }
 
     //************************************getter**********************************************
@@ -196,6 +206,7 @@ public class GameBoard implements Serializable {
             UpdateDicePool packet = new UpdateDicePool(dicePool);
             packet.setPlayerId(i);
             server.sendEventToView(packet);
+            System.err.println("inviata la dicepool al giocatore "+i);
         }
         stopGame = false;
     }
@@ -340,13 +351,14 @@ public class GameBoard implements Serializable {
             server.sendEventToView(packet);
         }
         countSetWindow++;
+        System.err.println("window settata");
         if (countSetWindow == player.length) {
             setUpFirstRound();
-            System.err.println(" Tutte le window sette");
+            System.err.println(" Tutte le window settate");
             throw new WindowSettingCompleteException();
 
         }
-        System.err.println("window settata");
+
     }
 
 //*****************************************metodi del player************************************************************************
@@ -388,10 +400,10 @@ public class GameBoard implements Serializable {
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column);
         for (int i = 0; i < player.length; i++) {
-            UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer,player[indexPlayer].getHandDice());
+            UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
             packet.setPlayerId(i);
             server.sendEventToView(packet);
-            UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line,column,player[indexPlayer].getPlayerWindowPattern().getCell(line,column));
+            UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
             packet.setPlayerId(i);
             server.sendEventToView(packetCell);
         }
@@ -479,7 +491,7 @@ public class GameBoard implements Serializable {
             if (round >= currentRound || round < 0) return false;//can't select a round that didn't exist
             if (indexStack >= roundTrack[round].size() || indexStack < 0) return false;// index wrong
             if (!player[indexPlayer].isHasUsedToolCard()) return false;//you didn't use a tool card
-            Dice dHand = player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice();
+            Dice dHand = player[indexPlayer].getPlayerWindowPattern().getDice(line, column).getDice();
             if (dHand == null) return false;   //no dice in this cell
             if (dHand.getColor() != roundTrack[round].get(indexStack).getColor()) return false; // color isn't the same
             return player[indexPlayer].moveDiceFromWindowPatternToHand(line, column);

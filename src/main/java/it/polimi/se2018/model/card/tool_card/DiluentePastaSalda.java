@@ -38,7 +38,7 @@ public class DiluentePastaSalda extends ToolCard {
       //  if(!gameBoard.changeDiceBetweenHandAndFactory(indexPlayer))return false;
         return true; //continue the effect (first you should notify the views) it's too cool if return a number/string and the controller parsing this information know how to handle the card
 
-        // controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))
+        // controller.useToolCard(gameBoard.getCostToolCard(indexOfCardInGame))
         //----------------------------->controller
         /*view.askTheValueOfTheDice()
         wait response (if no response end turn) (dado rimesso nella DraftPool perchè nuovo Dado)

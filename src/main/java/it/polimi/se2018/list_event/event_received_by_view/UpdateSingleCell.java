@@ -1,20 +1,19 @@
 package it.polimi.se2018.list_event.event_received_by_view;
 
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
-import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 
 public class UpdateSingleCell extends EventView {
     private int indexPlayer;//in other word the index of the window
     private int line;
     private int column;
-    private Cell cell;
+    private Dice dice;
 
-    public UpdateSingleCell(int indexPlayer, int line, int column, Cell cell) {
+    public UpdateSingleCell(int indexPlayer, int line, int column, Dice dice) {
         this.indexPlayer = indexPlayer;
         this.line = line;
         this.column = column;
-        this.cell = cell;
+        this.dice = dice;
     }
 
     public int getIndexPlayer() {
@@ -41,12 +40,12 @@ public class UpdateSingleCell extends EventView {
         this.column = column;
     }
 
-    public Cell getCell() {
-        return cell;
+    public Dice getDice() {
+        return dice;
     }
 
-    public void setCell(Cell cell) {
-        this.cell = cell;
+    public void setDice(Dice dice) {
+        this.dice = dice;
     }
 
     public void accept(ViewVisitor visitor) {

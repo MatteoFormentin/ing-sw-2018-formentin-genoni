@@ -23,11 +23,11 @@ public class UpdateSingleToolCardCost extends EventView {
         this.indexToolCard = indexToolCard;
     }
 
-    public int getToolCard() {
+    public int getCostToolCard() {
         return costToolCard;
     }
 
-    public void setToolCard(int costToolCard) {
+    public void setCostToolCard(int costToolCard) {
         this.costToolCard = costToolCard;
     }
 

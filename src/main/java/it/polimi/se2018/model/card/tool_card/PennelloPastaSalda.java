@@ -38,7 +38,7 @@ public class PennelloPastaSalda extends ToolCard {
         return true; // immediate effect. it's too cool if return a number/string and the controller parsing this information know how to handle the card
     }
 }
-    // controller.useToolCard(gameBoard.getToolCard(indexOfCardInGame))
+    // controller.useToolCard(gameBoard.getCostToolCard(indexOfCardInGame))
 //----------------------------->controller
 /*      view.askTheCellOfWindow()
         wait response

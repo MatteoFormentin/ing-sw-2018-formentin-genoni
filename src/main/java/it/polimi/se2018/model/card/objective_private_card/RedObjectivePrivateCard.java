@@ -2,6 +2,8 @@ package it.polimi.se2018.model.card.objective_private_card;
 
 import it.polimi.se2018.model.dice.DiceColor;
 
+import java.io.Serializable;
+
 /**
  * Pivate objective card Sfumature Rosse.
  * <p>
@@ -10,7 +12,7 @@ import it.polimi.se2018.model.dice.DiceColor;
  *
  * @author Matteo Formentin
  */
-public class RedObjectivePrivateCard extends ObjectivePrivateCard {
+public class RedObjectivePrivateCard extends ObjectivePrivateCard implements Serializable {
     public RedObjectivePrivateCard() {
         super();
         super.setId(0);
