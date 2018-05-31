@@ -6,7 +6,7 @@ import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 /**
  * used only for the init and it's personalized
  */
-public class UpdateSinglePrivateObject extends EventView{
+public class UpdateSinglePrivateObject extends EventView  {
     private int indexPlayer;
     private ObjectivePrivateCard privateCard;
 
@@ -34,4 +34,5 @@ public class UpdateSinglePrivateObject extends EventView{
     public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
+
 }

@@ -2,6 +2,7 @@ package it.polimi.se2018.list_event.event_received_by_view;
 
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Abstract void class for the EventController in a game, implements Serializable.
@@ -23,4 +24,5 @@ public abstract class EventView implements Serializable {
     }
 
     public abstract void accept(ViewVisitor visitor);
+
 }

@@ -5,7 +5,7 @@ import it.polimi.se2018.model.Player;
 /**
  * event for update the favor token and the point of the Player with the index contain in the event
  */
-public class UpdateSinglePlayerTokenAndPoints extends EventView{
+public class UpdateSinglePlayerTokenAndPoints extends EventView  {
     private int indexInGame;
     private int favorToken;
     private int points;
@@ -43,4 +43,5 @@ public class UpdateSinglePlayerTokenAndPoints extends EventView{
     public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
+
 }

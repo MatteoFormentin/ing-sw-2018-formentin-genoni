@@ -46,7 +46,7 @@ public class Controller implements ControllerVisitor {
         this.server = server;
         this.playerNumber = playerNumber;
         System.out.println("CONTROLLER CREATED!!!!!!!!!!!");
-        gameBoard = new GameBoard(playerNumber,server);
+        gameBoard = new GameBoard(playerNumber, server);
         toolcard = false;
     }
 
@@ -65,17 +65,18 @@ public class Controller implements ControllerVisitor {
     public void visit(SelectInitialWindowPatternCardController event) {
         try {
             gameBoard.setWindowOfPlayer(event.getPlayerId(), ((SelectInitialWindowPatternCardController) event).getSelectedIndex());
+            int nextPlayer = event.getPlayerId()+1;
+            sendWaitTurnToAllTheNonCurrent(nextPlayer);
+            InitialWindowPatternCard packet = new InitialWindowPatternCard();
+            packet.setInitialWindowPatternCard(gameBoard.getPlayer(nextPlayer).getThe4WindowPattern());
+            packet.setPlayerId(nextPlayer);
+            server.sendEventToView(packet);
+            System.out.println("inviato pacchetto init");
             //TODO mandare agli altri giocatori la carta scelta
         } catch (WindowSettingCompleteException ex) {
             EventView turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
-            for (int i = 0; i < playerNumber; i++) {
-                if (i == gameBoard.getIndexCurrentPlayer()) continue;
-                EventView waitPacket = new WaitYourTurn();
-                waitPacket.setPlayerId(i);
-                server.sendEventToView(waitPacket);
-            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -90,13 +91,12 @@ public class Controller implements ControllerVisitor {
     @Override
     public void visit(InsertDiceController event) {//this is the handler for a normal move
         if (!toolcard) {
-            if(gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()){
+            if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
                 //il giocatore ha già pescato un dado e deve piazzarlo
                 SelectCellOfWindowView packet = new SelectCellOfWindowView();
                 packet.setPlayerId(event.getPlayerId());
                 server.sendEventToView(packet);
-            }
-            else{//il giocatore non ha ancora pescato un nuovo dado
+            } else {//il giocatore non ha ancora pescato un nuovo dado
                 SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
                 packet.setPlayerId(event.getPlayerId());
                 server.sendEventToView(packet);
@@ -123,6 +123,7 @@ public class Controller implements ControllerVisitor {
             }
         }
     }
+
     @Override
     public void visit(SelectCellOfWindowController event) {
         if (toolcard) ;//pass to handler toolcard
@@ -158,7 +159,6 @@ public class Controller implements ControllerVisitor {
     }
 
 
-
     @Override
     public void visit(SelectDiceFromDraftpoolController event) {
 
@@ -170,24 +170,17 @@ public class Controller implements ControllerVisitor {
     }
 
     public void startGame() {
-        for (int i = 0; i < playerNumber; i++) {
-            for (int j = 0; j < playerNumber; j++) {
-                if (j == gameBoard.getIndexCurrentPlayer()) continue;
-                EventView waitTurn = new WaitYourTurn();
-                waitTurn.setPlayerId(j);
-                server.sendEventToView(waitTurn);
-            }
-
-            UpdateInitialWindowPatternCard packet = new UpdateInitialWindowPatternCard();
-            packet.setInitialWindowPatternCard(gameBoard.getPlayer(i).getThe4WindowPattern());
-            packet.setPlayerId(i);
-            server.sendEventToView(packet);
-            System.out.println("inviato pacchetto init");
-        }
+        sendWaitTurnToAllTheNonCurrent(0);
+        InitialWindowPatternCard packet = new InitialWindowPatternCard();
+        packet.setInitialWindowPatternCard(gameBoard.getPlayer(0).getThe4WindowPattern());
+        packet.setPlayerId(0);
+        server.sendEventToView(packet);
+        System.out.println("inviato pacchetto init");
     }
 
     /**
      * Method for notify the view that there is some problem with the input
+     *
      * @param ex
      */
     public void showErrorMessage(Exception ex) {
@@ -198,7 +191,16 @@ public class Controller implements ControllerVisitor {
         server.sendEventToView(packet);
     }
 
-    public void askDiceOfDicePool(){
+    private void sendWaitTurnToAllTheNonCurrent(int currentPlayerId){
+        for (int j = 0; j < playerNumber; j++) {
+            if (j == currentPlayerId) continue;
+            EventView waitTurn = new WaitYourTurn(currentPlayerId);
+            waitTurn.setPlayerId(j);
+            server.sendEventToView(waitTurn);
+        }
+    }
+
+    public void askDiceOfDicePool() {
         SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
         packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
         server.sendEventToView(packet);

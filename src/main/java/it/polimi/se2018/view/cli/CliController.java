@@ -64,7 +64,7 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     @Override
-    public void visit(UpdateInitialWindowPatternCard event) {
+    public void visit(InitialWindowPatternCard event) {
         //TODO aggiungere visualizzazione obiettivi prima della selezione carte
        /* for (ObjectivePublicCard card : objectivePublicCards) {
             cliMessage.showObjectivePublicCard(card);
@@ -190,7 +190,7 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     public void visit(UpdateSingleWindow event) {
-        windowPatternCard[event.getIndexPlayer()] = event.getWindowPatternCard();
+//        windowPatternCard[event.getIndexPlayer()] = event.getWindowPatternCard();
     }
 
 

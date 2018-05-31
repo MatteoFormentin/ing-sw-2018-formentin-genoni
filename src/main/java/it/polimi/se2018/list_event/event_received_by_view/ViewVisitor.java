@@ -64,7 +64,7 @@ public interface ViewVisitor {
     public void visit(UpdateAllToolCard event);
     public void visit(UpdateSingleToolCardCost event);
     public void visit(UpdateDicePool event);
-    public void visit(UpdateInitialWindowPatternCard event);
+    public void visit(InitialWindowPatternCard event);
 
     public void visit(UpdateSinglePlayerHand event);
     public void visit(UpdateAllPublicObject event);

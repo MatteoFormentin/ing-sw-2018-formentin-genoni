@@ -5,7 +5,7 @@ import it.polimi.se2018.model.card.tool_card.ToolCard;
 /**
  * forse inutile meglio fare l'update solo del costo della toolcard
  */
-public class UpdateSingleToolCardCost extends EventView{
+public class UpdateSingleToolCardCost extends EventView {
 
     private int indexToolCard;
     private int costToolCard;
@@ -34,4 +34,5 @@ public class UpdateSingleToolCardCost extends EventView{
     public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
+
 }

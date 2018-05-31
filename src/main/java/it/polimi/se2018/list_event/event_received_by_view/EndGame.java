@@ -7,4 +7,5 @@ public class EndGame extends EventView {
     public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
+
 }

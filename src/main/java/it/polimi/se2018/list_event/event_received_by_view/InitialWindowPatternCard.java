@@ -7,7 +7,7 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
  *
  * @author Luca Genoni
  */
-public class UpdateInitialWindowPatternCard extends EventView {
+public class InitialWindowPatternCard extends EventView  {
     //from EventController private String nicknamPlayer;
     //from EventController private Model model;
     WindowPatternCard[] initialWindowPatternCard;
@@ -24,4 +24,5 @@ public class UpdateInitialWindowPatternCard extends EventView {
     public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
+
 }

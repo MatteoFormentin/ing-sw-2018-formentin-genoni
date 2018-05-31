@@ -2,7 +2,7 @@ package it.polimi.se2018.list_event.event_received_by_view;
 
 import it.polimi.se2018.model.dice.DiceStack;
 
-public class UpdateSingleTurnRoundTrack extends EventView{
+public class UpdateSingleTurnRoundTrack extends EventView  {
     private int indexRound;
     private DiceStack dicePool;
 
@@ -30,4 +30,5 @@ public class UpdateSingleTurnRoundTrack extends EventView{
     public void accept(ViewVisitor visitor) {
         visitor.visit(this);
     }
+
 }
