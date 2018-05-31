@@ -1,5 +1,6 @@
 package it.polimi.se2018.model.dice;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Random;
  *
  * @author Luca Genoni
  */
-public class Dice {
+public class Dice implements Serializable {
     private int value;
     private DiceColor color;
 

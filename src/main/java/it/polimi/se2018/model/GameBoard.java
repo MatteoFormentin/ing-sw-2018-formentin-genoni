@@ -379,7 +379,11 @@ public class GameBoard implements Serializable {
      * @param indexDicePool index of the dice chosen
      * @throws NoDiceException there is no dice in the selected position
      */
-    public void addNewDiceToHandFromDicePool(int indexPlayer, int indexDicePool) throws NoDiceException {
+    public void addNewDiceToHandFromDicePool(int indexPlayer, int indexDicePool) throws NoDiceException,GameIsBlockedException,
+            CurrentPlayerException,AlreadyDrawANewDiceException {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (player[indexPlayer].isHasDrawNewDice()) throw new AlreadyDrawANewDiceException();
         Dice dice = dicePool.getDice(indexDicePool);
         if (dice == null) throw new NoDiceException();
         player[indexPlayer].addDiceToHand(dice);
@@ -403,7 +407,10 @@ public class GameBoard implements Serializable {
      * @return
      */
     public void insertDice(int indexPlayer, int line, int column) throws RestrictionCellOccupiedException, RestrictionValueViolatedException,
-            RestrictionColorViolatedException, RestrictionAdjacentViolatedException, NoDiceInHandException, AlreadyPlaceANewDiceException {
+            RestrictionColorViolatedException, RestrictionAdjacentViolatedException, NoDiceInHandException, AlreadyPlaceANewDiceException,
+            GameIsBlockedException,CurrentPlayerException{
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column);
         for (int i = 0; i < player.length; i++) {

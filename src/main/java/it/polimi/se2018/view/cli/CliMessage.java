@@ -263,8 +263,9 @@ class CliMessage {
     void showDiceStack(DiceStack diceStack) {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
         for (int i = 0; i < diceStack.size(); i++) {
-            AnsiConsole.out.print(ansi().fg(RED).a(i + ": "));
+            AnsiConsole.out.print(ansi().fg(DEFAULT).a(i + ": "));
             showDice(diceStack.get(i));
+            AnsiConsole.out.print(ansi().fg(DEFAULT).a(" | "));
         }
         AnsiConsole.out.println();
     }
@@ -273,6 +274,10 @@ class CliMessage {
         AnsiConsole.out.print(ansi().fg(RED).a("Valore inserito non valido. Riprova: "));
     }
     void showWaitInput(){
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per iniziare"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per continuare"));
+    }
+
+    void showMessage(String message){
+        AnsiConsole.out.println(ansi().fg(RED).a(message));
     }
 }

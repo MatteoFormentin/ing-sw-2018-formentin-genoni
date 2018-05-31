@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Luca Genoni
  */
-public class DiceStack extends LinkedList<Dice> {
+public class DiceStack extends LinkedList<Dice> implements Serializable{
 
     /**
      * the method right method for take a dice without exception

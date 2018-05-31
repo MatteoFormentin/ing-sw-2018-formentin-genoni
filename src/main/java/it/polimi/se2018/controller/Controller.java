@@ -123,7 +123,9 @@ public class Controller implements ControllerVisitor {
                 server.sendEventToView(packet);
             } catch (Exception ex) {
                 showErrorMessage(ex,event.getPlayerId());
-
+                SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
+                packet.setPlayerId(event.getPlayerId());
+                server.sendEventToView(packet);
             }
         }
     }
@@ -134,12 +136,17 @@ public class Controller implements ControllerVisitor {
         else {
             try {
                 gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
-                SelectCellOfWindowView packet = new SelectCellOfWindowView();
-                packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                server.sendEventToView(packet);
+                //sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
+                EventView turnPacket = new StartPlayerTurn();
+                turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
+                System.err.println("Il giocatore ha piazzato il dado con successo"+gameBoard.getIndexCurrentPlayer());
+                server.sendEventToView(turnPacket);
             } catch (Exception ex) {
                 //TODO implementare errori specifici da mostrare (colore / valore)????? non basta usare showErrorMessage?
                 showErrorMessage(ex,event.getPlayerId());
+                SelectCellOfWindowView packet = new SelectCellOfWindowView();
+                packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
+                server.sendEventToView(packet);
             }
         }
     }

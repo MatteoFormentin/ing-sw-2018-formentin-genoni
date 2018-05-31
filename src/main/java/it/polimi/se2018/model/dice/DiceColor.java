@@ -1,5 +1,6 @@
 package it.polimi.se2018.model.dice;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Arrays;
  *
  * @author Luca Genoni
  */
-public enum DiceColor {
+public enum DiceColor implements Serializable {
     Red,
     Yellow,
     Green,

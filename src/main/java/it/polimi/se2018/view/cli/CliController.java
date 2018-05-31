@@ -162,6 +162,7 @@ public class CliController implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(ShowErrorMessage event) {
+        cliMessage.showMessage(event.getErrorMessage());
         //TODO printare a schermo il messaggio d'errore l'evento contiene sia l'eccezione che il messagio scegli quale vuoi ed elimina l'altro
     }
 
