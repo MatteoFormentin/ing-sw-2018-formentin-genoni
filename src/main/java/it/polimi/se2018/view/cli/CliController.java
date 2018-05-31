@@ -285,13 +285,14 @@ public class CliController implements UIInterface, ViewVisitor {
 
             //Use tool card
             case 2:
+                turn();
                 break;
 
             //End turn
             case 3:
-                EventController packet2 = new EndTurnController();
-                packet2.setPlayerId(playerId);
-                client.sendEventToController(packet2);
+                EventController packetEnd = new EndTurnController();
+                packetEnd.setPlayerId(playerId);
+                client.sendEventToController(packetEnd);
                 break;
             //Show private object
             case 4:
@@ -312,6 +313,7 @@ public class CliController implements UIInterface, ViewVisitor {
                 /*for (Player p : opponentPlayers) {
                     cliMessage.showWindowPatternCard(p.getPlayerWindowPattern());
                 }*/
+                turn();
                 break;
             case 7:
                 cliMessage.showDicePool(dicePool);

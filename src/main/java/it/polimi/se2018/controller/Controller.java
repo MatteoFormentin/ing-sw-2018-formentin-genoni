@@ -1,6 +1,6 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.exception.GameboardException.WindowSettingCompleteException;
+import it.polimi.se2018.exception.GameboardException.*;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.SelectDiceFromDraftpool;
@@ -151,8 +151,17 @@ public class Controller implements ControllerVisitor {
 
     @Override
     public void visit(EndTurnController event) {
+        try {
+            gameBoard.nextPlayer(event.getPlayerId());
+            sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
+            EventView turnPacket = new StartPlayerTurn();
+            turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
+            System.err.println("cambiato il turno tocca a "+ gameBoard.getIndexCurrentPlayer());
+            server.sendEventToView(turnPacket);
 
-
+        }catch(Exception ex){
+            showErrorMessage(ex,event.getPlayerId());
+        }
     }
 
     @Override
@@ -181,8 +190,9 @@ public class Controller implements ControllerVisitor {
         sendWaitTurnToAllTheNonCurrent(0);
         InitialWindowPatternCard packet = new InitialWindowPatternCard();
         packet.setPlayerId(0);
-        server.sendEventToView(packet);
         System.out.println("inviato pacchetto init");
+        server.sendEventToView(packet);
+
     }
 
     /**
