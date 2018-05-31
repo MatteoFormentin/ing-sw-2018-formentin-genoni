@@ -69,15 +69,14 @@ public class Controller implements ControllerVisitor {
             sendWaitTurnToAllTheNonCurrent(nextPlayer);
             InitialWindowPatternCard packet = new InitialWindowPatternCard();
             packet.setPlayerId(nextPlayer);
+            System.err.println("inviato pacchetto initial per scegliere la window");
             server.sendEventToView(packet);
-            System.err.println("inviato pacchetto init");
-            //TODO mandare agli altri giocatori la carta scelta
         } catch (WindowSettingCompleteException ex) {
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             EventView turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
+            System.err.println("inizia il vero gioco con il giocatore"+gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
-            System.err.println("iniziato il gioco");
         } catch (Exception ex) {
             ex.printStackTrace();
             showErrorMessage(ex,event.getPlayerId());
@@ -160,6 +159,7 @@ public class Controller implements ControllerVisitor {
             server.sendEventToView(turnPacket);
 
         }catch(Exception ex){
+            ex.printStackTrace();
             showErrorMessage(ex,event.getPlayerId());
         }
     }
@@ -190,7 +190,7 @@ public class Controller implements ControllerVisitor {
         sendWaitTurnToAllTheNonCurrent(0);
         InitialWindowPatternCard packet = new InitialWindowPatternCard();
         packet.setPlayerId(0);
-        System.out.println("inviato pacchetto init");
+        System.err.println("Iniziato il gioco con la funziona start game");
         server.sendEventToView(packet);
 
     }

@@ -80,10 +80,10 @@ public class GameBoard implements Serializable {
         UpdateAllPublicObject packetObject = new UpdateAllPublicObject(objectivePublicCard);
         packetObject.setPlayerId(indexPlayer);
         server.sendEventToView(packetObject);
-        UpdateInitDimRound packetRound =new UpdateInitDimRound(roundTrack);
+        UpdateInitDimRound packetRound = new UpdateInitDimRound(roundTrack);
         packetRound.setPlayerId(indexPlayer);
         server.sendEventToView(packetRound);
-        System.err.println("inviati tutti le info iniziali a "+indexPlayer);
+        System.err.println("inviati tutti le info iniziali a " + indexPlayer);
     }
 
     //************************************getter**********************************************
@@ -206,7 +206,7 @@ public class GameBoard implements Serializable {
             UpdateDicePool packet = new UpdateDicePool(dicePool);
             packet.setPlayerId(i);
             server.sendEventToView(packet);
-            System.err.println("inviata la dicepool al giocatore "+i);
+            System.err.println("inviata la dicepool al giocatore " + i);
         }
         stopGame = false;
     }
@@ -247,6 +247,7 @@ public class GameBoard implements Serializable {
             freeHandPlayer(indexPlayer);
             indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
             currentTurn++;
+            System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
             if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             //se è uguale siamo nella fare tra il 1° e il 2° giro
         } else if (currentTurn == player.length) {
@@ -255,6 +256,7 @@ public class GameBoard implements Serializable {
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);
             currentTurn++;
+            System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             //siamo in pieno 2°giro
         } else if (currentTurn < (2 * player.length)) {
@@ -263,7 +265,9 @@ public class GameBoard implements Serializable {
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);
             indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
+            if (indexCurrentPlayer < 0) indexCurrentPlayer = player.length + indexCurrentPlayer;
             currentTurn++;
+            System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             //siamo tra il 2° e il 1° giro/endgame
         } else if (currentTurn == (2 * player.length)) { //fine round
@@ -288,6 +292,7 @@ public class GameBoard implements Serializable {
                         System.err.println("Non ci sono abbastanza dadi, è strano perchè dovrebbero essere 90 esatti");
                         throw new FatalGameErrorException();
                     }
+                    dicePool = new DiceStack();
                     dicePool.add(dice);
                 }
                 for (int i = 0; i < player.length; i++) {
@@ -295,12 +300,14 @@ public class GameBoard implements Serializable {
                     packetPool.setPlayerId(i);
                     server.sendEventToView(packetPool);
                 }
-                if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
+                System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
+                if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             } else {//il gioco è finito
                 stopGame = true;
                 currentTurn = 2 * player.length + 1;
                 //method for the end game
                 calculatePoint();
+                System.err.println("Il gioco è finito");
                 throw new GameIsOverException();
             }
         } else {
@@ -351,10 +358,10 @@ public class GameBoard implements Serializable {
             server.sendEventToView(packet);
         }
         countSetWindow++;
-        System.err.println("window settata");
+        System.err.println("window settata del player " + indexOfThePlayer + " settata");
         if (countSetWindow == player.length) {
             setUpFirstRound();
-            System.err.println(" Tutte le window settate");
+            System.err.println(" Tutte le window sono state settate");
             throw new WindowSettingCompleteException();
 
         }
