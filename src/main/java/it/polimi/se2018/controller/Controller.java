@@ -238,6 +238,15 @@ public class Controller implements ControllerVisitor {
 
     }
 
+    // TODO: CHECKARE LA CLASSE
+    public void joinGame(int id) {
+        gameBoard.notifyAllCards(id);
+        InitialWindowPatternCard packet = new InitialWindowPatternCard();
+        packet.setPlayerId(id);
+        System.err.println("Player "+id+" has made a relogin.");
+        server.sendEventToView(packet);
+    }
+
     /**
      * Method for notify the view that there is some problem with the input
      *

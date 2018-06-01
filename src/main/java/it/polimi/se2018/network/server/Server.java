@@ -220,7 +220,7 @@ public class Server implements ServerController {
                 else {
                     System.out.println("Player already logged!");
                     System.out.println("Please, use another nickname...");
-                    return false; //game is complete or nickname already exists
+                    return false;
                 }
             }
 
@@ -232,10 +232,17 @@ public class Server implements ServerController {
                     System.out.println("Sorry, room is full... You can't access...");
                     return false;
                 }
-                // ESISTEVA IL PLAYER CON QUEL NICKNAME
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
-                    // GESTISCO LA SOSTITUZIONE
 
+                // ESISTEVA IL PLAYER CON QUEL NICKNAME
+                // RELOGIN
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
+                    // L'ID DEL PLAYER E IL NICKNAME DEL PLAYER DEVONO RIMANERE UGUALI, DEVI SOLO CAMBIARE IL REMOTE PLAYER CON UNO NUOVO
+                    // SOSTITUZIONE IN BASE ALL'ID
+                    int id = remotePlayer.getPlayerId();
+                    replacePlayer(id,remotePlayer);
+                    System.out.println("Trying to log to the actual game...");
+                    this.timerThread.shutdown();
+                    this.game.joinGame(id);
                 }
                 return true;
             }
@@ -303,5 +310,18 @@ public class Server implements ServerController {
             }
         }
         return null; //Se arrivo qui qualcosa è sbagliato nel model
+    }
+
+    /**
+     * Replacer for player.
+     * The replacer work on the players ID, in order to not break the array list of RemotePlayer.
+     *
+     * @param id ID of the player associated to the client.
+     * @param newRemotePlayer new player used to replace the old one.
+     */
+    private void replacePlayer(int id, RemotePlayer newRemotePlayer){
+        players.set(id,newRemotePlayer);
+        String nickname = newRemotePlayer.getNickname();
+        System.out.println("Player "+nickname+" has been replaced from a new client!");
     }
 }
