@@ -63,7 +63,6 @@ public class CliController implements UIInterface, ViewVisitor {
 
 
     public void visit(StartGame event) {
-        //TODO mostra info sul gioco (numeri giocatori, stato connessione)
         playerId = event.getPlayerId();
         playersName = event.getPlayersName();
         windowPatternCardOfEachPlayer = new WindowPatternCard[playersName.length];
@@ -76,15 +75,26 @@ public class CliController implements UIInterface, ViewVisitor {
         cliMessage.showGameStarted(playersName);
     }
 
-    public void visit(ShowAllCards event){
-        for (ToolCard card : toolCard) {
-            cliMessage.showToolCard(card);
-        }
+    public void visit(ShowAllCards event) {
+        cliMessage.showObjectivePublicCardMessage();
         for (ObjectivePublicCard card : objectivePublicCards) {
             cliMessage.showObjectivePublicCard(card);
         }
+        cliMessage.println();
+
+        cliMessage.showObjectivePrivateCardMessage();
         cliMessage.showObjectivePrivateCard(objectivePrivateCardOfEachPlayers[playerId]);
+        cliMessage.println();
+
+        cliMessage.showToolCardMessage();
+        for (ToolCard card : toolCard) {
+            cliMessage.showToolCard(card);
+        }
+
+        cliMessage.println();
+
     }
+
     @Override
     public void visit(InitialWindowPatternCard event) {
         cliMessage.showYourTurnScreen();
@@ -97,6 +107,7 @@ public class CliController implements UIInterface, ViewVisitor {
 
         cliMessage.showInitialWindowPatternCardSelection();
         int selection = cliParser.parseInt(4);
+        cliMessage.eraseScreen();
         EventController packet = new SelectInitialWindowPatternCardController();
         packet.setPlayerId(playerId);
         ((SelectInitialWindowPatternCardController) packet).setSelectedIndex(selection);
@@ -153,15 +164,15 @@ public class CliController implements UIInterface, ViewVisitor {
         int column = cliParser.parseInt();
         SelectCellOfWindowController packet = new SelectCellOfWindowController();
         packet.setPlayerId(playerId);
-        packet.setLine(row-1);
-        packet.setColumn(column-1);
+        packet.setLine(row - 1);
+        packet.setColumn(column - 1);
         client.sendEventToController(packet);
     }
 
     @Override
     public void visit(SelectToolCard event) {
         cliMessage.showToolCardChoise(toolCard);
-        int indexTooLCard = cliParser.parsePositiveInt(toolCard.length)-1;
+        int indexTooLCard = cliParser.parsePositiveInt(toolCard.length) - 1;
         SelectToolCardController packet = new SelectToolCardController();
         packet.setPlayerId(playerId);
         packet.setIndexToolCard(indexTooLCard);
@@ -172,7 +183,6 @@ public class CliController implements UIInterface, ViewVisitor {
     public void visit(ShowErrorMessage event) {
         cliMessage.showMessage(event.getErrorMessage());
         cliParser.readSplash();
-        //TODO printare a schermo il messaggio d'errore l'evento contiene sia l'eccezione che il messagio scegli quale vuoi ed elimina l'altro
     }
 
     //*******************************************Visit for model event*******************************************************************************
@@ -209,11 +219,8 @@ public class CliController implements UIInterface, ViewVisitor {
 
     public void visit(UpdateSingleCell event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()].getCell(event.getLine(), event.getColumn()).setDice(event.getDice());
-        if(event.getIndexPlayer()==playerId){
-            cliMessage.showMessage("è stata agiornata la tua window");
-        }else{
-            cliMessage.showMessage("è stata agiornata la window avversaria");
-        }
+        cliMessage.showOpponentWindow(playersName[event.getIndexPlayer()]);
+        cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[event.getIndexPlayer()]);
     }
 
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
@@ -245,6 +252,7 @@ public class CliController implements UIInterface, ViewVisitor {
             ip = cliParser.parseIp();
 
             if (ip.equals("0")) {
+                //TODO metodo default sul client -- impostazioni un file
                 ip = "127.0.0.1";
                 port = 31415;
             } else {
@@ -279,31 +287,31 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     private void turn() {
-        //TODO far rivedere il menù dopo un azione con opzioni disabilitate
-        cliMessage.clean();
+        cliMessage.eraseScreen();
         cliMessage.showYourTurnScreen();
         cliMessage.showWindowPatternCard(getMyWindowPatternCard());
         cliMessage.showMainMenu();
-        int option = cliParser.parseInt(7);
+        int option = cliParser.parsePositiveInt(7);
 
         switch (option) {
             //Place dice
-            case 0:
-                turn();
-                break;
             case 1:
                 EventController packetInsert = new InsertDiceController();
                 packetInsert.setPlayerId(playerId);
                 client.sendEventToController(packetInsert);
-                //invio evento piaza insert dice al controller
-                //controller flag Mossa normale
-                //rispondo con il visitor con select drafpool
-                //view da caontroller l'indice controlla flag in base a quello risponde alla view select Cell of window
-                //la view
                 break;
 
             //Use tool card
             case 2:
+                cliMessage.eraseScreen();
+                cliMessage.showToolCardMessage();
+                for (ToolCard card : toolCard) {
+                    cliMessage.showToolCard(card);
+                    cliMessage.println();
+                }
+
+                //TODO scelta tool da usare
+
                 EventController packetTool = new UseToolCardController();
                 packetTool.setPlayerId(playerId);
                 client.sendEventToController(packetTool);
@@ -315,30 +323,51 @@ public class CliController implements UIInterface, ViewVisitor {
                 packetEnd.setPlayerId(playerId);
                 client.sendEventToController(packetEnd);
                 break;
+
             //Show private object
             case 4:
+                cliMessage.eraseScreen();
+                cliMessage.showObjectivePrivateCardMessage();
                 cliMessage.showObjectivePrivateCard(objectivePrivateCardOfEachPlayers[playerId]);
                 cliParser.readSplash();
                 turn();
                 break;
+
             //Show public object
             case 5:
+                cliMessage.eraseScreen();
+                cliMessage.showObjectivePublicCardMessage();
                 for (ObjectivePublicCard card : objectivePublicCards) {
                     cliMessage.showObjectivePublicCard(card);
+                    cliMessage.println();
                 }
                 cliParser.readSplash();
                 turn();
                 break;
+
             //Show opponents window pattern card
             case 6:
-                /*for (Player p : opponentPlayers) {
-                    cliMessage.showWindowPatternCard(p.getPlayerWindowPattern());
-                }*/
+                cliMessage.eraseScreen();
+                cliMessage.showOpponentWindowMessage();
+                for (int i = 0; i < windowPatternCardOfEachPlayer.length; i++) {
+                    if (i == playerId) continue;
+                    cliMessage.showOpponentWindow(playersName[i]);
+                    cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[i]);
+                    cliMessage.println();
+                }
                 turn();
                 break;
+
+            //Show dice pool
             case 7:
                 cliMessage.showDiceStack(dicePool);
                 cliParser.readSplash();
+                turn();
+                break;
+
+            //Show round track
+            case 8:
+                //TODO tracciato round
                 turn();
                 break;
         }
@@ -350,7 +379,6 @@ public class CliController implements UIInterface, ViewVisitor {
 
     private String getMyName() {
         return playersName[playerId];
-
     }
 
 }

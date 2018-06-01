@@ -20,7 +20,6 @@ import java.util.Observable;
  * Class that implements the {@code ControllerVisitor} for execute the event that the view produced
  *
  * @author Matteo Formentin
- * @author Davide Mammarella
  * @author Luca Genoni
  */
 
@@ -51,6 +50,7 @@ public class Controller implements ControllerVisitor {
         gameBoard = new GameBoard(playerNumber, server);
         toolcard = false;
     }
+
 
     // EX UPDATE
     public void sendEventToController(EventController event) {
@@ -121,7 +121,6 @@ public class Controller implements ControllerVisitor {
         } else {
             showErrorMessage(new ToolCardInUseException(), event.getPlayerId());
         }
-
     }
 
 
@@ -235,7 +234,6 @@ public class Controller implements ControllerVisitor {
         packet.setPlayerId(0);
         System.err.println("Iniziato il gioco con la funziona start game");
         server.sendEventToView(packet);
-
     }
 
     // TODO: CHECKARE LA CLASSE
