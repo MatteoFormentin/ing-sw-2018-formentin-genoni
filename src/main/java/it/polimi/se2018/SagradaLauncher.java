@@ -1,0 +1,25 @@
+package it.polimi.se2018;
+
+import it.polimi.se2018.network.client.Client;
+import it.polimi.se2018.network.server.Server;
+import it.polimi.se2018.view.cli.CliParser;
+
+public class SagradaLauncher {
+
+    private final String[] args = {};
+
+    public static void main(String[] args) {
+        System.out.println("Benvenuto su Sagrada.");
+        System.out.print("Digita 0 per avviare il server, uno per il client: ");
+        CliParser cliParser = new CliParser();
+        int choice = cliParser.parseInt(1);
+
+        switch (choice) {
+            case 0:
+                Server.main(args);
+                break;
+            case 1:
+                Client.main(args);
+        }
+    }
+}

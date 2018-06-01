@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Class used to manage time on login.
  * This class define a single thread.
  *
+ * @author Matteo Formentin
  * @author DavideMammarella
  */
 public class Timer implements Runnable {

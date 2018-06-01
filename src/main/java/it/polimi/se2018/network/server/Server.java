@@ -110,7 +110,7 @@ public class Server implements ServerController {
             server.startServer(rmiPort);
             //server.startServer(socketPort, rmiPort);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Server già in  esecuzione!");
         }
     }
 
