@@ -322,6 +322,6 @@ public class Server implements ServerController {
     private void replacePlayer(int id, RemotePlayer newRemotePlayer){
         players.set(id,newRemotePlayer);
         String nickname = newRemotePlayer.getNickname();
-        System.out.println("Player "+nickname+" has been replaced from a new client!");
+        System.out.println("Disconnected player "+nickname+" has been replaced from a new client!");
     }
 }
