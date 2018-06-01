@@ -27,7 +27,12 @@ class CliMessage {
     void println() {
         AnsiConsole.out.println();
     }
+    void clean(){
+        for(int i=0;i<50;i++){
+            println();
+        }
 
+    }
     void splashScreen() {
 
         // AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("BENVENUTO").fg(BLUE).a(" su"));
@@ -50,7 +55,6 @@ class CliMessage {
                         "        | | |           |   |   |   |   |            |  |  "));
         AnsiConsole.out().println();
         AnsiConsole.out.println(ansi().fg(BLUE).a("Un divertente gioco di dadi implementato da").fg(GREEN).a(" Matteo Formentin,").fg(MAGENTA).a(" Luca Genoni").fg(DEFAULT).a(" e").fg(RED).a(" Davide Mammarella"));
-
     }
 
     //--------------------------
@@ -244,24 +248,14 @@ class CliMessage {
     }
 
     void showInsertDiceRow() {
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale riga vuoi inserire il dado?"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale riga vuoi inserire il dado? "));
     }
 
     void showInsertDiceColumn() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale colonna vuoi inserire il dado?"));
     }
 
-    void showDicePool(DiceStack diceStack){
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Questi sono i dadi presenti attualemnte nella riserva :"));
-        for (int i = 0; i < diceStack.size(); i++) {
-            AnsiConsole.out.print(ansi().fg(RED).a(i + ": "));
-            showDice(diceStack.get(i));
-        }
-        AnsiConsole.out.println();
-    }
-
-    void showDiceStack(DiceStack diceStack) {
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
+    void showDiceStack(DiceStack diceStack){
         for (int i = 0; i < diceStack.size(); i++) {
             AnsiConsole.out.print(ansi().fg(DEFAULT).a(i + ": "));
             showDice(diceStack.get(i));
@@ -270,14 +264,22 @@ class CliMessage {
         AnsiConsole.out.println();
     }
 
+    void showDicePool(DiceStack diceStack) {
+        showDiceStack(diceStack);
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
+
+    }
+
     void showInputNotValid() {
         AnsiConsole.out.print(ansi().fg(RED).a("Valore inserito non valido. Riprova: "));
     }
+
     void showWaitInput(){
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per continuare"));
     }
 
     void showMessage(String message){
+        println();
         AnsiConsole.out.println(ansi().fg(RED).a(message));
     }
 }

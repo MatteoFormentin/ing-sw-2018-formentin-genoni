@@ -1,6 +1,7 @@
 package it.polimi.se2018.controller;
 
 import it.polimi.se2018.exception.GameboardException.*;
+import it.polimi.se2018.exception.PlayerException.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.SelectDiceFromDraftpool;
@@ -97,9 +98,20 @@ public class Controller implements ControllerVisitor {
         if (!toolcard) {
             if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
                 //il giocatore ha già pescato un dado e deve piazzarlo
-                SelectCellOfWindowView packet = new SelectCellOfWindowView();
-                packet.setPlayerId(event.getPlayerId());
-                server.sendEventToView(packet);
+                if(gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()){
+                    //il giocatore ha già utilizzato questa mossa
+                    showErrorMessage(new AlreadyPlaceANewDiceException(),event.getPlayerId());
+                    EventView turnPacket = new StartPlayerTurn();
+                    turnPacket.setPlayerId(event.getPlayerId());
+                    System.err.println("Il giocatore voleva violare le regole");
+                    server.sendEventToView(turnPacket);
+
+
+                }else{
+                    SelectCellOfWindowView packet = new SelectCellOfWindowView();
+                    packet.setPlayerId(event.getPlayerId());
+                    server.sendEventToView(packet);
+                }
             } else {//il giocatore non ha ancora pescato un nuovo dado
                 SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
                 packet.setPlayerId(event.getPlayerId());
@@ -194,6 +206,7 @@ public class Controller implements ControllerVisitor {
         for(int i=0;i<playerNumber;i++){
             gameBoard.notifyAllCards(i);
         }
+        showAllCardToAll();
         sendWaitTurnToAllTheNonCurrent(0);
         InitialWindowPatternCard packet = new InitialWindowPatternCard();
         packet.setPlayerId(0);
@@ -215,6 +228,13 @@ public class Controller implements ControllerVisitor {
         server.sendEventToView(packet);
     }
 
+    private void showAllCardToAll(){
+        for (int j = 0; j < playerNumber; j++) {
+            ShowAllCards waitSetUp = new ShowAllCards();
+            waitSetUp.setPlayerId(j);
+            server.sendEventToView(waitSetUp);
+        }
+    }
     private void sendWaitTurnToAllTheNonCurrent(int currentPlayerId){
         for (int j = 0; j < playerNumber; j++) {
             if (j == currentPlayerId) continue;

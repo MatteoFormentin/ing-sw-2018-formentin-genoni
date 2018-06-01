@@ -50,6 +50,8 @@ public interface ViewVisitor {
 
     public void visit(WaitYourTurn event);
 
+    public void visit(ShowAllCards event);
+
     public void visit(SelectCellOfWindowView event);
 
     public void visit(SelectDiceFromDraftpool event);
@@ -77,6 +79,10 @@ public interface ViewVisitor {
     public void visit(UpdateInitialWindowPatternCard event);
     public void visit(UpdateInitDimRound event);
 
-
+   /*
+    public void visit(UpdateInitDimRound event);
+    public void visit(UpdateInitDimRound event);
+    public void visit(UpdateInitDimRound event);
+    public void visit(UpdateInitDimRound event);*/
 
 }

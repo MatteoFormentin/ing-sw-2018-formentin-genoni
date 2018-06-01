@@ -76,16 +76,20 @@ public class CliController implements UIInterface, ViewVisitor {
         cliMessage.showGameStarted(playersName);
     }
 
-    @Override
-    public void visit(InitialWindowPatternCard event) {
-        //TODO aggiungere visualizzazione obiettivi prima della selezione carte
-       /* for (ObjectivePublicCard card : objectivePublicCards) {
+    public void visit(ShowAllCards event){
+        for (ToolCard card : toolCard) {
+            cliMessage.showToolCard(card);
+        }
+        for (ObjectivePublicCard card : objectivePublicCards) {
             cliMessage.showObjectivePublicCard(card);
         }
-
-        cliMessage.showObjectivePrivateCard(objectivePrivateCard);
-
-        cliParser.readSplash();*/
+        cliMessage.showObjectivePrivateCard(objectivePrivateCardOfEachPlayers[playerId]);
+    }
+    @Override
+    public void visit(InitialWindowPatternCard event) {
+        cliMessage.showYourTurnScreen();
+        cliMessage.showMessage("Quando sei pronto per scegliere la carta");
+        cliParser.readSplash();
 
         for (WindowPatternCard card : windowPatternCardsToChoose) {
             cliMessage.showWindowPatternCard(card);
@@ -133,7 +137,7 @@ public class CliController implements UIInterface, ViewVisitor {
      */
     @Override
     public void visit(SelectDiceFromDraftpool event) {
-        cliMessage.showDiceStack(dicePool);
+        cliMessage.showDicePool(dicePool);
         int diceIndex = cliParser.parseInt();
         SelectDiceFromHandController packet = new SelectDiceFromHandController();
         packet.setPlayerId(playerId);
@@ -142,15 +146,15 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     @Override
-    public void visit(SelectCellOfWindowView event) {
+    public void visit(SelectCellOfWindowView event) {// meglio inserire da 1 a 5 più comprensibile
         cliMessage.showInsertDiceRow();
         int row = cliParser.parseInt();
         cliMessage.showInsertDiceColumn();
         int column = cliParser.parseInt();
         SelectCellOfWindowController packet = new SelectCellOfWindowController();
         packet.setPlayerId(playerId);
-        packet.setLine(row);
-        packet.setColumn(column);
+        packet.setLine(row-1);
+        packet.setColumn(column-1);
         client.sendEventToController(packet);
     }
 
@@ -163,6 +167,7 @@ public class CliController implements UIInterface, ViewVisitor {
     @Override
     public void visit(ShowErrorMessage event) {
         cliMessage.showMessage(event.getErrorMessage());
+        cliParser.readSplash();
         //TODO printare a schermo il messaggio d'errore l'evento contiene sia l'eccezione che il messagio scegli quale vuoi ed elimina l'altro
     }
 
@@ -200,6 +205,11 @@ public class CliController implements UIInterface, ViewVisitor {
 
     public void visit(UpdateSingleCell event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()].getCell(event.getLine(), event.getColumn()).setDice(event.getDice());
+        if(event.getIndexPlayer()==playerId){
+            cliMessage.showMessage("è stata agiornata la tua window");
+        }else{
+            cliMessage.showMessage("è stata agiornata la window avversaria");
+        }
     }
 
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
@@ -266,13 +276,17 @@ public class CliController implements UIInterface, ViewVisitor {
 
     private void turn() {
         //TODO far rivedere il menù dopo un azione con opzioni disabilitate
+        cliMessage.clean();
         cliMessage.showYourTurnScreen();
         cliMessage.showWindowPatternCard(getMyWindowPatternCard());
         cliMessage.showMainMenu();
-        int option = cliParser.parseInt();
+        int option = cliParser.parseInt(7);
 
         switch (option) {
             //Place dice
+            case 0:
+                turn();
+                break;
             case 1:
                 EventController packet = new InsertDiceController();
                 packet.setPlayerId(playerId);
@@ -317,7 +331,7 @@ public class CliController implements UIInterface, ViewVisitor {
                 turn();
                 break;
             case 7:
-                cliMessage.showDicePool(dicePool);
+                cliMessage.showDiceStack(dicePool);
                 cliParser.readSplash();
                 turn();
                 break;

@@ -19,7 +19,7 @@ public class ColoredDiagonal extends ObjectivePublicCard {
         super();
         super.setId(8);
         super.setName("Diagonali Colorate");
-        super.setDescription("Numero  di  dadi  dello  stesso  colore  diagonalmente  adiacenti");
+        super.setDescription("Per ogni dado diagonalmente  adiacente ad un'altro dello  stesso  colore");
         super.setPoint(1); // point for each dice with the same color diagonally adjacent
         windowOfColor = null;
     }

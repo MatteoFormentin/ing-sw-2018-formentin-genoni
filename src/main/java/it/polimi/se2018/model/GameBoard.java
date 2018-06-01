@@ -388,6 +388,7 @@ public class GameBoard implements Serializable {
         if (dice == null) throw new NoDiceException();
         player[indexPlayer].addDiceToHand(dice);
         dicePool.remove(indexDicePool);
+        player[indexPlayer].setHasDrawNewDice(true);
         for (int i = 0; i < player.length; i++) {
             UpdateDicePool packetPool = new UpdateDicePool(dicePool);
             packetPool.setPlayerId(i);
@@ -413,6 +414,7 @@ public class GameBoard implements Serializable {
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column);
+        player[indexPlayer].setHasPlaceANewDice(true);
         for (int i = 0; i < player.length; i++) {
             UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
             packet.setPlayerId(i);

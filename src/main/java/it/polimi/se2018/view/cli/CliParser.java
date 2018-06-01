@@ -43,8 +43,10 @@ public class CliParser {
         int parsed;
         do {
             parsed = parseInt();
-            if (!(parsed < 0 && parsed > upperBound)) {
+            if (!(parsed < 0 || parsed > upperBound)) {
                 flag = true;
+            }else{
+                cliMessage.showInputNotValid();
             }
         } while (!flag);
         return parsed;
