@@ -157,15 +157,15 @@ public class GUI extends Application {
         gridCard.add(objectivePublicBox, 0, 1);
         gridCard.add(objectivePrivateBox, 0, 2);
         //setUp the button for the private Object
-        Image privateCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_private_retro.jpg"));
+        Image privateCard = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_retro.jpg"));
         imageViewPrivateCard = new ImageView(privateCard);
         setGraficOfCard(imageViewPrivateCard);
         objectivePrivateBox.getChildren().add(imageViewPrivateCard);
         //setUp the button for the Public Object
         for (int i = 0; i < 3; i++) {
             try {
-                Image publicCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_pubbliche_retro.jpg"));
-                Image publicToolCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_retro.jpg"));
+                Image publicCard = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_retro.jpg"));
+                Image publicToolCard = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_retro.jpg"));
                 imageViewPublicCard[i] = new ImageView(publicCard);
                 objectivePublicBox.getChildren().add(imageViewPublicCard[i]);
                 setGraficOfCard(imageViewPublicCard[i]);
@@ -255,7 +255,7 @@ public class GUI extends Application {
             try {
                 for (int row = 0; row < 4; row++) {
                     for (int column = 0; column < 5; column++) {
-                        Image cell = new Image(new FileInputStream("src/resources/dadijpg/White.jpg"));
+                        Image cell = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/dadijpg/White.jpg"));
                         imageViewCell[i][row][column] =new ImageView(cell);
                         cellWindow[i].add(imageViewCell[i][row][column], column, row);
                         imageViewCell[i][row][column].setFitHeight(50);
@@ -309,11 +309,11 @@ public class GUI extends Application {
         try {
             Image newImage;
             if (idPrivate < 0 || idPrivate > 4) {
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_private_retro.jpg"));
+                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_retro.jpg"));
                 System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI");
                 AlertMessage.displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_private_" + idPrivate + ".jpg"));
+                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_" + idPrivate + ".jpg"));
             imageViewPrivateCard.setImage(newImage);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
@@ -330,12 +330,12 @@ public class GUI extends Application {
         try {
             Image newImage;
             if (idPublic < 0 || idPublic > 9) {
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_pubbliche_retro.jpg"));
+                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_retro.jpg"));
                 System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI");
                 AlertMessage.displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else {
 
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_pubbliche_" + idPublic + ".jpg"));
+                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_" + idPublic + ".jpg"));
            /* FadeTransition fade = new FadeTransition(Duration.seconds(2), imageViewPublicCard[indexPublic]);
             fade.setFromValue(1);
             fade.setToValue(0);
@@ -356,11 +356,11 @@ public class GUI extends Application {
         try {
             Image newImage;
             if (idToolCard < 0 || idToolCard > 9) {
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_retro.jpg"));
+                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_retro.jpg"));
                 System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI per leggere la carta");
                 AlertMessage.displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_" + idToolCard + ".jpg"));
+                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_" + idToolCard + ".jpg"));
             imageViewToolCard[indexToolCard].setImage(newImage);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
@@ -388,12 +388,12 @@ public class GUI extends Application {
             int  value = rand.nextInt(6) + 1;
             int  color = rand.nextInt(5);
             try{
-                Image newImage = new Image(new FileInputStream("src/resources/dadijpg/" + DiceColor.getDiceColor(color)+"Dice"+value+".jpg"));
+                Image newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/dadijpg/" + DiceColor.getDiceColor(color)+"Dice"+value+".jpg"));
                 imageViewCell[indexWindow][indexRow][indexColumn].setImage(newImage);
             }catch (Exception exception){
 
             }
-            System.out.println("src/resources/dadi/"+DiceColor.getDiceColor(color)+"Dice"+value+".jpg");
+            System.out.println("src/main/java/it/polimi/se2018/resources/dadi/"+DiceColor.getDiceColor(color)+"Dice"+value+".jpg");
         });
 
     }

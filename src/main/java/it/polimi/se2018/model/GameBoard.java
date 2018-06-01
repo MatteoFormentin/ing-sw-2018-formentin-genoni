@@ -67,8 +67,7 @@ public class GameBoard implements Serializable {
     }
 
     public void notifyAllCards(int indexPlayer) {
-        ObjectivePrivateCard send = player[indexPlayer].getPrivateObject();
-        UpdateSinglePrivateObject packet = new UpdateSinglePrivateObject(indexPlayer, send);
+        UpdateSinglePrivateObject packet = new UpdateSinglePrivateObject(indexPlayer, player[indexPlayer].getPrivateObject());
         packet.setPlayerId(indexPlayer);
         server.sendEventToView(packet);
         UpdateInitialWindowPatternCard packetWindows = new UpdateInitialWindowPatternCard(player[indexPlayer].getThe4WindowPattern());
@@ -85,7 +84,12 @@ public class GameBoard implements Serializable {
         server.sendEventToView(packetRound);
         System.err.println("inviati tutti le info iniziali a " + indexPlayer);
     }
-
+    private void broadcast(EventView event){
+        for (int i = 0; i < player.length; i++) {
+            event.setPlayerId(i);
+            server.sendEventToView(event);
+        }
+    }
     //************************************getter**********************************************
     //************************************getter**********************************************
     //************************************getter**********************************************
@@ -198,31 +202,23 @@ public class GameBoard implements Serializable {
     //************************************class's method**********************************************
     private void setUpFirstRound() {
         //create the First Round
+        stopGame = false;
         dicePool = new DiceStack();
         for (int i = 0; i < (2 * player.length + 1); i++) {
             dicePool.add(factoryDiceForThisGame.createDice());
         }
-        for (int i = 0; i < player.length; i++) {
-            UpdateDicePool packet = new UpdateDicePool(dicePool);
-            packet.setPlayerId(i);
-            server.sendEventToView(packet);
-            System.err.println("inviata la dicepool al giocatore " + i);
-        }
-        stopGame = false;
+        UpdateDicePool packet = new UpdateDicePool(dicePool);
+        broadcast(packet);
     }
 
     private void freeHandPlayer(int indexPlayer) {
         while (player[indexPlayer].getHandDice().size() != 0) {
             dicePool.addLast(player[indexPlayer].getHandDice().remove(0));
         }
-        for (int i = 0; i < player.length; i++) {
-            UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-            UpdateDicePool packetDicePool = new UpdateDicePool(dicePool);
-            packet.setPlayerId(i);
-            packetDicePool.setPlayerId(i);
-            server.sendEventToView(packet);
-            server.sendEventToView(packetDicePool);
-        }
+        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
+        UpdateDicePool packetDicePool = new UpdateDicePool(dicePool);
+        broadcast(packet);
+        broadcast(packetDicePool);
     }
 
     /**
@@ -277,11 +273,8 @@ public class GameBoard implements Serializable {
             freeHandPlayer(indexPlayer);//rimette dadi rimanenti in mano nella draftpool
             roundTrack[currentRound] = dicePool;
             dicePool = null;
-            for (int i = 0; i < player.length; i++) {
-                UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
-                packetRound.setPlayerId(i);
-                server.sendEventToView(packetRound);
-            }
+            UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
+            broadcast(packetRound);
             currentRound++;
             if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
@@ -295,11 +288,8 @@ public class GameBoard implements Serializable {
                     dicePool = new DiceStack();
                     dicePool.add(dice);
                 }
-                for (int i = 0; i < player.length; i++) {
-                    UpdateDicePool packetPool = new UpdateDicePool(dicePool);
-                    packetPool.setPlayerId(i);
-                    server.sendEventToView(packetPool);
-                }
+                UpdateDicePool packetPool = new UpdateDicePool(dicePool);
+                broadcast(packetPool);
                 System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
                 if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             } else {//il gioco è finito
@@ -334,12 +324,11 @@ public class GameBoard implements Serializable {
             player.setPoints(pointCounter);
         }
         //inolra a tutti il punteggio
-        for (int n = 0; n < player.length; n++)
-            for (int i = 0; i < player.length; i++) {
-                UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
-                packet.setPlayerId(n);
-                server.sendEventToView(packet);
-            }
+        for (int i = 0; i < player.length; i++){
+            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
+            broadcast(packet);
+        }
+
     }
 
     /**
@@ -389,14 +378,10 @@ public class GameBoard implements Serializable {
         player[indexPlayer].addDiceToHand(dice);
         dicePool.remove(indexDicePool);
         player[indexPlayer].setHasDrawNewDice(true);
-        for (int i = 0; i < player.length; i++) {
-            UpdateDicePool packetPool = new UpdateDicePool(dicePool);
-            packetPool.setPlayerId(i);
-            server.sendEventToView(packetPool);
-            UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-            packet.setPlayerId(i);
-            server.sendEventToView(packet);
-        }
+        UpdateDicePool packetPool = new UpdateDicePool(dicePool);
+        broadcast(packetPool);
+        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
+        broadcast(packet);
     }
 
     /**
@@ -415,14 +400,10 @@ public class GameBoard implements Serializable {
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column);
         player[indexPlayer].setHasPlaceANewDice(true);
-        for (int i = 0; i < player.length; i++) {
-            UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-            packet.setPlayerId(i);
-            server.sendEventToView(packet);
-            UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
-            packet.setPlayerId(i);
-            server.sendEventToView(packetCell);
-        }
+        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
+        broadcast(packet);
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
+        broadcast(packetCell);
     }
 
     /**

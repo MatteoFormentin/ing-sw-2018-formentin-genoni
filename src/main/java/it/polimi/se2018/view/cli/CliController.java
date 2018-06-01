@@ -160,8 +160,12 @@ public class CliController implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(SelectToolCard event) {
-        // TODO mostrare inserimento dell'indice da 0 a 2 (oppure se decrementato da 1 a 3)
-
+        cliMessage.showToolCardChoise(toolCard);
+        int indexTooLCard = cliParser.parsePositiveInt(toolCard.length)-1;
+        SelectToolCardController packet = new SelectToolCardController();
+        packet.setPlayerId(playerId);
+        packet.setIndexToolCard(indexTooLCard);
+        client.sendEventToController(packet);
     }
 
     @Override
@@ -288,9 +292,9 @@ public class CliController implements UIInterface, ViewVisitor {
                 turn();
                 break;
             case 1:
-                EventController packet = new InsertDiceController();
-                packet.setPlayerId(playerId);
-                client.sendEventToController(packet);
+                EventController packetInsert = new InsertDiceController();
+                packetInsert.setPlayerId(playerId);
+                client.sendEventToController(packetInsert);
                 //invio evento piaza insert dice al controller
                 //controller flag Mossa normale
                 //rispondo con il visitor con select drafpool
@@ -300,7 +304,9 @@ public class CliController implements UIInterface, ViewVisitor {
 
             //Use tool card
             case 2:
-                turn();
+                EventController packetTool = new UseToolCardController();
+                packetTool.setPlayerId(playerId);
+                client.sendEventToController(packetTool);
                 break;
 
             //End turn

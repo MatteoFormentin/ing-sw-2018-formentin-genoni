@@ -267,9 +267,13 @@ class CliMessage {
     void showDicePool(DiceStack diceStack) {
         showDiceStack(diceStack);
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
-
     }
-
+    void showToolCardChoise (ToolCard[] toolCard) {
+        for(int i=0;i<toolCard.length;i++){
+            showToolCard(toolCard[i]);
+        }
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita quale toolcard vuoi usare 1°, 2°, 3°: "));
+    }
     void showInputNotValid() {
         AnsiConsole.out.print(ansi().fg(RED).a("Valore inserito non valido. Riprova: "));
     }

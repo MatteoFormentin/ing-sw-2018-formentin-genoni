@@ -37,6 +37,20 @@ public class CliParser {
         }
         return parsed;
     }
+    public int parsePositiveInt(int upperBound) {
+        int parsed=0;
+        boolean flag = false;
+        do {
+            try {
+                parsed = in.nextInt();
+                if (!(parsed <= 0 || parsed > upperBound)) flag = true;
+            } catch (InputMismatchException ex) {
+                cliMessage.showInputNotValid();
+                in.next();
+            }
+        }while (!flag);
+        return parsed;
+    }
 
     public int parseInt(int upperBound) {
         boolean flag = false;
