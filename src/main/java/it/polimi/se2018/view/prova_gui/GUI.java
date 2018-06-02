@@ -31,7 +31,7 @@ import java.util.Random;
  *
  * @author Luca Genoni
  */
-public class GUI extends Application {
+public class GUI{
     private Stage primaryStage;
     private Scene boardgame, windowChoice;
 
@@ -67,7 +67,7 @@ public class GUI extends Application {
 
     private Button pickwindow;
 
-    @Override
+
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         primaryStage.initStyle(StageStyle.UNIFIED);

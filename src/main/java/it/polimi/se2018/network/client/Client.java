@@ -5,9 +5,13 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
-import it.polimi.se2018.view.prova_gui.GUI;
+import it.polimi.se2018.view.prova_gui.GuiReceiver;
+
 
 import java.rmi.RemoteException;
+
+import static it.polimi.se2018.view.prova_gui.GuiReceiver.setUpGUI;
+
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -69,10 +73,11 @@ public class Client implements ClientController {
             }
 
             if (args[0].equals("gui")) {
-                GUI gui = new GUI();
-                gui.setUpGUI(args);
-            }
+                view = new GuiReceiver();
+                ((GuiReceiver) view).setClient(client);
+                setUpGUI(args);
 
+            }
         } catch (Exception e) {
             System.exit(0);
         }
@@ -115,7 +120,7 @@ public class Client implements ClientController {
     @Override
     public boolean startRMIClient() {
         try {
-            abstractClient = new RMIClient(this, "127.0.0.1", 31515);
+            abstractClient = new RMIClient(this, "127.0.0.1", 31415);
             abstractClient.connectToServer();
             return true;
         } catch (Exception e) {

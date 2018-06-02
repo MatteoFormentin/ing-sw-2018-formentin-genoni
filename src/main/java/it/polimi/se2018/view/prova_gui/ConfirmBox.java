@@ -27,6 +27,7 @@ public class ConfirmBox {
     public static boolean displayMessage(String message){
         Stage stageMessage = new Stage(StageStyle.UTILITY);
         stageMessage.initModality(Modality.APPLICATION_MODAL);
+        stageMessage.setAlwaysOnTop(true);
         Background confirmBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
         stageMessage.setMinWidth(250);
         stageMessage.setMinHeight(250);

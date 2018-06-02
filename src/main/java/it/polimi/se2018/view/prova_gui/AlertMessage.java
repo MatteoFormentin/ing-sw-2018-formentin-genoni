@@ -38,6 +38,7 @@ public class AlertMessage {
          */
         Stage stageMessage = new Stage(StageStyle.UNDECORATED);
         stageMessage.initModality(Modality.APPLICATION_MODAL);
+        stageMessage.setAlwaysOnTop(true);
         Background focusBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
 
 
