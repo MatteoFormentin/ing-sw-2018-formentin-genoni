@@ -5,6 +5,7 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
+import it.polimi.se2018.view.prova_gui.GUI;
 
 import java.rmi.RemoteException;
 
@@ -61,9 +62,17 @@ public class Client implements ClientController {
         try {
             /*serverIpAddress = args[0];
             rmiPort = Integer.parseInt(args[0]);*/
-
             ClientController client = new Client();
-            view = new CliController(client);
+
+            if (args[0].equals("cli")) {
+                view = new CliController(client);
+            }
+
+            if (args[0].equals("gui")) {
+                GUI gui = new GUI();
+                gui.setUpGUI(args);
+            }
+
         } catch (Exception e) {
             System.exit(0);
         }
@@ -87,6 +96,7 @@ public class Client implements ClientController {
      * @param rmiPort         port used for RMI connection.
      * @return true if the connection is established, false otherwise.
      */
+    @Override
     public boolean startRMIClient(String serverIpAddress, int rmiPort) {
         try {
             abstractClient = new RMIClient(this, serverIpAddress, rmiPort);
@@ -96,6 +106,23 @@ public class Client implements ClientController {
             return false;
         }
     }
+
+    /**
+     * Starter for the RMI connection with default ip and port.
+     *
+     * @return true if the connection is established, false otherwise.
+     */
+    @Override
+    public boolean startRMIClient() {
+        try {
+            abstractClient = new RMIClient(this, "127.0.0.1", 31515);
+            abstractClient.connectToServer();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER

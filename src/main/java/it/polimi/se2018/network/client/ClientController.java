@@ -20,6 +20,8 @@ public interface ClientController {
 
     public boolean startRMIClient(String serverIpAddress, int rmiPort);
 
+    public boolean startRMIClient();
+
 
     /**
      * Remote method used to log the user to the server with his nickname.

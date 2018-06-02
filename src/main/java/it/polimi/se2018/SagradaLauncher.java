@@ -6,7 +6,6 @@ import it.polimi.se2018.view.cli.CliParser;
 
 public class SagradaLauncher {
 
-    private final String[] args = {};
 
     public static void main(String[] args) {
         System.out.println("Benvenuto su Sagrada.");
@@ -16,10 +15,23 @@ public class SagradaLauncher {
 
         switch (choice) {
             case 0:
-                Server.main(args);
+                String[] args1 = {};
+                Server.main(args1);
                 break;
             case 1:
-                Client.main(args);
+                String[] args2 = new String[1];
+                System.out.print("Digita 0 per avviare il cli, uno per la gui: ");
+
+                switch (cliParser.parseInt(1)) {
+                    case 0:
+                        args2[0] = "cli";
+                        break;
+                    case 1:
+                        args2[0] = "gui";
+                        break;
+                }
+
+                Client.main(args2);
         }
     }
 }
