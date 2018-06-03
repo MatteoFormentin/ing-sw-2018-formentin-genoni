@@ -6,7 +6,6 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.StartGame;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
-import it.polimi.se2018.network.server.socket.SocketServer;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,7 +23,7 @@ import java.util.Properties;
 public class Server implements ServerController {
 
     //Porta su cui si appoggierà la comunicazione Socket
-    public static final int SOCKET_PORT = 16180;
+    //public static final int SOCKET_PORT = 16180;
     //Porta su cui si appoggierà la comunicazione RMI
     public static final int RMI_PORT = 31415;
     // NUM MINIMO DI GIOCATORI PER PARTITA
@@ -38,7 +37,7 @@ public class Server implements ServerController {
     ServerController serverController;
     boolean flag = true;
     // Socket Server
-    private SocketServer socketServer;
+    //private SocketServer socketServer;
     // RMI Server
     private RMIServer rmiServer;
     // GAME DELLA ROOM
@@ -161,13 +160,13 @@ public class Server implements ServerController {
     }
 
     /**
-     * Starter for the timeout.
+     * Starter for the timeout, based on a single thread.
      */
     public void startTimer() {
         System.out.println("Timeout started!");
-        // creo nuovo timer
+        // CREO NUOVO TIMER
         timerThread = new Timer(this, this.timeout);
-        //faccio partire il thread
+        // FACCIO PARTIRE IL THREAD
         timerThread.startThread();
     }
 
@@ -181,67 +180,100 @@ public class Server implements ServerController {
      * @param remotePlayer reference to RMI or Socket Player.
      * @return true if the user is logged, false otherwise.
      */
-    //CONSIDERA IL CASO DEL RI LOGIN ELSE IF
     @Override
     public boolean login(RemotePlayer remotePlayer) {
         synchronized (PLAYERS_MUTEX) {
             System.out.println("Trying to log the player...");
 
-            // SE LA STANZA è ACCESSIBILE
+            // SE LA STANZA è ACCESSIBILE (PRE-GAME)
             if (roomJoinable) {
 
                 // NON ESISTE PLAYER CON QUEL NICKNAME
                 if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
 
-                    // AGGIUNGI IL PLAYER
+                    // IMPOSTO L'ID
                     remotePlayer.setPlayerId(playerCounter);
+                    // IMPOSTO LA CONNESSIONE
+                    connectPlayer(remotePlayer);
                     players.add(remotePlayer);
                     playerCounter++;
                     System.out.println("Player logged!");
 
-                    // APPENA RAGGIUNGI IL NUMERO MINIMO PLAYER FAI PARTIRE TIMER
+                    // APPENA RAGGIUNGO IL NUMERO MINIMO PLAYER FACCIO PARTIRE TIMER
                     if (this.players.size() == MIN_PLAYERS) {
                         // FAI PARTIRE IL TEMPO DI ATTESA
                         startTimer();
                     }
 
-                    // APPENA RAGGIUNGI NUMERO MASSIMO FAI PARTIRE IL GIOCO
+                    // APPENA RAGGIUNGO IL NUMERO MASSIMO DI PLAYER FACCIO PARTIRE IL GIOCO
                     else if (this.players.size() == MAX_PLAYERS) {
-                        //TODO Problema: se giocatore si disconnette cosa succede? ora parte lo stesso
-                        // TERMINA THREAD SICCOME LA ROOM è PIENA
+                        // TERMINO THREAD SICCOME LA ROOM è PIENA
                         this.timerThread.shutdown();
-                        // FA PARTIRE IL GIOCO
+                        // FACCIO PARTIRE IL GIOCO
                         this.startGame();
                     }
                     return true;
                 }
 
-                // ESISTE PLAYER CON QUEL NICKNAME
-                else {
+                // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && remotePlayer.getPlayerRunning()){
                     System.out.println("Player already logged!");
                     System.out.println("Please, use another nickname...");
                     return false;
                 }
+
+                // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !remotePlayer.getPlayerRunning()){
+                    // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
+
+                    // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
+                    int id = remotePlayer.getPlayerId();
+                    String nickname = remotePlayer.getNickname();
+                    System.out.println(nickname+" was in the Room!");
+                    System.out.println("Trying to recreate the connection for "+nickname+"...");
+                    // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
+                    replacePlayer(id,remotePlayer);
+                    // IMPOSTO LA CONNESSIONE
+                    connectPlayer(remotePlayer);
+                    System.out.println("Connection established!");
+                }
             }
 
-            // SE LA STANZA NON è ACCESSIBILE
+            // SE LA STANZA NON è ACCESSIBILE (IN-GAME)
             else if (!roomJoinable) {
 
                 // NON ESISTE PLAYER CON QUEL NICKNAME
                 if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
-                    System.out.println("Sorry, room is full... You can't access...");
+                    System.out.println("Room is full, you can't access!");
                     return false;
                 }
 
-                // ESISTEVA IL PLAYER CON QUEL NICKNAME
+                // ESISTE IL PLAYER CON QUEL NICKNAME ED è CONNESSO
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && remotePlayer.getPlayerRunning()) {
+                    System.out.println("Player already logged!");
+                    return false;
+                }
+
+                // ESISTE IL PLAYER CON QUEL NICKNAME E NON è CONNESSO
                 // RELOGIN
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
+                else if(checkPlayerNicknameExists(remotePlayer.getNickname()) && !remotePlayer.getPlayerRunning()){
                     // L'ID DEL PLAYER E IL NICKNAME DEL PLAYER DEVONO RIMANERE UGUALI, DEVI SOLO CAMBIARE IL REMOTE PLAYER CON UNO NUOVO
-                    // SOSTITUZIONE IN BASE ALL'ID
+
                     int id = remotePlayer.getPlayerId();
+                    String nickname = remotePlayer.getNickname();
+                    System.out.println(nickname+" was in the actual Game!");
+                    System.out.println("Trying to recreate the connection for "+nickname+"...");
+                    // SOSTITUZIONE IN BASE ALL'ID
                     replacePlayer(id,remotePlayer);
+                    // RE IMPOSTAZIONE DELLA CONNESSIONE
+                    connectPlayer(remotePlayer);
                     System.out.println("Trying to log to the actual game...");
-                    this.timerThread.shutdown();
+
+                    // INTERRUZIONE IMMEDIATA DEL TIMER
+                    // TODO: DOVREBBE ESSERE USELESS
+                    // this.timerThread.shutdown();
+
+                    // RE INTEGRAZIONE NEL GIOCO
                     this.game.joinGame(id);
                 }
                 return true;
@@ -315,6 +347,7 @@ public class Server implements ServerController {
     /**
      * Replacer for player.
      * The replacer work on the players ID, in order to not break the array list of RemotePlayer.
+     * Login supporter method.
      *
      * @param id ID of the player associated to the client.
      * @param newRemotePlayer new player used to replace the old one.
@@ -323,5 +356,18 @@ public class Server implements ServerController {
         players.set(id,newRemotePlayer);
         String nickname = newRemotePlayer.getNickname();
         System.out.println("Disconnected player "+nickname+" has been replaced from a new client!");
+    }
+
+    /**
+     * Connecter for player.
+     * The connecter work on player connection state flag, putting it true determining a "connection established".
+     * Login supporter method.
+     *
+     * @param remotePlayer reference to RMI or Socket Player.
+     */
+    private void connectPlayer(RemotePlayer remotePlayer){
+        remotePlayer.setPlayerRunning(true);
+        String nickname = remotePlayer.getNickname();
+        System.out.println("Player "+nickname+" has been connected!");
     }
 }

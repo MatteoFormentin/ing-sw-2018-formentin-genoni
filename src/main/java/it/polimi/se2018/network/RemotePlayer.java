@@ -22,6 +22,11 @@ public abstract class RemotePlayer {
     // ID del player
     private int playerId;
 
+    // Si ricollega alla logica dei thread (vedi Timer)
+    // Setto una variabile booleana grazie la quale posso fornire lo stato del giocatore
+    // Ovvero se c'è una connessione ancora valida (Running / true) o meno (Not Running / false)
+    private Boolean playerRunning;
+
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -31,6 +36,7 @@ public abstract class RemotePlayer {
      */
     protected RemotePlayer() {
         super();
+        setPlayerRunning(false);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -72,7 +78,7 @@ public abstract class RemotePlayer {
      * @return name associated to the player.
      */
     public String getNickname() {
-        return nickname;
+        return this.nickname;
     }
 
     /**
@@ -90,7 +96,7 @@ public abstract class RemotePlayer {
      * @return player ID.
      */
     public int getPlayerId() {
-        return playerId;
+        return this.playerId;
     }
 
     /**
@@ -100,5 +106,23 @@ public abstract class RemotePlayer {
      */
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
+    }
+
+    /**
+     * Setter for player connection state.
+     *
+     * @param playerRunning flag used to determine if a player is connected (true) or not (false).
+     */
+    public void setPlayerRunning(boolean playerRunning){
+        this.playerRunning=playerRunning;
+    }
+
+    /**
+     * Getter for player connection state.
+     *
+     * @return true if player is connected, false otherwise.
+     */
+    public Boolean getPlayerRunning() {
+        return this.playerRunning;
     }
 }
