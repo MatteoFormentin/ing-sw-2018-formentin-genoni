@@ -7,8 +7,10 @@ import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
 import it.polimi.se2018.view.gui.GuiReceiver;
 
-
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Properties;
 
 import static it.polimi.se2018.view.gui.GuiReceiver.setUpGUI;
 
@@ -23,11 +25,11 @@ import static it.polimi.se2018.view.gui.GuiReceiver.setUpGUI;
 public class Client implements ClientController {
 
     // Indirizzo su cui le comunicazioni sono aperte a lato server
-    private static final String SERVER_ADDRESS = "localhost";
+    private static String SERVER_ADDRESS;
     //Porta su cui si appoggierà la comunicazione socket
-    private static final int SERVER_SOCKET_PORT = 16180;
+    //private static int SERVER_SOCKET_PORT;
     //Porta su cui si appoggierà la comunicazione RMI
-    private static final int SERVER_RMI_PORT = 31415;
+    private static int SERVER_RMI_PORT;
     private static UIInterface view;
     // Classe che rappresenta il client selezionato
     private AbstractClient abstractClient;
@@ -46,6 +48,8 @@ public class Client implements ClientController {
     public Client() {
         nickname = "Mr.Nessuno";
         this.turn = 0;
+
+
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -60,8 +64,39 @@ public class Client implements ClientController {
      */
     //TODO:aggiungere porta socket se aggiungi socket
     public static void main(String[] args) {
-        String serverIpAddress = SERVER_ADDRESS;
-        int rmiPort = SERVER_RMI_PORT;
+
+        // CONFIGURATIONS LOADER
+        System.out.println("Configuring the connection...");
+        try {
+            // LOAD FROM PROPERTIES
+            Properties configProperties = new Properties();
+
+            String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+            FileInputStream inputConnection = new FileInputStream(connectionConfig);
+
+            configProperties.load(inputConnection);
+
+            // SERVER ADDRESS LOAD
+            SERVER_ADDRESS = configProperties.getProperty("SERVER_ADDRESS");
+            System.out.println("Server address set to "+configProperties.getProperty("SERVER_ADDRESS"));
+
+            // RMI PORT LOAD
+            SERVER_RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
+            System.out.println("RMI port set to "+configProperties.getProperty("RMI_PORT"));
+
+            // SOCKET PORT LOAD
+            //SERVER_SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+            //System.out.println("Socket port set to "+configProperties.getProperty("SOCKET_PORT"));
+        } catch (IOException e) {
+            // LOAD FAILED
+            System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
+            // Default timeout in case of exception.
+            SERVER_ADDRESS = "localhost";
+            // Default RMI PORT in case of exception.
+            SERVER_RMI_PORT = 31415;
+            // Default Socket PORT in case of exception.
+            //SERVER_SOCKET_PORT = 16180;
+        }
 
         try {
             /*serverIpAddress = args[0];
@@ -103,22 +138,6 @@ public class Client implements ClientController {
     public boolean startRMIClient(String serverIpAddress, int rmiPort) {
         try {
             abstractClient = new RMIClient(this, serverIpAddress, rmiPort);
-            abstractClient.connectToServer();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     * Starter for the RMI connection with default ip and port.
-     *
-     * @return true if the connection is established, false otherwise.
-     */
-    @Override
-    public boolean startRMIClient() {
-        try {
-            abstractClient = new RMIClient(this, "127.0.0.1", 31415);
             abstractClient.connectToServer();
             return true;
         } catch (Exception e) {

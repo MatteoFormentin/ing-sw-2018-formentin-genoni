@@ -252,7 +252,11 @@ public class CliController implements UIInterface, ViewVisitor {
             ip = cliParser.parseIp();
 
             if (ip.equals("0")) {
-                if (client.startRMIClient()) {
+
+                cliMessage.showPortRequest();
+                port = cliParser.parseInt();
+
+                if (client.startRMIClient("localhost",port)) {
                     flag = true;
                     cliMessage.showConnectionSuccessful();
                     cliMessage.println();

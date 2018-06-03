@@ -23,9 +23,9 @@ import java.util.Properties;
 public class Server implements ServerController {
 
     //Porta su cui si appoggierà la comunicazione Socket
-    //public static final int SOCKET_PORT = 16180;
+    //public static int SOCKET_PORT;
     //Porta su cui si appoggierà la comunicazione RMI
-    public static final int RMI_PORT = 31415;
+    public static int RMI_PORT;
     // NUM MINIMO DI GIOCATORI PER PARTITA
     public static final int MIN_PLAYERS = 2;
     // NUM MASSIMO DI GIOCATORI PER PARTITA
@@ -67,23 +67,23 @@ public class Server implements ServerController {
         roomJoinable = true;
         players = new ArrayList<RemotePlayer>();
 
-        System.out.println("Setting room start timeout...");
+        System.out.println("Configuring the timers for the room...");
         try {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
 
-            String config = "src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
-            FileInputStream input = new FileInputStream(config);
+            String timeConfig = "src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
+            FileInputStream inputTime = new FileInputStream(timeConfig);
 
-            configProperties.load(input);
-            //*1000 per convertire in millisecondi
-            timeout = Long.parseLong(configProperties.getProperty("roomTimeout")) * 1000;
-            System.out.println("Timeout setted!");
-            System.out.println("It's value (in ms) is:");
-            System.out.println(configProperties.getProperty("roomTimeout"));
+            configProperties.load(inputTime);
+
+            // TIMEOUT LOAD
+            timeout = Long.parseLong(configProperties.getProperty("roomTimeout")) * 1000; //*1000 per convertire in millisecondi
+            System.out.println("Timeout set to "+configProperties.getProperty("roomTimeout")+" ms");
+
         } catch (IOException e) {
             // LOAD FAILED
-            System.out.println("Sorry, timeout can't be setted! The game will use the default one.");
+            System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
             // Default timeout in case of exception.
             timeout = 120 * 1000;
         }
@@ -101,6 +101,33 @@ public class Server implements ServerController {
      */
     // ORA SOLO RMI, MANCA EXCEPTION
     public static void main(String[] args) {
+
+        System.out.println("Configuring the connections for the room...");
+        try {
+            // LOAD FROM PROPERTIES
+            Properties configProperties = new Properties();
+
+            String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+            FileInputStream inputConnection = new FileInputStream(connectionConfig);
+
+            configProperties.load(inputConnection);
+
+            // RMI PORT LOAD
+            RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
+            System.out.println("RMI port set to "+configProperties.getProperty("RMI_PORT"));
+
+            // SOCKET PORT LOAD
+            //SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+            //System.out.println("Socket port set to "+configProperties.getProperty("SOCKET_PORT"));
+        } catch (IOException e) {
+            // LOAD FAILED
+            System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
+            // Default RMI PORT in case of exception.
+            RMI_PORT = 31415;
+            // Default Socket PORT in case of exception.
+            //SOCKET_PORT = 16180;
+        }
+
         int rmiPort = RMI_PORT;
         //int socketPort = SOCKET_PORT;
 
@@ -109,7 +136,7 @@ public class Server implements ServerController {
             server.startServer(rmiPort);
             //server.startServer(socketPort, rmiPort);
         } catch (Exception e) {
-            System.err.println("Server già in  esecuzione!");
+            System.err.println("Server già in esecuzione!");
         }
     }
 
@@ -215,27 +242,11 @@ public class Server implements ServerController {
                     return true;
                 }
 
-                // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && remotePlayer.getPlayerRunning()){
+                // ESISTE PLAYER CON QUEL NICKNAME
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname())){
                     System.out.println("Player already logged!");
                     System.out.println("Please, use another nickname...");
                     return false;
-                }
-
-                // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !remotePlayer.getPlayerRunning()){
-                    // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
-
-                    // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
-                    int id = remotePlayer.getPlayerId();
-                    String nickname = remotePlayer.getNickname();
-                    System.out.println(nickname+" was in the Room!");
-                    System.out.println("Trying to recreate the connection for "+nickname+"...");
-                    // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
-                    replacePlayer(id,remotePlayer);
-                    // IMPOSTO LA CONNESSIONE
-                    connectPlayer(remotePlayer);
-                    System.out.println("Connection established!");
                 }
             }
 
@@ -370,4 +381,18 @@ public class Server implements ServerController {
         String nickname = remotePlayer.getNickname();
         System.out.println("Player "+nickname+" has been connected!");
     }
+
+    /**
+     * Disonnecter for player.
+     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
+     * Login supporter method.
+     *
+     * @param remotePlayer reference to RMI or Socket Player.
+     */
+    private void disconnectPlayer(RemotePlayer remotePlayer){
+        remotePlayer.setPlayerRunning(false);
+        String nickname = remotePlayer.getNickname();
+        System.out.println("Player "+nickname+" has been disconnected!");
+    }
+
 }

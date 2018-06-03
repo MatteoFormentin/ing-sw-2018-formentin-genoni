@@ -33,6 +33,7 @@ public abstract class RemotePlayer {
 
     /**
      * Remote Player constructor.
+     * playerRunning flag will be initially false, determining
      */
     protected RemotePlayer() {
         super();
