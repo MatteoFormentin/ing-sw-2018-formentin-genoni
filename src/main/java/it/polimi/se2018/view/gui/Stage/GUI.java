@@ -1,17 +1,18 @@
-package it.polimi.se2018.view.prova_gui;
+package it.polimi.se2018.view.gui.Stage;
 
 
 import it.polimi.se2018.model.dice.DiceColor;
 
+import it.polimi.se2018.view.gui.ShowCardBox;
+import it.polimi.se2018.view.gui.Stage.AlertMessage;
+import it.polimi.se2018.view.gui.Stage.ConfirmBox;
 import javafx.application.Application;
 
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,10 +20,12 @@ import javafx.scene.layout.*;
 
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Random;
 
@@ -33,6 +36,8 @@ import java.util.Random;
  */
 public class GUI{
     private Stage primaryStage;
+    private ShowCardBox cardShow;
+
     private Scene boardgame, windowChoice;
 
     //topLine
@@ -68,8 +73,18 @@ public class GUI{
     private Button pickwindow;
 
 
-    public void start(Stage primaryStage) throws Exception {
+    public void displayBoard(Stage primaryStage){
         this.primaryStage = primaryStage;
+
+        primaryStage.setTitle("Sagrada a fun game of dice");
+        primaryStage.initModality(Modality.APPLICATION_MODAL);
+        primaryStage.setResizable(false);
+        primaryStage.setAlwaysOnTop(true);
+        primaryStage.setOnCloseRequest(e -> {
+            e.consume();
+            closeProgram();
+        });
+
         primaryStage.initStyle(StageStyle.UNIFIED);
         //set fixed window
 
@@ -83,16 +98,14 @@ public class GUI{
         //setup Window for the game
 
         //element for the scene for pick the window
-        primaryStage.setResizable(false);
         borderPaneRoot.setBackground(blackBackground);
         Scene scene = new Scene(borderPaneRoot, 1000, 800);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Sagrada a fun game of dice");
 
         //button for alert window, message from controller
         Button alertWindow = new Button();
         alertWindow.setText("Scegli una window pattern");
-        alertWindow.setOnAction(e -> AlertMessage.displayMessage("test"));
+        alertWindow.setOnAction(e -> new AlertMessage().displayMessage("test"));
         //button for close window, message
         Button closeWindow = new Button();
         closeWindow.setText("Close Game");
@@ -157,7 +170,12 @@ public class GUI{
         gridCard.add(objectivePublicBox, 0, 1);
         gridCard.add(objectivePrivateBox, 0, 2);
         //setUp the button for the private Object
-        Image privateCard = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_retro.jpg"));
+        Image privateCard = null;
+        try {
+            privateCard = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_retro.jpg"));
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        }
         imageViewPrivateCard = new ImageView(privateCard);
         setGraficOfCard(imageViewPrivateCard);
         objectivePrivateBox.getChildren().add(imageViewPrivateCard);
@@ -181,39 +199,39 @@ public class GUI{
         imageViewPrivateCard.setOnMouseClicked(e ->
 
         {
-            ShowCardBox.displayCard(imageViewPrivateCard, false);
+            cardShow.displayCard(imageViewPrivateCard, false);
         });
         imageViewPublicCard[0].setOnMouseClicked(e ->
 
         {
-            ShowCardBox.displayCard(imageViewPublicCard[0], false);
+            cardShow.displayCard(imageViewPublicCard[0], false);
         });
         imageViewPublicCard[1].setOnMouseClicked(e ->
 
         {
-            ShowCardBox.displayCard(imageViewPublicCard[1], false);
+            cardShow.displayCard(imageViewPublicCard[1], false);
         });
         imageViewPublicCard[2].setOnMouseClicked(e ->
 
         {
-            ShowCardBox.displayCard(imageViewPublicCard[2], false);
+            cardShow.displayCard(imageViewPublicCard[2], false);
         });
         imageViewToolCard[0].setOnMouseClicked(e ->
 
         {
-            ShowCardBox.displayCard(imageViewToolCard[0], availableToolCard);
+            cardShow.displayCard(imageViewToolCard[0], availableToolCard);
         });
         imageViewToolCard[1].setOnMouseClicked(e ->
 
         {
-            ShowCardBox.displayCard(imageViewToolCard[1], availableToolCard);
+            cardShow.displayCard(imageViewToolCard[1], availableToolCard);
             UpdatePublicObject(9, 2);
             UpdateToolCard(7, 2);
         });
         imageViewToolCard[2].setOnMouseClicked(e ->
 
         {
-            ShowCardBox.displayCard(imageViewToolCard[2], availableToolCard);
+            cardShow.displayCard(imageViewToolCard[2], availableToolCard);
             UpdatePublicObject(1, 2);
             UpdateToolCard(101, 2);
         });
@@ -289,7 +307,7 @@ public class GUI{
     }
 
     private void closeProgram() {
-        Boolean result = ConfirmBox.displayMessage("Sei sicuro di voler uscire dal gioco?");
+        Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler uscire dal gioco?");
         if (result) primaryStage.close();
     }
 
@@ -311,13 +329,13 @@ public class GUI{
             if (idPrivate < 0 || idPrivate > 4) {
                 newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_retro.jpg"));
                 System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI");
-                AlertMessage.displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
+                new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else
                 newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_" + idPrivate + ".jpg"));
             imageViewPrivateCard.setImage(newImage);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
-            AlertMessage.displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
+            new AlertMessage().displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
         }
     }
 
@@ -332,7 +350,7 @@ public class GUI{
             if (idPublic < 0 || idPublic > 9) {
                 newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_retro.jpg"));
                 System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI");
-                AlertMessage.displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
+                new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else {
 
                 newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_" + idPublic + ".jpg"));
@@ -344,7 +362,7 @@ public class GUI{
             }
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
-            AlertMessage.displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
+            new AlertMessage().displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
         }
     }
 
@@ -358,13 +376,13 @@ public class GUI{
             if (idToolCard < 0 || idToolCard > 9) {
                 newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_retro.jpg"));
                 System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI per leggere la carta");
-                AlertMessage.displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
+                new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else
                 newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_" + idToolCard + ".jpg"));
             imageViewToolCard[indexToolCard].setImage(newImage);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
-            AlertMessage.displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
+            new AlertMessage().displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
         }
     }
 

@@ -5,12 +5,12 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
-import it.polimi.se2018.view.prova_gui.GuiReceiver;
+import it.polimi.se2018.view.gui.GuiReceiver;
 
 
 import java.rmi.RemoteException;
 
-import static it.polimi.se2018.view.prova_gui.GuiReceiver.setUpGUI;
+import static it.polimi.se2018.view.gui.GuiReceiver.setUpGUI;
 
 
 /**
@@ -74,9 +74,7 @@ public class Client implements ClientController {
 
             if (args[0].equals("gui")) {
                 view = new GuiReceiver();
-                ((GuiReceiver) view).setClient(client);
                 setUpGUI(args);
-
             }
         } catch (Exception e) {
             System.exit(0);

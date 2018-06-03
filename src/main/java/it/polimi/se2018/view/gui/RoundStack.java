@@ -1,47 +1,46 @@
-package it.polimi.se2018.view.prova_gui;
+package it.polimi.se2018.view.gui;
 
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.effect.Lighting;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-/**
- * stage for show an important message that need a confirm from the player
- *
- * @author Luca Genoni
- */
-public class ConfirmBox {
-    private static boolean answer;
+public class RoundStack {
 
-    public static boolean displayMessage(String message){
+    private ImageView[] diceStackThisRound;
+    private static int index;
+            /*StageStyle
+                        UTILITY only _ x
+                        TRANSPARENT NOTHING and no _ o x
+                        UNIFIED boh
+                        UNDECORATED simile a TRANSPARENT ma con sfondo
+              modality
+                        APPLICATION_MODAL can't turn to previus stage and can't move
+                        WINDOW_MODAL
+             */
+    public static void displayRound(ImageView[][] diceStackRound){
         Stage stageMessage = new Stage(StageStyle.UTILITY);
         stageMessage.initModality(Modality.APPLICATION_MODAL);
-        stageMessage.setAlwaysOnTop(true);
         Background confirmBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
         stageMessage.setMinWidth(250);
         stageMessage.setMinHeight(250);
 
         Label confirmMessage =new Label();
-        confirmMessage.setText(message);
+
         Button yesButton =new Button("Si");
         Button noButton =new Button("No");
         yesButton.setOnAction(e->{
-            answer = true;
+
             stageMessage.close();
         });
         noButton.setOnAction(e->{
-            answer = false;
             stageMessage.close();
         });
         yesButton.setDefaultButton(false);
@@ -61,6 +60,26 @@ public class ConfirmBox {
         stageMessage.showAndWait();
 
 
-        return answer;
     }
+
+
+/*
+
+    public void activeCell( ImageView[])  {
+        imageViewCell[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {
+            System.out.println("è stata cliccata la window: " + indexWindow + " row: " + indexRow + " column " + indexColumn);
+            Random rand = new Random();
+            int  value = rand.nextInt(6) + 1;
+            int  color = rand.nextInt(5);
+            try{
+                Image newImage = new Image(new FileInputStream("src/resources/dadijpg/" + DiceColor.getDiceColor(color)+"Dice"+value+".jpg"));
+                imageViewCell[indexWindow][indexRow][indexColumn].setImage(newImage);
+            }catch (Exception exception){
+
+            }
+            System.out.println("src/resources/dadi/"+DiceColor.getDiceColor(color)+"Dice"+value+".jpg");
+        });
+
+    }*/
+
 }

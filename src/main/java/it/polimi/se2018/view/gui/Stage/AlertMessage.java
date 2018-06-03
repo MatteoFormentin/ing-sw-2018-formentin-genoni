@@ -1,20 +1,15 @@
-package it.polimi.se2018.view.prova_gui;
+package it.polimi.se2018.view.gui.Stage;
 
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.effect.Lighting;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -26,7 +21,7 @@ import javafx.stage.StageStyle;
  */
 public class AlertMessage {
 
-    public static void displayMessage(String message){
+    public void displayMessage(String message){
         /*StageStyle
                     UTILITY only _ x
                     TRANSPARENT NOTHING and no _ o x

@@ -1,13 +1,8 @@
-package it.polimi.se2018.view.prova_gui;
+package it.polimi.se2018.view.gui;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -17,7 +12,7 @@ import javafx.stage.StageStyle;
  * @author Luca Genoni
  */
 public class ShowCardBox {
-    public static void displayCard(ImageView imageViewToShow, boolean canCanUseCard){
+    public void displayCard(ImageView imageViewToShow, boolean canCanUseCard){
         Stage stageCard = new Stage(StageStyle.TRANSPARENT);
         stageCard.initModality(Modality.APPLICATION_MODAL);
         ImageView imageViewCard = new ImageView(imageViewToShow.getImage());
