@@ -1,4 +1,4 @@
-package it.polimi.se2018.view.gui;
+package it.polimi.se2018.view.gui.gamestage;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,11 +26,12 @@ public class RoundStack {
                         WINDOW_MODAL
              */
     public static void displayRound(ImageView[][] diceStackRound){
-        Stage stageMessage = new Stage(StageStyle.UTILITY);
-        stageMessage.initModality(Modality.APPLICATION_MODAL);
+        Stage stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setAlwaysOnTop(true);
         Background confirmBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
-        stageMessage.setMinWidth(250);
-        stageMessage.setMinHeight(250);
+        stage.setMinWidth(250);
+        stage.setMinHeight(250);
 
         Label confirmMessage =new Label();
 
@@ -38,10 +39,10 @@ public class RoundStack {
         Button noButton =new Button("No");
         yesButton.setOnAction(e->{
 
-            stageMessage.close();
+            stage.close();
         });
         noButton.setOnAction(e->{
-            stageMessage.close();
+            stage.close();
         });
         yesButton.setDefaultButton(false);
         noButton.setDefaultButton(false);
@@ -56,8 +57,8 @@ public class RoundStack {
         // group.getChildren().add(layoutMessage);
         Scene boxMessage =new Scene(layoutMessage,400,200,Color.BLACK);
         boxMessage.setFill(Color.BROWN);
-        stageMessage.setScene(boxMessage);
-        stageMessage.showAndWait();
+        stage.setScene(boxMessage);
+        stage.showAndWait();
 
 
     }

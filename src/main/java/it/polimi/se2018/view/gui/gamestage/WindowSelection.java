@@ -1,4 +1,4 @@
-package it.polimi.se2018.view.gui;
+package it.polimi.se2018.view.gui.gamestage;
 
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;

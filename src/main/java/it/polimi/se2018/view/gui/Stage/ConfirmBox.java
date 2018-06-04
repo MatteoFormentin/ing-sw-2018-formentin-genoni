@@ -1,4 +1,4 @@
-package it.polimi.se2018.view.gui.Stage;
+package it.polimi.se2018.view.gui.stage;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -54,8 +54,6 @@ public class ConfirmBox {
         boxMessage.setFill(Color.BROWN);
         stage.setScene(boxMessage);
         stage.showAndWait();
-
-
         return answer;
     }
 }

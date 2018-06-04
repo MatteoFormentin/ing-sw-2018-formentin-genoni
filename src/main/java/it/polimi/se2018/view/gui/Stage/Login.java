@@ -1,4 +1,4 @@
-package it.polimi.se2018.view.gui.Stage;
+package it.polimi.se2018.view.gui.stage;
 
 import it.polimi.se2018.network.client.ClientController;
 import javafx.geometry.Pos;
@@ -12,7 +12,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class Login {
-    public void display(ClientController client){
+    private boolean answer;
+
+    public boolean display(ClientController client){
         Stage stage = new Stage(StageStyle.UNDECORATED);
         GridPane form =new GridPane();
         Scene scene =new Scene(form,250,150);
@@ -43,7 +45,10 @@ public class Login {
         connect.setOnAction(e-> {
                 if(client.login(nameInput.getText())){
                     System.out.println("login effettuato con successo");
+                    answer=true;
+                    stage.close();
                 }else{
+                    answer=false;
                     System.out.println("Sbagliato, riprova con un altro nome.");
                 }
         });
@@ -52,5 +57,6 @@ public class Login {
         } );
 
         stage.showAndWait();
+        return answer;
     }
 }

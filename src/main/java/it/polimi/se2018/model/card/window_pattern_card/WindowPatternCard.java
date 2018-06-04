@@ -57,6 +57,10 @@ public class WindowPatternCard implements Serializable {
         return matrix;
     }
 
+    public Cell[] getColumn(int line){
+        return this.matrix[line];
+    }
+
     public Cell getCell(int line, int column) {
         return matrix[line][column];
     }

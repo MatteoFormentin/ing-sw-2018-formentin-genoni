@@ -1,11 +1,9 @@
-package it.polimi.se2018.view.gui.Stage;
+package it.polimi.se2018.view.gui.stage;
 
 
 import it.polimi.se2018.model.dice.DiceColor;
 
-import it.polimi.se2018.view.gui.ShowCardBox;
-import it.polimi.se2018.view.gui.Stage.AlertMessage;
-import it.polimi.se2018.view.gui.Stage.ConfirmBox;
+import it.polimi.se2018.view.gui.gamestage.ShowCardBox;
 import javafx.application.Application;
 
 import javafx.geometry.Insets;

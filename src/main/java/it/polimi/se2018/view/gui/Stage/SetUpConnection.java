@@ -1,4 +1,4 @@
-package it.polimi.se2018.view.gui.Stage;
+package it.polimi.se2018.view.gui.stage;
 
 
 import it.polimi.se2018.network.client.ClientController;

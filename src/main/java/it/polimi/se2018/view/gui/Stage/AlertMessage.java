@@ -1,4 +1,4 @@
-package it.polimi.se2018.view.gui.Stage;
+package it.polimi.se2018.view.gui.stage;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -55,30 +55,3 @@ public class AlertMessage {
         stageMessage.showAndWait();
     }
 }
-/*/*StageStyle
-                    UTILITY only _ x
-                    TRANSPARENT NOTHING and no _ o x
-                    UNIFIED boh
-                    UNDECORATED simile a TRANSPARENT ma con sfondo
-          modality
-                    APPLICATION_MODAL can't turn to previus stage and can't move
-                    WINDOW_MODAL
-
-final Stage stageMessage = new Stage(StageStyle.UTILITY);
-        stageMessage.initModality(Modality.APPLICATION_MODAL);
-
-
-                Label errorMessage =new Label();
-                errorMessage.setText(message);
-                Button closeButton =new Button("Ok");
-                closeButton.setOnAction(e->stageMessage.close());
-
-
-                VBox layoutMessage = new VBox(20);
-                layoutMessage.getChildren().addAll(errorMessage,closeButton);
-                layoutMessage.setAlignment(Pos.CENTER);
-
-                Scene boxMessage =new Scene(layoutMessage,200,200,Color.DARKGRAY);
-                boxMessage.setFill(Color.BROWN);
-                stageMessage.setScene(boxMessage);
-                stageMessage.showAndWait();*/
