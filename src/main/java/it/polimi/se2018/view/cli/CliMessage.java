@@ -16,7 +16,7 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  *
- * Class for
+ * Class for Display CLI messages using JANSI LIBRARY.
  *
  * @author Matteo Formentin
  */

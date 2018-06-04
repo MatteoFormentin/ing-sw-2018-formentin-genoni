@@ -11,7 +11,7 @@ import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
 /**
- * CLI
+ * CLI Event handler.
  *
  * @author Matteo Formentin
  */
@@ -253,10 +253,8 @@ public class CliController implements UIInterface, ViewVisitor {
 
             if (ip.equals("0")) {
 
-                cliMessage.showPortRequest();
-                port = cliParser.parseInt();
 
-                if (client.startRMIClient("localhost",port)) {
+                if (client.startRMIClient("localhost", 31415)) {
                     flag = true;
                     cliMessage.showConnectionSuccessful();
                     cliMessage.println();

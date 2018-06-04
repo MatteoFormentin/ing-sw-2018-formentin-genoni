@@ -1,14 +1,14 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.exception.GameboardException.*;
+import it.polimi.se2018.exception.GameboardException.CurrentPlayerException;
+import it.polimi.se2018.exception.GameboardException.WindowSettingCompleteException;
 import it.polimi.se2018.exception.PlayerException.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.exception.PlayerException.AlreadyUseToolCardException;
+import it.polimi.se2018.exception.ToolCardInUseException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
-import it.polimi.se2018.list_event.event_received_by_view.SelectDiceFromDraftpool;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.Model;
-import it.polimi.se2018.exception.*;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
 
@@ -166,12 +166,12 @@ public class Controller implements ControllerVisitor {
     public void visit(SelectToolCardController event) {
         if (toolcard) {
             gameBoard.getIdToolCard(event.getIndexToolCard());
-            System.err.println("Il giocatore ha scelto correttamente la toolcard "+ gameBoard.getIdToolCard(event.getIndexToolCard()));
+            System.err.println("Il giocatore ha scelto correttamente la toolcard " + gameBoard.getIdToolCard(event.getIndexToolCard()));
             EventView turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
         } else {
-            System.err.println("Il giocatore non può usare la toolcard "+ gameBoard.getIdToolCard(event.getIndexToolCard()));
+            System.err.println("Il giocatore non può usare la toolcard " + gameBoard.getIdToolCard(event.getIndexToolCard()));
             EventView turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
@@ -241,7 +241,7 @@ public class Controller implements ControllerVisitor {
         gameBoard.notifyAllCards(id);
         InitialWindowPatternCard packet = new InitialWindowPatternCard();
         packet.setPlayerId(id);
-        System.err.println("Player "+id+" has made a relogin.");
+        System.err.println("Player " + id + " has made a relogin.");
         server.sendEventToView(packet);
     }
 
