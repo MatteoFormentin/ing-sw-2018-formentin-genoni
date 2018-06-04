@@ -34,7 +34,7 @@ public class SetUpConnection {
         //static design
         Stage stage = new Stage(StageStyle.UNDECORATED);
         GridPane form =new GridPane();
-        Scene scene =new Scene(form,250,250);
+        Scene scene =new Scene(form,250,150);
         stage.setScene(scene);
 
         //Stage design

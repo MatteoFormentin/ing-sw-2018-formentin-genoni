@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
-import static it.polimi.se2018.view.gui.GuiReceiver.setUpGUI;
 
 
 /**
@@ -109,7 +108,7 @@ public class Client implements ClientController {
 
             if (args[0].equals("gui")) {
                 view = new GuiReceiver();
-                setUpGUI(args);
+                ((GuiReceiver) view).setUpGUI(args);
             }
         } catch (Exception e) {
             System.exit(0);

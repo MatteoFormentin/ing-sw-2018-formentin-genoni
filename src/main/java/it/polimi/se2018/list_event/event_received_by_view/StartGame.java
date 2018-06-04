@@ -14,7 +14,9 @@ public class StartGame extends EventView {
     public String[] getPlayersName() {
         return playersName;
     }
-
+    public String getPlayersName(int i) {
+        return playersName[i];
+    }
     public void setPlayersName(String[] playersName) {
         this.playersName = playersName;
     }

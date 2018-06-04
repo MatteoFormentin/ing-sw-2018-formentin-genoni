@@ -15,44 +15,43 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class GuiReceiver extends Application implements UIInterface, ViewVisitor {
+public class GuiReceiver extends Application implements UIInterface,ViewVisitor {
     //fields for the init game
-    private static ClientController client;
-
-    private Stage primaryStage;
-    private Scene startMenu, wait;
+    private static ClientController client = new Client();
+    private static BorderPane pane = new BorderPane();
+    private Stage primaryStage;//for close the program called from inside the start, don't need to be static
     private boolean connected = false, login = false;
-    Button close;
-    Text waitText;
-    private boolean gameStart =false;
 
-    public boolean isGameStart() {
-        return gameStart;
-    }
+    //variabili per il gioco
+    private static int playerId;
+    private static Text[] playersName;
+    private static ImageView[][][] windowPatternCardOfEachPlayer;
+    private static ImageView[] objectivePrivateCardOfEachPlayers;
+    private static ImageView[][] handOfEachPlayer;
+    private static Text[] FavorTokenOfEachPlayer;
+    private static Text[] PointsOfEachPlayer;
 
-    public void setGameStart(boolean gameStart) {
-        this.gameStart = gameStart;
-    }
-    //forse serve il get client
 
-    public static void setUpGUI(String[] args) {
-        Application.launch(args);
+    public void setUpGUI(String[] args) {
+        launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.primaryStage=primaryStage;
         //creating a Group object
-        client = new Client();
-        this.primaryStage = primaryStage;
         VBox menu = new VBox();
-        startMenu = new Scene(menu, 779, 261);
+        Scene startMenu = new Scene(menu, 779, 261);
+        Scene game = new Scene (pane);
         primaryStage.setScene(startMenu);
-
+        pane.setCenter(new Text("aspetta gli altri giocatori"));
+        pane.setMinSize(800,300);
         //design stage
         primaryStage.initStyle(StageStyle.UNIFIED);
         primaryStage.setTitle("Launcher Sagrada");
@@ -65,10 +64,6 @@ public class GuiReceiver extends Application implements UIInterface, ViewVisitor
         BackgroundImage backgroundImage = new BackgroundImage(new Image("it/polimi/se2018/resources/Immagine.png", 779, 261, true, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         //design scene wait
-        waitText = new Text("Aspetta gli altri giocatori");
-        HBox box = new HBox(waitText);
-        wait = new Scene(box, 400, 400);
-        wait.setCursor(Cursor.WAIT);
 
         //design scene
 
@@ -82,10 +77,9 @@ public class GuiReceiver extends Application implements UIInterface, ViewVisitor
             if (connected) {
                 if (login) {
                     new AlertMessage().displayMessage("Sei già collegato al Server");
-                }
-                else {
+                } else {
                     login = new Login().display(client);
-                    primaryStage.setScene(wait);
+                    primaryStage.setScene(game);
                 }
             } else
                 new AlertMessage().displayMessage("Devi prima impostare l'IP del server e la porta a cui ti vuoi collegare");
@@ -93,9 +87,9 @@ public class GuiReceiver extends Application implements UIInterface, ViewVisitor
         Button connectionButton = new Button("Impostazioni di rete");
         connectionButton.setOnAction(e -> {
             connected = new SetUpConnection().display(client);
-            login =false;
+            login = false;
         });
-        close =new Button();
+        Button close = new Button();
         close.setText("Esci Dal Gioco");
         close.setOnAction(e -> closeProgram());
 
@@ -110,7 +104,6 @@ public class GuiReceiver extends Application implements UIInterface, ViewVisitor
         if (result) primaryStage.close();
     }
 
-    @Override
     public void showMessage(EventView EventView) {
         EventView.accept(this);
     }
@@ -122,15 +115,25 @@ public class GuiReceiver extends Application implements UIInterface, ViewVisitor
 
     @Override
     public void visit(StartGame event) {
-        System.out.println("isFxApplicationThread: "+Platform.isFxApplicationThread());
+        HBox box = new HBox();
+        box.getChildren().add(new Text("Questi sono i giocatori connessi :"));
+        box.setSpacing(10);
+        box.setAlignment(Pos.CENTER);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                System.out.println("isFxApplicationThread: "+Platform.isFxApplicationThread());
-                waitText.setText("try");
+                pane.setMaxSize(1000,800);
+                pane.setMinSize(1000,800);
+                pane.setCenter(box);
+                playerId = event.getPlayerId();
+                playersName= new Text[event.getPlayersName().length];
+                for(int i=0; i<event.getPlayersName().length;i++){
+                    playersName[i] = new Text(event.getPlayersName(i));
+                    box.getChildren().add(playersName[i]);
+                }
+
             }
         });
-
     }
 
     @Override
