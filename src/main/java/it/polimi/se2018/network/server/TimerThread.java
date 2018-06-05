@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Matteo Formentin
  * @author DavideMammarella
  */
-public class Timer implements Runnable {
+public class TimerThread implements Runnable {
 
     // Thread che verrà utilizzato
     private Thread timerThread;
@@ -19,8 +19,6 @@ public class Timer implements Runnable {
 
     //Timeout passato da server (caricato da file)
     private long timeout;
-    // Punto di inizio del conteggio per il timer
-    private long startTimerTime;
 
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
@@ -36,7 +34,7 @@ public class Timer implements Runnable {
      * @param server server interface, used as controller to communicate with the server.
      * @param timeout timeout used to impose a time limit on login before starting a game.
      */
-    public Timer(ServerController server, long timeout) {
+    public TimerThread(ServerController server, long timeout) {
         this.timeout = timeout;
         this.server = server;
     }
@@ -55,7 +53,8 @@ public class Timer implements Runnable {
     public void run() {
 
         // Inizio conteggio timer
-        startTimerTime = System.currentTimeMillis();
+        // Punto di inizio del conteggio per il timer
+        long startTimerTime = System.currentTimeMillis();
 
         while (running.get()) {
             while(System.currentTimeMillis() - startTimerTime <= timeout){

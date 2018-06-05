@@ -14,7 +14,7 @@ import it.polimi.se2018.network.RemotePlayer;
 public interface ServerController {
 
     //TODO: EXCEPTION
-    void startGame();
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
@@ -34,6 +34,18 @@ public interface ServerController {
      */
     void sendEventToController(EventController eventController);
 
+    /**
+     * Remote method used to start the game.
+     */
+    void startGame();
+
+    /**
+     * Remote method used to join the current game.
+     *
+     * @param remotePlayer reference to RMI or Socket Player.
+     */
+    void joinGame(RemotePlayer remotePlayer);
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
@@ -44,5 +56,6 @@ public interface ServerController {
      * @param eventView object that will use the client to unleash the update associated.
      */
     void sendEventToView(EventView eventView);
+
 }
 

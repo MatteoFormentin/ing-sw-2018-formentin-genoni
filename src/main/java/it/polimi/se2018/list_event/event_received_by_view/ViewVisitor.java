@@ -46,6 +46,8 @@ public interface ViewVisitor {
 
     public void visit(StartGame event);
 
+    void visit(JoinGame event);
+
     public void visit(StartPlayerTurn event);
 
     public void visit(WaitYourTurn event);

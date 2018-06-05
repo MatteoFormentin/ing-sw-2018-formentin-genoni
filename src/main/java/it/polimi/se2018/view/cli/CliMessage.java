@@ -307,4 +307,9 @@ class CliMessage {
         println();
         AnsiConsole.out.println(ansi().fg(RED).a(message));
     }
+
+    void showGreenMessage(String message) {
+        println();
+        AnsiConsole.out.println(ansi().fg(GREEN).a(message));
+    }
 }

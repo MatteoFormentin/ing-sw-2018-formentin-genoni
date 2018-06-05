@@ -5,11 +5,11 @@ import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
 
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -19,6 +19,11 @@ import java.rmi.server.UnicastRemoteObject;
  * @author DavideMammarella
  */
 public class RMIServer extends AbstractServer implements IRMIServer {
+
+    private static Registry registry;
+
+    // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
+    private ArrayList<RMIPlayer> rmiPlayers;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -42,17 +47,25 @@ public class RMIServer extends AbstractServer implements IRMIServer {
      *
      * @param port number of port that will be used on the connection.
      */
+
+    // bind will throw an AlreadyBoundException if there's already an object bound to that name within the rmiregistry.
+    // If there was no match, the object will be bound to the name within the registry.
+
+    // rebind will replace any existing binding for the name within rmiregistry.
+    // If there was no match, the object will be bound to the name within the registry as usual.
     @Override
     public void startServer(int port) throws Exception {
-        Registry registry = createOrLoadRegistry(port);
+        registry = createOrLoadRegistry(port);
+
         try {
             registry.bind("IRMIServer", this);
             UnicastRemoteObject.exportObject(this, port);
+
+            //INIZIALIZZO ARRAY DEI GIOCATORI CONNESSI
+            rmiPlayers=new ArrayList<>();
+
             System.out.println("RMI Server running at " + port + " port...");
         } catch (RemoteException e) {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        } catch (AlreadyBoundException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
@@ -66,7 +79,9 @@ public class RMIServer extends AbstractServer implements IRMIServer {
      * @param port port on when the registry will be on listen.
      * @return RMI Registry created with the listen on the assigned port.
      */
+    // TODO: GESTIRE REMOTE EXCEPTION
     private Registry createOrLoadRegistry(int port) throws Exception {
+        registry=null;
         System.out.println("Creating RMI registry...");
         try {
             System.out.println("RMI registry created!");
@@ -112,4 +127,6 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     public void sendEventToController(EventController eventController) {
         getServerController().sendEventToController(eventController);
     }
+
+    // REMOVE CLOSED CONNECTION?
 }

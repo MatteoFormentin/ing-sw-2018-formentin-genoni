@@ -3,6 +3,7 @@ package it.polimi.se2018.network.server;
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.JoinGame;
 import it.polimi.se2018.list_event.event_received_by_view.StartGame;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
@@ -46,7 +47,11 @@ public class Server implements ServerController {
     // Timeout uploaded from properties file
     private long timeout;
     // Thread for the timeout in order to fix a time for the user login
-    private Timer timerThread;
+    private TimerThread timerThread;
+
+
+    // Thread for the pre game in order to permit user login
+    private PreGameThread preGameThread;
 
     //STATO STANZA
     private boolean roomJoinable;
@@ -64,10 +69,11 @@ public class Server implements ServerController {
     public Server() {
         rmiServer = new RMIServer(this);
         //socketServer = new SocketServer(this);
-        roomJoinable = true;
-        players = new ArrayList<RemotePlayer>();
 
-        System.out.println("Configuring the timers for the room...");
+        roomJoinable = true;
+        players = new ArrayList<>();
+
+        System.out.println("Configuring timers for the room...");
         try {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
@@ -154,7 +160,7 @@ public class Server implements ServerController {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // GAME STARTER (ONLY ONE GAME WITH MAXIMUM 4 PLAYERS)
+    // GAME STARTER/JOINER (ONLY ONE GAME WITH MAXIMUM 4 PLAYERS)
     //------------------------------------------------------------------------------------------------------------------
 
     /**
@@ -187,14 +193,44 @@ public class Server implements ServerController {
     }
 
     /**
+     * Joiner for the game.
+     */
+    public void joinGame(RemotePlayer remotePlayer) {
+        System.out.println("Game joined!");
+
+            try {
+                JoinGame packet = new JoinGame();
+                packet.setPlayerName(remotePlayer.getNickname());
+                packet.setPlayerId(remotePlayer.getPlayerId());
+                remotePlayer.sendEventToView(packet);
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                //TODO:Disconnessione
+            }
+
+        this.game.joinGame(remotePlayer.getPlayerId());
+    }
+
+    /**
      * Starter for the timeout, based on a single thread.
      */
-    public void startTimer() {
+    public void startTimerThread() {
         System.out.println("Timeout started!");
         // CREO NUOVO TIMER
-        timerThread = new Timer(this, this.timeout);
+        timerThread = new TimerThread(this, this.timeout);
         // FACCIO PARTIRE IL THREAD
         timerThread.startThread();
+    }
+
+    /**
+     * Starter for the pre-game, based on a single thread.
+     */
+    public void startPreGameThread(RemotePlayer remotePlayer){
+        System.out.println("Pre-game thread started!");
+        // CREO NUOVO PRE GAME THREAD
+        preGameThread = new PreGameThread(this, remotePlayer);
+        // FACCIO PARTIRE IL THREAD
+        preGameThread.startThread();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -229,24 +265,45 @@ public class Server implements ServerController {
                     // APPENA RAGGIUNGO IL NUMERO MINIMO PLAYER FACCIO PARTIRE TIMER
                     if (this.players.size() == MIN_PLAYERS) {
                         // FAI PARTIRE IL TEMPO DI ATTESA
-                        startTimer();
+                        startTimerThread();
                     }
 
                     // APPENA RAGGIUNGO IL NUMERO MASSIMO DI PLAYER FACCIO PARTIRE IL GIOCO
                     else if (this.players.size() == MAX_PLAYERS) {
                         // TERMINO THREAD SICCOME LA ROOM è PIENA
                         this.timerThread.shutdown();
-                        // FACCIO PARTIRE IL GIOCO
-                        this.startGame();
+                        // FACCIO PARTIRE IL PREGAME
+                        startPreGameThread(remotePlayer);
                     }
                     return true;
                 }
 
-                // ESISTE PLAYER CON QUEL NICKNAME
+                // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
                 else if (checkPlayerNicknameExists(remotePlayer.getNickname())){
                     System.out.println("Player already logged!");
                     System.out.println("Please, use another nickname...");
+
+
+                    //String text = "Player already logged! \n Please, use another nickname...";
+                    //showErrorMessage(new LoginException(text), remotePlayer.getPlayerId());
                     return false;
+                }
+
+                // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !remotePlayer.getPlayerRunning()){
+                    // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
+
+                    // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
+                    int id = remotePlayer.getPlayerId();
+                    String nickname = remotePlayer.getNickname();
+                    System.out.println(nickname+" was in the Room!");
+                    System.out.println("Trying to recreate the connection for "+nickname+"...");
+                    // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
+                    replacePlayer(id,remotePlayer);
+                    // IMPOSTO LA CONNESSIONE
+                    connectPlayer(remotePlayer);
+                    System.out.println("Connection established!");
+                    return true;
                 }
             }
 
@@ -280,11 +337,11 @@ public class Server implements ServerController {
                     connectPlayer(remotePlayer);
                     System.out.println("Trying to log to the actual game...");
 
-                    // INTERRUZIONE IMMEDIATA DEL TIMER
-                    // TODO: DOVREBBE ESSERE USELESS
-                    // this.timerThread.shutdown();
-
                     // RE INTEGRAZIONE NEL GIOCO
+
+                    // FACCIO PARTIRE IL PREGAME
+                    startPreGameThread(remotePlayer);
+
                     this.game.joinGame(id);
                 }
                 return true;

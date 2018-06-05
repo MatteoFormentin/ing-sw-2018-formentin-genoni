@@ -141,6 +141,10 @@ public class CliController implements UIInterface, ViewVisitor {
 
     }
 
+    @Override
+    public void visit(JoinGame event) {
+        //TODO
+    }
     /**
      * Receive the Event for select which dice take from the draft pool and send the packet to the controller(throught)
      *

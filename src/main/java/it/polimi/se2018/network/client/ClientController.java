@@ -18,7 +18,7 @@ public interface ClientController {
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    public boolean startRMIClient(String serverIpAddress, int rmiPort);
+    boolean startRMIClient(String serverIpAddress, int rmiPort);
 
     /**
      * Remote method used to log the user to the server with his nickname.
@@ -27,6 +27,8 @@ public interface ClientController {
      * @return true if the user is logged, false otherwise.
      */
     boolean login(String nickname);
+
+    //magari flag per vedere se il login è avvenuto con successo (entra anche in rmiclient e socketclient)
 
     /**
      * Remote method used to send to the server a request to unleash an event.

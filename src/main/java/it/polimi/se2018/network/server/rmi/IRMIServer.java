@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
  * Class based on the Abstract Factory Design Pattern.
  * Class used to permit remote method invocation.
  * CLIENT -> SERVER
- * <p>
+ *
  * The interface that define the class to export must:
  * Extends Remote Interface
  * Be Public
@@ -26,10 +26,8 @@ public interface IRMIServer extends Remote {
 
     /**
      * Remote method used to log the user to the server with his nickname.
-     *
-     * @param nickname   name of the player.
-     * @param iRMIClient client associated to the player.
-     */
+     *  @param nickname   name of the player.
+     * @param iRMIClient client associated to the player.*/
     void login(String nickname, IRMIClient iRMIClient) throws RemoteException;
 
     /**

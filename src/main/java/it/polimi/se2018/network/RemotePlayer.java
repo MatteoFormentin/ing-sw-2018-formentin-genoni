@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
  *
  * @author DavideMammarella
  */
-public abstract class RemotePlayer {
+public abstract class RemotePlayer{
 
     //Riferimento alla partita in cui è il giocatore
     private transient Server serverRoom;
@@ -25,7 +25,7 @@ public abstract class RemotePlayer {
     // Si ricollega alla logica dei thread (vedi Timer)
     // Setto una variabile booleana grazie la quale posso fornire lo stato del giocatore
     // Ovvero se c'è una connessione ancora valida (Running / true) o meno (Not Running / false)
-    private Boolean playerRunning;
+    private boolean playerRunning=false;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -37,7 +37,6 @@ public abstract class RemotePlayer {
      */
     protected RemotePlayer() {
         super();
-        setPlayerRunning(false);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -54,24 +53,6 @@ public abstract class RemotePlayer {
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Getter for the server room.
-     *
-     * @return reference of the server room where the player is playing.
-     */
-    public Server getServerRoom() {
-        return this.serverRoom;
-    }
-
-    /**
-     * Setter for the server room.
-     *
-     * @param serverRoom game where the players is in.
-     */
-    public void setServerRoom(Server serverRoom) {
-        this.serverRoom = serverRoom;
-    }
 
     /**
      * Getter for nickname.
@@ -123,7 +104,7 @@ public abstract class RemotePlayer {
      *
      * @return true if player is connected, false otherwise.
      */
-    public Boolean getPlayerRunning() {
+    public boolean getPlayerRunning() {
         return this.playerRunning;
     }
 }

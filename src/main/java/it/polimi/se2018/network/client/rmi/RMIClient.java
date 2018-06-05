@@ -51,8 +51,7 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      */
     //TODO: EXCEPTION
     public void connectToServer() throws RemoteException, NotBoundException {
-        Registry registry;
-        registry = LocateRegistry.getRegistry(getServerIpAddress(), getServerPort());
+        Registry registry = LocateRegistry.getRegistry(getServerIpAddress(), getServerPort());
         iRMIServer = (IRMIServer) registry.lookup("IRMIServer");
         UnicastRemoteObject.exportObject(this, 0);
     }
@@ -69,6 +68,7 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     @Override
     public void login(String nickname) throws RemoteException {
         iRMIServer.login(nickname, this);
+        //magari flag per vedere se il login è avvenuto con successo (entra anche il clientcontroller)
     }
 
     /**

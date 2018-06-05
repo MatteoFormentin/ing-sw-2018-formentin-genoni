@@ -37,6 +37,12 @@ public class Client implements ClientController {
     // Turno della partita (da 1 a 9)
     private int turn;
 
+    // Si ricollega alla logica dei thread (vedi Timer)
+    // Setto una variabile booleana grazie la quale posso fornire lo stato del client
+    // Ovvero se c'è una connessione ancora valida (Running / true) o meno (Not Running / false)
+    private Boolean clientRunning;
+
+
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -45,8 +51,9 @@ public class Client implements ClientController {
      * Client constructor.
      */
     public Client() {
-        nickname = "Mr.Nessuno";
+        this.nickname = "Mr.Nessuno";
         this.turn = 0;
+        this.clientRunning=false;
 
 
     }
@@ -97,10 +104,14 @@ public class Client implements ClientController {
             //SERVER_SOCKET_PORT = 16180;
         }
 
+        String serverIpAddress= SERVER_ADDRESS;
+        int rmiPort= SERVER_RMI_PORT;
+
         try {
             /*serverIpAddress = args[0];
             rmiPort = Integer.parseInt(args[0]);*/
             ClientController client = new Client();
+
 
             if (args[0].equals("cli")) {
                 view = new CliController(client);
@@ -122,9 +133,9 @@ public class Client implements ClientController {
      */
     //TODO:AGGIUNGI int socketPort se aggiungi socket
     //TODO:Se aggiungi socket qui ci dovrà essere la selezione, data da cli o gui fra RMI o Socket ed in base alla scelta bisogna far partire connessioni diverse
-    public void startClient(String serverIpAddress, int rmiPort) {
+    /*public void startClient(String serverIpAddress, int rmiPort) {
         startRMIClient(serverIpAddress, rmiPort);
-    }
+    }*/
 
     /**
      * Starter for the RMI connection.
@@ -159,6 +170,7 @@ public class Client implements ClientController {
         try {
             abstractClient.login(nickname);
             this.nickname = nickname;
+            this.clientRunning=true;
             return true;
         } catch (RemoteException e) {
             return false;
@@ -206,4 +218,12 @@ public class Client implements ClientController {
         return this.nickname;
     }
 
+    /**
+     * Getter for the client status.
+     *
+     * @return true if the client is running, false otherwise.
+     */
+    public Boolean getClientRunning() {
+        return this.clientRunning;
+    }
 }
