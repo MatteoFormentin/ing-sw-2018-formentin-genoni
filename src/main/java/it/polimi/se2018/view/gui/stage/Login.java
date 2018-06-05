@@ -20,7 +20,7 @@ public class Login {
         Scene scene =new Scene(form,250,150);
         stage.setScene(scene);
 
-        //Stage design
+        //stage design
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setAlwaysOnTop(true);
         stage.setResizable(false);

@@ -27,7 +27,7 @@ public class SetUpConnection {
           modality
                     APPLICATION_MODAL can't turn to previus stage and can't move
                     WINDOW_MODAL
-        Stage stageMessage = new Stage(StageStyle.UTILITY);
+        stage stageMessage = new stage(StageStyle.UTILITY);
         stageMessage.initModality(Modality.APPLICATION_MODAL);
         stageMessage.setAlwaysOnTop(true);
          */
@@ -37,7 +37,7 @@ public class SetUpConnection {
         Scene scene =new Scene(form,250,150);
         stage.setScene(scene);
 
-        //Stage design
+        //stage design
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setAlwaysOnTop(true);
         stage.setResizable(false);

@@ -3,11 +3,19 @@ package it.polimi.se2018;
 import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.view.cli.CliParser;
+import it.polimi.se2018.view.gui.GuiReceiver;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class SagradaLauncher {
+public class SagradaLauncher extends Application {
 
 
     public static void main(String[] args) {
+        launch();
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
         System.out.println("Benvenuto su Sagrada.");
         System.out.print("Digita 0 per avviare il server, uno per il client: ");
         CliParser cliParser = new CliParser();
@@ -27,6 +35,7 @@ public class SagradaLauncher {
                         break;
                     case 1:
                         args2[0] = "gui";
+                        GuiReceiver.getGuiReceiver().setUpGUI(primaryStage);
                         break;
                 }
 

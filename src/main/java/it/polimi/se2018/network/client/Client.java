@@ -118,8 +118,8 @@ public class Client implements ClientController {
             }
 
             if (args[0].equals("gui")) {
-                view = new GuiReceiver();
-                ((GuiReceiver) view).setUpGUI(args);
+                view = GuiReceiver.getGuiReceiver();
+                ((GuiReceiver) view).start(client);
             }
         } catch (Exception e) {
             System.exit(0);

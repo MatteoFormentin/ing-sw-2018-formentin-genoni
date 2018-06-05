@@ -1,11 +1,16 @@
 package it.polimi.se2018.view.gui.stage;
 
 
+import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.model.dice.DiceColor;
 
+import it.polimi.se2018.view.UIInterface;
+import it.polimi.se2018.view.gui.GuiReceiver;
+import it.polimi.se2018.view.gui.gamestage.GameGui;
 import it.polimi.se2018.view.gui.gamestage.ShowCardBox;
 import javafx.application.Application;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -32,10 +37,21 @@ import java.util.Random;
  *
  * @author Luca Genoni
  */
-public class GUI{
+public class GUI implements UIInterface,ViewVisitor {
+    private static GUI instance;
     private Stage primaryStage;
     private ShowCardBox cardShow;
 
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    private GUI(){
+    }
+    public static GUI getGUI(){
+        if(instance==null) instance=new GUI();
+        return instance;
+    }
     private Scene boardgame, windowChoice;
 
     //topLine
@@ -98,7 +114,9 @@ public class GUI{
         //element for the scene for pick the window
         borderPaneRoot.setBackground(blackBackground);
         Scene scene = new Scene(borderPaneRoot, 1000, 800);
-        primaryStage.setScene(scene);
+        Platform.runLater(()->primaryStage.setScene(scene)
+        );
+
 
         //button for alert window, message from controller
         Button alertWindow = new Button();
@@ -170,7 +188,7 @@ public class GUI{
         //setUp the button for the private Object
         Image privateCard = null;
         try {
-            privateCard = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_retro.jpg"));
+            privateCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_private_retro.jpg"));
         } catch (FileNotFoundException e) {
             System.err.println(e.getMessage());
         }
@@ -180,8 +198,8 @@ public class GUI{
         //setUp the button for the Public Object
         for (int i = 0; i < 3; i++) {
             try {
-                Image publicCard = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_retro.jpg"));
-                Image publicToolCard = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_retro.jpg"));
+                Image publicCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_pubbliche_retro.jpg"));
+                Image publicToolCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_retro.jpg"));
                 imageViewPublicCard[i] = new ImageView(publicCard);
                 objectivePublicBox.getChildren().add(imageViewPublicCard[i]);
                 setGraficOfCard(imageViewPublicCard[i]);
@@ -271,7 +289,7 @@ public class GUI{
             try {
                 for (int row = 0; row < 4; row++) {
                     for (int column = 0; column < 5; column++) {
-                        Image cell = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/dadijpg/White.jpg"));
+                        Image cell = new Image(new FileInputStream("src/resources/dadijpg/Dice0.jpg"));
                         imageViewCell[i][row][column] =new ImageView(cell);
                         cellWindow[i].add(imageViewCell[i][row][column], column, row);
                         imageViewCell[i][row][column].setFitHeight(50);
@@ -294,11 +312,13 @@ public class GUI{
         borderPaneRoot.setTop(gridRoundTrack);
         borderPaneRoot.setCenter(gridAllPlayer);
         borderPaneRoot.setRight(gridCard);
-        primaryStage.show();
+        Platform.runLater(()->primaryStage.show()
+        );
+
     }
 
     public static void setUpGUI(String[] args) {
-      /*  Stage stage = new Stage();
+      /*  stage stage = new stage();
         stage.centerOnScreen();
         stage.alwaysOnTopProperty();*/
         Application.launch(args);
@@ -329,7 +349,7 @@ public class GUI{
                 System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI");
                 new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else
-                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_" + idPrivate + ".jpg"));
+                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_private_" + idPrivate + ".jpg"));
             imageViewPrivateCard.setImage(newImage);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
@@ -351,7 +371,7 @@ public class GUI{
                 new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else {
 
-                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_" + idPublic + ".jpg"));
+                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_pubbliche_" + idPublic + ".jpg"));
            /* FadeTransition fade = new FadeTransition(Duration.seconds(2), imageViewPublicCard[indexPublic]);
             fade.setFromValue(1);
             fade.setToValue(0);
@@ -372,11 +392,11 @@ public class GUI{
         try {
             Image newImage;
             if (idToolCard < 0 || idToolCard > 9) {
-                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_retro.jpg"));
+                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_retro.jpg"));
                 System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI per leggere la carta");
                 new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else
-                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_" + idToolCard + ".jpg"));
+                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_" + idToolCard + ".jpg"));
             imageViewToolCard[indexToolCard].setImage(newImage);
         } catch (Exception exception) {
             System.err.println(exception.getMessage());
@@ -404,13 +424,138 @@ public class GUI{
             int  value = rand.nextInt(6) + 1;
             int  color = rand.nextInt(5);
             try{
-                Image newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/dadijpg/" + DiceColor.getDiceColor(color)+"Dice"+value+".jpg"));
+                Image newImage = new Image(new FileInputStream("src/resources/dadijpg/" + DiceColor.getDiceColor(color)+"Dice"+value+".jpg"));
                 imageViewCell[indexWindow][indexRow][indexColumn].setImage(newImage);
             }catch (Exception exception){
 
             }
-            System.out.println("src/main/java/it/polimi/se2018/resources/dadi/"+DiceColor.getDiceColor(color)+"Dice"+value+".jpg");
+            System.out.println("src/resources/dadi/"+DiceColor.getDiceColor(color)+"Dice"+value+".jpg");
         });
 
+    }
+
+    @Override
+    public void visit(EndGame event) {
+
+    }
+
+    @Override
+    public void visit(StartGame event) {
+        displayBoard(primaryStage);
+        GuiReceiver.closeSecondStage();
+        UpdatePrivateObject(3);
+    }
+
+    @Override
+    public void visit(JoinGame event) {
+        displayBoard(primaryStage);
+        GuiReceiver.closeSecondStage();
+        UpdatePrivateObject(3);
+    }
+
+    @Override
+    public void visit(StartPlayerTurn event) {
+
+    }
+
+    @Override
+    public void visit(WaitYourTurn event) {
+
+    }
+
+    @Override
+    public void visit(ShowAllCards event) {
+
+    }
+
+    @Override
+    public void visit(SelectCellOfWindowView event) {
+
+    }
+
+    @Override
+    public void visit(SelectDiceFromDraftpool event) {
+
+    }
+
+    @Override
+    public void visit(SelectToolCard event) {
+
+    }
+
+    @Override
+    public void visit(ShowErrorMessage event) {
+
+    }
+
+    @Override
+    public void visit(UpdateAllToolCard event) {
+
+    }
+
+    @Override
+    public void visit(UpdateSingleToolCardCost event) {
+
+    }
+
+    @Override
+    public void visit(UpdateDicePool event) {
+
+    }
+
+    @Override
+    public void visit(InitialWindowPatternCard event) {
+
+    }
+
+    @Override
+    public void visit(UpdateSinglePlayerHand event) {
+
+    }
+
+    @Override
+    public void visit(UpdateAllPublicObject event) {
+
+    }
+
+    @Override
+    public void visit(UpdateSingleCell event) {
+
+    }
+
+    @Override
+    public void visit(UpdateSinglePlayerTokenAndPoints event) {
+
+    }
+
+    @Override
+    public void visit(UpdateSinglePrivateObject event) {
+
+    }
+
+    @Override
+    public void visit(UpdateSingleTurnRoundTrack event) {
+
+    }
+
+    @Override
+    public void visit(UpdateSingleWindow event) {
+
+    }
+
+    @Override
+    public void visit(UpdateInitialWindowPatternCard event) {
+
+    }
+
+    @Override
+    public void visit(UpdateInitDimRound event) {
+
+    }
+
+    @Override
+    public void showMessage(EventView eventView) {
+        System.out.println("viene accettato");
+        eventView.accept(this);
     }
 }

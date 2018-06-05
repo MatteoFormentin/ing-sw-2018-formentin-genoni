@@ -4,6 +4,7 @@ import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
+import it.polimi.se2018.view.gui.gamestage.GameGui;
 import it.polimi.se2018.view.gui.stage.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -19,12 +20,20 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class GuiReceiver extends Application implements UIInterface,ViewVisitor {
+import static it.polimi.se2018.view.gui.gamestage.GameGui.getGameGui;
+import static it.polimi.se2018.view.gui.stage.GUI.getGUI;
+
+public class GuiReceiver implements UIInterface,ViewVisitor {
     //fields for the init waitScene
-    private static ClientController client = new Client();
+    private static GuiReceiver instance;
+    private ClientController client;
     private static BorderPane pane = new BorderPane();
-    private static Stage primaryStage,secondStage,gameStage;//for close the program called from inside the start, don't need to be static
+    private Stage primaryStage;
+
+    private static Stage secondStage,gameStage;//for close the program called from inside the start, don't need to be static
     private boolean connected = false, login = false;
+
+    private GUI game;
 
     //variabili per il giocatori
     private static int playerId;
@@ -51,14 +60,20 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
     //round track
     private static ImageView[][] roundTrack;
     private static ImageView[] poolDice;
+    private GuiReceiver(){
 
-    public void setUpGUI(String[] args) {
-        launch(args);
+    }
+    public static GuiReceiver getGuiReceiver(){
+        if(instance==null) instance=new GuiReceiver();
+        return instance;
+    }
+    public void setUpGUI(Stage primaryStage) {
+        game= getGUI();
+        this.primaryStage = primaryStage;
     }
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        this.primaryStage=primaryStage;
+    public void start(ClientController client){
+        this.client =client;
         //creating a Group object
         VBox menu = new VBox();
         Scene startMenu = new Scene(menu, 779, 261);
@@ -66,7 +81,7 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         primaryStage.setScene(startMenu);
         pane.setCenter(new Text("aspetta gli altri giocatori"));
         waitScene.setCursor(Cursor.WAIT);
-        //design stage
+        //design menu stage
         primaryStage.initStyle(StageStyle.UNIFIED);
         primaryStage.setTitle("Launcher Sagrada");
         primaryStage.setResizable(false);
@@ -76,8 +91,14 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
             e.consume();
             closeProgram();
         });
+
         //design second stage
         secondStage = new Stage(StageStyle.UNDECORATED);
+        gameStage = new Stage(StageStyle.UNDECORATED);
+        GUI.getGUI().setPrimaryStage(gameStage);
+        //design third stage
+
+
       /*  secondStage.initModality(Modality.APPLICATION_MODAL);
         secondStage.setAlwaysOnTop(true);
         secondStage.centerOnScreen();
@@ -128,9 +149,15 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         if (result) primaryStage.close();
         System.exit(0);
     }
+    public static void closeSecondStage(){
+        Platform.runLater(()->secondStage.close());
 
-    public void showMessage(EventView EventView) {
-        EventView.accept(this);
+    }
+
+    public void showMessage(EventView eventView) {
+        System.out.println("Reference al gioco : "+getGUI());
+        getGUI().showMessage(eventView);
+     //  eventView.accept(getGameGui());
     }
 
     @Override
