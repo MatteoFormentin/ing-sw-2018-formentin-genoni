@@ -84,7 +84,7 @@ public class Server implements ServerController {
             configProperties.load(inputTime);
 
             // TIMEOUT LOAD
-            timeout = Long.parseLong(configProperties.getProperty("roomTimeout")) * 1000; //*1000 per convertire in millisecondi
+            timeout = 3 * 1000; //*1000 per convertire in millisecondi
             System.out.println("Timeout set to "+configProperties.getProperty("roomTimeout")+" ms");
 
         } catch (IOException e) {

@@ -78,10 +78,12 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         });
         //design second stage
         secondStage = new Stage(StageStyle.UNDECORATED);
-        secondStage.initModality(Modality.APPLICATION_MODAL);
+      /*  secondStage.initModality(Modality.APPLICATION_MODAL);
         secondStage.setAlwaysOnTop(true);
         secondStage.centerOnScreen();
-
+        secondStage.setScene(waitScene);
+        secondStage.centerOnScreen();
+        secondStage.show();*/
         BackgroundImage backgroundImage = new BackgroundImage(new Image("it/polimi/se2018/resources/Immagine.png", 779, 261, true, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         //design scene wait
@@ -97,12 +99,11 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         playButton.setOnAction(e -> {
             if (connected) {
                 if (login) {
-                    new AlertMessage().displayMessage("Sei già collegato al Server");
+                    new AlertMessage().displayMessage("Devi effettuare il Relogin(non è vero sei ancora collegato al server, ma non devi rompere)");
                 } else {
                     login = new Login().display(client);
-                    secondStage.setScene(waitScene);
-                    secondStage.centerOnScreen();
-                    secondStage.show();
+                    new WaitGame().displayMessage(secondStage);
+
                 }
             } else
                 new AlertMessage().displayMessage("Devi prima impostare l'IP del server e la porta a cui ti vuoi collegare");
