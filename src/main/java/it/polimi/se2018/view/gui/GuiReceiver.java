@@ -84,7 +84,7 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         secondStage.setScene(waitScene);
         secondStage.centerOnScreen();
         secondStage.show();*/
-        BackgroundImage backgroundImage = new BackgroundImage(new Image("it/polimi/se2018/resources/Immagine.png", 779, 261, true, true),
+        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:src/resources/Immagine.jpg", 779, 261, true, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         //design scene wait
 
