@@ -23,8 +23,7 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
     //fields for the init waitScene
     private static ClientController client = new Client();
     private static BorderPane pane = new BorderPane();
-    private static Stage primaryStage,secondStage;//for close the program called from inside the start, don't need to be static
-    private static Scene startMenu,waitScene,gameScene;
+    private static Stage primaryStage,secondStage,gameStage;//for close the program called from inside the start, don't need to be static
     private boolean connected = false, login = false;
 
     //variabili per il giocatori
@@ -62,8 +61,8 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         this.primaryStage=primaryStage;
         //creating a Group object
         VBox menu = new VBox();
-        startMenu = new Scene(menu, 779, 261);
-        waitScene = new Scene (pane,300,200);
+        Scene startMenu = new Scene(menu, 779, 261);
+        Scene waitScene = new Scene (pane,300,200);
         primaryStage.setScene(startMenu);
         pane.setCenter(new Text("aspetta gli altri giocatori"));
         waitScene.setCursor(Cursor.WAIT);
@@ -78,7 +77,7 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
             closeProgram();
         });
         //design second stage
-        secondStage = new Stage(StageStyle.UTILITY);
+        secondStage = new Stage(StageStyle.UNDECORATED);
         secondStage.initModality(Modality.APPLICATION_MODAL);
         secondStage.setAlwaysOnTop(true);
         secondStage.centerOnScreen();
@@ -101,8 +100,9 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
                     new AlertMessage().displayMessage("Sei già collegato al Server");
                 } else {
                     login = new Login().display(client);
-                    primaryStage.setScene(waitScene);
-                    primaryStage.centerOnScreen();
+                    secondStage.setScene(waitScene);
+                    secondStage.centerOnScreen();
+                    secondStage.show();
                 }
             } else
                 new AlertMessage().displayMessage("Devi prima impostare l'IP del server e la porta a cui ti vuoi collegare");
@@ -143,14 +143,21 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         box.getChildren().add(new Text("Questi sono i giocatori connessi :"));
         box.setSpacing(10);
         box.setAlignment(Pos.CENTER);
-        playerId=event.getPlayerId();
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                //stage
+                gameStage = new Stage(StageStyle.UNDECORATED);
+                gameStage.initModality(Modality.APPLICATION_MODAL);
+                gameStage.setAlwaysOnTop(true);
+                gameStage.centerOnScreen();
+
+                playerId=event.getPlayerId();
                 pane=new BorderPane();
                 pane.setCenter(box);
                 VBox[] player = new VBox[event.getPlayersName().length];
-                gameScene =new Scene(pane,1000,800);
+                Scene gameScene =new Scene(pane,1000,800);
                 playersName= new Text[event.getPlayersName().length];
                 gridWindowPatternCardPoolChoise = new GridPane[event.getPlayersName().length];
                 for(int i=0; i<event.getPlayersName().length;i++){
@@ -162,11 +169,17 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
                     player[i].getChildren().add(gridWindowPatternCardPoolChoise[i]);
                     box.getChildren().add(player[i]);
                 }
-                secondStage.setScene(gameScene);
-                secondStage.centerOnScreen();
-                secondStage.show();
+                secondStage.close();
+                gameStage.setScene(gameScene);
+                gameStage.centerOnScreen();
+                gameStage.show();
             }
         });
+    }
+
+    @Override
+    public void visit(JoinGame event) {
+
     }
 
     @Override
