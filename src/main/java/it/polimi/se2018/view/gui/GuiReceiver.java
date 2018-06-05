@@ -1,11 +1,9 @@
 package it.polimi.se2018.view.gui;
 
 import it.polimi.se2018.list_event.event_received_by_view.*;
-import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
-import it.polimi.se2018.view.gui.gamestage.GuiGame;
 import it.polimi.se2018.view.gui.stage.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -13,30 +11,47 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class GuiReceiver extends Application implements UIInterface,ViewVisitor {
-    //fields for the init game
+    //fields for the init waitScene
     private static ClientController client = new Client();
     private static BorderPane pane = new BorderPane();
-    private Stage primaryStage;//for close the program called from inside the start, don't need to be static
+    private static Stage primaryStage,secondStage;//for close the program called from inside the start, don't need to be static
+    private static Scene startMenu,waitScene,gameScene;
     private boolean connected = false, login = false;
 
-    //variabili per il gioco
+    //variabili per il giocatori
     private static int playerId;
     private static Text[] playersName;
-    private static ImageView[][][] windowPatternCardOfEachPlayer;
-    private static ImageView[] objectivePrivateCardOfEachPlayers;
     private static ImageView[][] handOfEachPlayer;
     private static Text[] FavorTokenOfEachPlayer;
     private static Text[] PointsOfEachPlayer;
 
+    //fields for windows
+    private static Text[] nameWindowSNameChoise;
+    private static Text[] difficultyWindowChoise;
+    private static ImageView[][][] windowPatternCardPoolChoise;
+    private static GridPane[] gridWindowPatternCardPoolChoise;
+
+
+    private static Text[] nameWindowEachPlayer;
+    private static Text[] difficultyWindowEachPlayer;
+    private static ImageView[][][] windowPatternCardOfEachPlayer;
+    //fields for cards
+    private static ImageView[] toolCard;
+    private static ImageView[] objectiveCard;
+    private static ImageView[] objectivePrivateCardOfEachPlayers;
+
+    //round track
+    private static ImageView[][] roundTrack;
+    private static ImageView[] poolDice;
 
     public void setUpGUI(String[] args) {
         launch(args);
@@ -47,20 +62,27 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         this.primaryStage=primaryStage;
         //creating a Group object
         VBox menu = new VBox();
-        Scene startMenu = new Scene(menu, 779, 261);
-        Scene game = new Scene (pane);
+        startMenu = new Scene(menu, 779, 261);
+        waitScene = new Scene (pane,300,200);
         primaryStage.setScene(startMenu);
         pane.setCenter(new Text("aspetta gli altri giocatori"));
-        pane.setMinSize(800,300);
+        waitScene.setCursor(Cursor.WAIT);
         //design stage
         primaryStage.initStyle(StageStyle.UNIFIED);
         primaryStage.setTitle("Launcher Sagrada");
         primaryStage.setResizable(false);
         primaryStage.setAlwaysOnTop(true);
+        primaryStage.centerOnScreen();
         primaryStage.setOnCloseRequest(e -> {
             e.consume();
             closeProgram();
         });
+        //design second stage
+        secondStage = new Stage(StageStyle.UTILITY);
+        secondStage.initModality(Modality.APPLICATION_MODAL);
+        secondStage.setAlwaysOnTop(true);
+        secondStage.centerOnScreen();
+
         BackgroundImage backgroundImage = new BackgroundImage(new Image("it/polimi/se2018/resources/Immagine.png", 779, 261, true, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         //design scene wait
@@ -79,7 +101,8 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
                     new AlertMessage().displayMessage("Sei già collegato al Server");
                 } else {
                     login = new Login().display(client);
-                    primaryStage.setScene(game);
+                    primaryStage.setScene(waitScene);
+                    primaryStage.centerOnScreen();
                 }
             } else
                 new AlertMessage().displayMessage("Devi prima impostare l'IP del server e la porta a cui ti vuoi collegare");
@@ -102,6 +125,7 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
     private void closeProgram() {
         Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler uscire dal gioco?");
         if (result) primaryStage.close();
+        System.exit(0);
     }
 
     public void showMessage(EventView EventView) {
@@ -119,23 +143,36 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
         box.getChildren().add(new Text("Questi sono i giocatori connessi :"));
         box.setSpacing(10);
         box.setAlignment(Pos.CENTER);
+        playerId=event.getPlayerId();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                pane.setMaxSize(1000,800);
-                pane.setMinSize(1000,800);
+                pane=new BorderPane();
                 pane.setCenter(box);
-                playerId = event.getPlayerId();
+                VBox[] player = new VBox[event.getPlayersName().length];
+                gameScene =new Scene(pane,1000,800);
                 playersName= new Text[event.getPlayersName().length];
+                gridWindowPatternCardPoolChoise = new GridPane[event.getPlayersName().length];
                 for(int i=0; i<event.getPlayersName().length;i++){
                     playersName[i] = new Text(event.getPlayersName(i));
-                    box.getChildren().add(playersName[i]);
+                    gridWindowPatternCardPoolChoise[i] = new GridPane();
+                    player[i]= new VBox();
+                    player[i].setAlignment(Pos.CENTER);
+                    player[i].getChildren().add(playersName[i]);
+                    player[i].getChildren().add(gridWindowPatternCardPoolChoise[i]);
+                    box.getChildren().add(player[i]);
                 }
-
+                secondStage.setScene(gameScene);
+                secondStage.centerOnScreen();
+                secondStage.show();
             }
         });
     }
 
+    @Override
+    public void visit(InitialWindowPatternCard event) {
+
+    }
     @Override
     public void visit(StartPlayerTurn event) {
 
@@ -171,68 +208,64 @@ public class GuiReceiver extends Application implements UIInterface,ViewVisitor 
 
     }
 
-    @Override
-    public void visit(UpdateAllToolCard event) {
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
+    //*******************************************Visit for model event*******************************************************************************
 
-    }
-
-    @Override
-    public void visit(UpdateSingleToolCardCost event) {
-
-    }
-
-    @Override
-    public void visit(UpdateDicePool event) {
-
-    }
-
-    @Override
-    public void visit(InitialWindowPatternCard event) {
-
-    }
-
-    @Override
-    public void visit(UpdateSinglePlayerHand event) {
-
-    }
-
-    @Override
-    public void visit(UpdateAllPublicObject event) {
-
-    }
-
-    @Override
-    public void visit(UpdateSingleCell event) {
-
-    }
-
-    @Override
-    public void visit(UpdateSinglePlayerTokenAndPoints event) {
-
-    }
-
-    @Override
-    public void visit(UpdateSinglePrivateObject event) {
-
-    }
-
-    @Override
-    public void visit(UpdateSingleTurnRoundTrack event) {
-
-    }
-
-    @Override
-    public void visit(UpdateSingleWindow event) {
-
-    }
-
-    @Override
     public void visit(UpdateInitialWindowPatternCard event) {
-
+        int number = event.getInitialWindowPatternCard().length;
+        int line = event.getInitialWindowPatternCard(0).getMatrix().length;
+        int column = event.getInitialWindowPatternCard(0).getColumn(0).length;
+        //ini
     }
 
-    @Override
+    public void visit(UpdateAllToolCard event) {
+      //TODO  toolCard = event.getToolCard();
+    }
+
+    public void visit(UpdateAllPublicObject event) {
+        //TODO  objectivePublicCards = event.getPublicCards();
+    }
+
     public void visit(UpdateInitDimRound event) {
-
+        //TODO  roundTrack = event.getRoundTrack();
     }
+
+    public void visit(UpdateSingleToolCardCost event) {
+        //TODO toolCard[event.getIndexToolCard()].setFavorToken(event.getCostToolCard());
+    }
+
+    public void visit(UpdateDicePool event) {
+        //TODO dicePool = event.getDicePool();
+    }
+
+
+    public void visit(UpdateSinglePlayerHand event) {
+        //TODO handOfEachPlayer[event.getIndexPlayer()] = event.getHandPlayer();
+    }
+
+    public void visit(UpdateSingleCell event) {
+        //TODO  windowPatternCardOfEachPlayer[event.getIndexPlayer()].getCell(event.getLine(), event.getColumn()).setDice(event.getDice());
+      /*  cliMessage.showOpponentWindow(playersName[event.getIndexPlayer()]);
+        cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[event.getIndexPlayer()]);*/
+    }
+
+    public void visit(UpdateSinglePlayerTokenAndPoints event) {
+        //TODO  FavorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
+      //  PointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
+    }
+
+    public void visit(UpdateSinglePrivateObject event) {
+        //TODO objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = event.getPrivateCard();
+    }
+
+    public void visit(UpdateSingleTurnRoundTrack event) {
+        //TODO roundTrack[event.getIndexRound()] = event.getDicePool();
+    }
+
+    public void visit(UpdateSingleWindow event) {
+        //TODO  windowPatternCardOfEachPlayer[event.getIndexPlayer()] = event.getWindowPatternCard();
+    }
+
 }

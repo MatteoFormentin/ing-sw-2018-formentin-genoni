@@ -19,6 +19,9 @@ public class UpdateInitialWindowPatternCard extends EventView  {
     public WindowPatternCard[] getInitialWindowPatternCard() {
         return initialWindowPatternCard;
     }
+    public WindowPatternCard getInitialWindowPatternCard(int i) {
+        return initialWindowPatternCard[i];
+    }
 
     public void setInitialWindowPatternCard(WindowPatternCard[] initialWindowPatternCard) {
         this.initialWindowPatternCard = initialWindowPatternCard;
