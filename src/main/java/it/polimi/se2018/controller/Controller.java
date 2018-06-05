@@ -25,10 +25,7 @@ import java.util.Observable;
 
 public class Controller implements ControllerVisitor {
     private GameBoard gameBoard;
-    private Model model; //the class that can call the view for
-    private List<Observable> view;
-    private int playerok;
-    private boolean waitResponse;
+    private HandlerToolCard handlerToolCard;
     private int playerNumber;
     //Server in cui si setterà la partita
     private ServerController server;
@@ -48,13 +45,20 @@ public class Controller implements ControllerVisitor {
         this.playerNumber = playerNumber;
         System.out.println("CONTROLLER CREATED!!!!!!!!!!!");
         gameBoard = new GameBoard(playerNumber, server);
+        handlerToolCard = new HandlerToolCard(gameBoard, this);
         toolcard = false;
     }
 
 
     // EX UPDATE
     public void sendEventToController(EventController event) {
-        event.accept(this);
+        if (toolcard) ;//pass to handler toolcard
+        else event.accept(this);
+    }
+
+    //the handler respond with this method
+    public void sendEventToView(EventView event) {
+        server.sendEventToView(event);
     }
 
     //*****************************************Visitor Pattern************************************************************************
@@ -96,86 +100,65 @@ public class Controller implements ControllerVisitor {
      */
     @Override
     public void visit(InsertDiceController event) {//this is the handler for a normal move
-        if (!toolcard) {
-            if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
-                //il giocatore ha già pescato un dado e deve piazzarlo
-                if (gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()) {
-                    //il giocatore ha già utilizzato questa mossa
-                    showErrorMessage(new AlreadyPlaceANewDiceException(), event.getPlayerId());
-                    EventView turnPacket = new StartPlayerTurn();
-                    turnPacket.setPlayerId(event.getPlayerId());
-                    System.err.println("Il giocatore voleva violare le regole");
-                    server.sendEventToView(turnPacket);
-
-
-                } else {
-                    SelectCellOfWindowView packet = new SelectCellOfWindowView();
-                    packet.setPlayerId(event.getPlayerId());
-                    server.sendEventToView(packet);
-                }
-            } else {//il giocatore non ha ancora pescato un nuovo dado
-                SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
+        if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
+            //il giocatore ha già pescato un dado e deve piazzarlo
+            if (gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()) {
+                //il giocatore ha già utilizzato questa mossa
+                showErrorMessage(new AlreadyPlaceANewDiceException(), event.getPlayerId());
+                //TODO far rivedere il menu senza riinviare il pacchetto? boh
+                EventView turnPacket = new StartPlayerTurn();
+                turnPacket.setPlayerId(event.getPlayerId());
+                System.err.println("Il giocatore voleva violare le regole");
+                server.sendEventToView(turnPacket);
+            } else {
+                SelectCellOfWindowView packet = new SelectCellOfWindowView();
                 packet.setPlayerId(event.getPlayerId());
                 server.sendEventToView(packet);
             }
-        } else {
-            showErrorMessage(new ToolCardInUseException(), event.getPlayerId());
+        } else {//il giocatore non ha ancora pescato un nuovo dado
+            SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
+            packet.setPlayerId(event.getPlayerId());
+            server.sendEventToView(packet);
         }
+
     }
 
 
     @Override
     public void visit(SelectDiceFromHandController event) {
-        if (toolcard) ;//pass to handler toolcard
-        else {
-            try {
-                gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(), event.getIndex());
-                SelectCellOfWindowView packet = new SelectCellOfWindowView();
-                packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                server.sendEventToView(packet);
-            } catch (Exception ex) {
-                showErrorMessage(ex, event.getPlayerId());
-                SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
-                packet.setPlayerId(event.getPlayerId());
-                server.sendEventToView(packet);
-            }
+        try {
+            gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(), event.getIndex());
+            SelectCellOfWindowView packet = new SelectCellOfWindowView();
+            packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
+            server.sendEventToView(packet);
+        } catch (Exception ex) {
+            showErrorMessage(ex, event.getPlayerId());
+            SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
+            packet.setPlayerId(event.getPlayerId());
+            server.sendEventToView(packet);
         }
     }
 
     @Override
     public void visit(SelectCellOfWindowController event) {
-        if (toolcard) ;//pass to handler toolcard
-        else {
-            try {
-                gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
-                //sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
-                EventView turnPacket = new StartPlayerTurn();
-                turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                System.err.println("Il giocatore ha piazzato il dado con successo" + gameBoard.getIndexCurrentPlayer());
-                server.sendEventToView(turnPacket);
-            } catch (Exception ex) {
-                //TODO implementare errori specifici da mostrare (colore / valore)????? non basta usare showErrorMessage?
-                showErrorMessage(ex, event.getPlayerId());
-                SelectCellOfWindowView packet = new SelectCellOfWindowView();
-                packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                server.sendEventToView(packet);
-            }
+        try {
+            gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
+            //sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
+            EventView turnPacket = new StartPlayerTurn();
+            turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
+            System.err.println("Il giocatore ha piazzato il dado con successo" + gameBoard.getIndexCurrentPlayer());
+            server.sendEventToView(turnPacket);
+        } catch (Exception ex) {
+            //TODO implementare errori specifici da mostrare (colore / valore)????? non basta usare showErrorMessage?
+            showErrorMessage(ex, event.getPlayerId());
+            SelectCellOfWindowView packet = new SelectCellOfWindowView();
+            packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
+            server.sendEventToView(packet);
         }
     }
 
     public void visit(SelectToolCardController event) {
-        if (toolcard) {
-            gameBoard.getIdToolCard(event.getIndexToolCard());
-            System.err.println("Il giocatore ha scelto correttamente la toolcard " + gameBoard.getIdToolCard(event.getIndexToolCard()));
-            EventView turnPacket = new StartPlayerTurn();
-            turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(turnPacket);
-        } else {
-            System.err.println("Il giocatore non può usare la toolcard " + gameBoard.getIdToolCard(event.getIndexToolCard()));
-            EventView turnPacket = new StartPlayerTurn();
-            turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(turnPacket);
-        }
+        //TODO settare il flag della toolcard to true e girare il pacchetto all'handler
     }
 
     @Override
@@ -196,7 +179,7 @@ public class Controller implements ControllerVisitor {
 
     @Override
     public void visit(UseToolCardController event) {
-        if (gameBoard.getPlayer(event.getIndex()).isHasUsedToolCard()) {
+        if (gameBoard.getPlayer(event.getIndex()).isHasUsedToolCard()) {//se ha già usato la toolcard
             if (gameBoard.getIndexCurrentPlayer() == event.getIndex()) {// can use the move ToolCard!
                 showErrorMessage(new AlreadyUseToolCardException(), event.getPlayerId());
                 EventView turnPacket = new StartPlayerTurn();
@@ -206,7 +189,7 @@ public class Controller implements ControllerVisitor {
                 showErrorMessage(new CurrentPlayerException(), event.getPlayerId());
             }
         } else {
-            toolcard = true;
+            //TODO inviare il paccetto che rappresenta il menu della scelta toolcard(per gui farà vedere un messaggio e abilita i bottoni)
             EventView packet = new SelectToolCard();
             packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(packet);
@@ -221,7 +204,7 @@ public class Controller implements ControllerVisitor {
 
     @Override
     public void visit(SelectDiceFromRoundTrackController event) {
-
+        //non può avvenire nel controller
     }
 
     public void startGame() {
