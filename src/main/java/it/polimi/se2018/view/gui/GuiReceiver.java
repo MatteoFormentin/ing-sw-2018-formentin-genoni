@@ -93,17 +93,31 @@ public class GuiReceiver implements UIInterface {
         primaryStage.show();
     }
 
-    private void closeProgram() {
+    public void closeProgram() {
         Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler uscire dal gioco?");
         if (result) primaryStage.close();
         System.exit(0);
     }
+
+    /**
+     * inoltrare il messaggio alla classe adibita al gioco vero e proprio
+     *
+     * @param eventView
+     */
     public void showMessage(EventView eventView) {
-        System.out.println("Reference al gioco : "+ getGuiGame());
-        getGuiGame().showMessage(eventView);
-      // eventView.accept(this);
+        try {
+            getGuiGame().showMessage(eventView);
+        }catch(Exception ex){
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
+    /**
+     * inoltrare al client un pacchetto
+     *
+     * @param event
+     */
     public void sendEventToNetwork(EventController event){
         client.sendEventToController(event);
     }

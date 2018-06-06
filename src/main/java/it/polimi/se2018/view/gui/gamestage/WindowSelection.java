@@ -1,47 +1,59 @@
 package it.polimi.se2018.view.gui.gamestage;
 
+import it.polimi.se2018.view.gui.stage.AlertMessage;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 /**
  * stage for select the window.
  *
  * @author Luca Genoni
  */
 public class WindowSelection {
-    public static void display(){
-        Stage stageWindowChoice =new Stage();
+    private int selected;
+    private Stage stage;
+    private int index;
+    private HBox windowChoise;
+    private AlertMessage popup;
 
-        stageWindowChoice.initModality(Modality.APPLICATION_MODAL);
-        stageWindowChoice.setTitle("Select the window to play with");
-        HBox hbox = new HBox();
-        //Setting the space between the nodes of a HBox pane
-        hbox.setSpacing(10);
-/*
-        //Setting the margin to the nodes
-        hbox.setMargin(textField, new Insets(20, 20, 20, 20));
-        hbox.setMargin(playButton, new Insets(20, 20, 20, 20));
-        hbox.setMargin(stopButton, new Insets(20, 20, 20, 20));
+    WindowSelection() {
 
-        //retrieving the observable list of the HBox
-        ObservableList list = hbox.getChildren();
+        popup = new AlertMessage();
+    }
 
-        //Adding all the nodes to the observable list (HBox)
-        list.addAll(textField, playButton, stopButton);
+    public void displayInit(HBox tool,HBox publicO, HBox privateO){
 
-        Label errorMessage =new Label();
-        errorMessage.setText(message);
-        Button closeButton =new Button("Ok");
+    }
 
-        VBox layoutMessage = new VBox(10);
-        layoutMessage.getChildren().addAll(layoutMessage,closeButton);
-        layoutMessage.setAlignment(Pos.CENTER);
+    int displayCard(ImageView imageViewToShow, boolean canCanUseCard){
+        ImageView imageViewCard = new ImageView(imageViewToShow.getImage());
+        Pane cardPane =new Pane(imageViewCard);
+        imageViewCard.setOnMouseExited(e->stage.close());
+        if (canCanUseCard==true){
+            imageViewCard.setOnMouseClicked(e->{
+                stage.close();
+            });
+        }else{
+            imageViewCard.setOnMouseClicked(e->{
+                stage.close();
+            });
+        }
+        imageViewCard.setFitHeight(500);
+        imageViewCard.setFitWidth(1200);
 
-        Scene boxMessage =new Scene(layoutMessage);
-
-        stageWindowChoice.setScene(boxMessage);
-        stageWindowChoice.showAndWait();*/
-
+        //Setting the preserve ratio of the image view
+        imageViewCard.setPreserveRatio(true);
+        Scene scene =new Scene(cardPane);
+        stage.setScene(scene);
+        stage.showAndWait();
+        return index;
     }
 
 }

@@ -18,7 +18,7 @@ public class Cell implements Serializable {
 
     private Dice dice;
     private int valueRestriction = 0;
-    private DiceColor colorRestriction;
+    private DiceColor colorRestriction = null;
     //************************************getter**********************************************
     //************************************getter**********************************************
     //************************************getter**********************************************

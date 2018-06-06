@@ -20,7 +20,13 @@ import javafx.stage.StageStyle;
  * @author Luca Genoni
  */
 public class AlertMessage {
+    private Stage stageMessage;
 
+    public AlertMessage(){
+        stageMessage = new Stage(StageStyle.UNDECORATED);
+        stageMessage.initModality(Modality.APPLICATION_MODAL);
+        stageMessage.setAlwaysOnTop(true);
+    }
     public void displayMessage(String message){
         /*StageStyle
                     UTILITY only _ x
@@ -31,9 +37,7 @@ public class AlertMessage {
                     APPLICATION_MODAL can't turn to previus stage and can't move
                     WINDOW_MODAL
          */
-        Stage stageMessage = new Stage(StageStyle.UNDECORATED);
-        stageMessage.initModality(Modality.APPLICATION_MODAL);
-        stageMessage.setAlwaysOnTop(true);
+
         Background focusBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
 
 
@@ -42,8 +46,6 @@ public class AlertMessage {
 
         Button closeButton =new Button("Ok");
         closeButton.setOnAction(e->stageMessage.close());
-
-
         VBox layoutMessage = new VBox(20);
         layoutMessage.getChildren().addAll(errorMessage,closeButton);
         layoutMessage.setAlignment(Pos.CENTER);

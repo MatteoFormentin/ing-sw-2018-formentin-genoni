@@ -13,6 +13,10 @@ public class UpdateInitDimRound extends EventView  {
         return roundTrack;
     }
 
+    public DiceStack getRoundTrack(int index) {
+        return roundTrack[index];
+    }
+
     public void setRoundTrack(DiceStack[] roundTrack) {
         this.roundTrack = roundTrack;
     }
