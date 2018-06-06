@@ -10,11 +10,12 @@ public class UpdateAllToolCard extends EventView {
     public UpdateAllToolCard(ToolCard[] toolCards) {
         this.toolCards = toolCards;
     }
-    public UpdateAllToolCard(UpdateAllToolCard original) {
-        this.toolCards = toolCards;
-    }
+
     public ToolCard[] getToolCard() {
         return toolCards;
+    }
+    public ToolCard getToolCard(int index) {
+        return toolCards[index];
     }
 
     public void setToolCard(ToolCard[] toolCards) {

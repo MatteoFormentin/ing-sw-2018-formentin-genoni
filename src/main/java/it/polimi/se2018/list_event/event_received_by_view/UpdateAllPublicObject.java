@@ -18,6 +18,9 @@ public class UpdateAllPublicObject extends EventView{
         return publicCards;
     }
 
+    public ObjectivePublicCard getPublicCards(int index) {
+        return publicCards[index];
+    }
     public void setPublicCards(ObjectivePublicCard[] publicCards) {
         this.publicCards = publicCards;
     }

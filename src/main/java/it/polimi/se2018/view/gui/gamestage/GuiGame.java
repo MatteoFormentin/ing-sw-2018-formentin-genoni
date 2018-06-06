@@ -1,8 +1,7 @@
 package it.polimi.se2018.view.gui.gamestage;
 
 
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_controller.InsertDiceController;
+import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 
 import it.polimi.se2018.view.UIInterface;
@@ -10,9 +9,11 @@ import it.polimi.se2018.view.gui.stage.ConfirmBox;
 
 import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
@@ -21,55 +22,59 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+
+import java.util.stream.IntStream;
+
 import static it.polimi.se2018.view.gui.GuiReceiver.getGuiReceiver;
 
 /**
- * Class not on the javaFX thread. I made this class for keep clean the thread of javaFx
- * and modify the stage without incur in problems with multithreading
- *
+ * Class for handle the Gui gameboard
  */
-public class GuiGame implements UIInterface,ViewVisitor {
+public class GuiGame implements UIInterface, ViewVisitor {
     private static GuiGame instance;
-    private Stage waitStage,gameStage,showCardStage,showRoundStage;
+    private Stage waitStage, gameStage, showCardStage, showRoundStage;
+
+
+    //variables for show card
     private ShowCardBox cardShow;
+    private Boolean clicked;
 
     public void setTheGameStage() {
         //setTheGame wait
         waitStage = new Stage();
         waitStage.initStyle(StageStyle.UNDECORATED);
         waitStage.initModality(Modality.APPLICATION_MODAL);
-        waitStage.setOnCloseRequest(e -> {
-            e.consume();
-        });
+        waitStage.setOnCloseRequest(e -> e.consume());
 
         //setStageForTheGame
-        gameStage =new Stage();
+        gameStage = new Stage();
         gameStage.initStyle(StageStyle.UTILITY);
         gameStage.initModality(Modality.APPLICATION_MODAL);
-        gameStage.setOnCloseRequest(e -> {
+        gameStage.setOnCloseRequest(e -> e.consume());
 
-            e.consume();
-        });
-        //setStage for show a big card
-        showCardStage = new Stage();
-        showCardStage.initStyle(StageStyle.UNDECORATED);
-        showCardStage.initModality(Modality.APPLICATION_MODAL);
+        //setClass For show a bigger card
+        cardShow = new ShowCardBox(700, 600);
         //TODO set up all the stage
+        setBoard();
     }
 
-    private GuiGame(){
+    private GuiGame() {
+        //load the dimension of the scene from file
+
     }
-    public static GuiGame getGuiGame(){
-        if(instance==null) instance=new GuiGame();
+
+    public static GuiGame getGuiGame() {
+        if (instance == null) instance = new GuiGame();
         return instance;
     }
-    private Scene boardgame, windowChoice;
-
 
     //variabili per il giocatori
     private int playerId;
     private VBox opposingPlayers; //pane for add/remove Grid of other player
-    private GridPane[] gridPlayer; //one pane for each player????? not so usefull
+    private VBox centerBox; //conteins the player and dicepool
+
+    private HBox[] boxAllDataPlayer; //contains info and hand
+    private VBox[] infoPlayer; //Contains Name, (favorToken, Points in one HBox) and WindowPattern
     private Text[] playersName;
     private VBox[] handOfEachPlayer; //
     private Text[] FavorTokenOfEachPlayer;
@@ -89,8 +94,8 @@ public class GuiGame implements UIInterface,ViewVisitor {
     private HBox toolBox; //pane for add/remove the Tool card
     private ImageView[] toolCard; //store the Tool card
     private HBox objectivePublicBox; //pane for add/remove the Public card
-    private ImageView[] objectiveCard; //store the Public card
-    private HBox ObjectivePrivateBox; //pane for add/remove the Private card
+    private ImageView[] objectivePublicCard; //store the Public card
+    private HBox objectivePrivateBox; //pane for add/remove the Private card
     private ImageView[] objectivePrivateCardOfEachPlayers; //store the Private card
 
     //round track
@@ -102,72 +107,97 @@ public class GuiGame implements UIInterface,ViewVisitor {
     //Button of the menu game
     private Button[] gameButton;
 
-    public void showWaitStage(){
-        waitStage.setTitle("Launcher Sagrada");
+    public void showWaitStage() {
         waitStage.setResizable(false);
         waitStage.setAlwaysOnTop(true);
         waitStage.centerOnScreen();
         waitStage.setScene(WaitGame.displayMessage());
         waitStage.show();
     }
-    private void setBoard(){
-        //keep all the button
-        HBox menuButton = new HBox();
 
-        //aggiungere Pulsanti
-        gameButton = new Button[4];
-        for(int i=0;i<4;i++){
+    private void setBoard() {
+
+        //opposingPlayers
+        opposingPlayers = new VBox();
+        opposingPlayers.setAlignment(Pos.CENTER_LEFT);
+        //centerBox
+        centerBox = new VBox();
+        centerBox.setAlignment(Pos.CENTER);
+        //The button for menu in bottom position
+        HBox menuButton = new HBox();
+        gameButton = new Button[3];
+        for (int i = 0; i < 3; i++) {
             gameButton[i] = new Button();
             menuButton.getChildren().add(gameButton[i]);
         }
         gameButton[0].setText("Pesca e inserisci un dado");
         gameButton[0].setOnAction(event -> {
-            System.out.println("ho cliccato il pulsante");
-            EventController packet = new InsertDiceController();
-            packet.setPlayerId(playerId);
-            getGuiReceiver().sendEventToNetwork(packet);
+            InsertDiceController packet = new InsertDiceController();
+            sendEventToGuiReceiver(packet);
         });
         gameButton[1].setText("Utilizza una Tool Card");
+        gameButton[1].setOnAction(event -> {
+            IntStream.range(0, toolCard.length).forEach(i -> {
+                toolCard[i].setManaged(true);
+            });
+
+            UseToolCardController packet = new UseToolCardController();
+            sendEventToGuiReceiver(packet);
+        });
         gameButton[2].setText("Passa il turno");
-        gameButton[3].setText("Esci dal gioco");
-        //keep all the card
+        gameButton[2].setOnAction(event -> {
+            EndTurnController packet = new EndTurnController();
+            sendEventToGuiReceiver(packet);
+        });
+
+        //the card in right position
         VBox cardBox = new VBox();
+        toolBox = new HBox();
+        objectivePublicBox = new HBox();
+        objectivePrivateBox = new HBox();
+        cardBox.setAlignment(Pos.CENTER_RIGHT);
+        cardBox.getChildren().addAll(toolBox, objectivePublicBox, objectivePrivateBox);
 
 
         BorderPane pane = new BorderPane(); //keep all the element of the game
-    /*    pane.setTop();
-        pane.setCenter();
-        pane.setRight();
-        pane.setLeft();*/
+        //   pane.setTop();
+        pane.setLeft(opposingPlayers);
+        pane.setCenter(centerBox);
+        pane.setRight(cardBox);
         pane.setBottom(menuButton);
-        Scene scene = new Scene(pane,1000,800);
 
+        Scene scene = new Scene(pane, 1000, 800);
+        pane.setMinSize(1000, 800);
+        gameStage.setTitle("Sagrada a fun game of dice");
 
-
-        //setScene NO INIT
-
-        Platform.runLater(()-> {
-            gameStage.setTitle("Sagrada a fun game of dice");
-
-            gameStage.setResizable(false);
-            gameStage.setAlwaysOnTop(true);
-
-            gameStage.setOnCloseRequest(e -> {
-                Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler abbandonare la partita?");
-                if (!result) e.consume();
-
-            });
+        gameStage.setResizable(false);
+        gameStage.setAlwaysOnTop(true);
+        gameStage.centerOnScreen();
+        gameStage.setOnCloseRequest(e -> {
+            Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler abbandonare la partita?");
+            if (!result) e.consume();
+            //TODO devo informare qualcuno che ho eseguito un logout?
+        });
+        System.out.println("costruita");
+        //setScene
+        Platform.runLater(() -> {
             gameStage.setScene(scene);
-            gameStage.centerOnScreen();
         });
 
     }
+
+    private void sendEventToGuiReceiver(EventController packet) {
+        packet.setPlayerId(playerId);
+        getGuiReceiver().sendEventToNetwork(packet);
+    }
+
     /**
      * this class setUp the
+     *
      * @param gameStage
      */
 
-    private void displayBoard(Stage gameStage){
+    private void displayBoard(Stage gameStage) {
       /*  this.waitStage = waitStage;
 
 
@@ -284,11 +314,7 @@ public class GuiGame implements UIInterface,ViewVisitor {
 
         }
         //SetUp Action for the card
-        imageViewPrivateCard.setOnMouseClicked(e ->
-
-        {
-            cardShow.displayCard(imageViewPrivateCard, false);
-        });
+        imageViewPrivateCard.
         imageViewPublicCard[0].setOnMouseClicked(e ->
 
         {
@@ -390,11 +416,6 @@ public class GuiGame implements UIInterface,ViewVisitor {
         if (result) waitStage.close();
     }
 
-    private void setGraficOfCard(ImageView imageView) {
-        imageView.setFitHeight(150);
-        imageView.setFitWidth(150);
-        imageView.setPreserveRatio(true);
-    }
 
 
     public void UpdatePrivateObject(int idPrivate) {
@@ -487,26 +508,43 @@ public class GuiGame implements UIInterface,ViewVisitor {
 
     }*/
 
+    private ImageView createNewImageViewForCard() {
+        ImageView imageView = new ImageView();
+        imageView.setFitHeight(150);
+        imageView.setFitWidth(150);
+        imageView.setPreserveRatio(true);
+        return imageView;
+    }
+
     @Override
     public void visit(EndGame event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(StartGame event) {
+        System.out.println("viene accettato :" + event.toString());
+
         int numberOfPlayer = event.getPlayersName().length;
         playerId = event.getPlayerId();
+        boxAllDataPlayer = new HBox[numberOfPlayer];
+        infoPlayer = new VBox[numberOfPlayer];
         playersName = new Text[numberOfPlayer];
-        for(int i=0; i<numberOfPlayer;i++){
+        //setUpAllThe boxes
+        for (int i = 0; i < numberOfPlayer; i++) {
             playersName[i] = new Text(event.getPlayersName(i));
+            infoPlayer[i] = new VBox(playersName[i]);
+            boxAllDataPlayer[i] = new HBox(infoPlayer[i]);
+            if (i != playerId) opposingPlayers.getChildren().add(boxAllDataPlayer[i]);
+            else centerBox.getChildren().add(boxAllDataPlayer[i]);
         }
         windowPatternCardOfEachPlayer = new GridPane[playersName.length];
         objectivePrivateCardOfEachPlayers = new ImageView[playersName.length];
         handOfEachPlayer = new VBox[event.getPlayersName().length];
         FavorTokenOfEachPlayer = new Text[playersName.length];
         PointsOfEachPlayer = new Text[playersName.length];
-        setBoard();
-        Platform.runLater(()-> {
+
+        Platform.runLater(() -> {
             gameStage.show();
             waitStage.close();
         });
@@ -514,112 +552,174 @@ public class GuiGame implements UIInterface,ViewVisitor {
 
     @Override
     public void visit(JoinGame event) {
-        Platform.runLater(()-> gameStage.show());
+        System.out.println("viene accettato :" + event.toString());
+        Platform.runLater(() -> gameStage.show());
     }
 
     @Override
     public void visit(StartPlayerTurn event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(WaitYourTurn event) {
-
+        //TODO disattivare tutti i bottoni per inviare i pacchetti
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(ShowAllCards event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(SelectCellOfWindowView event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(SelectDiceFromDraftpool event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(SelectToolCard event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(ShowErrorMessage event) {
+        System.out.println("viene accettato :" + event.toString());
+    }
 
+    //************************************* UPLOAD FROM MODEL *********************************************************************
+    //************************************* UPLOAD FROM MODEL *********************************************************************
+    //************************************* UPLOAD FROM MODEL *********************************************************************
+    //************************************* UPLOAD FROM MODEL *********************************************************************
+    @Override
+    public void visit(UpdateSinglePrivateObject event) {
+        if (objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] == null) {
+            objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = createNewImageViewForCard();
+            Platform.runLater(() -> {
+                        objectivePrivateBox.getChildren().add(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()]);
+                        Image newImage = new Image("file:src/resources/carte_jpg/carte_private_" + event.getPrivateCard().getId() + ".jpg");
+                        objectivePrivateCardOfEachPlayers[event.getIndexPlayer()].setImage(newImage);
+                        objectivePrivateCardOfEachPlayers[event.getIndexPlayer()].setOnMouseClicked(e -> {
+                                    cardShow.displayCard(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()], false);
+                                 /*   Boolean clicked = cardShow.displayCard(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()], false)
+                                    if (clicked){
+                                        // inviare richiesta calcolo punti
+                        }*/
+                                }
+
+                        );
+                    }
+            );
+        } else {
+            System.err.println("è stata già inviata al private card");
+        }
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(UpdateAllToolCard event) {
+        int numberToolcard = event.getToolCard().length;
+        toolCard = new ImageView[numberToolcard];
+        //ForEach made for enable the click
+        for (int i = 0; i < numberToolcard; i++) {
+            toolCard[i] = createNewImageViewForCard();
+        }
+        Platform.runLater(() -> {
+                    IntStream.range(0, numberToolcard).forEach(i -> {
+                        toolBox.getChildren().add(toolCard[i]);
+                        Image newImage = new Image("file:src/resources/carte_jpg/carte_strumento_" + event.getToolCard(i).getId() + ".jpg");
+                        toolCard[i].setImage(newImage);
+                        toolCard[i].setOnMouseClicked(e -> {
+                            cardShow.displayCard(toolCard[i], true);
+                        });
+                    });
+                }
+        );
 
+        System.out.println("viene accettato :" + event.toString());
     }
-
+    @Override
+    public void visit(UpdateAllPublicObject event) {
+        int numberObjective = event.getPublicCards().length;
+        objectivePublicCard = new ImageView[numberObjective];
+        //ForEach made for enable the click
+        for (int i = 0; i < numberObjective; i++) {
+            objectivePublicCard[i] = createNewImageViewForCard();
+        }
+        Platform.runLater(() -> {
+                    IntStream.range(0, numberObjective).forEach(i -> {
+                        objectivePublicBox.getChildren().add(objectivePublicCard[i]);
+                        Image newImage = new Image("file:src/resources/carte_jpg/carte_pubbliche_" + event.getPublicCards(i).getId() + ".jpg");
+                        objectivePublicCard[i].setImage(newImage);
+                        objectivePublicCard[i].setOnMouseClicked(e -> {
+                            cardShow.displayCard(objectivePublicCard[i], true);
+                        });
+                    });
+                }
+        );
+        System.out.println("viene accettato :" + event.toString());
+    }
     @Override
     public void visit(UpdateSingleToolCardCost event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(UpdateDicePool event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(InitialWindowPatternCard event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(UpdateSinglePlayerHand event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
-    @Override
-    public void visit(UpdateAllPublicObject event) {
 
-    }
 
     @Override
     public void visit(UpdateSingleCell event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
-    @Override
-    public void visit(UpdateSinglePrivateObject event) {
-
-    }
 
     @Override
     public void visit(UpdateSingleTurnRoundTrack event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(UpdateSingleWindow event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(UpdateInitialWindowPatternCard event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void visit(UpdateInitDimRound event) {
-
+        System.out.println("viene accettato :" + event.toString());
     }
 
     @Override
     public void showMessage(EventView eventView) {
-        System.out.println("viene accettato");
+
         eventView.accept(this);
     }
 }

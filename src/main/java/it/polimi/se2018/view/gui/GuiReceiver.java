@@ -19,7 +19,7 @@ public class GuiReceiver implements UIInterface {
     //fields for the init waitStage
     private static GuiReceiver instance;
     private ClientController client;
-    private Stage primaryStage, waitStage, secondStage;
+    private Stage primaryStage;
     private BorderPane pane= new BorderPane();
     private boolean connected = false, login = false;
 
@@ -73,8 +73,7 @@ public class GuiReceiver implements UIInterface {
                     new AlertMessage().displayMessage("Devi effettuare il Relogin(non è vero sei ancora collegato al server, ma non devi rompere)");
                 } else {
                     login = new Login().display(client);
-                    getGuiGame().showWaitStage();
-
+                    if(login)getGuiGame().showWaitStage();
                 }
             } else
                 new AlertMessage().displayMessage("Devi prima impostare l'IP del server e la porta a cui ti vuoi collegare");
