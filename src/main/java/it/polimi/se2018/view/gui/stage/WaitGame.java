@@ -17,15 +17,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class WaitGame {
-    public void displayMessage(Stage stage){
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setAlwaysOnTop(true);
+    public static Scene displayMessage(){
         Label wait = new Label("Aspetta gli altri giocatori");
-        wait.setStyle("-fx-background-color: #888888");
+        //wait.setStyle("-fx-background-color: #888888");
         // group.getChildren().add(layoutMessage);
-        Scene boxMessage =new Scene(wait,400,200,Color.BLACK);
-        boxMessage.setCursor(Cursor.WAIT);
-        stage.setScene(boxMessage);
-        stage.show();
+        Scene scene =new Scene(wait,400,200,Color.BLACK);
+        scene.setCursor(Cursor.WAIT);
+        return scene;
     }
 }

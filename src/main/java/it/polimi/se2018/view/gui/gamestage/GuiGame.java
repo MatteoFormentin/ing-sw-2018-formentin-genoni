@@ -1,109 +1,181 @@
-package it.polimi.se2018.view.gui.stage;
+package it.polimi.se2018.view.gui.gamestage;
 
 
+import it.polimi.se2018.list_event.event_received_by_controller.EventController;
+import it.polimi.se2018.list_event.event_received_by_controller.InsertDiceController;
 import it.polimi.se2018.list_event.event_received_by_view.*;
-import it.polimi.se2018.model.dice.DiceColor;
 
 import it.polimi.se2018.view.UIInterface;
-import it.polimi.se2018.view.gui.GuiReceiver;
-import it.polimi.se2018.view.gui.gamestage.GameGui;
-import it.polimi.se2018.view.gui.gamestage.ShowCardBox;
-import javafx.application.Application;
+import it.polimi.se2018.view.gui.stage.ConfirmBox;
 
+import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Random;
+import static it.polimi.se2018.view.gui.GuiReceiver.getGuiReceiver;
 
 /**
- * stage for show the main game to the player
+ * Class not on the javaFX thread. I made this class for keep clean the thread of javaFx
+ * and modify the stage without incur in problems with multithreading
  *
- * @author Luca Genoni
  */
-public class GUI implements UIInterface,ViewVisitor {
-    private static GUI instance;
-    private Stage primaryStage;
+public class GuiGame implements UIInterface,ViewVisitor {
+    private static GuiGame instance;
+    private Stage waitStage,gameStage,showCardStage,showRoundStage;
     private ShowCardBox cardShow;
 
-    public void setPrimaryStage(Stage primaryStage) {
-        this.primaryStage = primaryStage;
+    public void setTheGameStage() {
+        //setTheGame wait
+        waitStage = new Stage();
+        waitStage.initStyle(StageStyle.UNDECORATED);
+        waitStage.initModality(Modality.APPLICATION_MODAL);
+        waitStage.setOnCloseRequest(e -> {
+            e.consume();
+        });
+
+        //setStageForTheGame
+        gameStage =new Stage();
+        gameStage.initStyle(StageStyle.UTILITY);
+        gameStage.initModality(Modality.APPLICATION_MODAL);
+        gameStage.setOnCloseRequest(e -> {
+
+            e.consume();
+        });
+        //setStage for show a big card
+        showCardStage = new Stage();
+        showCardStage.initStyle(StageStyle.UNDECORATED);
+        showCardStage.initModality(Modality.APPLICATION_MODAL);
+        //TODO set up all the stage
     }
 
-    private GUI(){
+    private GuiGame(){
     }
-    public static GUI getGUI(){
-        if(instance==null) instance=new GUI();
+    public static GuiGame getGuiGame(){
+        if(instance==null) instance=new GuiGame();
         return instance;
     }
     private Scene boardgame, windowChoice;
 
-    //topLine
-    private BorderPane borderPaneRoot = new BorderPane();
-    private HBox topLine = new HBox();
 
-    //for the roundTrack
+    //variabili per il giocatori
+    private int playerId;
+    private VBox opposingPlayers; //pane for add/remove Grid of other player
+    private GridPane[] gridPlayer; //one pane for each player????? not so usefull
+    private Text[] playersName;
+    private VBox[] handOfEachPlayer; //
+    private Text[] FavorTokenOfEachPlayer;
+    private Text[] PointsOfEachPlayer;
 
-    private Button[] ButtonDiceRound = new Button[10];// dove inserire i dadi avanzati
-    private ImageView[][] diceStackRound = new ImageView[10][9];
-    //for the Private Object
-
-    private HBox toolBox = new HBox();
-    private HBox objectivePublicBox = new HBox();
-    private HBox objectivePrivateBox = new HBox();
-    private ImageView imageViewPrivateCard;
-    private ImageView[] imageViewPublicCard = new ImageView[3], imageViewToolCard = new ImageView[3];
-    private boolean availableToolCard;
-    //info of the player
-    private GridPane gridAllPlayer = new GridPane();
-    private Text[] namePlayer = new Text[4];
-    private Text[] numberAvailableToken = new Text[4];
+    //fields for windows
+    private Text[] nameWindowSNameChoise;
+    private Text[] difficultyWindowChoise;
+    private GridPane[] windowPatternCardPoolChoise;
+    private GridPane[] gridWindowPatternCardPoolChoise;
 
 
-    //info of the window pattern
-    private Label[] idWindow = new Label[4];
-    private Label[] nameWindow = new Label[4];
-    private Label[] levelWindow = new Label[4];
-    private GridPane[] cellWindow = new GridPane[4];
-    private ImageView[][][] imageViewCell = new ImageView[4][4][5];
-    private VBox[] layoutWindow = new VBox[4];
+    private Text[] nameWindowEachPlayer;
+    private Text[] difficultyWindowEachPlayer;
+    private GridPane[] windowPatternCardOfEachPlayer;
+    //fields for cards
+    private HBox toolBox; //pane for add/remove the Tool card
+    private ImageView[] toolCard; //store the Tool card
+    private HBox objectivePublicBox; //pane for add/remove the Public card
+    private ImageView[] objectiveCard; //store the Public card
+    private HBox ObjectivePrivateBox; //pane for add/remove the Private card
+    private ImageView[] objectivePrivateCardOfEachPlayers; //store the Private card
 
-    private Button pickwindow;
+    //round track
+    private HBox roundBox;
+    private Button[] roundButton;
+    private ImageView[][] roundTrackDice;
+    private ImageView[] poolDice;
+
+    //Button of the menu game
+    private Button[] gameButton;
+
+    public void showWaitStage(){
+        waitStage.setTitle("Launcher Sagrada");
+        waitStage.setResizable(false);
+        waitStage.setAlwaysOnTop(true);
+        waitStage.centerOnScreen();
+        waitStage.setScene(WaitGame.displayMessage());
+        waitStage.show();
+    }
+    private void setBoard(){
+        //keep all the button
+        HBox menuButton = new HBox();
+
+        //aggiungere Pulsanti
+        gameButton = new Button[4];
+        for(int i=0;i<4;i++){
+            gameButton[i] = new Button();
+            menuButton.getChildren().add(gameButton[i]);
+        }
+        gameButton[0].setText("Pesca e inserisci un dado");
+        gameButton[0].setOnAction(event -> {
+            System.out.println("ho cliccato il pulsante");
+            EventController packet = new InsertDiceController();
+            packet.setPlayerId(playerId);
+            getGuiReceiver().sendEventToNetwork(packet);
+        });
+        gameButton[1].setText("Utilizza una Tool Card");
+        gameButton[2].setText("Passa il turno");
+        gameButton[3].setText("Esci dal gioco");
+        //keep all the card
+        VBox cardBox = new VBox();
 
 
-    public void displayBoard(Stage primaryStage){
-        this.primaryStage = primaryStage;
+        BorderPane pane = new BorderPane(); //keep all the element of the game
+    /*    pane.setTop();
+        pane.setCenter();
+        pane.setRight();
+        pane.setLeft();*/
+        pane.setBottom(menuButton);
+        Scene scene = new Scene(pane,1000,800);
 
-        primaryStage.setTitle("Sagrada a fun game of dice");
-        primaryStage.initModality(Modality.APPLICATION_MODAL);
-        primaryStage.setResizable(false);
-        primaryStage.setAlwaysOnTop(true);
-        primaryStage.setOnCloseRequest(e -> {
-            e.consume();
-            closeProgram();
+
+
+        //setScene NO INIT
+
+        Platform.runLater(()-> {
+            gameStage.setTitle("Sagrada a fun game of dice");
+
+            gameStage.setResizable(false);
+            gameStage.setAlwaysOnTop(true);
+
+            gameStage.setOnCloseRequest(e -> {
+                Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler abbandonare la partita?");
+                if (!result) e.consume();
+
+            });
+            gameStage.setScene(scene);
+            gameStage.centerOnScreen();
         });
 
-        primaryStage.initStyle(StageStyle.UNIFIED);
+    }
+    /**
+     * this class setUp the
+     * @param gameStage
+     */
+
+    private void displayBoard(Stage gameStage){
+      /*  this.waitStage = waitStage;
+
+
+
         //set fixed window
 
         //Call window Box before close the game
-        primaryStage.setOnCloseRequest(e -> {
+        waitStage.setOnCloseRequest(e -> {
             e.consume();
             closeProgram();
         });
@@ -114,7 +186,7 @@ public class GUI implements UIInterface,ViewVisitor {
         //element for the scene for pick the window
         borderPaneRoot.setBackground(blackBackground);
         Scene scene = new Scene(borderPaneRoot, 1000, 800);
-        Platform.runLater(()->primaryStage.setScene(scene)
+        Platform.runLater(()->waitStage.setScene(scene)
         );
 
 
@@ -261,10 +333,8 @@ public class GUI implements UIInterface,ViewVisitor {
         //Setup window Player
 
         for (int i = 0; i < 4; i++) {
-/*
-            idWindow[i] = new Text("Id null");
-            nameWindow[i] = new Text("Nameless");
-            levelWindow[i] = new Text("Level 0");*/
+
+
             idWindow[i] = new Label("Id null");
             nameWindow[i] = new Label("Nameless");
             levelWindow[i] = new Label("Level 0");
@@ -312,28 +382,14 @@ public class GUI implements UIInterface,ViewVisitor {
         borderPaneRoot.setTop(gridRoundTrack);
         borderPaneRoot.setCenter(gridAllPlayer);
         borderPaneRoot.setRight(gridCard);
-        Platform.runLater(()->primaryStage.show()
-        );
-
+        Platform.runLater(()->waitStage.show());*/
     }
-
-    public static void setUpGUI(String[] args) {
-      /*  stage stage = new stage();
-        stage.centerOnScreen();
-        stage.alwaysOnTopProperty();*/
-        Application.launch(args);
-    }
-
+/*
     private void closeProgram() {
         Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler uscire dal gioco?");
-        if (result) primaryStage.close();
+        if (result) waitStage.close();
     }
 
-    /**
-     * method for set the same design to all the card
-     *
-     * @param imageView
-     */
     private void setGraficOfCard(ImageView imageView) {
         imageView.setFitHeight(150);
         imageView.setFitWidth(150);
@@ -346,7 +402,7 @@ public class GUI implements UIInterface,ViewVisitor {
             Image newImage;
             if (idPrivate < 0 || idPrivate > 4) {
                 newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_retro.jpg"));
-                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI");
+                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GuiGame");
                 new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else
                 newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_private_" + idPrivate + ".jpg"));
@@ -367,15 +423,12 @@ public class GUI implements UIInterface,ViewVisitor {
             Image newImage;
             if (idPublic < 0 || idPublic > 9) {
                 newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_retro.jpg"));
-                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI");
+                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GuiGame");
                 new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else {
 
                 newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_pubbliche_" + idPublic + ".jpg"));
-           /* FadeTransition fade = new FadeTransition(Duration.seconds(2), imageViewPublicCard[indexPublic]);
-            fade.setFromValue(1);
-            fade.setToValue(0);
-            fade.setAutoReverse(true);*/
+
                 imageViewPublicCard[indexPublic].setImage(newImage);
             }
         } catch (Exception exception) {
@@ -393,7 +446,7 @@ public class GUI implements UIInterface,ViewVisitor {
             Image newImage;
             if (idToolCard < 0 || idToolCard > 9) {
                 newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_retro.jpg"));
-                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GUI per leggere la carta");
+                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GuiGame per leggere la carta");
                 new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
             } else
                 newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_" + idToolCard + ".jpg"));
@@ -432,7 +485,7 @@ public class GUI implements UIInterface,ViewVisitor {
             System.out.println("src/resources/dadi/"+DiceColor.getDiceColor(color)+"Dice"+value+".jpg");
         });
 
-    }
+    }*/
 
     @Override
     public void visit(EndGame event) {
@@ -441,16 +494,27 @@ public class GUI implements UIInterface,ViewVisitor {
 
     @Override
     public void visit(StartGame event) {
-        displayBoard(primaryStage);
-        GuiReceiver.closeSecondStage();
-        UpdatePrivateObject(3);
+        int numberOfPlayer = event.getPlayersName().length;
+        playerId = event.getPlayerId();
+        playersName = new Text[numberOfPlayer];
+        for(int i=0; i<numberOfPlayer;i++){
+            playersName[i] = new Text(event.getPlayersName(i));
+        }
+        windowPatternCardOfEachPlayer = new GridPane[playersName.length];
+        objectivePrivateCardOfEachPlayers = new ImageView[playersName.length];
+        handOfEachPlayer = new VBox[event.getPlayersName().length];
+        FavorTokenOfEachPlayer = new Text[playersName.length];
+        PointsOfEachPlayer = new Text[playersName.length];
+        setBoard();
+        Platform.runLater(()-> {
+            gameStage.show();
+            waitStage.close();
+        });
     }
 
     @Override
     public void visit(JoinGame event) {
-        displayBoard(primaryStage);
-        GuiReceiver.closeSecondStage();
-        UpdatePrivateObject(3);
+        Platform.runLater(()-> gameStage.show());
     }
 
     @Override

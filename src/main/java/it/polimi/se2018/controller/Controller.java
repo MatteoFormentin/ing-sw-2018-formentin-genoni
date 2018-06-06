@@ -52,7 +52,7 @@ public class Controller implements ControllerVisitor {
 
     // EX UPDATE
     public void sendEventToController(EventController event) {
-        if (toolcard) ;//pass to handler toolcard
+        if (toolcard) handlerToolCard.sendEventToHandlerToolCard(event);//pass to handler toolcard
         else event.accept(this);
     }
 
@@ -207,6 +207,9 @@ public class Controller implements ControllerVisitor {
         //non può avvenire nel controller
     }
 
+    /**
+     * method for se
+     */
     public void startGame() {
         for (int i = 0; i < playerNumber; i++) {
             gameBoard.notifyAllCards(i);

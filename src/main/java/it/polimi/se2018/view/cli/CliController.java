@@ -70,8 +70,6 @@ public class CliController implements UIInterface, ViewVisitor {
         handOfEachPlayer = new DiceStack[playersName.length];
         FavorTokenOfEachPlayer = new int[playersName.length];
         PointsOfEachPlayer = new int[playersName.length];
-        objectivePrivateCardOfEachPlayers = new ObjectivePrivateCard[playersName.length];
-
         cliMessage.showGameStarted(playersName);
     }
 
