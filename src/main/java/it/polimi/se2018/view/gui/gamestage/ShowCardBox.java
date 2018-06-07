@@ -2,6 +2,7 @@ package it.polimi.se2018.view.gui.gamestage;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -27,7 +28,9 @@ class ShowCardBox {
      boolean displayCard(ImageView imageViewToShow, boolean canCanUseCard){
         clicked=false;
         stage.setAlwaysOnTop(true);
-        ImageView imageViewCard = new ImageView(imageViewToShow.getImage());
+        Image big = imageViewToShow.getImage();
+        ImageView imageViewCard = new ImageView(big);
+
         Pane cardPane =new Pane(imageViewCard);
         imageViewCard.setOnMouseExited(e->stage.close());
         if (canCanUseCard==true){
@@ -50,4 +53,6 @@ class ShowCardBox {
         stage.showAndWait();
         return clicked;
     }
+
+
 }
