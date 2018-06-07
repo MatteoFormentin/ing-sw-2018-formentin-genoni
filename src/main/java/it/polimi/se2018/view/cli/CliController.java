@@ -178,7 +178,7 @@ public class CliController implements UIInterface, ViewVisitor {
     public void visit(SelectDiceFromDraftpool event) {
         cliMessage.showDicePool(dicePool);
         int diceIndex = cliParser.parseInt();
-        SelectDiceFromHandController packet = new SelectDiceFromHandController();
+        SelectDiceFromDraftpoolController packet = new SelectDiceFromDraftpoolController();
         packet.setPlayerId(playerId);
         packet.setIndex(diceIndex);
         client.sendEventToController(packet);

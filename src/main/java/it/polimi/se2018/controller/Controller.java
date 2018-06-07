@@ -1,6 +1,7 @@
 package it.polimi.se2018.controller;
 
 import it.polimi.se2018.exception.GameboardException.CurrentPlayerException;
+import it.polimi.se2018.exception.GameboardException.WindowPatternAlreadyTakenException;
 import it.polimi.se2018.exception.GameboardException.WindowSettingCompleteException;
 import it.polimi.se2018.exception.PlayerException.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.exception.PlayerException.AlreadyUseToolCardException;
@@ -12,6 +13,7 @@ import it.polimi.se2018.model.Model;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -66,7 +68,11 @@ public class Controller implements ControllerVisitor {
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
 
-
+    /**
+     * visit the event for select the window Pattern for the game
+     *
+     * @param event SelectInitialWindowPatternCardController
+     */
     @Override
     public void visit(SelectInitialWindowPatternCardController event) {
         try {
@@ -82,7 +88,10 @@ public class Controller implements ControllerVisitor {
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             System.err.println("inizia il vero gioco con il giocatore" + gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
-        } catch (Exception ex) {
+        } catch (WindowPatternAlreadyTakenException ex) {
+            System.err.println(ex.getMessage());
+            showErrorMessage(ex, event.getPlayerId());
+        } catch (Exception ex){
             System.err.println(ex.getMessage());
             showErrorMessage(ex, event.getPlayerId());
             InitialWindowPatternCard packet = new InitialWindowPatternCard();
@@ -105,10 +114,8 @@ public class Controller implements ControllerVisitor {
                 if (gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()) {
                     //il giocatore ha già utilizzato questa mossa
                     showErrorMessage(new AlreadyPlaceANewDiceException(), event.getPlayerId());
-                    //TODO far rivedere il menu senza riinviare il pacchetto? boh
-                    EventView turnPacket = new StartPlayerTurn();
+                    StartPlayerTurn turnPacket = new StartPlayerTurn();
                     turnPacket.setPlayerId(event.getPlayerId());
-                    System.err.println("Il giocatore voleva violare le regole");
                     server.sendEventToView(turnPacket);
                 } else {
                     SelectCellOfWindowView packet = new SelectCellOfWindowView();
@@ -123,46 +130,58 @@ public class Controller implements ControllerVisitor {
         }else{
             showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
         }
-
-
     }
 
-
     @Override
-    public void visit(SelectDiceFromHandController event) {
-        try {
-            gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(), event.getIndex());
-            SelectCellOfWindowView packet = new SelectCellOfWindowView();
-            packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(packet);
-        } catch (Exception ex) {
-            showErrorMessage(ex, event.getPlayerId());
-            SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
-            packet.setPlayerId(event.getPlayerId());
-            server.sendEventToView(packet);
+    public void visit(SelectDiceFromDraftpoolController event) {
+        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
+            try {
+                gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(),event.getIndex());
+                SelectCellOfWindowView packet = new SelectCellOfWindowView();
+                packet.setPlayerId(event.getPlayerId());
+                sendEventToView(packet);
+            } catch(Exception ex){
+                showErrorMessage(ex,event.getPlayerId());
+                SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
+                packet.setPlayerId(event.getPlayerId());
+                server.sendEventToView(packet);
+            }
+        }else{
+            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
         }
     }
 
     @Override
     public void visit(SelectCellOfWindowController event) {
-        try {
-            gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
-            //sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
-            EventView turnPacket = new StartPlayerTurn();
-            turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            System.err.println("Il giocatore ha piazzato il dado con successo" + gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(turnPacket);
-        } catch (Exception ex) {
-            //TODO implementare errori specifici da mostrare (colore / valore)????? non basta usare showErrorMessage?
-            showErrorMessage(ex, event.getPlayerId());
-            SelectCellOfWindowView packet = new SelectCellOfWindowView();
-            packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(packet);
+        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
+            try {
+                gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
+                EventView turnPacket = new StartPlayerTurn();
+                turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
+                System.err.println("Il giocatore ha piazzato il dado con successo" + gameBoard.getIndexCurrentPlayer());
+                server.sendEventToView(turnPacket);
+            } catch (AlreadyPlaceANewDiceException ex) {
+                showErrorMessage(ex, event.getPlayerId());
+            } catch (Exception ex){
+                showErrorMessage(ex, event.getPlayerId());
+                SelectCellOfWindowView packet = new SelectCellOfWindowView();
+                packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
+                server.sendEventToView(packet);
+            }
+        }else{
+            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
         }
+
     }
 
     public void visit(SelectToolCardController event) {
-        //TODO settare il flag della toolcard to true e girare il pacchetto all'handler
+        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
+            //TODO sostituire con il system.out l'attivazione della toolcard
+            System.out.println("il giocatore con id :"+event.getPlayerId()+" vuole giocare la "+event.getIndexToolCard()+" Toolcard");
+        }else{
+            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
+        }
+        //TODO settare il flag della toolcard to true e girare il pacchetto all'handler oppure viene fatto dal'handler?
     }
 
     @Override
@@ -174,9 +193,7 @@ public class Controller implements ControllerVisitor {
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             System.err.println("cambiato il turno tocca a " + gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
-
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
             showErrorMessage(ex, event.getPlayerId());
         }
     }
@@ -195,7 +212,7 @@ public class Controller implements ControllerVisitor {
                 }
             } else {
                 //TODO inviare il paccetto che rappresenta il menu della scelta toolcard(per gui farà vedere un messaggio e abilita i bottoni)
-                EventView packet = new SelectToolCard();
+                SelectToolCard packet = new SelectToolCard();
                 packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
                 server.sendEventToView(packet);
             }
@@ -207,13 +224,22 @@ public class Controller implements ControllerVisitor {
 
 
     @Override
-    public void visit(SelectDiceFromDraftpoolController event) {
-
+    public void visit(SelectDiceFromHandController event) {
+        // impossibile senza una tool card, rimane non implementata
+        for(int i=0; i<100;i++){
+            System.err.println("ERRORE NELLA LOGICA DEL CONTROLLER!!!!!!!!!!!!!!!!");
+        }
+        System.err.println(event);
     }
+
 
     @Override
     public void visit(SelectDiceFromRoundTrackController event) {
-        //non può avvenire nel controller
+        // impossibile senza una tool card, rimane non implementata
+        for(int i=0; i<100;i++){
+            System.err.println("ERRORE NELLA LOGICA DEL CONTROLLER!!!!!!!!!!!!!!!!");
+        }
+        System.err.println(event);
     }
 
     /**
