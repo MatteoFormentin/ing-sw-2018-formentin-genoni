@@ -44,8 +44,6 @@ public interface ControllerVisitor {
 
     public void visit(EndTurnController event);
 
-    public void visit(InsertDiceController event);
-
     public void visit(SelectCellOfWindowController event);
 
     public void visit(SelectDiceFromDraftpoolController event);
@@ -55,8 +53,6 @@ public interface ControllerVisitor {
     public void visit(SelectDiceFromHandController event);
 
     public void visit(SelectDiceFromRoundTrackController event);
-
-    public void visit(UseToolCardController event);
 
     public void visit(SelectInitialWindowPatternCardController event);
 

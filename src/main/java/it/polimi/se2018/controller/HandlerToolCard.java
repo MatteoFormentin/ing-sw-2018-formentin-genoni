@@ -30,10 +30,6 @@ public class HandlerToolCard implements ControllerVisitor {
 
     }
 
-    @Override
-    public void visit(InsertDiceController event) {
-
-    }
 
     @Override
     public void visit(SelectCellOfWindowController event) {
@@ -60,10 +56,6 @@ public class HandlerToolCard implements ControllerVisitor {
 
     }
 
-    @Override
-    public void visit(UseToolCardController event) {
-
-    }
 
     @Override
     public void visit(SelectInitialWindowPatternCardController event) {

@@ -78,20 +78,20 @@ public class Controller implements ControllerVisitor {
         try {
             gameBoard.setWindowOfPlayer(event.getPlayerId(), event.getSelectedIndex());
         } catch (WindowSettingCompleteException ex) {
-            for(int i=0;i<playerNumber;i++ ){
+            for (int i = 0; i < playerNumber; i++) {
                 EventView packetFineInit = new InitialEnded();
                 packetFineInit.setPlayerId(i);
                 sendEventToView(packetFineInit);
             }
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
-            EventView turnPacket = new StartPlayerTurn();
+            StartPlayerTurn turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             System.err.println("inizia il vero gioco con il giocatore" + gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
         } catch (WindowPatternAlreadyTakenException ex) {
             System.err.println(ex.getMessage());
             showErrorMessage(ex, event.getPlayerId());
-        } catch (Exception ex){
+        } catch (Exception ex) {
             System.err.println(ex.getMessage());
             showErrorMessage(ex, event.getPlayerId());
             InitialWindowPatternCard packet = new InitialWindowPatternCard();
@@ -100,86 +100,38 @@ public class Controller implements ControllerVisitor {
         }
     }
 
-    /**
-     * the player choose the first option: draw a dice and place it in the Window Pattern
-     * Now the controller need to know the Die to pick up from the dice pool, send a request to the View
-     *
-     * @param event
-     */
-    @Override
-    public void visit(InsertDiceController event) {//this is the handler for a normal move
-        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
-            if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
-                //il giocatore ha già pescato un dado e deve piazzarlo
-                if (gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()) {
-                    //il giocatore ha già utilizzato questa mossa
-                    showErrorMessage(new AlreadyPlaceANewDiceException(), event.getPlayerId());
-                    StartPlayerTurn turnPacket = new StartPlayerTurn();
-                    turnPacket.setPlayerId(event.getPlayerId());
-                    server.sendEventToView(turnPacket);
-                } else {
-                    SelectCellOfWindowView packet = new SelectCellOfWindowView();
-                    packet.setPlayerId(event.getPlayerId());
-                    server.sendEventToView(packet);
-                }
-            } else {//il giocatore non ha ancora pescato un nuovo dado
-                SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
-                packet.setPlayerId(event.getPlayerId());
-                server.sendEventToView(packet);
-            }
-        }else{
-            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
-        }
-    }
-
     @Override
     public void visit(SelectDiceFromDraftpoolController event) {
-        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
-            try {
-                gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(),event.getIndex());
-                SelectCellOfWindowView packet = new SelectCellOfWindowView();
-                packet.setPlayerId(event.getPlayerId());
-                sendEventToView(packet);
-            } catch(Exception ex){
-                showErrorMessage(ex,event.getPlayerId());
-                SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
-                packet.setPlayerId(event.getPlayerId());
-                server.sendEventToView(packet);
-            }
-        }else{
-            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
+        try {
+            gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(), event.getIndex());
+            OkMessage packet = new OkMessage();
+            packet.setPlayerId(event.getPlayerId());
+            sendEventToView(packet);
+        } catch (Exception ex) {
+            showErrorMessage(ex, event.getPlayerId());
         }
     }
 
     @Override
     public void visit(SelectCellOfWindowController event) {
-        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
-            try {
-                gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
-                EventView turnPacket = new StartPlayerTurn();
-                turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                System.err.println("Il giocatore ha piazzato il dado con successo" + gameBoard.getIndexCurrentPlayer());
-                server.sendEventToView(turnPacket);
-            } catch (AlreadyPlaceANewDiceException ex) {
-                showErrorMessage(ex, event.getPlayerId());
-            } catch (Exception ex){
-                showErrorMessage(ex, event.getPlayerId());
-                SelectCellOfWindowView packet = new SelectCellOfWindowView();
-                packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                server.sendEventToView(packet);
-            }
-        }else{
-            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
+        try {
+            gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
+            OkMessage packet = new OkMessage();
+            packet.setPlayerId(event.getPlayerId());
+            sendEventToView(packet);
+        } catch (AlreadyPlaceANewDiceException ex) {
+            showErrorMessage(ex, event.getPlayerId());
+        } catch (Exception ex) {
+            showErrorMessage(ex, event.getPlayerId());
         }
-
     }
 
     public void visit(SelectToolCardController event) {
-        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
+        if (gameBoard.getIndexCurrentPlayer() == event.getPlayerId()) {
             //TODO sostituire con il system.out l'attivazione della toolcard
-            System.out.println("il giocatore con id :"+event.getPlayerId()+" vuole giocare la "+event.getIndexToolCard()+" Toolcard");
-        }else{
-            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
+            System.out.println("il giocatore con id :" + event.getPlayerId() + " vuole giocare la " + event.getIndexToolCard() + " Toolcard");
+        } else {
+            showErrorMessage(new CurrentPlayerException(), event.getPlayerId());
         }
         //TODO settare il flag della toolcard to true e girare il pacchetto all'handler oppure viene fatto dal'handler?
     }
@@ -189,7 +141,7 @@ public class Controller implements ControllerVisitor {
         try {
             gameBoard.nextPlayer(event.getPlayerId());
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
-            EventView turnPacket = new StartPlayerTurn();
+            StartPlayerTurn turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             System.err.println("cambiato il turno tocca a " + gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
@@ -199,34 +151,9 @@ public class Controller implements ControllerVisitor {
     }
 
     @Override
-    public void visit(UseToolCardController event) {
-        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
-            if (gameBoard.getPlayer(event.getIndex()).isHasUsedToolCard()) {//se ha già usato la toolcard
-                if (gameBoard.getIndexCurrentPlayer() == event.getIndex()) {// can use the move ToolCard!
-                    showErrorMessage(new AlreadyUseToolCardException(), event.getPlayerId());
-                    EventView turnPacket = new StartPlayerTurn();
-                    turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                    server.sendEventToView(turnPacket);
-                } else {//not yout turn! how? don't know
-                    showErrorMessage(new CurrentPlayerException(), event.getPlayerId());
-                }
-            } else {
-                //TODO inviare il paccetto che rappresenta il menu della scelta toolcard(per gui farà vedere un messaggio e abilita i bottoni)
-                SelectToolCard packet = new SelectToolCard();
-                packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                server.sendEventToView(packet);
-            }
-        }else{
-            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
-        }
-
-    }
-
-
-    @Override
     public void visit(SelectDiceFromHandController event) {
         // impossibile senza una tool card, rimane non implementata
-        for(int i=0; i<100;i++){
+        for (int i = 0; i < 100; i++) {
             System.err.println("ERRORE NELLA LOGICA DEL CONTROLLER!!!!!!!!!!!!!!!!");
         }
         System.err.println(event);
@@ -236,7 +163,7 @@ public class Controller implements ControllerVisitor {
     @Override
     public void visit(SelectDiceFromRoundTrackController event) {
         // impossibile senza una tool card, rimane non implementata
-        for(int i=0; i<100;i++){
+        for (int i = 0; i < 100; i++) {
             System.err.println("ERRORE NELLA LOGICA DEL CONTROLLER!!!!!!!!!!!!!!!!");
         }
         System.err.println(event);

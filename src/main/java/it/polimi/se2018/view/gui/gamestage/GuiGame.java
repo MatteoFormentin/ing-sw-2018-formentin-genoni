@@ -4,8 +4,6 @@ package it.polimi.se2018.view.gui.gamestage;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 
-import it.polimi.se2018.network.client.Client;
-import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
 import it.polimi.se2018.view.gui.stage.ConfirmBox;
@@ -13,6 +11,7 @@ import it.polimi.se2018.view.gui.stage.ConfirmBox;
 import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -99,8 +98,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
     private ComboBox[] roundComboBox;
     private Button[] roundButton;
     private ImageView[][] roundTrackDice;
-    private ImageView[] poolDice;
-
+    private FlowPane flowPaneDicePool;
+    private ImageView[] dicePool;
     //Button of the menu game
     private HBox menuButton;
     private Button[] gameButton;
@@ -203,16 +202,9 @@ public class GuiGame implements UIInterface, ViewVisitor {
         }
         gameButton[0].setText("Pesca e inserisci un dado");
         gameButton[0].setOnAction(event -> {
-            InsertDiceController packet = new InsertDiceController();
-            sendEventToGuiReceiver(packet);
         });
         gameButton[1].setText("Utilizza una Tool Card");
         gameButton[1].setOnAction(event -> {
-            IntStream.range(0, toolCard.length).forEach(i -> {
-                toolCard[i].setManaged(true);
-            });
-            UseToolCardController packet = new UseToolCardController();
-            sendEventToGuiReceiver(packet);
         });
         gameButton[2].setText("Passa il turno");
         gameButton[2].setOnAction(event -> {
@@ -312,6 +304,17 @@ public class GuiGame implements UIInterface, ViewVisitor {
                 centerBox.getChildren().add(boxAllDataPlayer[i]);
             }
         }
+        flowPaneDicePool = new FlowPane(5,5);
+        flowPaneDicePool.setOrientation(Orientation.HORIZONTAL);
+        flowPaneDicePool.setAlignment(Pos.BOTTOM_CENTER);
+        dicePool = new ImageView[2*numberOfPlayer+1];
+        for(int i=0; i<dicePool.length;i++){
+            dicePool[i] = new ImageView();
+            dicePool[i].setFitHeight(40);
+            dicePool[i].setFitWidth(40);
+            flowPaneDicePool.getChildren().add( dicePool[i]);
+        }
+        centerBox.getChildren().add(flowPaneDicePool);
 
     }
 
@@ -365,6 +368,11 @@ public class GuiGame implements UIInterface, ViewVisitor {
     public void visit(ShowErrorMessage event) {
         popUpGame.displayMessage(event.getErrorMessage());
         System.out.println("viene accettato :" + event.toString());
+    }
+
+    @Override
+    public void visit(OkMessage event) {
+        popUpGame.displayMessage("Mossa andata a buon fine");
     }
 
     @Override
@@ -579,6 +587,18 @@ public class GuiGame implements UIInterface, ViewVisitor {
     @Override
     public void visit(UpdateDicePool event) {
         System.out.println("viene accettato :" + event.toString());
+        if(event.getDicePool()!=null){
+            for(int i=0; i<dicePool.length;i++){
+                try{
+                Image newImage = new Image("file:src/resources/dadijpg/"
+                        + event.getDicePool().getDice(i).getColor()
+                        + "Dice" + event.getDicePool().getDice(i).getValue() + ".jpg");
+                dicePool[i].setImage(newImage);
+                }catch (Exception e){
+                    dicePool[i].setImage(new Image("file:src/resources/dadijpg/Dice0.jpg"));
+                }
+            }
+        }
     }
 
 

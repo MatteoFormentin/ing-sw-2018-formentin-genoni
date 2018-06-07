@@ -211,6 +211,12 @@ public class CliController implements UIInterface, ViewVisitor {
     public void visit(ShowErrorMessage event) {
         cliMessage.showMessage(event.getErrorMessage());
         cliParser.readSplash();
+        turn();
+    }
+
+    @Override
+    public void visit(OkMessage event) {
+        turn();
     }
 
     //*******************************************Visit for model event*******************************************************************************
@@ -325,17 +331,19 @@ public class CliController implements UIInterface, ViewVisitor {
         cliMessage.eraseScreen();
         cliMessage.showYourTurnScreen();
         cliMessage.showWindowPatternCard(getMyWindowPatternCard());
+        cliMessage.showHandPlayer(getMyHand());
         cliMessage.showMainMenu();
-        int option = cliParser.parsePositiveInt(7);
+        int option = cliParser.parseInt(7);
 
         switch (option) {
-            //Place dice
-            case 1:
-                EventController packetInsert = new InsertDiceController();
-                packetInsert.setPlayerId(playerId);
-                client.sendEventToController(packetInsert);
+            //Pick a dice from dicePool
+            case 0:
+                visit(new SelectDiceFromDraftpool());
                 break;
-
+            //insert a dice in the window
+            case 1:
+                visit(new SelectCellOfWindowView());
+                break;
             //Use tool card
             case 2:
                 cliMessage.eraseScreen();
@@ -344,12 +352,7 @@ public class CliController implements UIInterface, ViewVisitor {
                     cliMessage.showToolCard(card);
                     cliMessage.println();
                 }
-
-                //TODO scelta tool da usare
-
-                EventController packetTool = new UseToolCardController();
-                packetTool.setPlayerId(playerId);
-                client.sendEventToController(packetTool);
+                visit(new SelectToolCard());
                 break;
 
             //End turn
@@ -410,6 +413,9 @@ public class CliController implements UIInterface, ViewVisitor {
 
     private WindowPatternCard getMyWindowPatternCard() {
         return windowPatternCardOfEachPlayer[playerId];
+    }
+    private DiceStack getMyHand(){
+        return handOfEachPlayer[playerId];
     }
 
     private String getMyName() {

@@ -65,7 +65,7 @@ public interface ViewVisitor {
     public void visit(SelectToolCard event);
 
     public void visit(ShowErrorMessage event);
-
+    public void visit(OkMessage event);
 
     //**********************************************from Model**************************************
 

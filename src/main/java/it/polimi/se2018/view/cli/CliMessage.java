@@ -15,7 +15,6 @@ import static org.fusesource.jansi.Ansi.ansi;
 
 
 /**
- *
  * Class for Display CLI messages using JANSI LIBRARY.
  *
  * @author Matteo Formentin
@@ -255,6 +254,7 @@ class CliMessage {
     void showMainMenu() {
         AnsiConsole.out.println();
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Cosa vuoi fare?"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("0 - Pescare un dado"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("1 - Posiziona un dado"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("2 - Utilizza una carta utensile"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("3 - Termina il turno"));
@@ -274,6 +274,7 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale colonna vuoi inserire il dado?"));
     }
 
+
     void showDiceStack(DiceStack diceStack) {
         for (int i = 0; i < diceStack.size(); i++) {
             AnsiConsole.out.print(ansi().fg(DEFAULT).a(i + ": "));
@@ -286,6 +287,17 @@ class CliMessage {
     void showDicePool(DiceStack diceStack) {
         showDiceStack(diceStack);
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
+    }
+
+    void showHandPlayer(DiceStack hand) {
+        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Dadi in mano: "));
+        if (hand == null) {
+            AnsiConsole.out.print(ansi().fg(DEFAULT).a(" Nessuno "));
+        } else if (hand.size() == 0) {
+            AnsiConsole.out.print(ansi().fg(DEFAULT).a(" Nessuno "));
+        } else {
+            showDiceStack(hand);
+        }
     }
 
     void showToolCardChoise(ToolCard[] toolCard) {
