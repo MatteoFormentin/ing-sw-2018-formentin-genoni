@@ -335,6 +335,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
         //TODO disattivare tutti i bottoni per inviare i pacchetti
         // popUpGame.displayMessage("é il turno di :" + playersName[event.getIndexCurrentPlayer()].getText());
         System.out.println("viene accettato :" + event.toString());
+        System.out.println();
     }
 
     @Override
@@ -372,6 +373,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(OkMessage event) {
+        System.out.println("viene accettato :" + event.toString());
         popUpGame.displayMessage("Mossa andata a buon fine");
     }
 

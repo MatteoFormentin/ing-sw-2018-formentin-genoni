@@ -1,5 +1,8 @@
 package it.polimi.se2018;
 
+import it.polimi.se2018.exception.WindowException.RestrictionCellOccupiedException;
+import it.polimi.se2018.exception.WindowException.RestrictionColorViolatedException;
+import it.polimi.se2018.exception.WindowException.RestrictionValueViolatedException;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
@@ -13,12 +16,30 @@ import static org.junit.Assert.*;
  * @author Luca Genoni
  */
 public class TestCell {
+    private static final String occupiedR = new RestrictionCellOccupiedException().getMessage();
+    private static final String valueR = new RestrictionValueViolatedException().getMessage();
+    private static final String colorR = new RestrictionColorViolatedException().getMessage();
+    private Cell[] allColor;
+    private Cell[] allValue;
     private Cell[][] matrix;
+    private Cell free;
+    private String e;
     private WindowPatternCard testWindowPatternCard;
-
 
     @Before
     public void initTestWindowPatternCard() {
+        allColor = new Cell[DiceColor.getNumberOfDiceColors()];
+        for (int i = 0; i < DiceColor.getNumberOfDiceColors(); i++) {
+            allColor[i] = new Cell();
+            allColor[i].setColorRestriction(DiceColor.getDiceColor(i));
+        }
+        allValue =new Cell[6];
+        for (int i = 0; i < allValue.length; i++) {
+            allValue[i] = new Cell();
+            allValue[i].setValueRestriction(i+1);
+        }
+        free = new Cell();
+
         matrix = new Cell[4][5];
         for (int m = 0; m < 4; m++) {
             for (int n = 0; n < 5; n++) {
@@ -82,44 +103,155 @@ public class TestCell {
     }
 
     @Test
-    public void testInsetDiceCell() {
+    public void testInsetDice3Blue() {
         Dice dice = new Dice(DiceColor.Blue);
-        dice.setValue(1);
-        //no window check
-/*
-        assertTrue(testWindowPatternCard.getDice(0, 1).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(0, 2).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(0, 3).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(1, 1).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(1, 3).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(2, 1).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(2, 3).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(3, 1).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(3, 2).insertDice(dice));
-        assertTrue(testWindowPatternCard.getDice(3, 3).insertDice(dice));
+        dice.setValue(3);
+        //try all color
+        for (int i = 0; i < DiceColor.getNumberOfDiceColors(); i++) {
+            e = null;
+            try {
+                allColor[i].insertDice(dice);
+            } catch (Exception ex) {
+                e = ex.getMessage();
+            }
+            if (DiceColor.Blue.equals(allColor[i].getColorRestriction())) {
+                assertNull(e);
+            } else {
+                assertEquals(colorR, e);
+            }
+        }
+        for (int i = 0; i < DiceColor.getNumberOfDiceColors(); i++) {
+            e = null;
+            try {
+                allValue[i].insertDice(dice);
+            } catch (Exception ex) {
+                e = ex.getMessage();
+            }
+            if ((i+1)==dice.getValue()) {
+                assertNull(e);
+            } else {
+                assertEquals(valueR, e);
+            }
+        }
+        e = null;
+        try {
+            free.insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertNull(e);
+        e = null;
+        try {
+            free.insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(occupiedR,e);
 
-
-        assertFalse(testWindowPatternCard.getDice(0, 0).insertDice(dice));
-        assertFalse(testWindowPatternCard.getDice(1, 0).insertDice(dice));
-        assertFalse(testWindowPatternCard.getDice(1, 2).insertDice(dice));
-        assertFalse(testWindowPatternCard.getDice(1, 4).insertDice(dice));
-        assertFalse(testWindowPatternCard.getDice(2, 0).insertDice(dice));
-        assertFalse(testWindowPatternCard.getDice(2, 2).insertDice(dice));
-        assertFalse(testWindowPatternCard.getDice(2, 4).insertDice(dice));
-        assertFalse(testWindowPatternCard.getDice(3, 0).insertDice(dice));
-        assertFalse(testWindowPatternCard.getDice(3, 4).insertDice(dice));
-
-        assertTrue(testWindowPatternCard.getDice(0, 0).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getDice(1, 0).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getDice(1, 2).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getDice(1, 4).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getDice(2, 0).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getDice(2, 2).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getDice(2, 4).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getDice(3, 0).insertDice(dice, false, false));
-        assertTrue(testWindowPatternCard.getDice(3, 4).insertDice(dice, false, false));*/
     }
 
+    @Test
+    public void testDice1Blue(){
+        Dice dice = new Dice(DiceColor.Blue);
+        dice.setValue(1);
+        //no exception
+        e=null;
+        try {
+            testWindowPatternCard.getCell(0, 1).insertDice(dice);
+            testWindowPatternCard.getCell(0, 2).insertDice(dice);
+            testWindowPatternCard.getCell(0, 3).insertDice(dice);
+            testWindowPatternCard.getCell(1, 1).insertDice(dice);
+            testWindowPatternCard.getCell(1, 3).insertDice(dice);
+            testWindowPatternCard.getCell(2, 1).insertDice(dice);
+            testWindowPatternCard.getCell(2, 3).insertDice(dice);
+            testWindowPatternCard.getCell(3, 1).insertDice(dice);
+            testWindowPatternCard.getCell(3, 2).insertDice(dice);
+            testWindowPatternCard.getCell(3, 3).insertDice(dice);
+        }catch(Exception ex){
+            e = ex.getMessage();
+        }
+        assertNull(e);
+
+        try {
+            testWindowPatternCard.getCell(1, 2).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(valueR, e);
+
+        try {
+            testWindowPatternCard.getCell(1, 4).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(valueR, e);
+
+        try {
+            testWindowPatternCard.getCell(1, 4).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(valueR, e);
+        try {
+            testWindowPatternCard.getCell(2, 0).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(valueR, e);
+        try {
+            testWindowPatternCard.getCell(2, 2).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(colorR, e);
+
+        try {
+            testWindowPatternCard.getCell(2, 4).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(colorR, e);
+        try {
+            testWindowPatternCard.getCell(3, 0).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(valueR, e);
+        try {
+            testWindowPatternCard.getCell(3, 4).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(colorR, e);
+
+        try {
+            testWindowPatternCard.getCell(0, 0).insertDice(dice);
+
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(colorR, e);
+
+
+        try {
+            testWindowPatternCard.getCell(1, 0).insertDice(dice);
+        } catch (Exception ex) {
+            e = ex.getMessage();
+        }
+        assertEquals(colorR, e);
+
+        //TODO metterlo con le eccezioni
+        assertTrue(testWindowPatternCard.getCell(0, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(1, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(1, 2).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(1, 4).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(2, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(2, 2).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(2, 4).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(3, 0).insertDice(dice, false, false));
+        assertTrue(testWindowPatternCard.getCell(3, 4).insertDice(dice, false, false));
+
+    }
     @Test
     public void testInsetDiceWindow() {
       /*  Dice dice,dice2;
