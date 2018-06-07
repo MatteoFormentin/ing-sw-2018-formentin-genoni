@@ -37,6 +37,8 @@ public class CliController implements UIInterface, ViewVisitor {
     private ObjectivePrivateCard[] objectivePrivateCardOfEachPlayers;//almost all null until the end game
     private int playerId;
 
+    Thread currentTask;
+
 
     public CliController(ClientController clientController) {
         client = clientController;
@@ -93,6 +95,24 @@ public class CliController implements UIInterface, ViewVisitor {
 
     }
 
+    public void thred() {
+
+        Runnable exec = () -> {
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                // We've been interrupted: no more messages.
+                return;
+            }
+
+        };
+
+        if (!currentTask.isAlive()) {
+            currentTask = new Thread(exec);
+            currentTask.start();
+        }
+    }
+
     @Override
     public void visit(InitialWindowPatternCard event) {
         cliMessage.showYourTurnScreen();
@@ -143,6 +163,7 @@ public class CliController implements UIInterface, ViewVisitor {
     public void visit(JoinGame event) {
         //TODO
     }
+
     /**
      * Receive the Event for select which dice take from the draft pool and send the packet to the controller(throught)
      *

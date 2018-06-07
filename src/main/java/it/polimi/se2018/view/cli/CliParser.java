@@ -10,15 +10,14 @@ import java.util.Scanner;
  * @author Matteo Formentin
  */
 public class CliParser {
-    private Scanner in;
     private CliMessage cliMessage;
 
     public CliParser() {
-        in = new Scanner(System.in);
         cliMessage = new CliMessage();
     }
 
     public void readSplash() {
+        Scanner in = new Scanner(System.in);
         cliMessage.showWaitInput();
         in.next();
     }
@@ -27,6 +26,7 @@ public class CliParser {
         int parsed = 0;
         boolean flag = false;
         while (!flag) {
+            Scanner in = new Scanner(System.in);
             try {
                 parsed = in.nextInt();
                 flag = true;
@@ -41,6 +41,7 @@ public class CliParser {
         int parsed=0;
         boolean flag = false;
         do {
+            Scanner in = new Scanner(System.in);
             try {
                 parsed = in.nextInt();
                 if (!(parsed <= 0 || parsed > upperBound)) flag = true;
@@ -70,6 +71,7 @@ public class CliParser {
         String parsed = "";
         boolean flag = false;
         while (!flag) {
+            Scanner in = new Scanner(System.in);
             try {
                 parsed = in.next("([a-z]|[A-z]|[0-9]){0,11}");
                 flag = true;
@@ -85,6 +87,7 @@ public class CliParser {
         String parsed = "";
         boolean flag = false;
         while (!flag) {
+            Scanner in = new Scanner(System.in);
             try {
                 parsed = in.next("(0)|((([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5])))");
                 flag = true;
