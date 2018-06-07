@@ -176,7 +176,7 @@ public class Controller implements ControllerVisitor {
             server.sendEventToView(turnPacket);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.err.println(ex.getMessage());
             showErrorMessage(ex, event.getPlayerId());
         }
     }

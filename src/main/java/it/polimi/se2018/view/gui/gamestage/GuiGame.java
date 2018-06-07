@@ -4,6 +4,8 @@ package it.polimi.se2018.view.gui.gamestage;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 
+import it.polimi.se2018.network.client.Client;
+import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
 import it.polimi.se2018.view.gui.stage.ConfirmBox;
@@ -209,7 +211,6 @@ public class GuiGame implements UIInterface, ViewVisitor {
             IntStream.range(0, toolCard.length).forEach(i -> {
                 toolCard[i].setManaged(true);
             });
-
             UseToolCardController packet = new UseToolCardController();
             sendEventToGuiReceiver(packet);
         });
@@ -346,6 +347,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(SelectCellOfWindowView event) {
+
         System.out.println("viene accettato :" + event.toString());
     }
 
@@ -376,6 +378,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
     @Override
     public void visit(InitialEnded event) {
         System.out.println("viene accettato :" + event.toString());
+        activeWindow(event.getPlayerId());
         Platform.runLater(() -> {
             stageChoose.close();
             cardBox.getChildren().addAll(toolBox, objectivePublicBox, objectivePrivateBox);
@@ -474,7 +477,11 @@ public class GuiGame implements UIInterface, ViewVisitor {
                         Image newImage = new Image("file:src/resources/carte_jpg/carte_strumento_" + event.getToolCard(i).getId() + ".jpg");
                         toolCard[i].setImage(newImage);
                         toolCard[i].setOnMouseClicked(e -> {
-                            cardShow.displayCard(toolCard[i], true);
+                            if(cardShow.displayCard(toolCard[i], true)){
+                                SelectToolCardController packet = new SelectToolCardController();
+                                packet.setIndexToolCard(i);
+                                sendEventToGuiReceiver(packet);
+                            }
                         });
                     });
                 }
@@ -535,6 +542,12 @@ public class GuiGame implements UIInterface, ViewVisitor {
         System.out.println("viene accettato :" + event.toString());
         int numberLine = event.getWindowPatternCard().getMatrix().length;
         int numberColumn = event.getWindowPatternCard().getColumn(0).length;
+        int dimCell;
+        if(event.getIndexPlayer()==playerId){
+            dimCell=50;
+        }else{
+            dimCell=25;
+        }
         imageViewsCellPlayer[event.getIndexPlayer()] = new ImageView[numberLine][numberColumn];
         nameWindowPlayer[event.getIndexPlayer()].setText(event.getWindowPatternCard().getName());
         difficultyWindowPlayer[event.getIndexPlayer()].setText(Integer.toString(event.getWindowPatternCard().getDifficulty()));
@@ -550,8 +563,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
                         + color
                         + "Dice" + Integer.toString(event.getWindowPatternCard().getCell(line, column).getValueRestriction()) + ".jpg");
                 imageViewsCellPlayer[event.getIndexPlayer()][line][column] = new ImageView(newImage);
-                imageViewsCellPlayer[event.getIndexPlayer()][line][column].setFitHeight(25);
-                imageViewsCellPlayer[event.getIndexPlayer()][line][column].setFitWidth(25);
+                imageViewsCellPlayer[event.getIndexPlayer()][line][column].setFitHeight(dimCell);
+                imageViewsCellPlayer[event.getIndexPlayer()][line][column].setFitWidth(dimCell);
                 imageViewsCellPlayer[event.getIndexPlayer()][line][column].setPreserveRatio(true);
                 gridCellPlayer[event.getIndexPlayer()].add(imageViewsCellPlayer[event.getIndexPlayer()][line][column], column, line);
             }
@@ -590,12 +603,30 @@ public class GuiGame implements UIInterface, ViewVisitor {
     public void visit(UpdateSingleTurnRoundTrack event) {
         System.out.println("viene accettato :" + event.toString());
     }
-
-
-
     @Override
     public void showMessage(EventView eventView) {
         eventView.accept(this);
+    }
+
+
+    public void activeWindow(int indexWindow) {
+        for (int row = 0; row < imageViewsCellPlayer[indexWindow].length; row++) {
+            for (int column = 0; column < imageViewsCellPlayer[indexWindow][row].length; column++) {
+                activeCell(indexWindow, row, column);
+            }
+        }
+
+    }
+
+    public void activeCell(int indexWindow, int indexRow, int indexColumn)  {
+        imageViewsCellPlayer[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {
+            System.out.println("ho cliccato la cella ("+indexRow+","+indexColumn+")");
+            SelectCellOfWindowController packet = new SelectCellOfWindowController();
+            packet.setLine(indexRow);
+            packet.setColumn(indexColumn);
+            sendEventToGuiReceiver(packet);
+        });
+
     }
 }
 /*
