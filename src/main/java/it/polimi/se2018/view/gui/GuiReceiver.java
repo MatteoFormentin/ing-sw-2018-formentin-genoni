@@ -13,6 +13,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.security.AllPermission;
+
 import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
 
 public class GuiReceiver implements UIInterface {
@@ -70,13 +72,13 @@ public class GuiReceiver implements UIInterface {
         playButton.setOnAction(e -> {
             if (connected) {
                 if (login) {
-                    new AlertMessage().displayMessage("Devi effettuare il Relogin(non è vero sei ancora collegato al server, ma non devi rompere)");
+                    new AlertMessage(primaryStage).displayMessage("Devi effettuare il Relogin(non è vero sei ancora collegato al server, ma non devi rompere)");
                 } else {
                     login = new Login().display(client);
                     if(login)getGuiGame().showWaitStage();
                 }
             } else
-                new AlertMessage().displayMessage("Devi prima impostare l'IP del server e la porta a cui ti vuoi collegare");
+                new AlertMessage(primaryStage).displayMessage("Devi prima impostare l'IP del server e la porta a cui ti vuoi collegare");
         });
         Button connectionButton = new Button("Impostazioni di rete");
         connectionButton.setOnAction(e -> {
@@ -95,8 +97,11 @@ public class GuiReceiver implements UIInterface {
 
     public void closeProgram() {
         Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler uscire dal gioco?");
-        if (result) primaryStage.close();
-        System.exit(0);
+        if (result) {
+            primaryStage.close();
+            System.exit(0);
+        }
+
     }
 
     /**

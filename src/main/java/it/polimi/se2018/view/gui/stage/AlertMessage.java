@@ -1,5 +1,6 @@
 package it.polimi.se2018.view.gui.stage;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,10 +23,11 @@ import javafx.stage.StageStyle;
 public class AlertMessage {
     private Stage stageMessage;
 
-    public AlertMessage(){
+    public AlertMessage(Stage owner){
         stageMessage = new Stage(StageStyle.UNDECORATED);
         stageMessage.initModality(Modality.APPLICATION_MODAL);
-        stageMessage.setAlwaysOnTop(true);
+        stageMessage.initOwner(owner);
+
     }
     public void displayMessage(String message){
         /*StageStyle
@@ -53,7 +55,12 @@ public class AlertMessage {
        // group.getChildren().add(layoutMessage);
         Scene boxMessage =new Scene(layoutMessage,400,200,Color.BLACK);
         boxMessage.setFill(Color.BROWN);
-        stageMessage.setScene(boxMessage);
-        stageMessage.showAndWait();
+        stageMessage.setAlwaysOnTop(true);
+
+        Platform.runLater(()->{
+            stageMessage.setScene(boxMessage);
+            stageMessage.showAndWait();
+        });
+
     }
 }

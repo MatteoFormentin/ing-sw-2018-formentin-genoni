@@ -46,7 +46,11 @@ public interface ViewVisitor {
 
     public void visit(StartGame event);
 
-    void visit(JoinGame event);
+    public void visit(InitialWindowPatternCard event);
+
+    public void visit(InitialEnded event);
+
+    public void visit(JoinGame event);
 
     public void visit(StartPlayerTurn event);
 
@@ -68,7 +72,7 @@ public interface ViewVisitor {
     public void visit(UpdateAllToolCard event);
     public void visit(UpdateSingleToolCardCost event);
     public void visit(UpdateDicePool event);
-    public void visit(InitialWindowPatternCard event);
+
 
     public void visit(UpdateSinglePlayerHand event);
     public void visit(UpdateAllPublicObject event);

@@ -70,21 +70,20 @@ public class Controller implements ControllerVisitor {
     @Override
     public void visit(SelectInitialWindowPatternCardController event) {
         try {
-            gameBoard.setWindowOfPlayer(event.getPlayerId(), ((SelectInitialWindowPatternCardController) event).getSelectedIndex());
-            int nextPlayer = event.getPlayerId() + 1;
-            sendWaitTurnToAllTheNonCurrent(nextPlayer);
-            InitialWindowPatternCard packet = new InitialWindowPatternCard();
-            packet.setPlayerId(nextPlayer);
-            System.err.println("inviato pacchetto initial per scegliere la window");
-            server.sendEventToView(packet);
+            gameBoard.setWindowOfPlayer(event.getPlayerId(), event.getSelectedIndex());
         } catch (WindowSettingCompleteException ex) {
+            for(int i=0;i<playerNumber;i++ ){
+                EventView packetFineInit = new InitialEnded();
+                packetFineInit.setPlayerId(i);
+                sendEventToView(packetFineInit);
+            }
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             EventView turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             System.err.println("inizia il vero gioco con il giocatore" + gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.err.println(ex.getMessage());
             showErrorMessage(ex, event.getPlayerId());
             InitialWindowPatternCard packet = new InitialWindowPatternCard();
             packet.setPlayerId(event.getPlayerId());
@@ -100,26 +99,31 @@ public class Controller implements ControllerVisitor {
      */
     @Override
     public void visit(InsertDiceController event) {//this is the handler for a normal move
-        if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
-            //il giocatore ha già pescato un dado e deve piazzarlo
-            if (gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()) {
-                //il giocatore ha già utilizzato questa mossa
-                showErrorMessage(new AlreadyPlaceANewDiceException(), event.getPlayerId());
-                //TODO far rivedere il menu senza riinviare il pacchetto? boh
-                EventView turnPacket = new StartPlayerTurn();
-                turnPacket.setPlayerId(event.getPlayerId());
-                System.err.println("Il giocatore voleva violare le regole");
-                server.sendEventToView(turnPacket);
-            } else {
-                SelectCellOfWindowView packet = new SelectCellOfWindowView();
+        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
+            if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
+                //il giocatore ha già pescato un dado e deve piazzarlo
+                if (gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()) {
+                    //il giocatore ha già utilizzato questa mossa
+                    showErrorMessage(new AlreadyPlaceANewDiceException(), event.getPlayerId());
+                    //TODO far rivedere il menu senza riinviare il pacchetto? boh
+                    EventView turnPacket = new StartPlayerTurn();
+                    turnPacket.setPlayerId(event.getPlayerId());
+                    System.err.println("Il giocatore voleva violare le regole");
+                    server.sendEventToView(turnPacket);
+                } else {
+                    SelectCellOfWindowView packet = new SelectCellOfWindowView();
+                    packet.setPlayerId(event.getPlayerId());
+                    server.sendEventToView(packet);
+                }
+            } else {//il giocatore non ha ancora pescato un nuovo dado
+                SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
                 packet.setPlayerId(event.getPlayerId());
                 server.sendEventToView(packet);
             }
-        } else {//il giocatore non ha ancora pescato un nuovo dado
-            SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
-            packet.setPlayerId(event.getPlayerId());
-            server.sendEventToView(packet);
+        }else{
+            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
         }
+
 
     }
 
@@ -172,28 +176,33 @@ public class Controller implements ControllerVisitor {
             server.sendEventToView(turnPacket);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            System.err.println(ex.getMessage());
             showErrorMessage(ex, event.getPlayerId());
         }
     }
 
     @Override
     public void visit(UseToolCardController event) {
-        if (gameBoard.getPlayer(event.getIndex()).isHasUsedToolCard()) {//se ha già usato la toolcard
-            if (gameBoard.getIndexCurrentPlayer() == event.getIndex()) {// can use the move ToolCard!
-                showErrorMessage(new AlreadyUseToolCardException(), event.getPlayerId());
-                EventView turnPacket = new StartPlayerTurn();
-                turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-                server.sendEventToView(turnPacket);
-            } else {//not yout turn! how? don't know
-                showErrorMessage(new CurrentPlayerException(), event.getPlayerId());
+        if(gameBoard.getIndexCurrentPlayer()==event.getPlayerId()){
+            if (gameBoard.getPlayer(event.getIndex()).isHasUsedToolCard()) {//se ha già usato la toolcard
+                if (gameBoard.getIndexCurrentPlayer() == event.getIndex()) {// can use the move ToolCard!
+                    showErrorMessage(new AlreadyUseToolCardException(), event.getPlayerId());
+                    EventView turnPacket = new StartPlayerTurn();
+                    turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
+                    server.sendEventToView(turnPacket);
+                } else {//not yout turn! how? don't know
+                    showErrorMessage(new CurrentPlayerException(), event.getPlayerId());
+                }
+            } else {
+                //TODO inviare il paccetto che rappresenta il menu della scelta toolcard(per gui farà vedere un messaggio e abilita i bottoni)
+                EventView packet = new SelectToolCard();
+                packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
+                server.sendEventToView(packet);
             }
-        } else {
-            //TODO inviare il paccetto che rappresenta il menu della scelta toolcard(per gui farà vedere un messaggio e abilita i bottoni)
-            EventView packet = new SelectToolCard();
-            packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(packet);
+        }else{
+            showErrorMessage(new CurrentPlayerException(),event.getPlayerId());
         }
+
     }
 
 
@@ -215,15 +224,18 @@ public class Controller implements ControllerVisitor {
             gameBoard.notifyAllCards(i);
         }
         showAllCardToAll();
-        sendWaitTurnToAllTheNonCurrent(0);
-        InitialWindowPatternCard packet = new InitialWindowPatternCard();
-        packet.setPlayerId(0);
-        System.err.println("Iniziato il gioco con la funziona start game");
-        server.sendEventToView(packet);
+        for (int i = 0; i < playerNumber; i++) {
+            InitialWindowPatternCard packet = new InitialWindowPatternCard();
+            packet.setPlayerId(i);
+            server.sendEventToView(packet);
+        }
+        System.err.println("Iniziato il gioco, inviati tutti i pacchetti per l'inizio del game");
+
     }
 
     // TODO: CHECKARE LA CLASSE
     public void joinGame(int id) {
+        //TODO non deve inviare l'init windowPattern....
         gameBoard.notifyAllCards(id);
         InitialWindowPatternCard packet = new InitialWindowPatternCard();
         packet.setPlayerId(id);

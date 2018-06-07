@@ -133,6 +133,11 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     @Override
+    public void visit(InitialEnded event) {
+
+    }
+
+    @Override
     public void visit(WaitYourTurn event) {
         cliMessage.showWaitYourTurnScreen(playersName[event.getIndexCurrentPlayer()]);
     }

@@ -68,14 +68,14 @@ public class SetUpConnection {
                 if(isInt(portInput)){
                     connected = client.startRMIClient(ipInput.getText(),Integer.parseInt(portInput.getText()));
                     if (connected) {
-                        new AlertMessage().displayMessage("Dati del server corretti");
+                        new AlertMessage(stage).displayMessage("Dati del server corretti");
                         stage.close();
                     }
-                    else new AlertMessage().displayMessage("Non è stato trovato il server");
+                    else new AlertMessage(stage).displayMessage("Non è stato trovato il server");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                new AlertMessage().displayMessage("Errore inaspettato durante la connessione");
+                new AlertMessage(stage).displayMessage("Errore inaspettato durante la connessione");
             }
         });
         back.setOnAction(e->{
