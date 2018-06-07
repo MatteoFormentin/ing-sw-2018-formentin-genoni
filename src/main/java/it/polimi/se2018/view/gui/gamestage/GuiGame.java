@@ -42,24 +42,25 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     //variables for show card
     private ShowCardBox cardShow;
-    private AlertMessage popUpGame,popUpWait;
+    private AlertMessage popUpGame, popUpWait;
     private boolean init;
 
 
     //variabili per il giocatori
     private int playerId;
     private VBox opposingPlayers; //pane for add/remove Grid of other player
-    private VBox centerBox; //conteins the player and dicepool
+    private VBox centerBox; //contains the player and dice pool
 
     private HBox[] boxAllDataPlayer; //contains info and hand
     private VBox[] infoPlayer; //Contains Name, (favorToken, Points in one HBox) and WindowPattern
 
     private Text[] playersName;
     private HBox[] numberData;
-    private Text[] FavorTokenOfEachPlayer;
-    private Text[] PointsOfEachPlayer;
+    private Text[] favorTokenOfEachPlayer;
+    private Text[] pointsOfEachPlayer;
     private VBox[] handOfEachPlayer; //
     //imageView for Hand
+
     //widnwo of each player
     private VBox[] boxWindowPlayer;
     private Text[] nameWindowPlayer;
@@ -104,6 +105,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     //messaggi
     private SelectInitialWindowPatternCardController selectInitialWindowPatternCardController;
+
     private GuiGame() {
         toolBox = new HBox();
         objectivePublicBox = new HBox();
@@ -115,6 +117,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
         if (instance == null) instance = new GuiGame();
         return instance;
     }
+
     public void setTheGameStage() {
         //setTheGame wait
         waitStage = new Stage();
@@ -162,12 +165,12 @@ public class GuiGame implements UIInterface, ViewVisitor {
         boxAllWindowPoolChoice.setSpacing(15);
         boxAllWindowPoolChoice.setAlignment(Pos.CENTER);
         invioWindow = new Button("Invia la WindowPattern scelta");
-        invioWindow.setOnAction(e->{
-            if (toggleWindowChoice.getSelectedToggle()!=null){
+        invioWindow.setOnAction(e -> {
+            if (toggleWindowChoice.getSelectedToggle() != null) {
                 selectInitialWindowPatternCardController = new SelectInitialWindowPatternCardController();
-                selectInitialWindowPatternCardController.setSelectedIndex(Integer.parseInt(((RadioButton)toggleWindowChoice.getSelectedToggle()).getText()));
+                selectInitialWindowPatternCardController.setSelectedIndex(Integer.parseInt(((RadioButton) toggleWindowChoice.getSelectedToggle()).getText()));
                 sendEventToGuiReceiver(selectInitialWindowPatternCardController);
-            }else{
+            } else {
                 popUpWait.displayMessage("Seleziona una windowPattern");
             }
 
@@ -175,7 +178,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
         toggleWindowChoice = new ToggleGroup();
         VBox pane = new VBox();
         pane.setAlignment(Pos.CENTER);
-        pane.getChildren().addAll(allCards, boxAllWindowPoolChoice,invioWindow);
+        pane.getChildren().addAll(allCards, boxAllWindowPoolChoice, invioWindow);
         Scene scene = new Scene(pane, 800, 500);
         stageChoose.setScene(scene);
     }
@@ -219,7 +222,6 @@ public class GuiGame implements UIInterface, ViewVisitor {
         //the card in right position
         cardBox = new VBox();
         cardBox.setAlignment(Pos.CENTER_RIGHT);
-
         //setUp BorderPane
         BorderPane pane = new BorderPane(); //keep all the element of the game
         pane.setTop(roundBox);
@@ -271,12 +273,36 @@ public class GuiGame implements UIInterface, ViewVisitor {
         boxAllDataPlayer = new HBox[numberOfPlayer];
         infoPlayer = new VBox[numberOfPlayer];
         playersName = new Text[numberOfPlayer];
+        handOfEachPlayer = new VBox[numberOfPlayer];
+        favorTokenOfEachPlayer = new Text[numberOfPlayer];
+        pointsOfEachPlayer = new Text[numberOfPlayer];
+        objectivePrivateCardOfEachPlayers = new ImageView[numberOfPlayer];
+        //init array for window
+        boxWindowPlayer = new VBox[numberOfPlayer];
+        nameWindowPlayer = new Text[numberOfPlayer];
+        difficultyWindowPlayer = new Text[numberOfPlayer];
+        gridCellPlayer = new GridPane[numberOfPlayer];
+        imageViewsCellPlayer = new ImageView[numberOfPlayer][][];
+
         //setUpAllThe boxes
         for (int i = 0; i < numberOfPlayer; i++) {
-            playersName[i] = new Text(event.getPlayersName(i));
-            infoPlayer[i] = new VBox(playersName[i]);
-            boxAllDataPlayer[i] = new HBox(infoPlayer[i]);
+            //box window
+            nameWindowPlayer[i]= new Text("Non scelta");
+            difficultyWindowPlayer[i] = new Text("0");
+            gridCellPlayer[i] = new GridPane();
+            boxWindowPlayer[i] = new VBox(nameWindowPlayer[i],gridCellPlayer[i],difficultyWindowPlayer[i]);
 
+            //box info
+            playersName[i] = new Text(event.getPlayersName(i));
+            favorTokenOfEachPlayer[i] = new Text("Favor : 0");
+            pointsOfEachPlayer[i] = new Text("Points : 0");
+            infoPlayer[i] = new VBox(playersName[i], favorTokenOfEachPlayer[i], pointsOfEachPlayer[i],boxWindowPlayer[i]);
+
+            //box player
+            handOfEachPlayer[i] = new VBox();
+            boxAllDataPlayer[i] = new HBox(infoPlayer[i],handOfEachPlayer[i]);
+
+            //select place
             if (i != playerId) {
                 opposingPlayers.getChildren().add(boxAllDataPlayer[i]);
                 boxAllDataPlayer[i].setAlignment(Pos.TOP_LEFT);
@@ -285,15 +311,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
                 centerBox.getChildren().add(boxAllDataPlayer[i]);
             }
         }
-        boxWindowPlayer = new VBox[numberOfPlayer];
-        nameWindowPlayer = new Text[numberOfPlayer];
-        difficultyWindowPlayer = new Text[numberOfPlayer];
-        gridCellPlayer = new GridPane[numberOfPlayer];
 
-        objectivePrivateCardOfEachPlayers = new ImageView[numberOfPlayer];
-        handOfEachPlayer = new VBox[numberOfPlayer];
-        FavorTokenOfEachPlayer = new Text[numberOfPlayer];
-        PointsOfEachPlayer = new Text[numberOfPlayer];
     }
 
     @Override
@@ -322,6 +340,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
             stageChoose.setAlwaysOnTop(true);
             stageChoose.show();
             waitStage.close();
+
         });
     }
 
@@ -356,8 +375,10 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(InitialEnded event) {
-        Platform.runLater(()->{
+        System.out.println("viene accettato :" + event.toString());
+        Platform.runLater(() -> {
             stageChoose.close();
+            cardBox.getChildren().addAll(toolBox, objectivePublicBox, objectivePrivateBox);
             gameStage.show();
         });
     }
@@ -405,6 +426,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
         difficultyWindowPoolChoice = new Text[numberWindow];
         gridCellPoolChoice = new GridPane[numberWindow];
         imageViewsCellPoolChoice = new ImageView[numberWindow][numberLine][numberColumn];
+
         for (int i = 0; i < numberWindow; i++) {
             gridCellPoolChoice[i] = new GridPane();
             gridCellPoolChoice[i].setPadding(new Insets(10, 0, 10, 0));
@@ -414,7 +436,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
             radioButtons[i].setToggleGroup(toggleWindowChoice);
             difficultyWindowPoolChoice[i] = new Text(Integer.toString(event.getInitialWindowPatternCard(i).getDifficulty()));
             nameWindowPoolChoice[i] = new Text(event.getInitialWindowPatternCard(i).getName());
-            boxWindowPoolChoice[i] = new VBox(nameWindowPoolChoice[i], gridCellPoolChoice[i], difficultyWindowPoolChoice[i],radioButtons[i]);
+            boxWindowPoolChoice[i] = new VBox(nameWindowPoolChoice[i], gridCellPoolChoice[i], difficultyWindowPoolChoice[i], radioButtons[i]);
             boxAllWindowPoolChoice.getChildren().add(boxWindowPoolChoice[i]);
             for (int line = 0; line < numberLine; line++) {
                 for (int column = 0; column < numberColumn; column++) {
@@ -508,6 +530,33 @@ public class GuiGame implements UIInterface, ViewVisitor {
         });
     }
 
+    @Override
+    public void visit(UpdateSingleWindow event) {
+        System.out.println("viene accettato :" + event.toString());
+        int numberLine = event.getWindowPatternCard().getMatrix().length;
+        int numberColumn = event.getWindowPatternCard().getColumn(0).length;
+        imageViewsCellPlayer[event.getIndexPlayer()] = new ImageView[numberLine][numberColumn];
+        nameWindowPlayer[event.getIndexPlayer()].setText(event.getWindowPatternCard().getName());
+        difficultyWindowPlayer[event.getIndexPlayer()].setText(Integer.toString(event.getWindowPatternCard().getDifficulty()));
+        for (int line = 0; line < numberLine; line++) {
+            for (int column = 0; column < numberColumn; column++) {
+                String color;
+                if (event.getWindowPatternCard().getCell(line, column).getColorRestriction() == null) {
+                    color = "";
+                } else {
+                    color = event.getWindowPatternCard().getCell(line, column).getColorRestriction().toString();
+                }
+                Image newImage = new Image("file:src/resources/dadijpg/"
+                        + color
+                        + "Dice" + Integer.toString(event.getWindowPatternCard().getCell(line, column).getValueRestriction()) + ".jpg");
+                imageViewsCellPlayer[event.getIndexPlayer()][line][column] = new ImageView(newImage);
+                imageViewsCellPlayer[event.getIndexPlayer()][line][column].setFitHeight(25);
+                imageViewsCellPlayer[event.getIndexPlayer()][line][column].setFitWidth(25);
+                imageViewsCellPlayer[event.getIndexPlayer()][line][column].setPreserveRatio(true);
+                gridCellPlayer[event.getIndexPlayer()].add(imageViewsCellPlayer[event.getIndexPlayer()][line][column], column, line);
+            }
+        }
+    }
 
     @Override
     public void visit(UpdateSingleToolCardCost event) {
@@ -542,10 +591,6 @@ public class GuiGame implements UIInterface, ViewVisitor {
         System.out.println("viene accettato :" + event.toString());
     }
 
-    @Override
-    public void visit(UpdateSingleWindow event) {
-        System.out.println("viene accettato :" + event.toString());
-    }
 
 
     @Override
