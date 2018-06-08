@@ -6,7 +6,6 @@ import it.polimi.se2018.exception.PlayerException.*;
 import it.polimi.se2018.exception.WindowException.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.model.card.Deck;
-import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
@@ -21,7 +20,7 @@ import java.io.Serializable;
  *
  * @author Luca Genoni
  */
-public class GameBoard implements Serializable {
+public class GameBoard{
     private int currentRound;//can have only the get
     private int currentTurn;//can have only the get
     private int indexCurrentPlayer;//can have only the get
@@ -207,18 +206,28 @@ public class GameBoard implements Serializable {
         for (int i = 0; i < (2 * player.length + 1); i++) {
             dicePool.add(factoryDiceForThisGame.createDice());
         }
-        UpdateDicePool packet = new UpdateDicePool(dicePool);
-        broadcast(packet);
+        updateDicePool();
     }
 
     private void freeHandPlayer(int indexPlayer) {
+        /*
         while (player[indexPlayer].getHandDice().size() != 0) {
             dicePool.addLast(player[indexPlayer].getHandDice().remove(0));
         }
+         */
+        while (!player[indexPlayer].getHandDice().isEmpty()) {
+            dicePool.addLast(player[indexPlayer].getHandDice().remove(0));
+        }
+        updateHand(indexPlayer);
+        updateDicePool();
+    }
+    private void updateHand(int indexPlayer){
         UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-        UpdateDicePool packetDicePool = new UpdateDicePool(dicePool);
         broadcast(packet);
-        broadcast(packetDicePool);
+    }
+    private void updateDicePool(){
+        UpdateDicePool packet = new UpdateDicePool(dicePool);
+        broadcast(packet);
     }
 
     /**
@@ -241,6 +250,7 @@ public class GameBoard implements Serializable {
                 player[indexPlayer].endTrun(false);
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);
+
             indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
             currentTurn++;
             System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
@@ -251,6 +261,7 @@ public class GameBoard implements Serializable {
                 player[indexPlayer].endTrun(false);
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);
+
             currentTurn++;
             System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
@@ -260,6 +271,7 @@ public class GameBoard implements Serializable {
                 player[indexPlayer].endTrun(true);
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);
+
             indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
             if (indexCurrentPlayer < 0) indexCurrentPlayer = player.length + indexCurrentPlayer;
             currentTurn++;
@@ -271,25 +283,24 @@ public class GameBoard implements Serializable {
                 player[indexPlayer].endTrun(true);
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);//rimette dadi rimanenti in mano nella draftpool
+
             roundTrack[currentRound] = dicePool;
-            dicePool = null;
-            UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
-            broadcast(packetRound);
             currentRound++;
             if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
                 currentTurn = 1;
+                dicePool = new DiceStack();
                 for (int i = 0; i < (2 * player.length + 1); i++) {
                     Dice dice = factoryDiceForThisGame.createDice();
                     if (dice == null) {
                         System.err.println("Non ci sono abbastanza dadi, è strano perchè dovrebbero essere 90 esatti");
                         throw new FatalGameErrorException();
                     }
-                    dicePool = new DiceStack();
                     dicePool.add(dice);
                 }
-                UpdateDicePool packetPool = new UpdateDicePool(dicePool);
-                broadcast(packetPool);
+                UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
+                broadcast(packetRound);
+                updateDicePool();
                 System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
                 if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             } else {//il gioco è finito
@@ -308,20 +319,20 @@ public class GameBoard implements Serializable {
 
     private void calculatePoint() {
         int pointCounter;
-        for (Player player : this.player) {
+        for (Player playerX : this.player) {
             pointCounter = 0;
             //calculate point for the public object
-            for (ObjectivePublicCard objectivePublicCard : this.objectivePublicCard) {
-                pointCounter += objectivePublicCard.calculatePoint(player.getPlayerWindowPattern());
+            for (ObjectivePublicCard objectivePublicCardx : this.objectivePublicCard) {
+                pointCounter += objectivePublicCardx.calculatePoint(playerX.getPlayerWindowPattern());
             }
             //calculate point for the private object
-            pointCounter += player.getPrivateObject().calculatePoint(player.getPlayerWindowPattern());
+            pointCounter += playerX.getPrivateObject().calculatePoint(playerX.getPlayerWindowPattern());
             //add the token left
-            pointCounter += player.getFavorToken();
-            player.setFavorToken(0);
+            pointCounter += playerX.getFavorToken();
+            playerX.setFavorToken(0);
             //subtract the void cell
-            pointCounter = pointCounter - (20 - player.getPlayerWindowPattern().getNumberOfCellWithDice());
-            player.setPoints(pointCounter);
+            pointCounter = pointCounter - (20 - playerX.getPlayerWindowPattern().getNumberOfCellWithDice());
+            playerX.setPoints(pointCounter);
         }
         //inolra a tutti il punteggio
         for (int i = 0; i < player.length; i++){
@@ -378,10 +389,8 @@ public class GameBoard implements Serializable {
         player[indexPlayer].addDiceToHand(dice);
         dicePool.remove(indexDicePool);
         player[indexPlayer].setHasDrawNewDice(true);
-        UpdateDicePool packetPool = new UpdateDicePool(dicePool);
-        broadcast(packetPool);
-        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-        broadcast(packet);
+        updateHand(indexPlayer);
+        updateDicePool();
     }
 
     /**
@@ -400,8 +409,7 @@ public class GameBoard implements Serializable {
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column);
         player[indexPlayer].setHasPlaceANewDice(true);
-        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-        broadcast(packet);
+        updateHand(indexPlayer);
         UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
         broadcast(packetCell);
     }

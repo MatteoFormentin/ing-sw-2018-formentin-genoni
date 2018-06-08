@@ -29,6 +29,7 @@ public class GuiReceiver implements UIInterface {
 
     }
     public static GuiReceiver getGuiReceiver(){
+
         if(instance==null) instance=new GuiReceiver();
         return instance;
     }
@@ -38,6 +39,7 @@ public class GuiReceiver implements UIInterface {
     }
 
     public void start(ClientController client){
+
         this.client =client;
         //creating a Group object
         VBox menu = new VBox();
@@ -57,6 +59,7 @@ public class GuiReceiver implements UIInterface {
         //design second stage
 
         getGuiGame().setTheGameStage();
+        System.out.println("arrivato al Gui Receiver");
         BackgroundImage backgroundImage = new BackgroundImage(new Image("file:src/resources/Immagine.jpg", 779, 261, true, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         //design scene wait

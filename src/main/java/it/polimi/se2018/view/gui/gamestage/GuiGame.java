@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 
+import java.util.LinkedList;
 import java.util.stream.IntStream;
 
 import static it.polimi.se2018.view.gui.GuiReceiver.getGuiReceiver;
@@ -59,7 +60,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
     private HBox[] numberData;
     private Text[] favorTokenOfEachPlayer;
     private Text[] pointsOfEachPlayer;
-    private VBox[] handOfEachPlayer; //
+    private VBox[] vBoxesHandOfEachPlayer; //
+    private ImageView[][] imageViewsHandPlayer;
     //imageView for Hand
 
     //widnwo of each player
@@ -99,7 +101,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
     private Button[] roundButton;
     private ImageView[][] roundTrackDice;
     private FlowPane flowPaneDicePool;
-    private ImageView[] dicePool;
+    private LinkedList<ImageView> dicePool;
     //Button of the menu game
     private HBox menuButton;
     private Button[] gameButton;
@@ -182,6 +184,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
         pane.getChildren().addAll(allCards, boxAllWindowPoolChoice, invioWindow);
         Scene scene = new Scene(pane, 800, 500);
         stageChoose.setScene(scene);
+
     }
 
     private void setBoard() {
@@ -195,22 +198,27 @@ public class GuiGame implements UIInterface, ViewVisitor {
         centerBox.setAlignment(Pos.CENTER);
         //The button for menu in bottom position
         menuButton = new HBox();
-        gameButton = new Button[3];
-        for (int i = 0; i < 3; i++) {
+        gameButton = new Button[4];
+        for (int i = 0; i < gameButton.length; i++) {
             gameButton[i] = new Button();
             menuButton.getChildren().add(gameButton[i]);
+
         }
-        gameButton[0].setText("Pesca e inserisci un dado");
+        gameButton[0].setText("Pesca un dado");
         gameButton[0].setOnAction(event -> {
         });
-        gameButton[1].setText("Utilizza una Tool Card");
+        gameButton[1].setText("Inserisci un dado");
         gameButton[1].setOnAction(event -> {
         });
-        gameButton[2].setText("Passa il turno");
+        gameButton[2].setText("Utilizza una Tool Card");
         gameButton[2].setOnAction(event -> {
+        });
+        gameButton[3].setText("Passa il turno");
+        gameButton[3].setOnAction(event -> {
             EndTurnController packet = new EndTurnController();
             sendEventToGuiReceiver(packet);
         });
+
 
         //the card in right position
         cardBox = new VBox();
@@ -253,6 +261,14 @@ public class GuiGame implements UIInterface, ViewVisitor {
         return imageView;
     }
 
+    private ImageView createNewImageViewForDicePool() {
+        ImageView imageView = new ImageView();
+        imageView.setFitHeight(40);
+        imageView.setFitWidth(40);
+        imageView.setPreserveRatio(true);
+        return imageView;
+    }
+
     @Override
     public void visit(EndGame event) {
         System.out.println("viene accettato :" + event.toString());
@@ -266,7 +282,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
         boxAllDataPlayer = new HBox[numberOfPlayer];
         infoPlayer = new VBox[numberOfPlayer];
         playersName = new Text[numberOfPlayer];
-        handOfEachPlayer = new VBox[numberOfPlayer];
+        vBoxesHandOfEachPlayer = new VBox[numberOfPlayer];
+        imageViewsHandPlayer = new ImageView[numberOfPlayer][5];
         favorTokenOfEachPlayer = new Text[numberOfPlayer];
         pointsOfEachPlayer = new Text[numberOfPlayer];
         objectivePrivateCardOfEachPlayers = new ImageView[numberOfPlayer];
@@ -280,20 +297,20 @@ public class GuiGame implements UIInterface, ViewVisitor {
         //setUpAllThe boxes
         for (int i = 0; i < numberOfPlayer; i++) {
             //box window
-            nameWindowPlayer[i]= new Text("Non scelta");
+            nameWindowPlayer[i] = new Text("Non scelta");
             difficultyWindowPlayer[i] = new Text("0");
             gridCellPlayer[i] = new GridPane();
-            boxWindowPlayer[i] = new VBox(nameWindowPlayer[i],gridCellPlayer[i],difficultyWindowPlayer[i]);
+            boxWindowPlayer[i] = new VBox(nameWindowPlayer[i], gridCellPlayer[i], difficultyWindowPlayer[i]);
 
             //box info
             playersName[i] = new Text(event.getPlayersName(i));
             favorTokenOfEachPlayer[i] = new Text("Favor : 0");
             pointsOfEachPlayer[i] = new Text("Points : 0");
-            infoPlayer[i] = new VBox(playersName[i], favorTokenOfEachPlayer[i], pointsOfEachPlayer[i],boxWindowPlayer[i]);
+            infoPlayer[i] = new VBox(playersName[i], favorTokenOfEachPlayer[i], pointsOfEachPlayer[i], boxWindowPlayer[i]);
 
             //box player
-            handOfEachPlayer[i] = new VBox();
-            boxAllDataPlayer[i] = new HBox(infoPlayer[i],handOfEachPlayer[i]);
+            vBoxesHandOfEachPlayer[i] = new VBox();
+            boxAllDataPlayer[i] = new HBox(infoPlayer[i], vBoxesHandOfEachPlayer[i]);
 
             //select place
             if (i != playerId) {
@@ -303,16 +320,20 @@ public class GuiGame implements UIInterface, ViewVisitor {
                 boxAllDataPlayer[i].setAlignment(Pos.CENTER);
                 centerBox.getChildren().add(boxAllDataPlayer[i]);
             }
+            for (int j = 0; j < imageViewsHandPlayer[i].length; j++) {
+                imageViewsHandPlayer[i][j] = createNewImageViewForDicePool();
+                imageViewsHandPlayer[i][j].setImage(null);
+                vBoxesHandOfEachPlayer[i].getChildren().add(imageViewsHandPlayer[i][j]);
+            }
         }
-        flowPaneDicePool = new FlowPane(5,5);
+        flowPaneDicePool = new FlowPane(5, 5);
         flowPaneDicePool.setOrientation(Orientation.HORIZONTAL);
         flowPaneDicePool.setAlignment(Pos.BOTTOM_CENTER);
-        dicePool = new ImageView[2*numberOfPlayer+1];
-        for(int i=0; i<dicePool.length;i++){
-            dicePool[i] = new ImageView();
-            dicePool[i].setFitHeight(40);
-            dicePool[i].setFitWidth(40);
-            flowPaneDicePool.getChildren().add( dicePool[i]);
+        dicePool = new LinkedList<ImageView>();
+        for (int i = 0; i < (2 * numberOfPlayer + 1); i++) {
+            dicePool.add(createNewImageViewForDicePool());
+            flowPaneDicePool.getChildren().add(dicePool.get(i));
+            activeDiceOfDicePool(i);
         }
         centerBox.getChildren().add(flowPaneDicePool);
 
@@ -487,7 +508,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
                         Image newImage = new Image("file:src/resources/carte_jpg/carte_strumento_" + event.getToolCard(i).getId() + ".jpg");
                         toolCard[i].setImage(newImage);
                         toolCard[i].setOnMouseClicked(e -> {
-                            if(cardShow.displayCard(toolCard[i], true)){
+                            if (cardShow.displayCard(toolCard[i], true)) {
                                 SelectToolCardController packet = new SelectToolCardController();
                                 packet.setIndexToolCard(i);
                                 sendEventToGuiReceiver(packet);
@@ -553,10 +574,10 @@ public class GuiGame implements UIInterface, ViewVisitor {
         int numberLine = event.getWindowPatternCard().getMatrix().length;
         int numberColumn = event.getWindowPatternCard().getColumn(0).length;
         int dimCell;
-        if(event.getIndexPlayer()==playerId){
-            dimCell=50;
-        }else{
-            dimCell=25;
+        if (event.getIndexPlayer() == playerId) {
+            dimCell = 50;
+        } else {
+            dimCell = 25;
         }
         imageViewsCellPlayer[event.getIndexPlayer()] = new ImageView[numberLine][numberColumn];
         nameWindowPlayer[event.getIndexPlayer()].setText(event.getWindowPatternCard().getName());
@@ -589,15 +610,49 @@ public class GuiGame implements UIInterface, ViewVisitor {
     @Override
     public void visit(UpdateDicePool event) {
         System.out.println("viene accettato :" + event.toString());
-        if(event.getDicePool()!=null){
-            for(int i=0; i<dicePool.length;i++){
-                try{
+        //rimuovo gli i figli ascoltati
+        int number = flowPaneDicePool.getChildren().size();
+        Platform.runLater(() -> {
+            flowPaneDicePool.getChildren().remove(0, (number));
+            //TODO usciv
+        });
+
+        if (event.getDicePool() != null) {
+            for (int i = 0; i < event.getDicePool().size(); i++) {
                 Image newImage = new Image("file:src/resources/dadijpg/"
                         + event.getDicePool().getDice(i).getColor()
                         + "Dice" + event.getDicePool().getDice(i).getValue() + ".jpg");
-                dicePool[i].setImage(newImage);
-                }catch (Exception e){
-                    dicePool[i].setImage(new Image("file:src/resources/dadijpg/Dice0.jpg"));
+                dicePool.get(i).setImage(newImage);
+                addDiceToDicePool(i);
+
+            }
+        }
+    }
+
+    private void addDiceToDicePool(int index) {
+
+        Platform.runLater(() -> {
+                    System.out.println("dado indice:" + index);
+                    flowPaneDicePool.getChildren().add(dicePool.get(index));
+                }
+        );
+        //TODO crea duplicati, sistemare
+    }
+
+
+    @Override
+    public void visit(UpdateSinglePlayerHand event) {
+        System.out.println("viene accettato :" + event.toString());
+        //rimuovo tutti i dadi
+        if (event.getHandPlayer() != null) {
+            for (int i = 0; i < imageViewsHandPlayer[event.getIndexPlayer()].length; i++) {
+                try {
+                    Image newImage = new Image("file:src/resources/dadijpg/"
+                            + event.getHandPlayer().getDice(i).getColor()
+                            + "Dice" + event.getHandPlayer().getDice(i).getValue() + ".jpg");
+                    imageViewsHandPlayer[event.getIndexPlayer()][i].setImage(newImage);
+                } catch (Exception e) {
+                    imageViewsHandPlayer[event.getIndexPlayer()][i].setImage(null);
                 }
             }
         }
@@ -605,14 +660,16 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
 
     @Override
-    public void visit(UpdateSinglePlayerHand event) {
-        System.out.println("viene accettato :" + event.toString());
-    }
-
-
-    @Override
     public void visit(UpdateSingleCell event) {
         System.out.println("viene accettato :" + event.toString());
+        Image newImage;
+        if (event.getDice() == null) {
+            newImage = new Image("file:src/resources/dadijpg/Dice0.jpg");
+        } else {
+            newImage = new Image("file:src/resources/dadijpg/" + event.getDice().getColor()
+                    + "Dice" + Integer.toString(event.getDice().getValue()) + ".jpg");
+        }
+        imageViewsCellPlayer[event.getIndexPlayer()][event.getLine()][event.getColumn()].setImage(newImage);
     }
 
     @Override
@@ -625,6 +682,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
     public void visit(UpdateSingleTurnRoundTrack event) {
         System.out.println("viene accettato :" + event.toString());
     }
+
     @Override
     public void showMessage(EventView eventView) {
         eventView.accept(this);
@@ -640,9 +698,9 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     }
 
-    public void activeCell(int indexWindow, int indexRow, int indexColumn)  {
+    public void activeCell(int indexWindow, int indexRow, int indexColumn) {
         imageViewsCellPlayer[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {
-            System.out.println("ho cliccato la cella ("+indexRow+","+indexColumn+")");
+            System.out.println("ho cliccato la cella (" + indexRow + "," + indexColumn + ")");
             SelectCellOfWindowController packet = new SelectCellOfWindowController();
             packet.setLine(indexRow);
             packet.setColumn(indexColumn);
@@ -650,6 +708,17 @@ public class GuiGame implements UIInterface, ViewVisitor {
         });
 
     }
+
+    public void activeDiceOfDicePool(int index) {
+        dicePool.get(index).setOnMouseClicked(e -> {
+                    SelectDiceFromDraftpoolController packet = new SelectDiceFromDraftpoolController();
+                    packet.setIndex(index);
+                    packet.setPlayerId(playerId);
+                    sendEventToGuiReceiver(packet);
+                }
+        );
+    }
+
 }
 /*
     private void displayBoard(Stage gameStage) {

@@ -22,7 +22,7 @@ import java.io.Serializable;
  * @author Matteo Formentin
  * @author Luca Genoni
  */
-public class Player implements Serializable {
+public class Player {
     private int indexInGame;
     private int favorToken;
     private int points;

@@ -4,19 +4,14 @@ import it.polimi.se2018.exception.GameboardException.CurrentPlayerException;
 import it.polimi.se2018.exception.GameboardException.WindowPatternAlreadyTakenException;
 import it.polimi.se2018.exception.GameboardException.WindowSettingCompleteException;
 import it.polimi.se2018.exception.PlayerException.AlreadyPlaceANewDiceException;
-import it.polimi.se2018.exception.PlayerException.AlreadyUseToolCardException;
-import it.polimi.se2018.exception.ToolCardInUseException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.model.GameBoard;
-import it.polimi.se2018.model.Model;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
 
-import java.awt.*;
+import java.lang.instrument.IllegalClassFormatException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
 
 /**
  * Class that implements the {@code ControllerVisitor} for execute the event that the view produced
@@ -130,6 +125,7 @@ public class Controller implements ControllerVisitor {
         if (gameBoard.getIndexCurrentPlayer() == event.getPlayerId()) {
             //TODO sostituire con il system.out l'attivazione della toolcard
             System.out.println("il giocatore con id :" + event.getPlayerId() + " vuole giocare la " + event.getIndexToolCard() + " Toolcard");
+            showErrorMessage(new IllegalClassFormatException(), event.getPlayerId());
         } else {
             showErrorMessage(new CurrentPlayerException(), event.getPlayerId());
         }
