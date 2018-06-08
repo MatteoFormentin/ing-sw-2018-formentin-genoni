@@ -12,6 +12,8 @@ import java.util.Scanner;
 public class CliParser {
     private CliMessage cliMessage;
 
+    private boolean isInputActive;
+
     public CliParser() {
         cliMessage = new CliMessage();
     }
@@ -25,7 +27,7 @@ public class CliParser {
     public int parseInt() {
         int parsed = 0;
         boolean flag = false;
-        while (!flag) {
+        while (!flag && isInputActive()) {
             Scanner in = new Scanner(System.in);
             try {
                 parsed = in.nextInt();
@@ -37,8 +39,9 @@ public class CliParser {
         }
         return parsed;
     }
+
     public int parsePositiveInt(int upperBound) {
-        int parsed=0;
+        int parsed = 0;
         boolean flag = false;
         do {
             Scanner in = new Scanner(System.in);
@@ -49,7 +52,7 @@ public class CliParser {
                 cliMessage.showInputNotValid();
                 in.next();
             }
-        }while (!flag);
+        } while (!flag && isInputActive());
         return parsed;
     }
 
@@ -60,7 +63,7 @@ public class CliParser {
             parsed = parseInt();
             if (!(parsed < 0 || parsed > upperBound)) {
                 flag = true;
-            }else{
+            } else {
                 cliMessage.showInputNotValid();
             }
         } while (!flag);
@@ -70,7 +73,7 @@ public class CliParser {
     public String parseNickname() {
         String parsed = "";
         boolean flag = false;
-        while (!flag) {
+        while (!flag && isInputActive()) {
             Scanner in = new Scanner(System.in);
             try {
                 parsed = in.next("([a-z]|[A-z]|[0-9]){0,11}");
@@ -86,7 +89,7 @@ public class CliParser {
     public String parseIp() {
         String parsed = "";
         boolean flag = false;
-        while (!flag) {
+        while (!flag && isInputActive()) {
             Scanner in = new Scanner(System.in);
             try {
                 parsed = in.next("(0)|((([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5])))");
@@ -99,4 +102,11 @@ public class CliParser {
         return parsed;
     }
 
+    public boolean isInputActive() {
+        return isInputActive;
+    }
+
+    public void setInputActive(boolean inputActive) {
+        isInputActive = inputActive;
+    }
 }

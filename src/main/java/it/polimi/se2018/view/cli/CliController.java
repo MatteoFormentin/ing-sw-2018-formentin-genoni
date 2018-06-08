@@ -56,7 +56,14 @@ public class CliController implements UIInterface, ViewVisitor {
     //*****************************************Visitor Pattern************************************************************************
 
     public void showMessage(EventView EventView) {
-        EventView.accept(this);
+        cliParser.setInputActive(true);
+        Runnable exec = () -> {
+            Thread.currentThread().setName("Visitor Handler");
+            // System.out.println("Visitor Handler");
+            EventView.accept(this);
+        };
+        currentTask = new Thread(exec);
+        currentTask.start();
     }
 
     //*******************************************Visit for Controller event*******************************************************************************
@@ -96,21 +103,22 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     public void thred() {
-
         Runnable exec = () -> {
             try {
-                Thread.sleep(4000);
+                Thread.sleep(1);
+
             } catch (InterruptedException e) {
                 // We've been interrupted: no more messages.
                 return;
             }
-
         };
+
 
         if (!currentTask.isAlive()) {
             currentTask = new Thread(exec);
             currentTask.start();
         }
+
     }
 
     @Override
@@ -139,6 +147,7 @@ public class CliController implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(WaitYourTurn event) {
+        cliParser.setInputActive(false);
         cliMessage.showWaitYourTurnScreen(playersName[event.getIndexCurrentPlayer()]);
     }
 
@@ -414,7 +423,8 @@ public class CliController implements UIInterface, ViewVisitor {
     private WindowPatternCard getMyWindowPatternCard() {
         return windowPatternCardOfEachPlayer[playerId];
     }
-    private DiceStack getMyHand(){
+
+    private DiceStack getMyHand() {
         return handOfEachPlayer[playerId];
     }
 
