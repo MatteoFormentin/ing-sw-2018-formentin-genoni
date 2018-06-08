@@ -23,13 +23,13 @@ import javafx.stage.StageStyle;
 public class AlertMessage {
     private Stage stageMessage;
 
-    public AlertMessage(Stage owner){
-        stageMessage = new Stage(StageStyle.UNDECORATED);
+    public AlertMessage(Stage owner) {
+        stageMessage = new Stage(StageStyle.UTILITY);
         stageMessage.initModality(Modality.APPLICATION_MODAL);
         stageMessage.initOwner(owner);
-
     }
-    public void displayMessage(String message){
+
+    public void displayMessage(String message) {
         /*StageStyle
                     UTILITY only _ x
                     TRANSPARENT NOTHING and no _ o x
@@ -43,24 +43,20 @@ public class AlertMessage {
         Background focusBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
 
 
-        Label errorMessage =new Label();
+        Label errorMessage = new Label();
         errorMessage.setText(message);
 
-        Button closeButton =new Button("Ok");
-        closeButton.setOnAction(e->stageMessage.close());
+        Button closeButton = new Button("Ok");
+        closeButton.setOnAction(e -> stageMessage.close());
         VBox layoutMessage = new VBox(20);
-        layoutMessage.getChildren().addAll(errorMessage,closeButton);
+        layoutMessage.getChildren().addAll(errorMessage, closeButton);
         layoutMessage.setAlignment(Pos.CENTER);
         layoutMessage.setBackground(focusBackground);
-       // group.getChildren().add(layoutMessage);
-        Scene boxMessage =new Scene(layoutMessage,400,200,Color.BLACK);
+        // group.getChildren().add(layoutMessage);
+        Scene boxMessage = new Scene(layoutMessage, 400, 200, Color.BLACK);
         boxMessage.setFill(Color.BROWN);
-        stageMessage.setAlwaysOnTop(true);
-
-        Platform.runLater(()->{
-            stageMessage.setScene(boxMessage);
-            stageMessage.showAndWait();
-        });
+        stageMessage.setScene(boxMessage);
+        stageMessage.showAndWait();
 
     }
 }

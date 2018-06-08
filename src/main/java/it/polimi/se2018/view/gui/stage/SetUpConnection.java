@@ -15,8 +15,19 @@ import javafx.stage.StageStyle;
 
 import java.util.InputMismatchException;
 
+import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
+
 public class SetUpConnection {
-    private boolean connected = false;
+    private boolean connected ;
+    private Stage stage;
+
+    public SetUpConnection(Stage owner) {
+        stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(owner);
+        stage.setResizable(false);
+        connected=false;
+    }
 
     public boolean display(ClientController client){
         /*StageStyle
@@ -32,15 +43,10 @@ public class SetUpConnection {
         stageMessage.setAlwaysOnTop(true);
          */
         //static design
-        Stage stage = new Stage(StageStyle.UNDECORATED);
+
         GridPane form =new GridPane();
         Scene scene =new Scene(form,250,150);
         stage.setScene(scene);
-
-        //stage design
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setAlwaysOnTop(true);
-        stage.setResizable(false);
 
         //gridPane design
         form.setAlignment(Pos.CENTER);
@@ -66,7 +72,7 @@ public class SetUpConnection {
         connect.setOnAction(e-> {
             try {
                 if(isInt(portInput)){
-                    connected = client.startRMIClient(ipInput.getText(),Integer.parseInt(portInput.getText()));
+                    connected = getGuiInstance().getClient().startRMIClient(ipInput.getText(),Integer.parseInt(portInput.getText()));
                     if (connected) {
                         new AlertMessage(stage).displayMessage("Dati del server corretti");
                         stage.close();

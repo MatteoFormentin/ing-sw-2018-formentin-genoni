@@ -263,8 +263,10 @@ public class CliController implements UIInterface, ViewVisitor {
 
     public void visit(UpdateSingleCell event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()].getCell(event.getLine(), event.getColumn()).setDice(event.getDice());
-        cliMessage.showOpponentWindow(playersName[event.getIndexPlayer()]);
-        cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[event.getIndexPlayer()]);
+        if(event.getIndexPlayer()!=playerId) {
+            cliMessage.showOpponentInsertDice(playersName[event.getIndexPlayer()],event.getLine(),event.getColumn());
+            cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[event.getIndexPlayer()]);
+        }
     }
 
     public void visit(UpdateSinglePlayerTokenAndPoints event) {

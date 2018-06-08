@@ -7,15 +7,10 @@ import it.polimi.se2018.view.gui.GuiReceiver;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-public class SagradaLauncher extends Application {
+public class SagradaLauncher{
 
 
     public static void main(String[] args) {
-        launch();
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
         System.out.println("Benvenuto su Sagrada.");
         System.out.print("Digita 0 per avviare il server, uno per il client: ");
         CliParser cliParser = new CliParser();
@@ -35,7 +30,6 @@ public class SagradaLauncher extends Application {
                         break;
                     case 1:
                         args2[0] = "gui";
-                        GuiReceiver.getGuiReceiver().setUpGUI(primaryStage);
                         break;
                 }
 

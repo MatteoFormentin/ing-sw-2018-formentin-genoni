@@ -208,9 +208,13 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(YELLOW).a("Carte vetrate degli avversari:"));
     }
 
-    void showOpponentWindow(String name) {
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a(name + " ha inserito un dado:"));
+    void showOpponentInsertDice(String name,int line, int column) {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a(name + " ha inserito un dado in ("+line+","+column+")"));
     }
+    void showOpponentWindow (String name){
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Vetrata di "+name));
+    }
+
 
     void showToolCardMessage() {
         AnsiConsole.out.println(ansi().fg(GREEN).a("Carte utensile:"));
@@ -291,10 +295,9 @@ class CliMessage {
 
     void showHandPlayer(DiceStack hand) {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Dadi in mano: "));
-        if (hand == null) {
+        if (hand == null || hand.isEmpty()) {
             AnsiConsole.out.print(ansi().fg(DEFAULT).a(" Nessuno "));
-        } else if (hand.size() == 0) {
-            AnsiConsole.out.print(ansi().fg(DEFAULT).a(" Nessuno "));
+            println();
         } else {
             showDiceStack(hand);
         }

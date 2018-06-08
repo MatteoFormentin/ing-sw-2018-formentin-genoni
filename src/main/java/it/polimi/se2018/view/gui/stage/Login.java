@@ -13,17 +13,21 @@ import javafx.stage.StageStyle;
 
 public class Login {
     private boolean answer;
+    private Stage stage;
 
+    public Login(Stage owner) {
+        stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(owner);
+        stage.setResizable(false);
+        answer=false;
+    }
     public boolean display(ClientController client){
-        Stage stage = new Stage(StageStyle.UNDECORATED);
         GridPane form =new GridPane();
         Scene scene =new Scene(form,250,150);
         stage.setScene(scene);
 
         //stage design
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setAlwaysOnTop(true);
-        stage.setResizable(false);
 
         //gridPane design
         form.setAlignment(Pos.CENTER);
@@ -44,12 +48,11 @@ public class Login {
         //components action
         connect.setOnAction(e-> {
                 if(client.login(nameInput.getText())){
-                    System.out.println("login effettuato con successo");
                     answer=true;
                     stage.close();
                 }else{
                     answer=false;
-                    System.out.println("Sbagliato, riprova con un altro nome.");
+                    new AlertMessage(stage).displayMessage("Non puoi eseguire il login");
                 }
         });
         back.setOnAction(e->{

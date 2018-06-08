@@ -5,6 +5,7 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
+import it.polimi.se2018.view.gui.GuiInstance;
 import it.polimi.se2018.view.gui.GuiReceiver;
 
 import java.io.FileInputStream;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
+import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
 
 
 /**
@@ -118,10 +120,12 @@ public class Client implements ClientController {
             }
 
             if (args[0].equals("gui")) {
-                view = GuiReceiver.getGuiReceiver();
-                ((GuiReceiver) view).start(client);
+                view = getGuiInstance();
+                ((GuiInstance) view).setClient(client);
+              //  ((GuiInstance) view).startGui();
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.exit(0);
         }
     }

@@ -18,14 +18,16 @@ import javafx.stage.StageStyle;
  */
 public class ConfirmBox {
     private boolean answer;
+    private Stage stage;
 
-    public boolean displayMessage(String message){
-        Stage stage = new Stage(StageStyle.UTILITY);
+    public ConfirmBox(Stage owner) {
+        stage = new Stage(StageStyle.UTILITY);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setAlwaysOnTop(true);
+        stage.initOwner(owner);
+        answer = false;
+    }
+    public boolean displayMessage(String message){
         Background confirmBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
-        stage.setMinWidth(250);
-        stage.setMinHeight(250);
 
         Label confirmMessage =new Label();
         confirmMessage.setText(message);
