@@ -10,14 +10,28 @@ public class OkMessage extends EventView {
     //from EventController private String nicknamPlayer;
     //from EventController private Model model;
 
-    String playerNickname;
+    String messageConfirm;
+    boolean showTurn;
 
-    public String getPlayerName() {
-        return playerNickname;
+    public OkMessage(String messageConfirm, boolean showTurn) {
+        this.messageConfirm = messageConfirm;
+        this.showTurn = showTurn;
     }
 
-    public void setPlayerName(String playerNickname) {
-        this.playerNickname = playerNickname;
+    public String getMessageConfirm() {
+        return messageConfirm;
+    }
+
+    public void setMessageConfirm(String messageConfirm) {
+        this.messageConfirm = messageConfirm;
+    }
+
+    public boolean isShowTurn() {
+        return showTurn;
+    }
+
+    public void setShowTurn(boolean showTurn) {
+        this.showTurn = showTurn;
     }
 
     public void accept(ViewVisitor visitor) {

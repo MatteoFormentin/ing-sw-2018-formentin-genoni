@@ -72,6 +72,9 @@ public class Controller implements ControllerVisitor {
     public void visit(SelectInitialWindowPatternCardController event) {
         try {
             gameBoard.setWindowOfPlayer(event.getPlayerId(), event.getSelectedIndex());
+            OkMessage packet = new OkMessage("Hai scelto la window Pattern",false);
+            packet.setPlayerId(event.getPlayerId());
+            sendEventToView(packet);
         } catch (WindowSettingCompleteException ex) {
             for (int i = 0; i < playerNumber; i++) {
                 EventView packetFineInit = new InitialEnded();
@@ -85,10 +88,10 @@ public class Controller implements ControllerVisitor {
             server.sendEventToView(turnPacket);
         } catch (WindowPatternAlreadyTakenException ex) {
             System.err.println(ex.getMessage());
-            showErrorMessage(ex, event.getPlayerId());
+            showErrorMessageNoShowTurn(ex,event.getPlayerId());
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
-            showErrorMessage(ex, event.getPlayerId());
+            showErrorMessageNoShowTurn(ex,event.getPlayerId());
             InitialWindowPatternCard packet = new InitialWindowPatternCard();
             packet.setPlayerId(event.getPlayerId());
             server.sendEventToView(packet);
@@ -99,11 +102,11 @@ public class Controller implements ControllerVisitor {
     public void visit(SelectDiceFromDraftpoolController event) {
         try {
             gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(), event.getIndex());
-            OkMessage packet = new OkMessage();
+            OkMessage packet = new OkMessage("Hai pescato il dado",true);
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
         } catch (Exception ex) {
-            showErrorMessage(ex, event.getPlayerId());
+            showErrorMessageAndShowTrun(ex, event.getPlayerId());
         }
     }
 
@@ -111,13 +114,13 @@ public class Controller implements ControllerVisitor {
     public void visit(SelectCellOfWindowController event) {
         try {
             gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
-            OkMessage packet = new OkMessage();
+            OkMessage packet = new OkMessage("Hai inserito il dado",true);
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
         } catch (AlreadyPlaceANewDiceException ex) {
-            showErrorMessage(ex, event.getPlayerId());
+            showErrorMessageAndShowTrun(ex, event.getPlayerId());
         } catch (Exception ex) {
-            showErrorMessage(ex, event.getPlayerId());
+            showErrorMessageAndShowTrun(ex, event.getPlayerId());
         }
     }
 
@@ -125,9 +128,9 @@ public class Controller implements ControllerVisitor {
         if (gameBoard.getIndexCurrentPlayer() == event.getPlayerId()) {
             //TODO sostituire con il system.out l'attivazione della toolcard
             System.out.println("il giocatore con id :" + event.getPlayerId() + " vuole giocare la " + event.getIndexToolCard() + " Toolcard");
-            showErrorMessage(new IllegalClassFormatException(), event.getPlayerId());
+            showErrorMessageAndShowTrun(new IllegalClassFormatException(), event.getPlayerId());
         } else {
-            showErrorMessage(new CurrentPlayerException(), event.getPlayerId());
+            showErrorMessageAndShowTrun(new CurrentPlayerException(), event.getPlayerId());
         }
         //TODO settare il flag della toolcard to true e girare il pacchetto all'handler oppure viene fatto dal'handler?
     }
@@ -142,7 +145,7 @@ public class Controller implements ControllerVisitor {
             System.err.println("cambiato il turno tocca a " + gameBoard.getIndexCurrentPlayer());
             server.sendEventToView(turnPacket);
         } catch (Exception ex) {
-            showErrorMessage(ex, event.getPlayerId());
+            showErrorMessageAndShowTrun(ex, event.getPlayerId());
         }
     }
 
@@ -197,11 +200,14 @@ public class Controller implements ControllerVisitor {
      *
      * @param ex
      */
-    public void showErrorMessage(Exception ex, int indexPlayer) {
-        ShowErrorMessage packet = new ShowErrorMessage();
-        packet.setPlayerId(indexPlayer);
-        packet.setErrorMessage(ex.getMessage());
-        packet.setTypeException(ex);
+    public void showErrorMessageAndShowTrun(Exception ex, int idPlayer) {
+        ShowErrorMessage packet = new ShowErrorMessage(ex.getMessage(),true);
+        packet.setPlayerId(idPlayer);
+        server.sendEventToView(packet);
+    }
+    public void showErrorMessageNoShowTurn(Exception ex, int idPlayer) {
+        ShowErrorMessage packet = new ShowErrorMessage(ex.getMessage(),false);
+        packet.setPlayerId(idPlayer);
         server.sendEventToView(packet);
     }
 

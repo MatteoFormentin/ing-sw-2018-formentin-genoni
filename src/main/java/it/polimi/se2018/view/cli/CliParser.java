@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class CliParser {
     private CliMessage cliMessage;
 
-    private boolean isInputActive;
+    private boolean isInputActive= true;
 
     public CliParser() {
         cliMessage = new CliMessage();

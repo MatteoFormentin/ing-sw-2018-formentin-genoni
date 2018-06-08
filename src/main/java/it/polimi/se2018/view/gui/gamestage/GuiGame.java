@@ -395,7 +395,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
     @Override
     public void visit(OkMessage event) {
         System.out.println("viene accettato :" + event.toString());
-        popUpGame.displayMessage("Mossa andata a buon fine");
+        popUpGame.displayMessage(event.getMessageConfirm());
     }
 
     @Override

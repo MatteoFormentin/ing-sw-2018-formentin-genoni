@@ -220,12 +220,13 @@ public class CliController implements UIInterface, ViewVisitor {
     public void visit(ShowErrorMessage event) {
         cliMessage.showMessage(event.getErrorMessage());
         cliParser.readSplash();
-        turn();
+        if(event.isShowTurn()) turn();
     }
 
     @Override
     public void visit(OkMessage event) {
-        turn();
+        cliMessage.showGreenMessage(event.getMessageConfirm());
+        if(event.isShowTurn()) turn();
     }
 
     //*******************************************Visit for model event*******************************************************************************
@@ -362,6 +363,7 @@ public class CliController implements UIInterface, ViewVisitor {
                     cliMessage.println();
                 }
                 visit(new SelectToolCard());
+                turn();
                 break;
 
             //End turn
@@ -389,7 +391,6 @@ public class CliController implements UIInterface, ViewVisitor {
                     cliMessage.println();
                 }
                 cliParser.readSplash();
-                turn();
                 break;
 
             //Show opponents window pattern card

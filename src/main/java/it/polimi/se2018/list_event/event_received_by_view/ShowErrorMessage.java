@@ -9,7 +9,12 @@ public class ShowErrorMessage extends EventView {
     //from EventController private String nicknamPlayer;
     //from EventController private Model model;
     private String errorMessage; //for simple use in the view
-    private Exception typeException; //for a complex use in the view
+    private boolean showTurn;
+
+    public ShowErrorMessage(String errorMessage, boolean showTurn) {
+        this.errorMessage = errorMessage;
+        this.showTurn = showTurn;
+    }
 
     public String getErrorMessage() {
         return errorMessage;
@@ -19,12 +24,12 @@ public class ShowErrorMessage extends EventView {
         this.errorMessage = errorMessage;
     }
 
-    public Exception getTypeException() {
-        return typeException;
+    public boolean isShowTurn() {
+        return showTurn;
     }
 
-    public void setTypeException(Exception typeException) {
-        this.typeException = typeException;
+    public void setShowTurn(boolean showTurn) {
+        this.showTurn = showTurn;
     }
 
     public void accept(ViewVisitor visitor) {

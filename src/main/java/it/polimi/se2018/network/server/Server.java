@@ -285,7 +285,7 @@ public class Server implements ServerController {
 
 
                     //String text = "Player already logged! \n Please, use another nickname...";
-                    //showErrorMessage(new LoginException(text), remotePlayer.getPlayerId());
+                    //showErrorMessageAndShowTrun(new LoginException(text), remotePlayer.getPlayerId());
                     return false;
                 }
 
