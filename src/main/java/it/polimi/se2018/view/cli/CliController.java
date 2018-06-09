@@ -99,26 +99,14 @@ public class CliController implements UIInterface, ViewVisitor {
         }
 
         cliMessage.println();
-
     }
 
-    public void thred() {
-        Runnable exec = () -> {
-            try {
-                Thread.sleep(1);
+    @Override
+    public void visit(MoveTimeoutExpired event) {
+        System.out.println("!!!!!!!TEMPO SCADUTO!!!!!!!");
+        cliParser.setInputActive(false);
 
-            } catch (InterruptedException e) {
-                // We've been interrupted: no more messages.
-                return;
-            }
-        };
-
-
-        if (!currentTask.isAlive()) {
-            currentTask = new Thread(exec);
-            currentTask.start();
-        }
-
+        cliMessage.showMoveTimeoutExpired();
     }
 
     @Override
