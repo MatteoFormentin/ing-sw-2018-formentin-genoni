@@ -327,4 +327,9 @@ class CliMessage {
         println();
         AnsiConsole.out.println(ansi().fg(GREEN).a(message));
     }
+
+    void showMoveTimeoutExpired() {
+        println();
+        AnsiConsole.out.println(ansi().fg(RED).a("Spiacente, hai esaurito il tempo a tua disposizione!"));
+    }
 }

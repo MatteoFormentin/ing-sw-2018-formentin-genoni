@@ -42,7 +42,7 @@ public interface ViewVisitor {
 
     public void visit(EndGame event);
 
-
+    public void visit(MoveTimeoutExpired event);
 
     public void visit(StartGame event);
 

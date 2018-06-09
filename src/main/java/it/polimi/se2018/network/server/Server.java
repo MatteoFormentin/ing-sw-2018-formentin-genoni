@@ -7,6 +7,8 @@ import it.polimi.se2018.list_event.event_received_by_view.JoinGame;
 import it.polimi.se2018.list_event.event_received_by_view.StartGame;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
+import it.polimi.se2018.utils.TimerCallback;
+import it.polimi.se2018.utils.TimerThread;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +23,7 @@ import java.util.Properties;
  *
  * @author DavideMammarella
  */
-public class Server implements ServerController {
+public class Server implements ServerController, TimerCallback {
 
     //Porta su cui si appoggierà la comunicazione Socket
     //public static int SOCKET_PORT;
@@ -192,6 +194,11 @@ public class Server implements ServerController {
         game.startGame();
     }
 
+    @Override
+    public void timerCallback() {
+        startGame();
+    }
+
     /**
      * Joiner for the game.
      */
@@ -285,7 +292,7 @@ public class Server implements ServerController {
 
 
                     //String text = "Player already logged! \n Please, use another nickname...";
-                    //showErrorMessageAndShowTrun(new LoginException(text), remotePlayer.getPlayerId());
+                    //showErrorMessageAndShowTurn(new LoginException(text), remotePlayer.getPlayerId());
                     return false;
                 }
 

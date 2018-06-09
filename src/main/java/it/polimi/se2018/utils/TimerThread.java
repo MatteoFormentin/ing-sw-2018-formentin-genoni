@@ -1,9 +1,11 @@
-package it.polimi.se2018.network.server;
+package it.polimi.se2018.utils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Class used to manage time on login.
+ * Simple timeout with callback.
+ * <p>
+ * Since java doesn't provide callback, caller class must implement TimerCallback Interface.
  * This class define a single thread.
  *
  * @author Matteo Formentin
@@ -11,18 +13,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class TimerThread implements Runnable {
 
-    // Thread che verrà utilizzato
-    private Thread timerThread;
-
-    // Interfaccia server, serve per comunicare col server
-    private ServerController server;
-
-    //Timeout passato da server (caricato da file)
-    private long timeout;
-
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
     private final AtomicBoolean running = new AtomicBoolean();
+    // Thread che verrà utilizzato
+    private Thread timerThread;
+    // Interfaccia server, serve per comunicare col server
+    private TimerCallback timerCallback;
+    //Timeout passato da server (caricato da file)
+    private long timeout;
+    private long startTimerTime;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -31,12 +31,12 @@ public class TimerThread implements Runnable {
     /**
      * Timer Constructor.
      *
-     * @param server server interface, used as controller to communicate with the server.
-     * @param timeout timeout used to impose a time limit on login before starting a game.
+     * @param timerCallback server interface, used as controller to communicate with the server.
+     * @param timeout       timeout used to impose a time limit on login before starting a game.
      */
-    public TimerThread(ServerController server, long timeout) {
+    public TimerThread(TimerCallback timerCallback, long timeout) {
         this.timeout = timeout;
-        this.server = server;
+        this.timerCallback = timerCallback;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -51,25 +51,19 @@ public class TimerThread implements Runnable {
      */
     @Override
     public void run() {
-
         // Inizio conteggio timer
         // Punto di inizio del conteggio per il timer
-        long startTimerTime = System.currentTimeMillis();
-
-        while (running.get()) {
-            while(System.currentTimeMillis() - startTimerTime <= timeout){
-                try {
-                    Thread.sleep(this.timeout);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    System.out.println("Thread interrupted...");
-                }
+        startTimerTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTimerTime <= timeout) {
+            if (!running.get()) return;
+            try {
+                Thread.sleep(this.timeout);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.out.println("Thread interrupted...");
             }
-
-            System.out.println("Time is over, starting the game...");
-            server.startGame();
-            shutdown();
         }
+        timerCallback.timerCallback();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -79,8 +73,8 @@ public class TimerThread implements Runnable {
     /**
      * Starter for the Timer Thread.
      */
-    public void startThread(){
-        timerThread=new Thread(this);
+    public void startThread() {
+        timerThread = new Thread(this);
         running.set(true);
         timerThread.start();
     }
@@ -92,9 +86,18 @@ public class TimerThread implements Runnable {
     /**
      * Stopper for the Timer Thread.
      */
-    public void shutdown(){
+    public void shutdown() {
         running.set(false);
     }
 
+    /**
+     * Reset the Timer.
+     */
+    public void resetTimer() {
+        startTimerTime = System.currentTimeMillis();
+    }
 
+    public boolean isExpired() {
+        return timerThread.isAlive();
+    }
 }

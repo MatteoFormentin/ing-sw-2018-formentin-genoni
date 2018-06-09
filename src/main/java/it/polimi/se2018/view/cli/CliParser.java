@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class CliParser {
     private CliMessage cliMessage;
 
-    private boolean isInputActive= true;
+    private boolean isInputActive = true;
 
     public CliParser() {
         cliMessage = new CliMessage();
@@ -66,7 +66,7 @@ public class CliParser {
             } else {
                 cliMessage.showInputNotValid();
             }
-        } while (!flag);
+        } while (!flag && isInputActive());
         return parsed;
     }
 

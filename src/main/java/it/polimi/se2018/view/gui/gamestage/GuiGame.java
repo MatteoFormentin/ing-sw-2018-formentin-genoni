@@ -262,6 +262,11 @@ public class GuiGame implements UIInterface, ViewVisitor {
     }
 
     @Override
+    public void visit(MoveTimeoutExpired event) {
+
+    }
+
+    @Override
     public void visit(StartGame event) {
         System.out.println("viene accettato :" + event.toString());
         int numberOfPlayer = event.getPlayersName().length;
