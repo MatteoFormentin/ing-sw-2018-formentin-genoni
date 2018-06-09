@@ -267,7 +267,7 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     public void visit(UpdateSingleTurnRoundTrack event) {
-        roundTrack[event.getIndexRound()] = event.getDicePool();
+        roundTrack[event.getIndexRound()] = event.getRoundDice();
     }
 
     public void visit(UpdateSingleWindow event) {

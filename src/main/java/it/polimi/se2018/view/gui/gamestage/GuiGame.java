@@ -10,6 +10,7 @@ import it.polimi.se2018.view.gui.stage.ConfirmBox;
 
 import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -21,9 +22,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 
 
 import java.util.LinkedList;
@@ -90,18 +93,14 @@ public class GuiGame implements UIInterface, ViewVisitor {
     private ImageView[] objectivePublicCard; //store the Public card
     private HBox objectivePrivateBox; //pane for add/remove the Private card
     private ImageView[] objectivePrivateCardOfEachPlayers; //store the Private card
-    private ChoiceBox<VBox> sceltaWindowPattern;
 
     //round track
-    private HBox roundBox;
-    private ComboBox[] roundComboBox;
-    private Button[] roundButton;
-    private ImageView[][] roundTrackDice;
+    private HBox boxAllRound;
+    private VBox[] boxSingleRound;
+    private Text[] textSingleRound;
+    private ComboBox<Image>[] comboBoxSingleRound;
     private FlowPane flowPaneDicePool;
     private LinkedList<ImageView> dicePool;
-    //Button of the menu game
-    private HBox menuButton;
-    private Button[] gameButton;
 
     private GuiGame() {
         toolBox = new HBox();
@@ -112,13 +111,13 @@ public class GuiGame implements UIInterface, ViewVisitor {
         objectivePrivateBox.setSpacing(5);
     }
 
-    public static GuiGame getGuiGame(){
-        if(instance==null) instance= new GuiGame();
+    public static GuiGame getGuiGame() {
+        if (instance == null) instance = new GuiGame();
         return instance;
     }
 
     public void setGameWait(Stage owner) {
-        waitGame= new WaitGame(owner);
+        waitGame = new WaitGame(owner);
         waitGame.displayMessage();
         closeGame(waitGame.getStage());
         gameStage = new Stage();
@@ -145,9 +144,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
         gameStage.setOnCloseRequest(e -> {
             Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
             if (result) {
-                instance=null;
-            }
-            else e.consume();
+                instance = null;
+            } else e.consume();
         });
     }
 
@@ -162,15 +160,15 @@ public class GuiGame implements UIInterface, ViewVisitor {
         boxAllWindowPoolChoice.setSpacing(20);
         boxAllWindowPoolChoice.setAlignment(Pos.CENTER);
         VBox pane = new VBox();
-        pane.getChildren().addAll(allCards,boxAllWindowPoolChoice);
-        Scene scene = new Scene(pane,800,500);
+        pane.getChildren().addAll(allCards, boxAllWindowPoolChoice);
+        Scene scene = new Scene(pane, 800, 500);
         stageChoose.setScene(scene);
 
     }
 
     private void setBoard() {
         //top pane
-        roundBox = new HBox();
+        boxAllRound = new HBox();
         //opposingPlayers
         opposingPlayers = new VBox();
         opposingPlayers.setAlignment(Pos.CENTER_LEFT);
@@ -178,42 +176,33 @@ public class GuiGame implements UIInterface, ViewVisitor {
         centerBox = new VBox();
         centerBox.setAlignment(Pos.CENTER);
         //The button for menu in bottom position
-        menuButton = new HBox();
-        gameButton = new Button[4];
+        //Button of the menu game
+        HBox menuButton = new HBox();
+        Button[] gameButton = new Button[1];
         for (int i = 0; i < gameButton.length; i++) {
             gameButton[i] = new Button();
             menuButton.getChildren().add(gameButton[i]);
 
         }
-        gameButton[0].setText("Pesca un dado");
+        gameButton[0].setText("Passa il turno");
         gameButton[0].setOnAction(event -> {
-        });
-        gameButton[1].setText("Inserisci un dado");
-        gameButton[1].setOnAction(event -> {
-        });
-        gameButton[2].setText("Utilizza una Tool Card");
-        gameButton[2].setOnAction(event -> {
-        });
-        gameButton[3].setText("Passa il turno");
-        gameButton[3].setOnAction(event -> {
             EndTurnController packet = new EndTurnController();
             sendEventToGuiInstance(packet);
         });
-
+        menuButton.setAlignment(Pos.BASELINE_RIGHT);
 
         //the card in right position
         cardBox = new VBox();
         cardBox.setAlignment(Pos.CENTER_RIGHT);
         //setUp BorderPane
         BorderPane pane = new BorderPane(); //keep all the element of the game
-        pane.setTop(roundBox);
+        pane.setTop(boxAllRound);
         pane.setLeft(opposingPlayers);
         pane.setCenter(centerBox);
         pane.setRight(cardBox);
         pane.setBottom(menuButton);
 
-        sceneGame = new Scene(pane, 1000, 800);
-        pane.setMinSize(1000, 800);
+        sceneGame = new Scene(pane);
         gameStage.setScene(sceneGame);
         gameStage.setTitle("Sagrada a fun game of dice");
         gameStage.setResizable(false);
@@ -252,8 +241,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     @Override
     public void showMessage(EventView eventView) {
-        Platform.runLater(()->eventView.accept(this));
-
+        Platform.runLater(() -> eventView.accept(this));
     }
 
     @Override
@@ -306,7 +294,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
             //select place
             if (i != playerId) {
-                System.out.println("fatto player "+i);
+                System.out.println("fatto player " + i);
                 opposingPlayers.getChildren().add(boxAllDataPlayer[i]);
                 boxAllDataPlayer[i].setAlignment(Pos.TOP_LEFT);
             } else {
@@ -396,13 +384,14 @@ public class GuiGame implements UIInterface, ViewVisitor {
     @Override
     public void visit(InitialWindowPatternCard event) {
         //TODO attivare i pulsanti per scegliere la window Pattern
-        for(int i=0; i<boxWindowPoolChoice.length;i++){
+        for (int i = 0; i < boxWindowPoolChoice.length; i++) {
             activeWindowChoice(i);
         }
         System.out.println("viene accettato :" + event.toString());
     }
-    private void activeWindowChoice(int index){
-        boxWindowPoolChoice[index].setOnMouseClicked(e->{
+
+    private void activeWindowChoice(int index) {
+        boxWindowPoolChoice[index].setOnMouseClicked(e -> {
             SelectInitialWindowPatternCardController packet = new SelectInitialWindowPatternCardController();
             packet.setSelectedIndex(index);
             sendEventToGuiInstance(packet);
@@ -481,7 +470,6 @@ public class GuiGame implements UIInterface, ViewVisitor {
     }
 
 
-
     @Override
     public void visit(UpdateAllToolCard event) {
         System.out.println("viene accettato :" + event.toString());
@@ -511,43 +499,61 @@ public class GuiGame implements UIInterface, ViewVisitor {
         for (int i = 0; i < numberObjective; i++) {
             objectivePublicCard[i] = createNewImageViewForCard();
         }
-        Platform.runLater(() -> {
-                    IntStream.range(0, numberObjective).forEach(i -> {
-                        objectivePublicBox.getChildren().add(objectivePublicCard[i]);
-                        Image newImage = new Image("file:src/resources/carte_jpg/carte_pubbliche_" + event.getPublicCards(i).getId() + ".jpg");
-                        objectivePublicCard[i].setImage(newImage);
-                        objectivePublicCard[i].setOnMouseClicked(e -> {
-                            cardShow.displayCard(objectivePublicCard[i], true);
-                        });
-                    });
-                }
-        );
+        IntStream.range(0, numberObjective).forEach(i -> {
+            objectivePublicBox.getChildren().add(objectivePublicCard[i]);
+            Image newImage = new Image("file:src/resources/carte_jpg/carte_pubbliche_" + event.getPublicCards(i).getId() + ".jpg");
+            objectivePublicCard[i].setImage(newImage);
+            objectivePublicCard[i].setOnMouseClicked(e -> {
+                cardShow.displayCard(objectivePublicCard[i], true);
+            });
+        });
+
     }
 
+    class ImageListDice extends ListCell<Image> {
+        private final ImageView image;
+        ImageListDice(){
+            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            image = createNewImageViewForDicePool();
+        }
+        @Override
+        protected void updateItem(Image item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (item == null || empty) {
+                setGraphic(null);
+            } else {
+                image.setImage(item);
+                setGraphic(image);
+            }
+        }
+    }
 
     @Override
     public void visit(UpdateInitDimRound event) {
         System.out.println("viene accettato :" + event.toString());
         int numberRound = event.getRoundTrack().length;
-        roundComboBox = new ComboBox[numberRound];
-
-        Platform.runLater(() -> {
-            for (int i = 0; i < numberRound; i++) {
-                roundComboBox[i] = new ComboBox();
-                roundComboBox[i].setPromptText(Integer.toString(i) + 1);
-                roundComboBox[i].setDisable(true);
-                roundBox.getChildren().add(roundComboBox[i]);
-                if (event.getRoundTrack(i) == null) {
-                } else {
-                    for (int j = 0; j < event.getRoundTrack(i).size(); j++) {
-                        Image newImage = new Image("file:src/resources/dadijpg/" + event.getRoundTrack(i).getDice(j).getColor()
-                                + "Dice" + event.getRoundTrack(i).getDice(j).getValue() + ".jpg");
-                        roundComboBox[i].getItems().add(newImage);
-                        //TODO a better implementation
-                    }
+        boxSingleRound = new VBox[event.getRoundTrack().length];
+        textSingleRound = new Text[event.getRoundTrack().length];
+        comboBoxSingleRound = new ComboBox[event.getRoundTrack().length];
+        for (int i = 0; i < numberRound; i++) {
+            comboBoxSingleRound[i] = new ComboBox<>();
+            // setUP combo box factory, with this method the dice don't disapear when is selected
+            comboBoxSingleRound[i].setCellFactory(listView -> new ImageListDice());
+            comboBoxSingleRound[i].setButtonCell(new ImageListDice());
+            comboBoxSingleRound[i].setPromptText("Round " + (i + 1));
+            textSingleRound[i] = new Text(Integer.toString(i + 1));
+            textSingleRound[i].setTextAlignment(TextAlignment.CENTER);
+            boxSingleRound[i] = new VBox(textSingleRound[i], comboBoxSingleRound[i]);
+            boxAllRound.getChildren().add(boxSingleRound[i]);
+            if (event.getRoundTrack(i) != null) {
+                for (int j = 0; j < event.getRoundTrack(i).size(); j++) {
+                    Image newImage = new Image("file:src/resources/dadijpg/" + event.getRoundTrack(i).getDice(j).getColor()
+                            + "Dice" + event.getRoundTrack(i).getDice(j).getValue() + ".jpg");
+                    comboBoxSingleRound[i].getItems().add(newImage);
                 }
             }
-        });
+        }
     }
 
     @Override
@@ -642,6 +648,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
+        favorTokenOfEachPlayer[event.getIndexInGame()].setText("Favor :" + event.getFavorToken());
+        pointsOfEachPlayer[event.getIndexInGame()].setText("Points :" + event.getPoints());
         System.out.println("viene accettato :" + event.toString());
     }
 
@@ -649,6 +657,17 @@ public class GuiGame implements UIInterface, ViewVisitor {
     @Override
     public void visit(UpdateSingleTurnRoundTrack event) {
         System.out.println("viene accettato :" + event.toString());
+        while (!comboBoxSingleRound[event.getIndexRound()].getItems().isEmpty()) {
+            comboBoxSingleRound[event.getIndexRound()].getItems().remove(0);
+        }
+        for (int i = 0; i < event.getRoundDice().size(); i++) {
+            Image newImage = new Image("file:src/resources/dadijpg/" + event.getRoundDice().getDice(i).getColor()
+                    + "Dice" + event.getRoundDice().getDice(i).getValue() + ".jpg");
+            comboBoxSingleRound[event.getIndexRound()].getItems().add(newImage);
+        }
+        for(int i=0;i<comboBoxSingleRound.length;i++){
+            comboBoxSingleRound[i].getSelectionModel().clearSelection();
+        }
     }
 
     //****************************************ACTIVE THE CELL********************************************************************************

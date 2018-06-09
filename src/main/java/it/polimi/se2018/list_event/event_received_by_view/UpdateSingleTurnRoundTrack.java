@@ -4,11 +4,11 @@ import it.polimi.se2018.model.dice.DiceStack;
 
 public class UpdateSingleTurnRoundTrack extends EventView  {
     private int indexRound;
-    private DiceStack dicePool;
+    private DiceStack roundDice;
 
-    public UpdateSingleTurnRoundTrack(int indexRound, DiceStack dicePool) {
+    public UpdateSingleTurnRoundTrack(int indexRound, DiceStack roundDice) {
         this.indexRound = indexRound;
-        this.dicePool = dicePool;
+        this.roundDice = roundDice;
     }
 
     public int getIndexRound() {
@@ -19,12 +19,12 @@ public class UpdateSingleTurnRoundTrack extends EventView  {
         this.indexRound = indexRound;
     }
 
-    public DiceStack getDicePool() {
-        return dicePool;
+    public DiceStack getRoundDice() {
+        return roundDice;
     }
 
-    public void setDicePool(DiceStack dicePool) {
-        this.dicePool = dicePool;
+    public void setRoundDice(DiceStack roundDice) {
+        this.roundDice = roundDice;
     }
 
     public void accept(ViewVisitor visitor) {

@@ -250,7 +250,9 @@ public class GameBoard{
                 player[indexPlayer].endTrun(false);
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);
-
+            roundTrack[currentRound] = dicePool;
+            UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
+            broadcast(packetRound);
             indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
             currentTurn++;
             System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
@@ -283,8 +285,9 @@ public class GameBoard{
                 player[indexPlayer].endTrun(true);
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);//rimette dadi rimanenti in mano nella draftpool
-
             roundTrack[currentRound] = dicePool;
+            UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
+            broadcast(packetRound);
             currentRound++;
             if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
@@ -298,8 +301,6 @@ public class GameBoard{
                     }
                     dicePool.add(dice);
                 }
-                UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
-                broadcast(packetRound);
                 updateDicePool();
                 System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
                 if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
