@@ -67,7 +67,7 @@ public class GuiReceiver extends Application {
             }
         });
         Button connectionButton = new Button("Impostazioni di rete");
-        connectionButton.setOnAction(e -> new SetUpConnection(primaryStage).display(getGuiInstance().getClient()));
+        connectionButton.setOnAction(e -> new SetUpConnection(primaryStage).display());
         Button close = new Button();
         close.setText("Esci Dal Gioco");
         close.setOnAction(e -> closeProgram());

@@ -1,8 +1,6 @@
 package it.polimi.se2018.view.gui.stage;
 
 
-import it.polimi.se2018.network.client.ClientController;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,7 +11,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.util.InputMismatchException;
 
 import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
 
@@ -29,21 +26,7 @@ public class SetUpConnection {
         connected=false;
     }
 
-    public boolean display(ClientController client){
-        /*StageStyle
-                    UTILITY only _, x
-                    TRANSPARENT NOTHING and no _, o, x
-                    UNIFIED boh
-                    UNDECORATED simile a TRANSPARENT ma con sfondo
-          modality
-                    APPLICATION_MODAL can't turn to previus stage and can't move
-                    WINDOW_MODAL
-        stage stageMessage = new stage(StageStyle.UTILITY);
-        stageMessage.initModality(Modality.APPLICATION_MODAL);
-        stageMessage.setAlwaysOnTop(true);
-         */
-        //static design
-
+    public boolean display(){
         GridPane form =new GridPane();
         Scene scene =new Scene(form,250,150);
         stage.setScene(scene);
@@ -81,7 +64,7 @@ public class SetUpConnection {
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                new AlertMessage(stage).displayMessage("Errore inaspettato durante la connessione");
+                new AlertMessage(stage).displayMessage("Errore inaspettato durante il setup della connession");
             }
         });
         back.setOnAction(e->{
