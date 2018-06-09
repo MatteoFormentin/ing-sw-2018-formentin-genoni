@@ -27,8 +27,6 @@ public class Login {
         Scene scene =new Scene(form,250,150);
         stage.setScene(scene);
 
-        //stage design
-
         //gridPane design
         form.setAlignment(Pos.CENTER);
         form.setHgap(5);
@@ -47,13 +45,16 @@ public class Login {
         form.addRow(2,back,connect);
         //components action
         connect.setOnAction(e-> {
-                if(client.login(nameInput.getText())){
-                    answer=true;
+            try {
+                if (client.login(nameInput.getText())) {
+                    answer = true;
                     stage.close();
-                }else{
-                    answer=false;
+                } else {
                     new AlertMessage(stage).displayMessage("Non puoi eseguire il login");
                 }
+            }catch(NullPointerException ex){
+                new AlertMessage(stage).displayMessage("Non sei collegato al server");
+            }
         });
         back.setOnAction(e->{
             stage.close();

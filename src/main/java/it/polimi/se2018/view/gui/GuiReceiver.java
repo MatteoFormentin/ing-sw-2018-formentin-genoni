@@ -1,9 +1,5 @@
 package it.polimi.se2018.view.gui;
 
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.*;
-import it.polimi.se2018.network.client.ClientController;
-import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.gamestage.GuiGame;
 import it.polimi.se2018.view.gui.stage.*;
 import javafx.application.Application;
@@ -15,24 +11,32 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.security.AllPermission;
-
 import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
+import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
 
+/**
+ * Main class for the Gui, where the JavaFx Application start.
+ * Setup of the connection and start of the game.
+ * Can't handle the EventView (that are related to the actual game)
+ *
+ * @author Luca Genoni
+ */
 public class GuiReceiver extends Application {
     //fields for the init waitStage
-    private Stage primaryStage;
+    private static Stage primaryStage;
     private GuiGame game;
-    private BorderPane pane= new BorderPane();
-    private boolean connected = false, login = false;
 
-    public static void launchGui(){
+    static void launchGui() {
         launch();
     }
 
+    private static void setPrimaryStage(Stage stage) {
+        primaryStage = stage;
+    }
+
     @Override
-    public void start(Stage primaryStage) throws Exception{
-        this.primaryStage=primaryStage;
+    public void start(Stage primaryStage) throws Exception {
+        setPrimaryStage(primaryStage);
         //creating a Group object
         VBox menu = new VBox();
         Scene startMenu = new Scene(menu, 779, 261);
@@ -56,26 +60,14 @@ public class GuiReceiver extends Application {
         // add button to the menu
         Button playButton = new Button("Fai il Login e inizia una partita");
         playButton.setOnAction(e -> {
-            WaitGame wait = new WaitGame(primaryStage);
-           // game = new GuiGame(primaryStage);
-            game.setGameStage(wait);
-            if (connected) {
-                if (login) {
-                    new AlertMessage(primaryStage).displayMessage("Devi effettuare il Relogin (non è vero sei ancora collegato al server, ma devo ancora vederla bene");
-                } else {
-                    login = new Login(primaryStage).display(getGuiInstance().getClient());
-                    if(login) {
-                        wait.displayMessage();
-                    }
-                }
-            } else
-                new AlertMessage(primaryStage).displayMessage("Devi prima impostare l'IP del server e la porta a cui ti vuoi collegare");
+            boolean login = new Login(primaryStage).display(getGuiInstance().getClient());
+            if (login) {
+                game = getGuiGame();
+                game.setGameWait(primaryStage);
+            }
         });
         Button connectionButton = new Button("Impostazioni di rete");
-        connectionButton.setOnAction(e -> {
-            connected = new SetUpConnection(primaryStage).display(getGuiInstance().getClient());
-            login = false;
-        });
+        connectionButton.setOnAction(e -> new SetUpConnection(primaryStage).display(getGuiInstance().getClient()));
         Button close = new Button();
         close.setText("Esci Dal Gioco");
         close.setOnAction(e -> closeProgram());
@@ -87,7 +79,7 @@ public class GuiReceiver extends Application {
         primaryStage.setAlwaysOnTop(false);
     }
 
-    public void closeProgram() {
+    public static void closeProgram() {
         Boolean result = new ConfirmBox(primaryStage).displayMessage("Sei sicuro di voler uscire dal gioco?");
         if (result) {
             primaryStage.close();

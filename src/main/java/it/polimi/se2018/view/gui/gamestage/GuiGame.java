@@ -14,11 +14,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -41,7 +38,7 @@ import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
 public class GuiGame implements UIInterface, ViewVisitor {
     private static GuiGame instance;
     private WaitGame waitGame;
-    private Stage waitStage, gameStage, stageChoose;
+    private Stage gameStage, stageChoose;
     private Scene sceneGame, sceneInit;
 
     //variables for show card
@@ -83,9 +80,6 @@ public class GuiGame implements UIInterface, ViewVisitor {
     private GridPane[] gridCellPoolChoice;
     private ImageView[][][] imageViewsCellPoolChoice;
     private Text[] difficultyWindowPoolChoice;
-    private ToggleGroup toggleWindowChoice;
-    private RadioButton[] radioButtons;
-    private Button invioWindow;
 
 
     //fields for cards
@@ -96,6 +90,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
     private ImageView[] objectivePublicCard; //store the Public card
     private HBox objectivePrivateBox; //pane for add/remove the Private card
     private ImageView[] objectivePrivateCardOfEachPlayers; //store the Private card
+    private ChoiceBox<VBox> sceltaWindowPattern;
 
     //round track
     private HBox roundBox;
@@ -108,43 +103,34 @@ public class GuiGame implements UIInterface, ViewVisitor {
     private HBox menuButton;
     private Button[] gameButton;
 
-    //messaggi
-    private SelectInitialWindowPatternCardController selectInitialWindowPatternCardController;
-
     private GuiGame() {
         toolBox = new HBox();
+        toolBox.setSpacing(5);
         objectivePublicBox = new HBox();
+        objectivePublicBox.setSpacing(5);
         objectivePrivateBox = new HBox();
+        objectivePrivateBox.setSpacing(5);
     }
 
     public static GuiGame getGuiGame(){
-        if(instance==null) return new GuiGame();
+        if(instance==null) instance= new GuiGame();
         return instance;
     }
-    public static void resetGuiGame(){
-        instance= new GuiGame();
-    }
-    public void setGameStage(WaitGame wait) {
-        this.waitGame = wait;
+
+    public void setGameWait(Stage owner) {
+        waitGame= new WaitGame(owner);
+        waitGame.displayMessage();
+        closeGame(waitGame.getStage());
         gameStage = new Stage();
         gameStage.initStyle(StageStyle.UTILITY);
         gameStage.initModality(Modality.APPLICATION_MODAL);
-        gameStage.initOwner(wait.getStage());
-        gameStage.setOnCloseRequest(e -> e.consume());
-    }
-
-    public void setTheGameStage(Stage owner) {
-        //setTheGame wait
-
-        //setStageForTheGame
-
-
-        //
+        gameStage.initOwner(owner);
+        closeGame(gameStage);
         stageChoose = new Stage();
-        stageChoose.initStyle(StageStyle.UNDECORATED);
+        stageChoose.initStyle(StageStyle.UTILITY);
         stageChoose.initModality(Modality.APPLICATION_MODAL);
         stageChoose.initOwner(owner);
-        stageChoose.setOnCloseRequest(e -> e.consume());
+        closeGame(stageChoose);
 
         //setClass For show a bigger card
         cardShow = new ShowCardBox(700, 600);
@@ -155,32 +141,29 @@ public class GuiGame implements UIInterface, ViewVisitor {
         setBoard();
     }
 
+    private void closeGame(Stage gameStage) {
+        gameStage.setOnCloseRequest(e -> {
+            Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
+            if (result) {
+                instance=null;
+            }
+            else e.consume();
+        });
+    }
+
 
     private void setInit() {
         stageChoose.setTitle("Pick a Window");
-        stageChoose.centerOnScreen();
         HBox allCards = new HBox();
         allCards.setAlignment(Pos.TOP_CENTER);
+        allCards.setSpacing(10);
         allCards.getChildren().addAll(toolBox, objectivePublicBox, objectivePrivateBox);
         boxAllWindowPoolChoice = new HBox();
-        boxAllWindowPoolChoice.setSpacing(15);
+        boxAllWindowPoolChoice.setSpacing(20);
         boxAllWindowPoolChoice.setAlignment(Pos.CENTER);
-        invioWindow = new Button("Invia la WindowPattern scelta");
-        invioWindow.setOnAction(e -> {
-            if (toggleWindowChoice.getSelectedToggle() != null) {
-                selectInitialWindowPatternCardController = new SelectInitialWindowPatternCardController();
-                selectInitialWindowPatternCardController.setSelectedIndex(Integer.parseInt(((RadioButton) toggleWindowChoice.getSelectedToggle()).getText()));
-                sendEventToGuiReceiver(selectInitialWindowPatternCardController);
-            } else {
-                popUpWait.displayMessage("Seleziona una windowPattern");
-            }
-
-        });
-        toggleWindowChoice = new ToggleGroup();
         VBox pane = new VBox();
-        pane.setAlignment(Pos.CENTER);
-        pane.getChildren().addAll(allCards, boxAllWindowPoolChoice, invioWindow);
-        Scene scene = new Scene(pane, 800, 500);
+        pane.getChildren().addAll(allCards,boxAllWindowPoolChoice);
+        Scene scene = new Scene(pane,800,500);
         stageChoose.setScene(scene);
 
     }
@@ -214,7 +197,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
         gameButton[3].setText("Passa il turno");
         gameButton[3].setOnAction(event -> {
             EndTurnController packet = new EndTurnController();
-            sendEventToGuiReceiver(packet);
+            sendEventToGuiInstance(packet);
         });
 
 
@@ -233,19 +216,11 @@ public class GuiGame implements UIInterface, ViewVisitor {
         pane.setMinSize(1000, 800);
         gameStage.setScene(sceneGame);
         gameStage.setTitle("Sagrada a fun game of dice");
-
         gameStage.setResizable(false);
-        gameStage.setAlwaysOnTop(true);
-        gameStage.setOnCloseRequest(e -> {
-            Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
-            if (!result) e.consume();
-            //TODO devo informare qualcuno che ho eseguito un logout?
-        });
-        System.out.println("costruita");
         //TODO settare la scena con platform
     }
 
-    private void sendEventToGuiReceiver(EventController packet) {
+    private void sendEventToGuiInstance(EventController packet) {
         packet.setPlayerId(playerId);
         getGuiInstance().sendEventToNetwork(packet);
     }
@@ -264,6 +239,21 @@ public class GuiGame implements UIInterface, ViewVisitor {
         imageView.setFitWidth(40);
         imageView.setPreserveRatio(true);
         return imageView;
+    }
+
+    //*************************************************VISITOR PATTERN*********************************************************************************
+    //*************************************************VISITOR PATTERN*********************************************************************************
+    //*************************************************VISITOR PATTERN*********************************************************************************
+    //*************************************************VISITOR PATTERN*********************************************************************************
+    //*************************************************VISITOR PATTERN*********************************************************************************
+    //*************************************************VISITOR PATTERN*********************************************************************************
+    //*************************************************VISITOR PATTERN*********************************************************************************
+    //*************************************************VISITOR PATTERN**********************************************************************************
+
+    @Override
+    public void showMessage(EventView eventView) {
+        Platform.runLater(()->eventView.accept(this));
+
     }
 
     @Override
@@ -311,6 +301,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
             //select place
             if (i != playerId) {
+                System.out.println("fatto player "+i);
                 opposingPlayers.getChildren().add(boxAllDataPlayer[i]);
                 boxAllDataPlayer[i].setAlignment(Pos.TOP_LEFT);
             } else {
@@ -333,7 +324,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
             activeDiceOfDicePool(i);
         }
         centerBox.getChildren().add(flowPaneDicePool);
-
+        System.out.println("finito lo start");
+        System.out.println();
     }
 
     @Override
@@ -347,12 +339,13 @@ public class GuiGame implements UIInterface, ViewVisitor {
         //TODO attivare bottoni in basso
         new AlertMessage(gameStage).displayMessage("è il tuo turno!");
         System.out.println("viene accettato :" + event.toString());
+
     }
 
     @Override
     public void visit(WaitYourTurn event) {
         //TODO disattivare tutti i bottoni per inviare i pacchetti
-        new AlertMessage(gameStage).displayMessage("Adesso tocca a "+playersName[event.getIndexCurrentPlayer()]);
+        new AlertMessage(gameStage).displayMessage("Adesso tocca a " + playersName[event.getIndexCurrentPlayer()].getText());
         System.out.println("viene accettato :" + event.toString());
         System.out.println();
     }
@@ -360,9 +353,10 @@ public class GuiGame implements UIInterface, ViewVisitor {
     @Override
     public void visit(ShowAllCards event) {
         System.out.println("viene accettato :" + event.toString());
-        waitStage.close();
-        stageChoose.showAndWait();
-
+        waitGame.closeWait();
+        stageChoose.show();
+        System.out.println("finito lo show message");
+        System.out.println();
     }
 
     @Override
@@ -397,7 +391,17 @@ public class GuiGame implements UIInterface, ViewVisitor {
     @Override
     public void visit(InitialWindowPatternCard event) {
         //TODO attivare i pulsanti per scegliere la window Pattern
+        for(int i=0; i<boxWindowPoolChoice.length;i++){
+            activeWindowChoice(i);
+        }
         System.out.println("viene accettato :" + event.toString());
+    }
+    private void activeWindowChoice(int index){
+        boxWindowPoolChoice[index].setOnMouseClicked(e->{
+            SelectInitialWindowPatternCardController packet = new SelectInitialWindowPatternCardController();
+            packet.setSelectedIndex(index);
+            sendEventToGuiInstance(packet);
+        });
     }
 
     @Override
@@ -409,10 +413,13 @@ public class GuiGame implements UIInterface, ViewVisitor {
         gameStage.showAndWait();
     }
 
-    //************************************* UPLOAD FROM MODEL *********************************************************************
-    //************************************* UPLOAD FROM MODEL *********************************************************************
-    //************************************* UPLOAD FROM MODEL *********************************************************************
-    //************************************* UPLOAD FROM MODEL *********************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
     @Override
     public void visit(UpdateSinglePrivateObject event) {
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = createNewImageViewForCard();
@@ -431,7 +438,6 @@ public class GuiGame implements UIInterface, ViewVisitor {
         int numberWindow = event.getInitialWindowPatternCard().length;
         int numberLine = event.getInitialWindowPatternCard(0).getMatrix().length;
         int numberColumn = event.getInitialWindowPatternCard(0).getColumn(0).length;
-        radioButtons = new RadioButton[numberWindow];
         boxWindowPoolChoice = new VBox[numberWindow];
         nameWindowPoolChoice = new Text[numberWindow];
         difficultyWindowPoolChoice = new Text[numberWindow];
@@ -442,11 +448,9 @@ public class GuiGame implements UIInterface, ViewVisitor {
             gridCellPoolChoice[i].setPadding(new Insets(10, 0, 10, 0));
             gridCellPoolChoice[i].setVgap(5);
             gridCellPoolChoice[i].setHgap(5);
-            radioButtons[i] = new RadioButton(Integer.toString(i));
-            radioButtons[i].setToggleGroup(toggleWindowChoice);
             difficultyWindowPoolChoice[i] = new Text(Integer.toString(event.getInitialWindowPatternCard(i).getDifficulty()));
             nameWindowPoolChoice[i] = new Text(event.getInitialWindowPatternCard(i).getName());
-            boxWindowPoolChoice[i] = new VBox(nameWindowPoolChoice[i], gridCellPoolChoice[i], difficultyWindowPoolChoice[i], radioButtons[i]);
+            boxWindowPoolChoice[i] = new VBox(nameWindowPoolChoice[i], gridCellPoolChoice[i], difficultyWindowPoolChoice[i]);
             boxAllWindowPoolChoice.getChildren().add(boxWindowPoolChoice[i]);
             for (int line = 0; line < numberLine; line++) {
                 for (int column = 0; column < numberColumn; column++) {
@@ -467,7 +471,11 @@ public class GuiGame implements UIInterface, ViewVisitor {
                 }
             }
         }
+        System.out.println("finito l'update init");
+        System.out.println();
     }
+
+
 
     @Override
     public void visit(UpdateAllToolCard event) {
@@ -483,7 +491,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
                 if (cardShow.displayCard(toolCard[i], true)) {
                     SelectToolCardController packet = new SelectToolCardController();
                     packet.setIndexToolCard(i);
-                    sendEventToGuiReceiver(packet);
+                    sendEventToGuiInstance(packet);
                 }
             });
         });
@@ -638,10 +646,11 @@ public class GuiGame implements UIInterface, ViewVisitor {
         System.out.println("viene accettato :" + event.toString());
     }
 
-    @Override
-    public void showMessage(EventView eventView) {
-        eventView.accept(this);
-    }
+    //****************************************ACTIVE THE CELL********************************************************************************
+    //****************************************ACTIVE THE CELL********************************************************************************
+    //****************************************ACTIVE THE CELL********************************************************************************
+    //****************************************ACTIVE THE CELL********************************************************************************
+    //****************************************ACTIVE THE CELL********************************************************************************
 
 
     public void activeWindow(int indexWindow) {
@@ -659,7 +668,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
             SelectCellOfWindowController packet = new SelectCellOfWindowController();
             packet.setLine(indexRow);
             packet.setColumn(indexColumn);
-            sendEventToGuiReceiver(packet);
+            sendEventToGuiInstance(packet);
         });
 
     }
@@ -669,7 +678,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
                     SelectDiceFromDraftpoolController packet = new SelectDiceFromDraftpoolController();
                     packet.setIndex(index);
                     packet.setPlayerId(playerId);
-                    sendEventToGuiReceiver(packet);
+                    sendEventToGuiInstance(packet);
                 }
         );
     }
