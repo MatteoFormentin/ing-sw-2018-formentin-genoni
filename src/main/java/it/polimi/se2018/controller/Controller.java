@@ -1,11 +1,13 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.exception.GameboardException.CurrentPlayerException;
-import it.polimi.se2018.exception.GameboardException.WindowPatternAlreadyTakenException;
-import it.polimi.se2018.exception.GameboardException.WindowSettingCompleteException;
-import it.polimi.se2018.exception.PlayerException.AlreadyPlaceANewDiceException;
+import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
+import it.polimi.se2018.exception.gameboard_exception.WindowPatternAlreadyTakenException;
+import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteException;
+import it.polimi.se2018.exception.player_exception.AlreadyPlaceANewDiceException;
+import it.polimi.se2018.exception.player_exception.AlreadyUseToolCardException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.*;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
@@ -71,18 +73,20 @@ public class Controller implements ControllerVisitor, TimerCallback {
     //*****************************************Visitor Pattern************************************************************************
 
     /**
-     * visit the event for select the window Pattern for the game
+     * Method of the Visitor Pattern, event received from the view
+     * to let the player pick a window.
      *
-     * @param event SelectInitialWindowPatternCardController
+     * @param event ControllerSelectInitialWindowPatternCard
      */
     @Override
-    public void visit(SelectInitialWindowPatternCardController event) {
+    public void visit(ControllerSelectInitialWindowPatternCard event) {
         try {
             gameBoard.setWindowOfPlayer(event.getPlayerId(), event.getSelectedIndex());
-            OkMessage packet = new OkMessage("Hai scelto la window Pattern", false);
+            MessageOk packet = new MessageOk("Hai scelto la window Pattern.", false,true);
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
         } catch (WindowSettingCompleteException ex) {
+            //all the window are set
             for (int i = 0; i < playerNumber; i++) {
                 EventView packetFineInit = new InitialEnded();
                 packetFineInit.setPlayerId(i);
@@ -91,79 +95,136 @@ public class Controller implements ControllerVisitor, TimerCallback {
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             StartPlayerTurn turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            System.err.println("inizia il vero gioco con il giocatore" + gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(turnPacket);
+            sendEventToView(turnPacket);
+            //TODO fermare il timout per l'init e iniziare quello per il round.
             playerTimeout.shutdown();
             playerTimeout.startThread();
         } catch (WindowPatternAlreadyTakenException ex) {
-            System.err.println(ex.getMessage());
-            showErrorMessageNoShowTurn(ex, event.getPlayerId());
+            //window already chosen
+            MessageError packetError = new MessageError(ex.getMessage(),false,true);
+            packetError.setPlayerId(event.getPlayerId());
+            sendEventToView(packetError);
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-            showErrorMessageNoShowTurn(ex, event.getPlayerId());
-            InitialWindowPatternCard packet = new InitialWindowPatternCard();
+            //strange exception retry the input
+            MessageError packetError = new MessageError(ex.getMessage(),false,true);
+            packetError.setPlayerId(event.getPlayerId());
+            sendEventToView(packetError);
+            SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
             packet.setPlayerId(event.getPlayerId());
-            server.sendEventToView(packet);
+            sendEventToView(packet);
         }
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the view
+     * to let the player initiate the mode draw and place a die
+     *
+     * @param event ControllerSelectInitialWindowPatternCard
+     */
     @Override
-    public void visit(SelectDiceFromDraftpoolController event) {
+    public void visit(ControllerMoveDrawAndPlaceDie event) {
+        if(event.getPlayerId()==gameBoard.getIndexCurrentPlayer()){
+            if(gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()){
+                showErrorMessage(new AlreadyPlaceANewDiceException(),event.getPlayerId(),true);
+            }else if(gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()){
+                SelectCellOfWindow packet = new SelectCellOfWindow();
+                packet.setPlayerId(event.getPlayerId());
+                sendEventToView(packet);
+            }else{
+                SelectDiceFromDraftPool packet = new SelectDiceFromDraftPool();
+                packet.setPlayerId(event.getPlayerId());
+                sendEventToView(packet);
+            }
+        }else{
+            showErrorMessage(new CurrentPlayerException(),event.getPlayerId(),false);
+        }
+    }
+
+    /**
+     * Method of the Visitor Pattern, event received from the view
+     * to let the player initiate the mode play a tool card
+     *
+     * @param event ControllerMoveUseToolCard
+     */
+    @Override
+    public void visit(ControllerMoveUseToolCard event) {
+        if(event.getPlayerId()==gameBoard.getIndexCurrentPlayer()){
+            if(gameBoard.getPlayer(event.getPlayerId()).isHasUsedToolCard()){
+                showErrorMessage(new AlreadyUseToolCardException(),event.getPlayerId(),true);
+            }else{
+                SelectToolCard packet = new SelectToolCard();
+                packet.setPlayerId(event.getPlayerId());
+                sendEventToView(packet);
+            }
+        }else{
+            showErrorMessage(new CurrentPlayerException(),event.getPlayerId(),false);
+        }
+    }
+
+    /**
+     * Method of the Visitor Pattern, event received from the view
+     * to let the player initiate the mode play a tool card
+     *
+     * @param event ControllerSelectDiceFromDraftPool
+     */
+    @Override
+    public void visit(ControllerSelectDiceFromDraftPool event) {
         try {
             gameBoard.addNewDiceToHandFromDicePool(event.getPlayerId(), event.getIndex());
-            OkMessage packet = new OkMessage("Hai pescato il dado", true);
+            SelectCellOfWindow packet = new SelectCellOfWindow();
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
+        } catch (CurrentPlayerException ex){
+            showErrorMessage(ex,event.getPlayerId(),false);
         } catch (Exception ex) {
-            showErrorMessageAndShowTurn(ex, event.getPlayerId());
+            showErrorMessage(ex, event.getPlayerId(),true);
+
         }
     }
 
     @Override
-    public void visit(SelectCellOfWindowController event) {
+    public void visit(ControllerSelectCellOfWindow event) {
         try {
             gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
-            OkMessage packet = new OkMessage("Hai inserito il dado", true);
+            EventView packet =new MessageOk("la massa si è conclusa con successo",true);
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
-        } catch (AlreadyPlaceANewDiceException ex) {
-            showErrorMessageAndShowTurn(ex, event.getPlayerId());
+        } catch (CurrentPlayerException ex){
+            showErrorMessage(ex,event.getPlayerId(),false);
         } catch (Exception ex) {
-            showErrorMessageAndShowTurn(ex, event.getPlayerId());
+            showErrorMessage(ex, event.getPlayerId(),true);
         }
     }
 
-    public void visit(SelectToolCardController event) {
-        if (gameBoard.getIndexCurrentPlayer() == event.getPlayerId()) {
-            //TODO sostituire con il system.out l'attivazione della toolcard
-            System.out.println("il giocatore con id :" + event.getPlayerId() + " vuole giocare la " + event.getIndexToolCard() + " Toolcard");
-            showErrorMessageAndShowTurn(new IllegalClassFormatException(), event.getPlayerId());
-        } else {
-            showErrorMessageAndShowTurn(new CurrentPlayerException(), event.getPlayerId());
+    public void visit(ControllerSelectToolCard event) {
+        try{
+            gameBoard.useToolCard(event.getPlayerId(),event.getIndexToolCard());
+            showErrorMessage(new IllegalClassFormatException(), event.getPlayerId(),true);
+        } catch (CurrentPlayerException ex){
+            showErrorMessage(ex,event.getPlayerId(),false);
+        } catch (Exception ex) {
+            showErrorMessage(ex, event.getPlayerId(),true);
         }
-        //TODO settare il flag della toolcard to true e girare il pacchetto all'handler oppure viene fatto dal'handler?
     }
 
     @Override
-    public void visit(EndTurnController event) {
+    public void visit(ControllerEndTurn event) {
         try {
             gameBoard.nextPlayer(event.getPlayerId());
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             StartPlayerTurn turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            System.err.println("cambiato il turno tocca a " + gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(turnPacket);
-
+            sendEventToView(turnPacket);
             //Restart timer
             playerTimeout.shutdown();
             playerTimeout.startThread();
         } catch (Exception ex) {
-            showErrorMessageAndShowTurn(ex, event.getPlayerId());
+            showErrorMessage(ex, event.getPlayerId(),false);
         }
     }
 
     @Override
-    public void visit(SelectDiceFromHandController event) {
+    public void visit(ControllerSelectDiceFromHand event) {
         // impossibile senza una tool card, rimane non implementata
         for (int i = 0; i < 100; i++) {
             System.err.println("ERRORE NELLA LOGICA DEL CONTROLLER!!!!!!!!!!!!!!!!");
@@ -173,7 +234,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
 
     @Override
-    public void visit(SelectDiceFromRoundTrackController event) {
+    public void visit(ControllerSelectDiceFromRoundTrack event) {
         // impossibile senza una tool card, rimane non implementata
         for (int i = 0; i < 100; i++) {
             System.err.println("ERRORE NELLA LOGICA DEL CONTROLLER!!!!!!!!!!!!!!!!");
@@ -188,50 +249,41 @@ public class Controller implements ControllerVisitor, TimerCallback {
         for (int i = 0; i < playerNumber; i++) {
             gameBoard.notifyAllCards(i);
         }
-        showAllCardToAll();
+        //after the notify to all player show the info
+        for (int j = 0; j < playerNumber; j++) {
+            ShowAllCards waitSetUp = new ShowAllCards();
+            waitSetUp.setPlayerId(j);
+            server.sendEventToView(waitSetUp);
+        }
+        //after showing the info ask the player to choose the window
         for (int i = 0; i < playerNumber; i++) {
-            InitialWindowPatternCard packet = new InitialWindowPatternCard();
+            SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
             packet.setPlayerId(i);
             server.sendEventToView(packet);
         }
+        //TODO Start the timer
         System.err.println("Iniziato il gioco, inviati tutti i pacchetti per l'inizio del game");
 
     }
 
     // TODO: CHECKARE LA CLASSE
     public void joinGame(int id) {
-        //TODO non deve inviare l'init windowPattern....
+        //TODO non deve inviare l'init windowPattern... ci sono 2 tipi di join
         gameBoard.notifyAllCards(id);
-        InitialWindowPatternCard packet = new InitialWindowPatternCard();
+        SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
         packet.setPlayerId(id);
         System.err.println("Player " + id + " has made a relogin.");
         server.sendEventToView(packet);
     }
 
-    /**
-     * Method for notify the view that there is some problem with the input
-     *
-     * @param ex
-     */
-    public void showErrorMessageAndShowTurn(Exception ex, int idPlayer) {
-        ShowErrorMessage packet = new ShowErrorMessage(ex.getMessage(), true);
+
+    private void showErrorMessage(Exception ex, int idPlayer, boolean showMenuTurn) {
+        MessageError packet = new MessageError(ex.getMessage(),showMenuTurn);
         packet.setPlayerId(idPlayer);
         server.sendEventToView(packet);
     }
 
-    public void showErrorMessageNoShowTurn(Exception ex, int idPlayer) {
-        ShowErrorMessage packet = new ShowErrorMessage(ex.getMessage(), false);
-        packet.setPlayerId(idPlayer);
-        server.sendEventToView(packet);
-    }
 
-    private void showAllCardToAll() {
-        for (int j = 0; j < playerNumber; j++) {
-            ShowAllCards waitSetUp = new ShowAllCards();
-            waitSetUp.setPlayerId(j);
-            server.sendEventToView(waitSetUp);
-        }
-    }
 
     private void sendWaitTurnToAllTheNonCurrent(int currentPlayerId) {
         for (int j = 0; j < playerNumber; j++) {
@@ -240,12 +292,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
             waitTurn.setPlayerId(j);
             server.sendEventToView(waitTurn);
         }
-    }
-
-    public void askDiceOfDicePool() {
-        SelectDiceFromDraftpool packet = new SelectDiceFromDraftpool();
-        packet.setPlayerId(gameBoard.getIndexCurrentPlayer());
-        server.sendEventToView(packet);
     }
 
     @Override
@@ -266,7 +312,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             playerTimeout.shutdown();
             playerTimeout.startThread();
         } catch (Exception ex) {
-            showErrorMessageAndShowTurn(ex, gameBoard.getIndexCurrentPlayer());
+            showErrorMessage(ex, gameBoard.getIndexCurrentPlayer(),false);
         }
     }
 }

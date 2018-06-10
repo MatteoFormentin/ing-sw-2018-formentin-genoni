@@ -11,8 +11,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
-import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
+import static it.polimi.se2018.view.gui.gamestage.GuiGame.createGuiGame;
 
 /**
  * Main class for the Gui, where the JavaFx Application start.
@@ -22,7 +21,6 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
  * @author Luca Genoni
  */
 public class GuiReceiver extends Application {
-    //fields for the init waitStage
     private static Stage primaryStage;
     private GuiGame game;
 
@@ -34,6 +32,12 @@ public class GuiReceiver extends Application {
         primaryStage = stage;
     }
 
+    /**
+     * The start of the JavaFx thread
+     *
+     * @param primaryStage received by the Application.launch() method
+     * @throws Exception if something goes wrong during the construction of the application
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         setPrimaryStage(primaryStage);
@@ -60,9 +64,9 @@ public class GuiReceiver extends Application {
         // add button to the menu
         Button playButton = new Button("Fai il Login e inizia una partita");
         playButton.setOnAction(e -> {
-            boolean login = new Login(primaryStage).display(getGuiInstance().getClient());
+            boolean login = new Login(primaryStage).display();
             if (login) {
-                game = getGuiGame();
+                game = createGuiGame();
                 game.setGameWait(primaryStage);
             }
         });
@@ -79,6 +83,9 @@ public class GuiReceiver extends Application {
         primaryStage.setAlwaysOnTop(false);
     }
 
+    /**
+     * Method for close the application
+     */
     public static void closeProgram() {
         Boolean result = new ConfirmBox(primaryStage).displayMessage("Sei sicuro di voler uscire dal gioco?");
         if (result) {

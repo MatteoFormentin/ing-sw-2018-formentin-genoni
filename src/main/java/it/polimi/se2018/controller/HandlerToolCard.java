@@ -26,39 +26,49 @@ public class HandlerToolCard implements ControllerVisitor {
         event.accept(this);
     }
     @Override
-    public void visit(EndTurnController event) {
+    public void visit(ControllerEndTurn event) {
 
     }
 
 
     @Override
-    public void visit(SelectCellOfWindowController event) {
+    public void visit(ControllerSelectCellOfWindow event) {
 
     }
 
     @Override
-    public void visit(SelectDiceFromDraftpoolController event) {
+    public void visit(ControllerSelectDiceFromDraftPool event) {
 
     }
 
     @Override
-    public void visit(SelectToolCardController event) {
+    public void visit(ControllerSelectToolCard event) {
         //TODO accetta la carta selezionata, carica gli effetti della carta Con un metodo get effect (riceve una linkedList di effetti)
     }
 
     @Override
-    public void visit(SelectDiceFromHandController event) {
+    public void visit(ControllerSelectDiceFromHand event) {
 
     }
 
     @Override
-    public void visit(SelectDiceFromRoundTrackController event) {
+    public void visit(ControllerSelectDiceFromRoundTrack event) {
 
     }
 
 
     @Override
-    public void visit(SelectInitialWindowPatternCardController event) {
+    public void visit(ControllerSelectInitialWindowPatternCard event) {
+
+    }
+
+    @Override
+    public void visit(ControllerMoveDrawAndPlaceDie event) {
+
+    }
+
+    @Override
+    public void visit(ControllerMoveUseToolCard event) {
 
     }
 

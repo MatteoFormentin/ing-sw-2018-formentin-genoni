@@ -258,8 +258,7 @@ class CliMessage {
     void showMainMenu() {
         AnsiConsole.out.println();
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Cosa vuoi fare?"));
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("0 - Pescare un dado"));
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("1 - Posiziona un dado"));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("1 - Pescare e Posizionare un dado"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("2 - Utilizza una carta utensile"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("3 - Termina il turno"));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("4 - Visualizza il tuo obiettivo privato"));
