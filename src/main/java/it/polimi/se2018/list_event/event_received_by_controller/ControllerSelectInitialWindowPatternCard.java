@@ -1,13 +1,12 @@
 package it.polimi.se2018.list_event.event_received_by_controller;
 
 /**
- * Extends EventController, describe the event "end of the turn" produced by the view
+ * Extends EventController, the controller receives the selected window's index of the initial windows
  *
  * @author Luca Genoni
+ * @author Matteo Formentin
  */
-public class SelectInitialWindowPatternCardController extends EventController {
-    //from EventController private String nicknamPlayer;
-    //from EventController private Model model;
+public class ControllerSelectInitialWindowPatternCard extends EventController {
     private int selectedIndex;
 
     public int getSelectedIndex() {

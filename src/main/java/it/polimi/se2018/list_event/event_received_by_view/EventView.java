@@ -1,16 +1,13 @@
 package it.polimi.se2018.list_event.event_received_by_view;
 
-
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
- * Abstract void class for the EventController in a game, implements Serializable.
- * Every EventController is produced by a player and belong to a specific game board
- * <p>
- * SENDED FROM CONTROLLER TO VIEW
+ * Abstract void class for the event read by the view in a game, implements Serializable.
+ * EventViews are produced by the controller and the model.
  *
  * @author Luca Genoni
+ * @author Matteo Formentin
  */
 public abstract class EventView implements Serializable {
     private int playerId;

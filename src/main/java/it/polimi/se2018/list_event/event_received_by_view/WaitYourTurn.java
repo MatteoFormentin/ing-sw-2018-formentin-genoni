@@ -1,13 +1,12 @@
 package it.polimi.se2018.list_event.event_received_by_view;
 
 /**
- * Extends EventController, describe the event "end of the turn" produced by the view
+ * Extends EventView, tells the view which player is playing
  *
  * @author Luca Genoni
+ * @author Matteo Formentin
  */
 public class WaitYourTurn extends EventView {
-    //from EventController private String nicknamPlayer;
-    //from EventController private Model model;
     private int indexCurrentPlayer;
 
     public WaitYourTurn(int indexCurrentPlayer) {
@@ -16,10 +15,6 @@ public class WaitYourTurn extends EventView {
 
     public int getIndexCurrentPlayer() {
         return indexCurrentPlayer;
-    }
-
-    public void setIndexCurrentPlayer(int indexCurrentPlayer) {
-        this.indexCurrentPlayer = indexCurrentPlayer;
     }
 
     @Override

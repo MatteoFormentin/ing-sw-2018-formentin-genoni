@@ -250,9 +250,8 @@ public class GameBoard{
                 player[indexPlayer].endTrun(false);
             }//else he use a tool card that alter the normal circle
             freeHandPlayer(indexPlayer);
+
             roundTrack[currentRound] = dicePool;
-            UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
-            broadcast(packetRound);
             indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
             currentTurn++;
             System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
@@ -346,27 +345,26 @@ public class GameBoard{
     /**
      * move for select the window Pattern
      *
-     * @param indexOfThePlayer who want to set the window
+     * @param idPlayer who want to set the window
      * @param indexOfTheWindow of the window selected
-     * @return true if all is gone perfectly, false otherwise.
      */
-    public void setWindowOfPlayer(int indexOfThePlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException {
-        if (player[indexOfThePlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
-        player[indexOfThePlayer].choosePlayerWindowPattern(indexOfTheWindow);
+    public void setWindowOfPlayer(int idPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException {
+        if (player[idPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
+        player[idPlayer].choosePlayerWindowPattern(indexOfTheWindow);
         for (int i = 0; i < player.length; i++) {
-            UpdateSingleWindow packet = new UpdateSingleWindow(indexOfThePlayer, player[indexOfThePlayer].getPlayerWindowPattern());
+            UpdateSingleWindow packet = new UpdateSingleWindow(idPlayer, player[idPlayer].getPlayerWindowPattern());
             packet.setPlayerId(i);
             server.sendEventToView(packet);
+            UpdateSinglePlayerTokenAndPoints packetToken = new UpdateSinglePlayerTokenAndPoints(idPlayer,
+                    player[idPlayer].getFavorToken(),player[idPlayer].getPoints());
+            packetToken.setPlayerId(idPlayer);
+            server.sendEventToView(packetToken);
         }
         countSetWindow++;
-        System.err.println("window settata del player " + indexOfThePlayer + " settata");
         if (countSetWindow == player.length) {
             setUpFirstRound();
-            System.err.println(" Tutte le window sono state settate");
             throw new WindowSettingCompleteException();
-
         }
-
     }
 
 //*****************************************metodi del player************************************************************************
@@ -421,6 +419,7 @@ public class GameBoard{
      * @return
      */
     public void useToolCard(int indexPlayer, int cost) throws Exception {
+        throw new Exception("non ancora implementato");
 /*
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();

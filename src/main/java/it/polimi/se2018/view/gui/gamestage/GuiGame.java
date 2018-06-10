@@ -1,49 +1,46 @@
 package it.polimi.se2018.view.gui.gamestage;
 
-
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
-
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
 import it.polimi.se2018.view.gui.stage.ConfirmBox;
-
 import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Callback;
-
 
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
 import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
 
-
 /**
  * Class for handle the Gui gameboard
+ *
+ * @author Luca Genoni
  */
 public class GuiGame implements UIInterface, ViewVisitor {
     private static GuiGame instance;
     private WaitGame waitGame;
-    private Stage gameStage, stageChoose;
+    private Stage gameStage, utilStage;
     private Scene sceneGame, sceneInit;
 
+    private static final String diceSource = "file:src/resources/dadijpg/";
+    private static final String toolCardSource = "file:src/resources/carte_jpg/carte_strumento_";
+    private static final String privateObjectSource = "file:src/resources/carte_jpg/carte_private_";
+    private static final String publicObjectSource = "file:src/resources/carte_jpg/carte_pubbliche_";
     //variables for show card
     private ShowCardBox cardShow;
     private AlertMessage popUpGame, popUpWait;
@@ -102,6 +99,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
     private FlowPane flowPaneDicePool;
     private LinkedList<ImageView> dicePool;
 
+    private Button[] gameButton;
+
     private GuiGame() {
         toolBox = new HBox();
         toolBox.setSpacing(5);
@@ -112,30 +111,33 @@ public class GuiGame implements UIInterface, ViewVisitor {
     }
 
     public static GuiGame getGuiGame() {
+        return instance;
+    }
+
+    public static GuiGame createGuiGame() {
         if (instance == null) instance = new GuiGame();
         return instance;
     }
 
     public void setGameWait(Stage owner) {
         waitGame = new WaitGame(owner);
-        waitGame.displayMessage();
+        waitGame.displayMessage("Ti sei aggiunto ad una partita\nAspetta che la stanza sia pronta");
         closeGame(waitGame.getStage());
         gameStage = new Stage();
         gameStage.initStyle(StageStyle.UTILITY);
         gameStage.initModality(Modality.APPLICATION_MODAL);
         gameStage.initOwner(owner);
         closeGame(gameStage);
-        stageChoose = new Stage();
-        stageChoose.initStyle(StageStyle.UTILITY);
-        stageChoose.initModality(Modality.APPLICATION_MODAL);
-        stageChoose.initOwner(owner);
-        closeGame(stageChoose);
+        utilStage = new Stage();
+        utilStage.initStyle(StageStyle.UTILITY);
+        utilStage.initModality(Modality.APPLICATION_MODAL);
+        utilStage.initOwner(owner);
+        closeGame(utilStage);
 
         //setClass For show a bigger card
-        cardShow = new ShowCardBox(700, 600);
+        cardShow = new ShowCardBox(gameStage, 700, 600);
         popUpGame = new AlertMessage(gameStage);
-        popUpWait = new AlertMessage(stageChoose);
-        //TODO set up all the stage
+        popUpWait = new AlertMessage(utilStage);
         setInit();
         setBoard();
     }
@@ -151,7 +153,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
 
     private void setInit() {
-        stageChoose.setTitle("Pick a Window");
+        utilStage.setTitle("Pick a Window");
         HBox allCards = new HBox();
         allCards.setAlignment(Pos.TOP_CENTER);
         allCards.setSpacing(10);
@@ -162,13 +164,15 @@ public class GuiGame implements UIInterface, ViewVisitor {
         VBox pane = new VBox();
         pane.getChildren().addAll(allCards, boxAllWindowPoolChoice);
         Scene scene = new Scene(pane, 800, 500);
-        stageChoose.setScene(scene);
+        utilStage.setScene(scene);
 
     }
 
     private void setBoard() {
         //top pane
         boxAllRound = new HBox();
+        boxAllRound.setAlignment(Pos.CENTER);
+        boxAllRound.setSpacing(5);
         //opposingPlayers
         opposingPlayers = new VBox();
         opposingPlayers.setAlignment(Pos.CENTER_LEFT);
@@ -178,19 +182,16 @@ public class GuiGame implements UIInterface, ViewVisitor {
         //The button for menu in bottom position
         //Button of the menu game
         HBox menuButton = new HBox();
-        Button[] gameButton = new Button[1];
+        menuButton.setAlignment(Pos.BASELINE_RIGHT);
+        gameButton = new Button[3];
         for (int i = 0; i < gameButton.length; i++) {
             gameButton[i] = new Button();
             menuButton.getChildren().add(gameButton[i]);
 
         }
-        gameButton[0].setText("Passa il turno");
-        gameButton[0].setOnAction(event -> {
-            EndTurnController packet = new EndTurnController();
-            sendEventToGuiInstance(packet);
-        });
-        menuButton.setAlignment(Pos.BASELINE_RIGHT);
-
+        gameButton[0].setText("Pesca e inserisci un dado");
+        gameButton[1].setText("Utilizza una carta strumento");
+        gameButton[2].setText("Passa il turno");
         //the card in right position
         cardBox = new VBox();
         cardBox.setAlignment(Pos.CENTER_RIGHT);
@@ -206,10 +207,9 @@ public class GuiGame implements UIInterface, ViewVisitor {
         gameStage.setScene(sceneGame);
         gameStage.setTitle("Sagrada a fun game of dice");
         gameStage.setResizable(false);
-        //TODO settare la scena con platform
     }
 
-    private void sendEventToGuiInstance(EventController packet) {
+    private void sendEventAndSetTheId(EventController packet) {
         packet.setPlayerId(playerId);
         getGuiInstance().sendEventToNetwork(packet);
     }
@@ -224,8 +224,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     private ImageView createNewImageViewForDicePool() {
         ImageView imageView = new ImageView();
-        imageView.setFitHeight(40);
-        imageView.setFitWidth(40);
+        imageView.setFitHeight(50);
+        imageView.setFitWidth(50);
         imageView.setPreserveRatio(true);
         return imageView;
     }
@@ -254,6 +254,12 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to activate the button of the game for the player
+     *
+     * @param event StartPlayerTurn
+     */
     @Override
     public void visit(StartGame event) {
         System.out.println("viene accettato :" + event.toString());
@@ -294,7 +300,6 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
             //select place
             if (i != playerId) {
-                System.out.println("fatto player " + i);
                 opposingPlayers.getChildren().add(boxAllDataPlayer[i]);
                 boxAllDataPlayer[i].setAlignment(Pos.TOP_LEFT);
             } else {
@@ -314,95 +319,239 @@ public class GuiGame implements UIInterface, ViewVisitor {
         for (int i = 0; i < (2 * numberOfPlayer + 1); i++) {
             dicePool.add(createNewImageViewForDicePool());
             flowPaneDicePool.getChildren().add(dicePool.get(i));
-            activeDiceOfDicePool(i);
         }
         centerBox.getChildren().add(flowPaneDicePool);
-        System.out.println("finito lo start");
-        System.out.println();
     }
 
     @Override
     public void visit(JoinGame event) {
-        System.out.println("viene accettato :" + event.toString());
+        System.out.println("Finalmente è arrivato questo pacchetto, non l'ho mai visto prima d'ora viene accettato :" + event.toString());
         gameStage.show();
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to activate the button of the game for the player
+     *
+     * @param event StartPlayerTurn
+     */
     @Override
     public void visit(StartPlayerTurn event) {
-        //TODO attivare bottoni in basso
+        gameButton[0].setOnAction(e -> {
+            ControllerMoveDrawAndPlaceDie packet = new ControllerMoveDrawAndPlaceDie();
+            sendEventAndSetTheId(packet);
+        });
+        gameButton[1].setOnAction(e -> {
+            ControllerMoveUseToolCard packet = new ControllerMoveUseToolCard();
+            sendEventAndSetTheId(packet);
+        });
+        gameButton[2].setOnAction(e -> {
+            ControllerEndTurn packet = new ControllerEndTurn();
+            sendEventAndSetTheId(packet);
+        });
         new AlertMessage(gameStage).displayMessage("è il tuo turno!");
-        System.out.println("viene accettato :" + event.toString());
 
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to block the button of the player
+     *
+     * @param event WaitYourTurn
+     */
     @Override
     public void visit(WaitYourTurn event) {
-        //TODO disattivare tutti i bottoni per inviare i pacchetti
+        IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
         new AlertMessage(gameStage).displayMessage("Adesso tocca a " + playersName[event.getIndexCurrentPlayer()].getText());
-        System.out.println("viene accettato :" + event.toString());
-        System.out.println();
     }
 
+
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to let the player select a cell of the window
+     *
+     * @param event SelectCellOfWindow
+     */
     @Override
-    public void visit(ShowAllCards event) {
-        System.out.println("viene accettato :" + event.toString());
-        waitGame.closeWait();
-        stageChoose.show();
-        System.out.println("finito lo show message");
-        System.out.println();
+    public void visit(SelectCellOfWindow event) {
+        activeWindow(playerId);
+        new AlertMessage(gameStage).displayMessage("Clicca su una cella della tua windowPattern");
     }
 
+    private void activeWindow(int indexWindow) {
+        for (int row = 0; row < imageViewsCellPlayer[indexWindow].length; row++) {
+            for (int column = 0; column < imageViewsCellPlayer[indexWindow][row].length; column++) {
+                activeCell(indexWindow, row, column);
+            }
+        }
+    }
+
+    private void activeCell(int indexWindow, int indexRow, int indexColumn) {
+        imageViewsCellPlayer[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {
+            disableWindow(indexWindow);
+            ControllerSelectCellOfWindow packet = new ControllerSelectCellOfWindow();
+            packet.setLine(indexRow);
+            packet.setColumn(indexColumn);
+            sendEventAndSetTheId(packet);
+        });
+    }
+
+    private void disableWindow(int indexWindow){
+        for (int row = 0; row < imageViewsCellPlayer[indexWindow].length; row++) {
+            for (int column = 0; column < imageViewsCellPlayer[indexWindow][row].length; column++) {
+                imageViewsCellPlayer[indexWindow][row][column].setOnMouseClicked(null);
+            }
+        }
+    }
+
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to let the player pick a dice from the round pool
+     *
+     * @param event SelectDiceFromDraftPool
+     */
     @Override
-    public void visit(SelectCellOfWindowView event) {
-
-        System.out.println("viene accettato :" + event.toString());
+    public void visit(SelectDiceFromRoundTrack event) {
+        activeRoundTrack();
+        new AlertMessage(gameStage).displayMessage("Seleziona un dado del RoundTrack");
     }
 
+    private void activeRoundTrack() {
+        for (int i = 0; i < comboBoxSingleRound.length; i++) {
+            if (!comboBoxSingleRound[i].getItems().isEmpty()) {
+                activeSingleRound(i);
+            }
+        }
+    }
+
+    private void activeSingleRound(int indexRound) {
+        for (int i = 0; i < comboBoxSingleRound[indexRound].getItems().size(); i++) {
+            comboBoxSingleRound[indexRound].getSelectionModel().clearSelection();
+            comboBoxSingleRound[indexRound].setOnAction(e -> {
+                disableAllRound();
+                ControllerSelectDiceFromRoundTrack packet = new ControllerSelectDiceFromRoundTrack(
+                        indexRound, comboBoxSingleRound[indexRound].getSelectionModel().getSelectedIndex()
+                );
+                sendEventAndSetTheId(packet);
+            });
+        }
+    }
+
+    private void disableAllRound() {
+        IntStream.range(0, comboBoxSingleRound.length).forEach(i -> comboBoxSingleRound[i].setOnAction(null));
+    }
+
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to let the player pick a dice from the draft pool
+     *
+     * @param event SelectDiceFromDraftPool
+     */
     @Override
-    public void visit(SelectDiceFromDraftpool event) {
-        System.out.println("viene accettato :" + event.toString());
+    public void visit(SelectDiceFromDraftPool event) {
+        for (int i = 0; i < dicePool.size(); i++) activeDiceOfDicePool(i);
+        new AlertMessage(gameStage).displayMessage("Seleziona un dado nella DraftPool");
     }
 
+    private void activeDiceOfDicePool(int index) {
+        dicePool.get(index).setOnMouseClicked(e -> {
+                    disableDiceOfDicePool();
+                    ControllerSelectDiceFromDraftPool packet = new ControllerSelectDiceFromDraftPool();
+                    packet.setIndex(index);
+                    packet.setPlayerId(playerId);
+                    sendEventAndSetTheId(packet);
+                }
+        );
+    }
+
+    private void disableDiceOfDicePool() {
+        IntStream.range(0, dicePool.size()).forEach(i -> dicePool.get(i).setOnMouseClicked(null));
+    }
+
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to let the player pick a tool card
+     *
+     * @param event SelectToolCard
+     */
     @Override
     public void visit(SelectToolCard event) {
-        //TODO attivare i bottoni per selezionare la toolcard
-        System.out.println("viene accettato :" + event.toString());
+        cardShow.setClickIsOn(true);
+        new AlertMessage(gameStage).displayMessage(
+                "Mentre la carta strumento viene mostrata in grande cliccala per utilizzarla");
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to let the player know that his move wasn't accepted
+     *
+     * @param event MessageError
+     */
     @Override
-    public void visit(ShowErrorMessage event) {
-        new AlertMessage(gameStage).displayMessage(event.getErrorMessage());
-        System.out.println("viene accettato :" + event.toString());
+    public void visit(MessageError event) {
+        if (event.isInitGame()) new AlertMessage(utilStage).displayMessage(event.getMessage());
+        else new AlertMessage(gameStage).displayMessage(event.getMessage());
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * to let the player know that his move was accepted
+     *
+     * @param event MessageOk
+     */
     @Override
-    public void visit(OkMessage event) {
-        System.out.println("viene accettato :" + event.toString());
-        popUpGame.displayMessage(event.getMessageConfirm());
+    public void visit(MessageOk event) {
+        if (event.isInitGame()) new AlertMessage(utilStage).displayMessage(event.getMessageConfirm());
+        else new AlertMessage(gameStage).displayMessage(event.getMessageConfirm());
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * for show the stage of the init game
+     *
+     * @param event ShowAllCards
+     */
     @Override
-    public void visit(InitialWindowPatternCard event) {
-        //TODO attivare i pulsanti per scegliere la window Pattern
+    public void visit(ShowAllCards event) {
+        waitGame.closeWait();
+        utilStage.show();
+    }
+
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * for activated the selection of the window
+     *
+     * @param event SelectInitialWindowPatternCard
+     */
+    @Override
+    public void visit(SelectInitialWindowPatternCard event) {
         for (int i = 0; i < boxWindowPoolChoice.length; i++) {
             activeWindowChoice(i);
         }
-        System.out.println("viene accettato :" + event.toString());
+        new AlertMessage(utilStage).displayMessage("Clicca sulla vetrata che vuoi utilizzare durante la partita");
     }
 
     private void activeWindowChoice(int index) {
         boxWindowPoolChoice[index].setOnMouseClicked(e -> {
-            SelectInitialWindowPatternCardController packet = new SelectInitialWindowPatternCardController();
+            disableWindowChoise();
+            ControllerSelectInitialWindowPatternCard packet = new ControllerSelectInitialWindowPatternCard();
             packet.setSelectedIndex(index);
-            sendEventToGuiInstance(packet);
+            sendEventAndSetTheId(packet);
         });
     }
+    private void disableWindowChoise(){
+        IntStream.range(0, boxWindowPoolChoice.length).forEach(i -> boxWindowPoolChoice[i].setOnMouseClicked(null));
+    }
 
+    /**
+     * Method of the Visitor Pattern, event received from the controller
+     * for close the initial and open the start the main game.
+     *
+     * @param event InitialEnded
+     */
     @Override
     public void visit(InitialEnded event) {
-        System.out.println("viene accettato :" + event.toString());
-        activeWindow(event.getPlayerId());
-        stageChoose.close();
+        utilStage.close();
         cardBox.getChildren().addAll(toolBox, objectivePublicBox, objectivePrivateBox);
         gameStage.showAndWait();
     }
@@ -414,21 +563,30 @@ public class GuiGame implements UIInterface, ViewVisitor {
     //************************************* UPLOAD FROM MODEL ************************************************************************************
     //************************************* UPLOAD FROM MODEL ************************************************************************************
     //************************************* UPLOAD FROM MODEL ************************************************************************************
+
+    /**
+     * Method of the Visitor Pattern, event received from the model for setUp a private Object
+     *
+     * @param event UpdateSinglePrivateObject
+     */
     @Override
     public void visit(UpdateSinglePrivateObject event) {
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = createNewImageViewForCard();
         objectivePrivateBox.getChildren().add(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()]);
-        Image newImage = new Image("file:src/resources/carte_jpg/carte_private_" + event.getPrivateCard().getId() + ".jpg");
+        Image newImage = new Image(privateObjectSource + event.getPrivateCard().getId() + ".jpg");
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()].setImage(newImage);
-        objectivePrivateCardOfEachPlayers[event.getIndexPlayer()].setOnMouseClicked(e -> {
-                    cardShow.displayCard(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()], false);
-                }
+        objectivePrivateCardOfEachPlayers[event.getIndexPlayer()].setOnMouseClicked(e ->
+                cardShow.displayCard(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()], false)
         );
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the model for setUp the Initial window Pattern
+     *
+     * @param event UpdateInitialWindowPatternCard
+     */
     @Override
     public void visit(UpdateInitialWindowPatternCard event) {
-        System.out.println("viene accettato :" + event.toString());
         int numberWindow = event.getInitialWindowPatternCard().length;
         int numberLine = event.getInitialWindowPatternCard(0).getMatrix().length;
         int numberColumn = event.getInitialWindowPatternCard(0).getColumn(0).length;
@@ -454,7 +612,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
                     } else {
                         color = event.getInitialWindowPatternCard(i).getCell(line, column).getColorRestriction().toString();
                     }
-                    Image newImage = new Image("file:src/resources/dadijpg/"
+                    Image newImage = new Image(diceSource
                             + color
                             + "Dice" + Integer.toString(event.getInitialWindowPatternCard(i).getCell(line, column).getValueRestriction()) + ".jpg");
                     imageViewsCellPoolChoice[i][line][column] = new ImageView(newImage);
@@ -465,57 +623,99 @@ public class GuiGame implements UIInterface, ViewVisitor {
                 }
             }
         }
-        System.out.println("finito l'update init");
-        System.out.println();
     }
 
 
+    /**
+     * Method of the Visitor Pattern, event received from the model for setUp all the tool card
+     *
+     * @param event UpdateAllToolCard
+     */
     @Override
     public void visit(UpdateAllToolCard event) {
-        System.out.println("viene accettato :" + event.toString());
         toolCard = new ImageView[event.getToolCard().length];
         //ForEach made for enable the click
         IntStream.range(0, event.getToolCard().length).forEach(i -> {
             toolCard[i] = createNewImageViewForCard();
             toolBox.getChildren().add(toolCard[i]);
-            Image newImage = new Image("file:src/resources/carte_jpg/carte_strumento_" + event.getToolCard(i).getId() + ".jpg");
+            Image newImage = new Image(toolCardSource + event.getToolCard(i).getId() + ".jpg");
             toolCard[i].setImage(newImage);
             toolCard[i].setOnMouseClicked(e -> {
                 if (cardShow.displayCard(toolCard[i], true)) {
-                    SelectToolCardController packet = new SelectToolCardController();
+                    ControllerSelectToolCard packet = new ControllerSelectToolCard();
                     packet.setIndexToolCard(i);
-                    sendEventToGuiInstance(packet);
+                    sendEventAndSetTheId(packet);
                 }
             });
         });
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the model for setUp all the public object
+     *
+     * @param event UpdateAllPublicObject
+     */
     @Override
     public void visit(UpdateAllPublicObject event) {
-        System.out.println("viene accettato :" + event.toString());
-        int numberObjective = event.getPublicCards().length;
-        objectivePublicCard = new ImageView[numberObjective];
-        //ForEach made for enable the click
-        for (int i = 0; i < numberObjective; i++) {
+        //creates the array of public cards
+        objectivePublicCard = new ImageView[event.getPublicCards().length];
+        //creates each public card
+        IntStream.range(0, event.getPublicCards().length).forEach(i -> {
             objectivePublicCard[i] = createNewImageViewForCard();
-        }
-        IntStream.range(0, numberObjective).forEach(i -> {
             objectivePublicBox.getChildren().add(objectivePublicCard[i]);
-            Image newImage = new Image("file:src/resources/carte_jpg/carte_pubbliche_" + event.getPublicCards(i).getId() + ".jpg");
+            Image newImage = new Image(publicObjectSource + event.getPublicCards(i).getId() + ".jpg");
             objectivePublicCard[i].setImage(newImage);
-            objectivePublicCard[i].setOnMouseClicked(e -> {
-                cardShow.displayCard(objectivePublicCard[i], true);
-            });
+            objectivePublicCard[i].setOnMouseClicked(e ->
+                    cardShow.displayCard(objectivePublicCard[i], false)
+            );
         });
-
     }
 
-    class ImageListDice extends ListCell<Image> {
+    /**
+     * Method of the Visitor Pattern, event received from the model for setUp the Round Track.
+     *
+     * @param event UpdateInitDimRound
+     */
+    @Override
+    public void visit(UpdateInitDimRound event) {
+        int numberRound = event.getRoundTrack().length;
+        boxSingleRound = new VBox[event.getRoundTrack().length];
+        textSingleRound = new Text[event.getRoundTrack().length];
+        comboBoxSingleRound = new ComboBox[event.getRoundTrack().length];
+        for (int i = 0; i < numberRound; i++) {
+            comboBoxSingleRound[i] = new ComboBox<>();
+            ImageView size = createNewImageViewForDicePool();
+            comboBoxSingleRound[i].setMinSize(size.getFitWidth() + 10, size.getFitHeight() + 10);
+            comboBoxSingleRound[i].setMaxSize(size.getFitWidth() + 10, size.getFitHeight() + 10);
+            // setUP combo box factory, with this method the dice don't disapear when is selected
+            comboBoxSingleRound[i].setCellFactory(listView -> new ImageListDice());
+            comboBoxSingleRound[i].setButtonCell(new ImageListDice());
+            textSingleRound[i] = new Text(Integer.toString(i + 1));
+            textSingleRound[i].setTextAlignment(TextAlignment.CENTER);
+            boxSingleRound[i] = new VBox(textSingleRound[i], comboBoxSingleRound[i]);
+            boxSingleRound[i].setAlignment(Pos.CENTER);
+            boxSingleRound[i].setSpacing(5);
+            boxAllRound.getChildren().add(boxSingleRound[i]);
+
+            if (event.getRoundTrack(i) != null) {
+                for (int j = 0; j < event.getRoundTrack(i).size(); j++) {
+                    Image newImage = new Image(diceSource + event.getRoundTrack(i).getDice(j).getColor()
+                            + "Dice" + event.getRoundTrack(i).getDice(j).getValue() + ".jpg");
+                    comboBoxSingleRound[i].getItems().add(newImage);
+                }
+            }
+        }
+    }
+
+    //utils class for a better combo box
+    private class ImageListDice extends ListCell<Image> {
         private final ImageView image;
-        ImageListDice(){
+
+        ImageListDice() {
             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             image = createNewImageViewForDicePool();
         }
+
         @Override
         protected void updateItem(Image item, boolean empty) {
             super.updateItem(item, empty);
@@ -529,36 +729,13 @@ public class GuiGame implements UIInterface, ViewVisitor {
         }
     }
 
-    @Override
-    public void visit(UpdateInitDimRound event) {
-        System.out.println("viene accettato :" + event.toString());
-        int numberRound = event.getRoundTrack().length;
-        boxSingleRound = new VBox[event.getRoundTrack().length];
-        textSingleRound = new Text[event.getRoundTrack().length];
-        comboBoxSingleRound = new ComboBox[event.getRoundTrack().length];
-        for (int i = 0; i < numberRound; i++) {
-            comboBoxSingleRound[i] = new ComboBox<>();
-            // setUP combo box factory, with this method the dice don't disapear when is selected
-            comboBoxSingleRound[i].setCellFactory(listView -> new ImageListDice());
-            comboBoxSingleRound[i].setButtonCell(new ImageListDice());
-            comboBoxSingleRound[i].setPromptText("Round " + (i + 1));
-            textSingleRound[i] = new Text(Integer.toString(i + 1));
-            textSingleRound[i].setTextAlignment(TextAlignment.CENTER);
-            boxSingleRound[i] = new VBox(textSingleRound[i], comboBoxSingleRound[i]);
-            boxAllRound.getChildren().add(boxSingleRound[i]);
-            if (event.getRoundTrack(i) != null) {
-                for (int j = 0; j < event.getRoundTrack(i).size(); j++) {
-                    Image newImage = new Image("file:src/resources/dadijpg/" + event.getRoundTrack(i).getDice(j).getColor()
-                            + "Dice" + event.getRoundTrack(i).getDice(j).getValue() + ".jpg");
-                    comboBoxSingleRound[i].getItems().add(newImage);
-                }
-            }
-        }
-    }
-
+    /**
+     * Method of the Visitor Pattern, event received from the model for set up the window of one player.
+     *
+     * @param event UpdateSingleWindow
+     */
     @Override
     public void visit(UpdateSingleWindow event) {
-        System.out.println("viene accettato :" + event.toString());
         int numberLine = event.getWindowPatternCard().getMatrix().length;
         int numberColumn = event.getWindowPatternCard().getColumn(0).length;
         int dimCell;
@@ -578,7 +755,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
                 } else {
                     color = event.getWindowPatternCard().getCell(line, column).getColorRestriction().toString();
                 }
-                Image newImage = new Image("file:src/resources/dadijpg/"
+                Image newImage = new Image(diceSource
                         + color
                         + "Dice" + Integer.toString(event.getWindowPatternCard().getCell(line, column).getValueRestriction()) + ".jpg");
                 imageViewsCellPlayer[event.getIndexPlayer()][line][column] = new ImageView(newImage);
@@ -592,17 +769,21 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(UpdateSingleToolCardCost event) {
+        //TODO aggiornate il costo della carta
         System.out.println("viene accettato :" + event.toString());
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the model for update the dicePool
+     *
+     * @param event UpdateSingleCell
+     */
     @Override
     public void visit(UpdateDicePool event) {
-        System.out.println("viene accettato :" + event.toString());
-        //rimuovo gli i figli ascoltati
         if (event.getDicePool() != null) {
             for (int i = 0; i < dicePool.size(); i++) {
                 try {
-                    Image newImage = new Image("file:src/resources/dadijpg/"
+                    Image newImage = new Image(diceSource
                             + event.getDicePool().getDice(i).getColor()
                             + "Dice" + event.getDicePool().getDice(i).getValue() + ".jpg");
                     dicePool.get(i).setImage(newImage);
@@ -613,15 +794,17 @@ public class GuiGame implements UIInterface, ViewVisitor {
         }
     }
 
-
+    /**
+     * Method of the Visitor Pattern, event received from the model for update the hand of one player
+     *
+     * @param event UpdateSingleCell
+     */
     @Override
     public void visit(UpdateSinglePlayerHand event) {
-        System.out.println("viene accettato :" + event.toString());
-        //rimuovo tutti i dadi
         if (event.getHandPlayer() != null) {
             for (int i = 0; i < imageViewsHandPlayer[event.getIndexPlayer()].length; i++) {
                 try {
-                    Image newImage = new Image("file:src/resources/dadijpg/"
+                    Image newImage = new Image(diceSource
                             + event.getHandPlayer().getDice(i).getColor()
                             + "Dice" + event.getHandPlayer().getDice(i).getValue() + ".jpg");
                     imageViewsHandPlayer[event.getIndexPlayer()][i].setImage(newImage);
@@ -632,370 +815,51 @@ public class GuiGame implements UIInterface, ViewVisitor {
         }
     }
 
-
+    /**
+     * Method of the Visitor Pattern, event received from the model for update a single cell of the window
+     *
+     * @param event UpdateSingleCell
+     */
     @Override
     public void visit(UpdateSingleCell event) {
-        System.out.println("viene accettato :" + event.toString());
         Image newImage;
         if (event.getDice() == null) {
-            newImage = new Image("file:src/resources/dadijpg/Dice0.jpg");
+            newImage = new Image(diceSource + "Dice0.jpg");
         } else {
-            newImage = new Image("file:src/resources/dadijpg/" + event.getDice().getColor()
+            newImage = new Image(diceSource + event.getDice().getColor()
                     + "Dice" + Integer.toString(event.getDice().getValue()) + ".jpg");
         }
         imageViewsCellPlayer[event.getIndexPlayer()][event.getLine()][event.getColumn()].setImage(newImage);
     }
 
+    /**
+     * Method of the Visitor Pattern, event received from the model for update the token and the point of one player.
+     *
+     * @param event UpdateSinglePlayerTokenAndPoints
+     */
     @Override
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
-        favorTokenOfEachPlayer[event.getIndexInGame()].setText("Favor :" + event.getFavorToken());
-        pointsOfEachPlayer[event.getIndexInGame()].setText("Points :" + event.getPoints());
-        System.out.println("viene accettato :" + event.toString());
+        favorTokenOfEachPlayer[event.getIndexInGame()].setText("Favor : " + event.getFavorToken());
+        pointsOfEachPlayer[event.getIndexInGame()].setText("Points : " + event.getPoints());
     }
 
-
+    /**
+     * Method of the Visitor Pattern, event received from the model for update a single Turn.
+     *
+     * @param event UpdateSingleTurnRoundTrack
+     */
     @Override
     public void visit(UpdateSingleTurnRoundTrack event) {
-        System.out.println("viene accettato :" + event.toString());
         while (!comboBoxSingleRound[event.getIndexRound()].getItems().isEmpty()) {
             comboBoxSingleRound[event.getIndexRound()].getItems().remove(0);
         }
         for (int i = 0; i < event.getRoundDice().size(); i++) {
-            Image newImage = new Image("file:src/resources/dadijpg/" + event.getRoundDice().getDice(i).getColor()
+            Image newImage = new Image(diceSource + event.getRoundDice().getDice(i).getColor()
                     + "Dice" + event.getRoundDice().getDice(i).getValue() + ".jpg");
             comboBoxSingleRound[event.getIndexRound()].getItems().add(newImage);
         }
-        for(int i=0;i<comboBoxSingleRound.length;i++){
-            comboBoxSingleRound[i].getSelectionModel().clearSelection();
+        for (ComboBox<Image> aComboBoxSingleRound : comboBoxSingleRound) {
+            aComboBoxSingleRound.getSelectionModel().clearSelection();
         }
     }
-
-    //****************************************ACTIVE THE CELL********************************************************************************
-    //****************************************ACTIVE THE CELL********************************************************************************
-    //****************************************ACTIVE THE CELL********************************************************************************
-    //****************************************ACTIVE THE CELL********************************************************************************
-    //****************************************ACTIVE THE CELL********************************************************************************
-
-
-    public void activeWindow(int indexWindow) {
-        for (int row = 0; row < imageViewsCellPlayer[indexWindow].length; row++) {
-            for (int column = 0; column < imageViewsCellPlayer[indexWindow][row].length; column++) {
-                activeCell(indexWindow, row, column);
-            }
-        }
-
-    }
-
-    public void activeCell(int indexWindow, int indexRow, int indexColumn) {
-        imageViewsCellPlayer[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {
-            System.out.println("ho cliccato la cella (" + indexRow + "," + indexColumn + ")");
-            SelectCellOfWindowController packet = new SelectCellOfWindowController();
-            packet.setLine(indexRow);
-            packet.setColumn(indexColumn);
-            sendEventToGuiInstance(packet);
-        });
-
-    }
-
-    public void activeDiceOfDicePool(int index) {
-        dicePool.get(index).setOnMouseClicked(e -> {
-                    SelectDiceFromDraftpoolController packet = new SelectDiceFromDraftpoolController();
-                    packet.setIndex(index);
-                    packet.setPlayerId(playerId);
-                    sendEventToGuiInstance(packet);
-                }
-        );
-    }
-
 }
-/*
-    private void displayBoard(Stage gameStage) {
-      /*  this.waitStage = waitStage;
-
-
-
-        Background blackBackground = new Background(new BackgroundFill(Color.web("#fff"), CornerRadii.EMPTY, Insets.EMPTY));
-        Background whiteBackground = new Background(new BackgroundFill(Color.web("#fff"), CornerRadii.EMPTY, Insets.EMPTY));
-        //setup Window for the game
-
-        //element for the scene for pick the window
-        borderPaneRoot.setBackground(blackBackground);
-
-        //setUpOf all layout in the gameBoard
-        GridPane gridRoundTrack = new GridPane();
-        GridPane gridCard = new GridPane();
-
-
-        //************************ROUNDTRACK*********************************************
-        //************************ROUNDTRACK*********************************************
-        //************************ROUNDTRACK*********************************************
-        //************************ROUNDTRACK*********************************************
-        //setup gridRoundTrack
-        gridRoundTrack.setPadding(new Insets(10, 10, 10, 10));
-        gridRoundTrack.setBackground(blackBackground);
-        gridRoundTrack.setVgap(10);
-        gridRoundTrack.setHgap(10);
-        gridRoundTrack.setAlignment(Pos.CENTER);
-        for (int i = 0; i < 10; i++) {
-
-            ButtonDiceRound[i] = new Button();
-            gridRoundTrack.add(ButtonDiceRound[i], i, 1);
-            ButtonDiceRound[i].setMinSize(60,50);
-            ButtonDiceRound[i].setMaxSize(60,50);
-            Random rand= new Random();
-            for(int n=0; n<9;n++){
-                int  value = rand.nextInt(6) + 1;
-                int  color = rand.nextInt(5);
-                try{
-                    Image newImage = new Image(new FileInputStream("src/resources/dadijpg/" + DiceColor.getDiceColor(color)+"Dice"+value+".jpg"));
-                    ImageView dice= new ImageView(newImage);
-                    dice.setFitHeight(50);
-                    dice.setFitWidth(50);
-                    dice.setPreserveRatio(true);
-                }catch (Exception exception){
-
-                }
-            }
-
-        }
-
-
-        //************************CARD*********************************************
-        //************************CARD*********************************************
-        //************************CARD*********************************************
-        //************************CARD*********************************************
-
-
-        toolBox.setSpacing(10);
-        objectivePublicBox.setSpacing(10);
-        objectivePrivateBox.setSpacing(10);
-        //SetUp VBox for the Card
-        gridCard.setPadding(new Insets(10, 10, 10, 10));
-        gridCard.setBackground(blackBackground);
-        gridCard.setVgap(10);
-        gridCard.setHgap(10);
-        gridCard.setAlignment(Pos.TOP_LEFT);
-        //Setting the margin to the nodes
-        gridCard.add(toolBox, 0, 0);
-        gridCard.add(objectivePublicBox, 0, 1);
-        gridCard.add(objectivePrivateBox, 0, 2);
-        //setUp the button for the private Object
-        Image privateCard = null;
-        try {
-            privateCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_private_retro.jpg"));
-        } catch (FileNotFoundException e) {
-            System.err.println(e.getMessage());
-        }
-        imageViewPrivateCard = new ImageView(privateCard);
-        setGraficOfCard(imageViewPrivateCard);
-        objectivePrivateBox.getChildren().add(imageViewPrivateCard);
-        //setUp the button for the Public Object
-        for (int i = 0; i < 3; i++) {
-            try {
-                Image publicCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_pubbliche_retro.jpg"));
-                Image publicToolCard = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_retro.jpg"));
-                imageViewPublicCard[i] = new ImageView(publicCard);
-                objectivePublicBox.getChildren().add(imageViewPublicCard[i]);
-                setGraficOfCard(imageViewPublicCard[i]);
-                imageViewToolCard[i] = new ImageView(publicToolCard);
-                toolBox.getChildren().add(imageViewToolCard[i]);
-                setGraficOfCard(imageViewToolCard[i]);
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-            }
-
-        }
-        //SetUp Action for the card
-        imageViewPrivateCard.
-        imageViewPublicCard[0].setOnMouseClicked(e ->
-
-        {
-            cardShow.displayCard(imageViewPublicCard[0], false);
-        });
-        imageViewPublicCard[1].setOnMouseClicked(e ->
-
-        {
-            cardShow.displayCard(imageViewPublicCard[1], false);
-        });
-        imageViewPublicCard[2].setOnMouseClicked(e ->
-
-        {
-            cardShow.displayCard(imageViewPublicCard[2], false);
-        });
-        imageViewToolCard[0].setOnMouseClicked(e ->
-
-        {
-            cardShow.displayCard(imageViewToolCard[0], availableToolCard);
-        });
-        imageViewToolCard[1].setOnMouseClicked(e ->
-
-        {
-            cardShow.displayCard(imageViewToolCard[1], availableToolCard);
-            UpdatePublicObject(9, 2);
-            UpdateToolCard(7, 2);
-        });
-        imageViewToolCard[2].setOnMouseClicked(e ->
-
-        {
-            cardShow.displayCard(imageViewToolCard[2], availableToolCard);
-            UpdatePublicObject(1, 2);
-            UpdateToolCard(101, 2);
-        });
-        //***************************WINDOW PATTERN************************************************
-        //***************************WINDOW PATTERN************************************************
-        //***************************WINDOW PATTERN************************************************
-        //***************************WINDOW PATTERN************************************************
-        //***************************WINDOW PATTERN************************************************
-
-
-        //Setup window Player
-
-        for (int i = 0; i < 4; i++) {
-
-
-            idWindow[i] = new Label("Id null");
-            nameWindow[i] = new Label("Nameless");
-            levelWindow[i] = new Label("Level 0");
-            idWindow[i].setAlignment(Pos.TOP_LEFT);
-            nameWindow[i].setAlignment(Pos.TOP_CENTER);
-            levelWindow[i].setAlignment(Pos.TOP_RIGHT);
-            cellWindow[i] = new GridPane();
-            cellWindow[i].setPadding(new Insets(10, 10, 10, 10));
-            cellWindow[i].setVgap(5);
-            cellWindow[i].setHgap(5);
-            layoutWindow[i] = new VBox();
-            HBox infoPlayer = new HBox();
-            infoPlayer.setMargin(idWindow[i], new Insets(0, 20, 0, 20));
-            infoPlayer.setMargin(nameWindow[i], new Insets(0, 20, 0, 20));
-            infoPlayer.setMargin(levelWindow[i], new Insets(0, 20, 0, 20));
-            infoPlayer.getChildren().addAll(idWindow[i], nameWindow[i], levelWindow[i]);
-            infoPlayer.setAlignment(Pos.CENTER);
-            layoutWindow[i].getChildren().addAll(infoPlayer, cellWindow[i]);
-            layoutWindow[i].setBackground(whiteBackground);
-            gridAllPlayer.add(layoutWindow[i], (i / 2), (i % 2));
-            System.out.println("ciao row " + (i / 2) + " column " + (i % 2));
-            try {
-                for (int row = 0; row < 4; row++) {
-                    for (int column = 0; column < 5; column++) {
-                        Image cell = new Image(new FileInputStream("src/resources/dadijpg/Dice0.jpg"));
-                        imageViewCell[i][row][column] =new ImageView(cell);
-                        cellWindow[i].add(imageViewCell[i][row][column], column, row);
-                        imageViewCell[i][row][column].setFitHeight(50);
-                        imageViewCell[i][row][column].setFitWidth(50);
-                        imageViewCell[i][row][column].setPreserveRatio(true);
-
-                    }
-                }
-            } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-            }
-
-        }
-        activeWindow(0);
-
-        //*************************************SetUPPage***********************************************
-        //*************************************SetUPPage***********************************************
-        //*************************************SetUPPage***********************************************
-        //*************************************SetUPPage***********************************************
-        borderPaneRoot.setTop(gridRoundTrack);
-        borderPaneRoot.setCenter(gridAllPlayer);
-        borderPaneRoot.setRight(gridCard);
-        Platform.runLater(()->waitStage.show());*/
-
-/*
-    private void closeProgram() {
-        Boolean result = new ConfirmBox().displayMessage("Sei sicuro di voler uscire dal gioco?");
-        if (result) waitStage.close();
-    }
-
-
-
-    public void UpdatePrivateObject(int idPrivate) {
-        try {
-            Image newImage;
-            if (idPrivate < 0 || idPrivate > 4) {
-                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_retro.jpg"));
-                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GuiGame");
-                new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
-            } else
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_private_" + idPrivate + ".jpg"));
-            imageViewPrivateCard.setImage(newImage);
-        } catch (Exception exception) {
-            System.err.println(exception.getMessage());
-            new AlertMessage().displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
-        }
-    }
-
-
-    public void UpdatePublicObject(int idPublic, int indexPublic) {
-        if (indexPublic < 0 || indexPublic > 2) {
-            System.err.println("Le regole del gioco sono cambiate.... quando e perchè?");
-            return;
-        }
-        try {
-            Image newImage;
-            if (idPublic < 0 || idPublic > 9) {
-                newImage = new Image(new FileInputStream("src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_retro.jpg"));
-                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GuiGame");
-                new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
-            } else {
-
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_pubbliche_" + idPublic + ".jpg"));
-
-                imageViewPublicCard[indexPublic].setImage(newImage);
-            }
-        } catch (Exception exception) {
-            System.err.println(exception.getMessage());
-            new AlertMessage().displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
-        }
-    }
-
-    public void UpdateToolCard(int idToolCard, int indexToolCard) {
-        if (indexToolCard < 0 || indexToolCard > 2) {
-            System.err.println("Le regole del gioco sono cambiate.... quando e perchè?");
-            return;
-        }
-        try {
-            Image newImage;
-            if (idToolCard < 0 || idToolCard > 9) {
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_retro.jpg"));
-                System.err.println("Carta pubblica non prevista dal gioco base, necessario un update della GuiGame per leggere la carta");
-                new AlertMessage().displayMessage("Aggiornare la cartella resources o passare alla versione CLI");
-            } else
-                newImage = new Image(new FileInputStream("src/resources/carte_jpg/carte_strumento_" + idToolCard + ".jpg"));
-            imageViewToolCard[indexToolCard].setImage(newImage);
-        } catch (Exception exception) {
-            System.err.println(exception.getMessage());
-            new AlertMessage().displayMessage("Sono state eliminate/corrotte delle carte. Controllare la cartella resources, reinstallare il gioco o in alternativa utilizzare la CLI");
-        }
-    }
-
-    public void UpdateCellWindow(int indexWindow, int row, int column, int value, DiceColor color) {
-
-    }
-
-    public void activeWindow(int indexWindow) {
-        for (int row = 0; row < imageViewCell[indexWindow].length; row++) {
-            for (int column = 0; column < imageViewCell[indexWindow][row].length; column++) {
-                activeCell(indexWindow, row, column);
-            }
-        }
-
-    }
-
-    public void activeCell(int indexWindow, int indexRow, int indexColumn)  {
-        imageViewCell[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {
-            System.out.println("è stata cliccata la window: " + indexWindow + " row: " + indexRow + " column " + indexColumn);
-            Random rand = new Random();
-            int  value = rand.nextInt(6) + 1;
-            int  color = rand.nextInt(5);
-            try{
-                Image newImage = new Image(new FileInputStream("src/resources/dadijpg/" + DiceColor.getDiceColor(color)+"Dice"+value+".jpg"));
-                imageViewCell[indexWindow][indexRow][indexColumn].setImage(newImage);
-            }catch (Exception exception){
-
-            }
-            System.out.println("src/resources/dadi/"+DiceColor.getDiceColor(color)+"Dice"+value+".jpg");
-        });
-
-    }*/

@@ -14,21 +14,33 @@ import javafx.stage.StageStyle;
 
 import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
 
+
+/**
+ * Class for handle the setup of the connection
+ *
+ * @author Luca Genoni
+ */
 public class SetUpConnection {
-    private boolean connected ;
     private Stage stage;
 
+    /**
+     * Constructor
+     *
+     * @param owner of the stage for this class
+     */
     public SetUpConnection(Stage owner) {
         stage = new Stage(StageStyle.UTILITY);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(owner);
         stage.setResizable(false);
-        connected=false;
     }
 
-    public boolean display(){
-        GridPane form =new GridPane();
-        Scene scene =new Scene(form,250,150);
+    /**
+     * Method for display the stage
+     */
+    public void display() {
+        GridPane form = new GridPane();
+        Scene scene = new Scene(form, 250, 150);
         stage.setScene(scene);
 
         //gridPane design
@@ -39,49 +51,43 @@ public class SetUpConnection {
 
         //GridPane children
         TextField ipInput = new TextField();
-        Label ip =new Label("Server IP :");
+        Label ip = new Label("Server IP :");
         ip.setLabelFor(ipInput);
-        form.addRow(0,ip,ipInput);
+        form.addRow(0, ip, ipInput);
         //port
         TextField portInput = new TextField();
-        Label port =new Label("Server Port :");
+        Label port = new Label("Server Port :");
         ip.setLabelFor(portInput);
-        form.addRow(1,port,portInput);
+        form.addRow(1, port, portInput);
         //escape
         Button connect = new Button("Connect");
-        Button back = new Button ("Back");
-        form.addRow(2,back,connect);
+        Button back = new Button("Back");
+        form.addRow(2, back, connect);
         //components action
-        connect.setOnAction(e-> {
+        connect.setOnAction(e -> {
             try {
-                if(isInt(portInput)){
-                    connected = getGuiInstance().getClient().startRMIClient(ipInput.getText(),Integer.parseInt(portInput.getText()));
-                    if (connected) {
+                if (isInt(portInput)) {
+                    if (getGuiInstance().getClient().startRMIClient(ipInput.getText(), Integer.parseInt(portInput.getText()))) {
                         new AlertMessage(stage).displayMessage("Dati del server corretti");
                         stage.close();
-                    }
-                    else new AlertMessage(stage).displayMessage("Non è stato trovato il server");
+                    } else new AlertMessage(stage).displayMessage("Non è stato trovato il server.");
+                } else {
+                    new AlertMessage(stage).displayMessage("Per favore, inserisci un numero per la porta...");
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
-                new AlertMessage(stage).displayMessage("Errore inaspettato durante il setup della connession");
+                new AlertMessage(stage).displayMessage("Errore inaspettato durante il setup della connessione\n" +
+                        "Oppure sono state finalmente implementate le eccezioni per il setup");
             }
         });
-        back.setOnAction(e->{
-            connected = false;
-            stage.close();
-        } );
-
+        back.setOnAction(e -> stage.close());
         stage.showAndWait();
-        return connected;
     }
 
-    private boolean isInt(TextField input){
-        try{
-            int port = Integer.parseInt(input.getText());
+    private boolean isInt(TextField input) {
+        try {
+            Integer.parseInt(input.getText());
             return true;
-        }catch(NumberFormatException e){
-            System.out.println("errore, c'è un testo");
+        } catch (NumberFormatException e) {
             input.setStyle("-fx-text-inner-color: red;");
             return false;
         }

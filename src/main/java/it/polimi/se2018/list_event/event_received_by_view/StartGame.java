@@ -1,15 +1,14 @@
 package it.polimi.se2018.list_event.event_received_by_view;
 
 /**
- * Extends EventController, describe the event "login" produced by the view
+ * Extends EventView, tells the view the name of the players and their number.
  *
  * @author Luca Genoni
+ * @author Matteo Formentin
  */
 public class StartGame extends EventView {
-    //from EventController private String nicknamPlayer;
-    //from EventController private Model model;
 
-    String[] playersName;
+    private String[] playersName;
 
     public String[] getPlayersName() {
         return playersName;

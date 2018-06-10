@@ -1,14 +1,13 @@
 package it.polimi.se2018.list_event.event_received_by_controller;
 
 /**
- * Extends EventController, describe the event "select dice from the draft pool" produced by the view
+ * Extends EventController, the controller receives the selected die's index from the draft pool
  *
  * @author Luca Genoni
+ * @author Matteo Formentin
  */
-public class SelectDiceFromDraftpoolController extends EventController {
-    //from EventController private String nicknamPlayer;
-    //from EventController private Model model;
-    int index;
+public class ControllerSelectDiceFromDraftPool extends EventController {
+    private int index;
 
     public int getIndex() {
         return index;

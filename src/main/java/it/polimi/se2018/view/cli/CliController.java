@@ -110,7 +110,7 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     @Override
-    public void visit(InitialWindowPatternCard event) {
+    public void visit(SelectInitialWindowPatternCard event) {
         cliMessage.showYourTurnScreen();
         cliMessage.showMessage("Quando sei pronto per scegliere la carta");
         cliParser.readSplash();
@@ -122,9 +122,9 @@ public class CliController implements UIInterface, ViewVisitor {
         cliMessage.showInitialWindowPatternCardSelection();
         int selection = cliParser.parseInt(4);
         cliMessage.eraseScreen();
-        EventController packet = new SelectInitialWindowPatternCardController();
+        EventController packet = new ControllerSelectInitialWindowPatternCard();
         packet.setPlayerId(playerId);
-        ((SelectInitialWindowPatternCardController) packet).setSelectedIndex(selection);
+        ((ControllerSelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
         client.sendEventToController(packet);
     }
 
@@ -172,22 +172,22 @@ public class CliController implements UIInterface, ViewVisitor {
      * @param event
      */
     @Override
-    public void visit(SelectDiceFromDraftpool event) {
+    public void visit(SelectDiceFromDraftPool event) {
         cliMessage.showDicePool(dicePool);
         int diceIndex = cliParser.parseInt();
-        SelectDiceFromDraftpoolController packet = new SelectDiceFromDraftpoolController();
+        ControllerSelectDiceFromDraftPool packet = new ControllerSelectDiceFromDraftPool();
         packet.setPlayerId(playerId);
         packet.setIndex(diceIndex);
         client.sendEventToController(packet);
     }
 
     @Override
-    public void visit(SelectCellOfWindowView event) {// meglio inserire da 1 a 5 più comprensibile
+    public void visit(SelectCellOfWindow event) {// meglio inserire da 1 a 5 più comprensibile
         cliMessage.showInsertDiceRow();
         int row = cliParser.parseInt();
         cliMessage.showInsertDiceColumn();
         int column = cliParser.parseInt();
-        SelectCellOfWindowController packet = new SelectCellOfWindowController();
+        ControllerSelectCellOfWindow packet = new ControllerSelectCellOfWindow();
         packet.setPlayerId(playerId);
         packet.setLine(row - 1);
         packet.setColumn(column - 1);
@@ -195,26 +195,37 @@ public class CliController implements UIInterface, ViewVisitor {
     }
 
     @Override
+    public void visit(SelectDiceFromRoundTrack event) {
+
+    }
+
+    @Override
     public void visit(SelectToolCard event) {
+        cliMessage.eraseScreen();
+        cliMessage.showToolCardMessage();
+        for (ToolCard card : toolCard) {
+            cliMessage.showToolCard(card);
+            cliMessage.println();
+        }
         cliMessage.showToolCardChoise(toolCard);
         int indexTooLCard = cliParser.parsePositiveInt(toolCard.length) - 1;
-        SelectToolCardController packet = new SelectToolCardController();
+        ControllerSelectToolCard packet = new ControllerSelectToolCard();
         packet.setPlayerId(playerId);
         packet.setIndexToolCard(indexTooLCard);
         client.sendEventToController(packet);
     }
 
     @Override
-    public void visit(ShowErrorMessage event) {
-        cliMessage.showMessage(event.getErrorMessage());
+    public void visit(MessageError event) {
+        cliMessage.showMessage(event.getMessage());
         cliParser.readSplash();
-        if(event.isShowTurn()) turn();
+        if(event.isShowMenuTurn()) turn();
     }
 
     @Override
-    public void visit(OkMessage event) {
+    public void visit(MessageOk event) {
         cliMessage.showGreenMessage(event.getMessageConfirm());
-        if(event.isShowTurn()) turn();
+        if(event.isShowTurnMenu()) turn();
     }
 
     //*******************************************Visit for model event*******************************************************************************
@@ -333,32 +344,25 @@ public class CliController implements UIInterface, ViewVisitor {
         cliMessage.showWindowPatternCard(getMyWindowPatternCard());
         cliMessage.showHandPlayer(getMyHand());
         cliMessage.showMainMenu();
-        int option = cliParser.parseInt(7);
+        int option = cliParser.parsePositiveInt(7);
 
         switch (option) {
-            //Pick a dice from dicePool
-            case 0:
-                visit(new SelectDiceFromDraftpool());
-                break;
             //insert a dice in the window
             case 1:
-                visit(new SelectCellOfWindowView());
+                EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
+                packetInsertDice.setPlayerId(playerId);
+                client.sendEventToController(packetInsertDice);
                 break;
             //Use tool card
             case 2:
-                cliMessage.eraseScreen();
-                cliMessage.showToolCardMessage();
-                for (ToolCard card : toolCard) {
-                    cliMessage.showToolCard(card);
-                    cliMessage.println();
-                }
-                visit(new SelectToolCard());
-                turn();
+                EventController packetUseTool = new ControllerMoveDrawAndPlaceDie();
+                packetUseTool.setPlayerId(playerId);
+                client.sendEventToController(packetUseTool);
                 break;
 
             //End turn
             case 3:
-                EventController packetEnd = new EndTurnController();
+                EventController packetEnd = new ControllerEndTurn();
                 packetEnd.setPlayerId(playerId);
                 client.sendEventToController(packetEnd);
                 break;
@@ -381,6 +385,7 @@ public class CliController implements UIInterface, ViewVisitor {
                     cliMessage.println();
                 }
                 cliParser.readSplash();
+                turn();
                 break;
 
             //Show opponents window pattern card

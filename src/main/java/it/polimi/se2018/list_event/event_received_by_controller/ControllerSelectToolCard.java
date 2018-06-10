@@ -1,14 +1,13 @@
 package it.polimi.se2018.list_event.event_received_by_controller;
 
 /**
- * Extends EventController, describe the event "select dice from hand" produced by the view
+ * Extends EventController, the controller receives the selected tool card's index that the player want to use.
  *
  * @author Luca Genoni
+ * @author Matteo Formentin
  */
-public class SelectToolCardController extends EventController {
-    //from EventController private String nicknamPlayer;
-    //from EventController private Model model;
-    int indexToolCard;
+public class ControllerSelectToolCard extends EventController {
+    private int indexToolCard;
 
     public int getIndexToolCard() {
         return indexToolCard;

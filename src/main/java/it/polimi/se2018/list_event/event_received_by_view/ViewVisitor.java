@@ -1,94 +1,59 @@
 package it.polimi.se2018.list_event.event_received_by_view;
 
 
+/**
+ * Visitor Pattern for the event received by the view.
+ * all the method are public by default, it's an interface
+ *
+ * @author Luca Genoni
+ * @author Matteo Formentin
+ */
 public interface ViewVisitor {
 
-    /*
+    //**********************************************from Controller**************************************
+    //for the setup
+    void visit(StartGame event);
+    void visit(JoinGame event);
 
-    {
-        if (event instanceof StartGame) {
-            //TODO controllre se id pacchetto presente nel server
-            init();
-        }
+    //for the initial prt of the game
+    void visit(ShowAllCards event);
+    void visit(SelectInitialWindowPatternCard event);
+    void visit(InitialEnded event);
 
+    //respond messages
+    void visit(MessageError event);
+    void visit(MessageOk event);
 
-        if (event instanceof InsertDiceController) {
-            // gameBoard.
-        }
+    //for the turn
+    void visit(StartPlayerTurn event);
+    void visit(SelectCellOfWindow event);
+    void visit(SelectDiceFromRoundTrack event);
+    void visit(SelectDiceFromDraftPool event);
+    void visit(SelectToolCard event);
+    void visit(MoveTimeoutExpired event);
+    void visit(WaitYourTurn event);
 
-        if (event instanceof EndTurnController) {
-            System.out.println("Arrivato pacchetto");
-            // gameBoard.nextPlayer(event.getPlayerId());
-            //EventController packet = new EndTurnController();
-        }
-
-        if (event instanceof UseToolCardController) {
-
-        }
-
-        if (event instanceof SelectWindow) {
-            System.out.println("Arrivato SelectWindow da " + event.getPlayerId());
-        }
-
-        if (event instanceof Logout) {
-            System.out.println("Arrivato Logout da " + event.getPlayerId());
-        }
-
-        if (event instanceof SelectInitialWindowPatternCardController) {
-            gameBoard.setWindowOfPlayer(event.getPlayerId(), ((SelectInitialWindowPatternCardController) event).getSelectedIndex());
-        }
-
-    }*/
-
-    public void visit(EndGame event);
-
-    public void visit(MoveTimeoutExpired event);
-
-    public void visit(StartGame event);
-
-    public void visit(InitialWindowPatternCard event);
-
-    public void visit(InitialEnded event);
-
-    public void visit(JoinGame event);
-
-    public void visit(StartPlayerTurn event);
-
-    public void visit(WaitYourTurn event);
-
-    public void visit(ShowAllCards event);
-
-    public void visit(SelectCellOfWindowView event);
-
-    public void visit(SelectDiceFromDraftpool event);
-
-    public void visit(SelectToolCard event);
-
-    public void visit(ShowErrorMessage event);
-    public void visit(OkMessage event);
+    //for the end game
+    void visit(EndGame event);
 
     //**********************************************from Model**************************************
 
-    public void visit(UpdateAllToolCard event);
-    public void visit(UpdateSingleToolCardCost event);
-    public void visit(UpdateDicePool event);
+    //setup update
+    void visit(UpdateInitDimRound event);
+    void visit(UpdateAllToolCard event);
+    void visit(UpdateAllPublicObject event);
+    void visit(UpdateSinglePrivateObject event);
+    void visit(UpdateInitialWindowPatternCard event);
+    void visit(UpdateSingleWindow event);
 
+    //during the game
+    void visit(UpdateSinglePlayerHand event);
+    void visit(UpdateSingleCell event);
+    void visit(UpdateDicePool event);
 
-    public void visit(UpdateSinglePlayerHand event);
-    public void visit(UpdateAllPublicObject event);
-    public void visit(UpdateSingleCell event);
-    public void visit(UpdateSinglePlayerTokenAndPoints event);
-    public void visit(UpdateSinglePrivateObject event);
+    void visit(UpdateSinglePlayerTokenAndPoints event);
+    void visit(UpdateSingleToolCardCost event);
 
-    public void visit(UpdateSingleTurnRoundTrack event);
-    public void visit(UpdateSingleWindow event);
-    public void visit(UpdateInitialWindowPatternCard event);
-    public void visit(UpdateInitDimRound event);
-
-   /*
-    public void visit(UpdateInitDimRound event);
-    public void visit(UpdateInitDimRound event);
-    public void visit(UpdateInitDimRound event);
-    public void visit(UpdateInitDimRound event);*/
+     void visit(UpdateSingleTurnRoundTrack event);
 
 }

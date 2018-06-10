@@ -1,6 +1,5 @@
 package it.polimi.se2018.view.gui.stage;
 
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -23,12 +22,22 @@ import javafx.stage.StageStyle;
 public class AlertMessage {
     private Stage stageMessage;
 
+    /**
+     * Constructor
+     *
+     * @param owner of the stage for this class
+     */
     public AlertMessage(Stage owner) {
         stageMessage = new Stage(StageStyle.UTILITY);
         stageMessage.initModality(Modality.APPLICATION_MODAL);
         stageMessage.initOwner(owner);
     }
 
+    /**
+     * Method for display the alert Box
+     *
+     * @param message the message to show
+     */
     public void displayMessage(String message) {
         /*StageStyle
                     UTILITY only _ x
@@ -39,20 +48,15 @@ public class AlertMessage {
                     APPLICATION_MODAL can't turn to previus stage and can't move
                     WINDOW_MODAL
          */
-
         Background focusBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
-
-
         Label errorMessage = new Label();
         errorMessage.setText(message);
-
         Button closeButton = new Button("Ok");
         closeButton.setOnAction(e -> stageMessage.close());
         VBox layoutMessage = new VBox(20);
         layoutMessage.getChildren().addAll(errorMessage, closeButton);
         layoutMessage.setAlignment(Pos.CENTER);
         layoutMessage.setBackground(focusBackground);
-        // group.getChildren().add(layoutMessage);
         Scene boxMessage = new Scene(layoutMessage, 400, 200, Color.BLACK);
         boxMessage.setFill(Color.BROWN);
         stageMessage.setScene(boxMessage);

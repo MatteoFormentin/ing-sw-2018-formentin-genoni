@@ -1,10 +1,12 @@
 package it.polimi.se2018.list_event.event_received_by_view;
 
-import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 
 /**
- * used only for the init and it's personalized
+ * Extends EventView, updates all the public cards
+ *
+ * @author Luca Genoni
+ * @author Matteo Formentin
  */
 public class UpdateAllPublicObject extends EventView{
 
@@ -20,9 +22,6 @@ public class UpdateAllPublicObject extends EventView{
 
     public ObjectivePublicCard getPublicCards(int index) {
         return publicCards[index];
-    }
-    public void setPublicCards(ObjectivePublicCard[] publicCards) {
-        this.publicCards = publicCards;
     }
 
     public void accept(ViewVisitor visitor) {

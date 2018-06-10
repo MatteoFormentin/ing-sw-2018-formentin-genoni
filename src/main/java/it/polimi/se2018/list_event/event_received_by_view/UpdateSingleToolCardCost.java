@@ -1,9 +1,10 @@
 package it.polimi.se2018.list_event.event_received_by_view;
 
-import it.polimi.se2018.model.card.tool_card.ToolCard;
-
 /**
- * forse inutile meglio fare l'update solo del costo della toolcard
+ * Extends EventView, updates the cost of the tool card
+ *
+ * @author Luca Genoni
+ * @author Matteo Formentin
  */
 public class UpdateSingleToolCardCost extends EventView {
 
@@ -19,16 +20,8 @@ public class UpdateSingleToolCardCost extends EventView {
         return indexToolCard;
     }
 
-    public void setIndexToolCard(int indexToolCard) {
-        this.indexToolCard = indexToolCard;
-    }
-
     public int getCostToolCard() {
         return costToolCard;
-    }
-
-    public void setCostToolCard(int costToolCard) {
-        this.costToolCard = costToolCard;
     }
 
     public void accept(ViewVisitor visitor) {
