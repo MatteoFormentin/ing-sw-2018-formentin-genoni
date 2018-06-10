@@ -20,6 +20,6 @@ public abstract class EventView implements Serializable {
         this.playerId = playerId;
     }
 
-    public abstract void accept(ViewVisitor visitor);
+    public abstract void acceptGeneric(ViewVisitor visitor);
 
 }

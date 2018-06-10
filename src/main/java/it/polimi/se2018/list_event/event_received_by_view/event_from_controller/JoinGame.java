@@ -9,7 +9,7 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
  *
  * @author DavideMammarella
  */
-public class JoinGame extends EventView {
+public class JoinGame extends EventViewFromController {
     //from EventController private String nicknamPlayer;
     //from EventController private Model model;
 
@@ -23,7 +23,8 @@ public class JoinGame extends EventView {
         this.playerNickname = playerNickname;
     }
 
-    public void accept(ViewVisitor visitor) {
+    @Override
+    public void acceptControllerEvent(ViewControllerVisitor visitor) {
         visitor.visit(this);
     }
 

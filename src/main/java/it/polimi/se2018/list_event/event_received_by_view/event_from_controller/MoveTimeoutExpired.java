@@ -11,7 +11,7 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 public class MoveTimeoutExpired extends EventViewFromController {
 
     @Override
-    public void accept(ViewVisitor visitor) {
+    public void acceptControllerEvent(ViewControllerVisitor visitor) {
         visitor.visit(this);
     }
 

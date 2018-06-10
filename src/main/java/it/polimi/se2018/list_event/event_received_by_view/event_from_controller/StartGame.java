@@ -23,7 +23,8 @@ public class StartGame extends EventViewFromController {
         this.playersName = playersName;
     }
 
-    public void accept(ViewVisitor visitor) {
+    @Override
+    public void acceptControllerEvent(ViewControllerVisitor visitor) {
         visitor.visit(this);
     }
 

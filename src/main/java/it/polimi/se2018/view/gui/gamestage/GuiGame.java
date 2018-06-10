@@ -33,7 +33,7 @@ import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
  *
  * @author Luca Genoni
  */
-public class GuiGame implements UIInterface, ViewVisitor {
+public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, ViewControllerVisitor {
     private static GuiGame instance;
     private WaitGame waitGame;
     private Stage gameStage, utilStage;
@@ -243,9 +243,20 @@ public class GuiGame implements UIInterface, ViewVisitor {
 
     @Override
     public void showMessage(EventView eventView) {
-        Platform.runLater(() -> eventView.accept(this));
+        Platform.runLater(() -> eventView.acceptGeneric(this));
     }
 
+    @Override
+    public void visit(EventViewFromController event) {
+        event.acceptControllerEvent(this);
+    }
+
+    @Override
+    public void visit(EventViewFromModel event) {
+        event.acceptModelEvent(this);
+    }
+
+    //***************************************************From Controller
     @Override
     public void visit(EndGame event) {
         System.out.println("viene accettato :" + event.toString());
@@ -398,7 +409,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
         });
     }
 
-    private void disableWindow(int indexWindow){
+    private void disableWindow(int indexWindow) {
         for (int row = 0; row < imageViewsCellPlayer[indexWindow].length; row++) {
             for (int column = 0; column < imageViewsCellPlayer[indexWindow][row].length; column++) {
                 imageViewsCellPlayer[indexWindow][row][column].setOnMouseClicked(null);
@@ -541,7 +552,8 @@ public class GuiGame implements UIInterface, ViewVisitor {
             sendEventAndSetTheId(packet);
         });
     }
-    private void disableWindowChoise(){
+
+    private void disableWindowChoise() {
         IntStream.range(0, boxWindowPoolChoice.length).forEach(i -> boxWindowPoolChoice[i].setOnMouseClicked(null));
     }
 
@@ -708,6 +720,7 @@ public class GuiGame implements UIInterface, ViewVisitor {
             }
         }
     }
+
 
     //utils class for a better combo box
     private class ImageListDice extends ListCell<Image> {

@@ -21,7 +21,7 @@ public class WaitYourTurn extends EventViewFromController {
     }
 
     @Override
-    public void accept(ViewVisitor visitor) {
+    public void acceptControllerEvent(ViewControllerVisitor visitor) {
         visitor.visit(this);
     }
 }

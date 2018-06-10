@@ -17,7 +17,7 @@ import it.polimi.se2018.view.UIInterface;
  *
  * @author Matteo Formentin
  */
-public class CliController implements UIInterface, ViewVisitor {
+public class CliController implements UIInterface, ViewVisitor,ViewControllerVisitor,ViewModelVisitor {
 
     private CliMessage cliMessage;
     private CliParser cliParser;
@@ -57,6 +57,28 @@ public class CliController implements UIInterface, ViewVisitor {
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
 
+    public void showMessage(EventView eventView) {
+       // cliParser.setInputActive(true);
+        Runnable exec = () -> {
+            Thread.currentThread().setName("Visitor Handler");
+            // System.out.println("Visitor Handler");
+            eventView.acceptGeneric(this);
+        };
+        currentTask = new Thread(exec);
+        currentTask.start();
+    }
+
+    @Override
+    public void visit(EventViewFromController event) {
+        event.acceptControllerEvent(this);
+    }
+
+    @Override
+    public void visit(EventViewFromModel event) {
+        event.acceptModelEvent(this);
+    }
+
+    /*
     public void showMessage(EventView eventView) {
         Runnable exec = () -> {
                 Thread.currentThread().setName("Visitor Handler: "+ eventView.getClass());

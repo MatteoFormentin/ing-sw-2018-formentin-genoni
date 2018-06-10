@@ -10,7 +10,10 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public abstract class EventViewFromModel extends EventView {
+public class EventViewFromModel extends EventView {
+    @Override
+    public void acceptGeneric(ViewVisitor viewVisitor) {viewVisitor.visit(this);}
 
-    public abstract void accept(ViewVisitor visitor);
+    //ha bisogno dell'overriding
+    public void acceptModelEvent(ViewModelVisitor visitor){}
 }

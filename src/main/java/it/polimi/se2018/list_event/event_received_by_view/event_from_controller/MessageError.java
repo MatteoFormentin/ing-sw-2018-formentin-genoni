@@ -51,7 +51,8 @@ public class MessageError extends EventViewFromController {
         return initGame;
     }
 
-    public void accept(ViewVisitor visitor) {
+    @Override
+    public void acceptControllerEvent(ViewControllerVisitor visitor) {
         visitor.visit(this);
     }
 
