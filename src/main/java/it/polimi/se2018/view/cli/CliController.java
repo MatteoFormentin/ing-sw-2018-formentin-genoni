@@ -57,16 +57,20 @@ public class CliController implements UIInterface, ViewVisitor {
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
 
-    public void showMessage(EventView EventView) {
-        cliParser.setInputActive(true);
+    public void showMessage(EventView eventView) {
         Runnable exec = () -> {
-            Thread.currentThread().setName("Visitor Handler");
-            // System.out.println("Visitor Handler");
-            EventView.accept(this);
+                Thread.currentThread().setName("Visitor Handler: "+ eventView.getClass());
+                eventView.accept(this);
+
         };
         currentTask = new Thread(exec);
         currentTask.start();
     }
+
+    /*public void showMessage(MoveTimeoutExpired eventView) {
+        currentTask.stop();
+        cliMessage.showMoveTimeoutExpired();
+    }*/
 
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
@@ -105,9 +109,6 @@ public class CliController implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(MoveTimeoutExpired event) {
-        System.out.println("!!!!!!!TEMPO SCADUTO!!!!!!!");
-        cliParser.setInputActive(false);
-
         cliMessage.showMoveTimeoutExpired();
     }
 
@@ -137,7 +138,6 @@ public class CliController implements UIInterface, ViewVisitor {
 
     @Override
     public void visit(WaitYourTurn event) {
-        cliParser.setInputActive(false);
         cliMessage.showWaitYourTurnScreen(playersName[event.getIndexCurrentPlayer()]);
     }
 
@@ -221,13 +221,13 @@ public class CliController implements UIInterface, ViewVisitor {
     public void visit(MessageError event) {
         cliMessage.showMessage(event.getMessage());
         cliParser.readSplash();
-        if(event.isShowMenuTurn()) turn();
+        if (event.isShowMenuTurn()) turn();
     }
 
     @Override
     public void visit(MessageOk event) {
         cliMessage.showGreenMessage(event.getMessageConfirm());
-        if(event.isShowTurnMenu()) turn();
+        if (event.isShowTurnMenu()) turn();
     }
 
     //*******************************************Visit for model event*******************************************************************************
@@ -264,8 +264,8 @@ public class CliController implements UIInterface, ViewVisitor {
 
     public void visit(UpdateSingleCell event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()].getCell(event.getLine(), event.getColumn()).setDice(event.getDice());
-        if(event.getIndexPlayer()!=playerId) {
-            cliMessage.showOpponentInsertDice(playersName[event.getIndexPlayer()],event.getLine(),event.getColumn());
+        if (event.getIndexPlayer() != playerId) {
+            cliMessage.showOpponentInsertDice(playersName[event.getIndexPlayer()], event.getLine(), event.getColumn());
             cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[event.getIndexPlayer()]);
         }
     }
@@ -299,8 +299,6 @@ public class CliController implements UIInterface, ViewVisitor {
             ip = cliParser.parseIp();
 
             if (ip.equals("0")) {
-
-
                 if (client.startRMIClient("localhost", 31415)) {
                     flag = true;
                     cliMessage.showConnectionSuccessful();
