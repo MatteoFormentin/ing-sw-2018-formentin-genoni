@@ -1,20 +1,18 @@
 package it.polimi.se2018.model;
 
 
-import it.polimi.se2018.exception.GameboardException.NoDiceException;
+import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
 import it.polimi.se2018.exception.*;
-import it.polimi.se2018.exception.PlayerException.NoDiceInHandException;
-import it.polimi.se2018.exception.PlayerException.NoEnoughTokenException;
-import it.polimi.se2018.exception.WindowException.RestrictionAdjacentViolatedException;
-import it.polimi.se2018.exception.WindowException.RestrictionCellOccupiedException;
-import it.polimi.se2018.exception.WindowException.RestrictionColorViolatedException;
-import it.polimi.se2018.exception.WindowException.RestrictionValueViolatedException;
+import it.polimi.se2018.exception.player_exception.NoDiceInHandException;
+import it.polimi.se2018.exception.player_exception.NoEnoughTokenException;
+import it.polimi.se2018.exception.window_exception.RestrictionAdjacentViolatedException;
+import it.polimi.se2018.exception.window_exception.RestrictionCellOccupiedException;
+import it.polimi.se2018.exception.window_exception.RestrictionColorViolatedException;
+import it.polimi.se2018.exception.window_exception.RestrictionValueViolatedException;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
-
-import java.io.Serializable;
 
 /**
  * Player state and data. his active dice in hand is in position 0, convention

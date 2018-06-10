@@ -1,18 +1,17 @@
 package it.polimi.se2018.model;
 
 
-import it.polimi.se2018.exception.GameboardException.*;
-import it.polimi.se2018.exception.PlayerException.*;
-import it.polimi.se2018.exception.WindowException.*;
+import it.polimi.se2018.exception.gameboard_exception.*;
+import it.polimi.se2018.exception.player_exception.*;
+import it.polimi.se2018.exception.window_exception.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.tool_card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
 import it.polimi.se2018.network.server.ServerController;
-
-import java.io.Serializable;
 
 
 /**
@@ -254,7 +253,6 @@ public class GameBoard{
             roundTrack[currentRound] = dicePool;
             indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
             currentTurn++;
-            System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
             if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             //se è uguale siamo nella fare tra il 1° e il 2° giro
         } else if (currentTurn == player.length) {
@@ -264,7 +262,6 @@ public class GameBoard{
             freeHandPlayer(indexPlayer);
 
             currentTurn++;
-            System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             //siamo in pieno 2°giro
         } else if (currentTurn < (2 * player.length)) {
@@ -276,7 +273,6 @@ public class GameBoard{
             indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
             if (indexCurrentPlayer < 0) indexCurrentPlayer = player.length + indexCurrentPlayer;
             currentTurn++;
-            System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             //siamo tra il 2° e il 1° giro/endgame
         } else if (currentTurn == (2 * player.length)) { //fine round
@@ -295,13 +291,11 @@ public class GameBoard{
                 for (int i = 0; i < (2 * player.length + 1); i++) {
                     Dice dice = factoryDiceForThisGame.createDice();
                     if (dice == null) {
-                        System.err.println("Non ci sono abbastanza dadi, è strano perchè dovrebbero essere 90 esatti");
                         throw new FatalGameErrorException();
                     }
                     dicePool.add(dice);
                 }
                 updateDicePool();
-                System.err.println("Turno: " + currentTurn + " Tocca al giocatore : " + indexCurrentPlayer);
                 if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             } else {//il gioco è finito
                 stopGame = true;
@@ -413,14 +407,10 @@ public class GameBoard{
         broadcast(packetCell);
     }
 
-    /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param cost
-     * @return
-     */
-    public void useToolCard(int indexPlayer, int cost) throws Exception {
-        throw new Exception("non ancora implementato");
-/*
+
+    public void useToolCard(int indexPlayer, int indexOfToolInGame) throws Exception {
+        throw new UnsupportedOperationException();
+    /*
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (cost < 0) throw new NegativeCostException();
@@ -451,7 +441,6 @@ public class GameBoard{
         factoryDiceForThisGame.removeDice(dice);
         dice = factoryDiceForThisGame.createDice();
         player[indexPlayer].addDiceToHand(dice);*/
-
     }
 
     /**

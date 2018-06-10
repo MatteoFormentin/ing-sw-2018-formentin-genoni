@@ -1,12 +1,13 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.exception.GameboardException.CurrentPlayerException;
-import it.polimi.se2018.exception.GameboardException.WindowPatternAlreadyTakenException;
-import it.polimi.se2018.exception.GameboardException.WindowSettingCompleteException;
-import it.polimi.se2018.exception.PlayerException.AlreadyPlaceANewDiceException;
-import it.polimi.se2018.exception.PlayerException.AlreadyUseToolCardException;
+import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
+import it.polimi.se2018.exception.gameboard_exception.WindowPatternAlreadyTakenException;
+import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteException;
+import it.polimi.se2018.exception.player_exception.AlreadyPlaceANewDiceException;
+import it.polimi.se2018.exception.player_exception.AlreadyUseToolCardException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.*;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
