@@ -1,6 +1,9 @@
 package it.polimi.se2018.network.server.rmi;
 
+import it.polimi.se2018.exception.NetworkException.PlayerAlreadyLoggedException;
+import it.polimi.se2018.exception.NetworkException.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
+import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
@@ -36,6 +39,7 @@ public class RMIServer extends AbstractServer implements IRMIServer {
      */
     public RMIServer(ServerController serverController) {
         super(serverController);
+        rmiPlayers=new ArrayList<>();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -60,9 +64,6 @@ public class RMIServer extends AbstractServer implements IRMIServer {
         try {
             registry.bind("IRMIServer", this);
             UnicastRemoteObject.exportObject(this, port);
-
-            //INIZIALIZZO ARRAY DEI GIOCATORI CONNESSI
-            rmiPlayers=new ArrayList<>();
 
             System.out.println("RMI Server running at " + port + " port...");
         } catch (RemoteException e) {
@@ -99,6 +100,11 @@ public class RMIServer extends AbstractServer implements IRMIServer {
         }
     }
 
+
+    public RemotePlayer searchPlayerById(int id){
+        return getServerController().searchPlayerById(id);
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
@@ -113,8 +119,12 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     public void login(String nickname, IRMIClient iRMIClient) throws RemoteException {
         RMIPlayer player = new RMIPlayer(iRMIClient);
         player.setNickname(nickname);
-        if (!getServerController().login(player)) {
-            throw new RemoteException();
+        try {
+            if (!getServerController().login(player)) {
+                throw new RemoteException();
+            }
+        } catch (PlayerAlreadyLoggedException | RoomIsFullException e) {
+            e.printStackTrace();
         }
     }
 
@@ -128,5 +138,4 @@ public class RMIServer extends AbstractServer implements IRMIServer {
         getServerController().sendEventToController(eventController);
     }
 
-    // REMOVE CLOSED CONNECTION?
 }

@@ -40,7 +40,7 @@ public class RMIPlayer extends RemotePlayer {
      * @param eventView object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView) throws RemoteException {
+    public void sendEventToView(EventView eventView) throws RemoteException{
         iRMIClient.sendEventToView(eventView);
     }
 

@@ -286,32 +286,29 @@ public class Server implements ServerController, TimerCallback {
                 }
 
                 // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname())){
-                    System.out.println("Player already logged!");
-                    System.out.println("Please, use another nickname...");
-
-
-                    //String text = "Player already logged! \n Please, use another nickname...";
-                    //showErrorMessageAndShowTurn(new LoginException(text), remotePlayer.getPlayerId());
-                    return false;
-                }
-
-                // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !remotePlayer.getPlayerRunning()){
-                    // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
-
-                    // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
-                    int id = remotePlayer.getPlayerId();
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
                     String nickname = remotePlayer.getNickname();
-                    System.out.println(nickname+" was in the Room!");
-                    System.out.println("Trying to recreate the connection for "+nickname+"...");
-                    // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
-                    replacePlayer(id,remotePlayer);
-                    // IMPOSTO LA CONNESSIONE
-                    connectPlayer(remotePlayer);
-                    System.out.println("Connection established!");
-                    return true;
-                }
+                    System.out.println(nickname + " was in the Room!");
+                    return false;
+                    //throw new PlayerAlreadyLoggedException("Player already logged! \n Please, use another nickname...");
+
+                    // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
+                    //TODO
+                }else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !searchPlayerByNickname(remotePlayer.getNickname())){
+                        // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
+
+                        // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
+                        int id = remotePlayer.getPlayerId();
+                        String nickname = remotePlayer.getNickname();
+                        System.out.println(nickname+" was in the Room!");
+                        System.out.println("Trying to recreate the connection for "+nickname+"...");
+                        // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
+                        replacePlayer(id,remotePlayer);
+                        // IMPOSTO LA CONNESSIONE
+                        connectPlayer(remotePlayer);
+                        System.out.println("Connection established!");
+                        return true;
+                    }
             }
 
             // SE LA STANZA NON è ACCESSIBILE (IN-GAME)
@@ -319,13 +316,13 @@ public class Server implements ServerController, TimerCallback {
 
                 // NON ESISTE PLAYER CON QUEL NICKNAME
                 if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
-                    System.out.println("Room is full, you can't access!");
+                    //throw new RoomIsFullException("Room is full, you can't access!");
                     return false;
                 }
 
                 // ESISTE IL PLAYER CON QUEL NICKNAME ED è CONNESSO
                 else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && remotePlayer.getPlayerRunning()) {
-                    System.out.println("Player already logged!");
+                    //throw new PlayerAlreadyLoggedException("Player already logged!");
                     return false;
                 }
 
@@ -377,12 +374,38 @@ public class Server implements ServerController, TimerCallback {
      * @param eventView object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView) {
+    public void sendEventToView(EventView eventView){
         try {
             searchPlayerById(eventView.getPlayerId()).sendEventToView(eventView);
-        } catch (RemoteException ex) {
+        }catch (RemoteException ex){
+            ex.printStackTrace();
             //TODO:Disconnessione
+            }
+    }
+
+    /**
+     * Searcher for player id in the game.
+     *
+     * @param id ID of the player associated to the client.
+     * @return player associated to the ID.
+     */
+    // RITORNA IL GIOCATORE REMOTO (FAI CON QUESTO IL CHECK PER VEDERE SE IL CLIENT C'è O MENO)
+    @Override
+    public RemotePlayer searchPlayerById(int id){
+        return players.get(id);
+    }
+
+
+    public boolean searchPlayerByNickname(String nickname){
+        for (RemotePlayer player : players) {
+            if (player.getNickname().equals(nickname)) {
+            int id = player.getPlayerId();
+            if(searchPlayerById(id)!=null){
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -402,21 +425,6 @@ public class Server implements ServerController, TimerCallback {
             }
         }
         return false;
-    }
-
-    /**
-     * Searcher for player id in the game.
-     *
-     * @param id ID of the player associated to the client.
-     * @return player associated to the ID.
-     */
-    private RemotePlayer searchPlayerById(int id) {
-        for (RemotePlayer player : players) {
-            if (player.getPlayerId() == id) {
-                return player;
-            }
-        }
-        return null; //Se arrivo qui qualcosa è sbagliato nel model
     }
 
     /**
@@ -458,5 +466,4 @@ public class Server implements ServerController, TimerCallback {
         String nickname = remotePlayer.getNickname();
         System.out.println("Player "+nickname+" has been disconnected!");
     }
-
 }

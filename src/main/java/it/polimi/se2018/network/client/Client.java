@@ -56,8 +56,6 @@ public class Client implements ClientController {
         this.nickname = "Mr.Nessuno";
         this.turn = 0;
         this.clientRunning=false;
-
-
     }
 
     //------------------------------------------------------------------------------------------------------------------

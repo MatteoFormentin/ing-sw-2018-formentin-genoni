@@ -6,7 +6,6 @@ import it.polimi.se2018.network.server.ServerController;
 
 import java.io.*;
 import java.net.Socket;
-import java.rmi.RemoteException;
 
 /**
  * Class that extends the RemotePlayer in order to define a Socket Player.
@@ -101,7 +100,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable{
      * @param eventView object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView) throws RemoteException {
+    public void sendEventToView(EventView eventView) {
 
     }
 }

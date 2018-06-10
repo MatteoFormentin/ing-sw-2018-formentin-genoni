@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
  *
  * @author DavideMammarella
  */
-public abstract class RemotePlayer{
+public abstract class RemotePlayer {
 
     //Riferimento alla partita in cui è il giocatore
     private transient Server serverRoom;
@@ -53,6 +53,10 @@ public abstract class RemotePlayer{
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
+
+    protected void setServerRoom(Server serverRoom){
+        this.serverRoom=serverRoom;
+    }
 
     /**
      * Getter for nickname.
