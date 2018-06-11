@@ -13,6 +13,8 @@ import it.polimi.se2018.model.dice.DiceStack;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * CLI Event handler.
  *
@@ -21,7 +23,7 @@ import it.polimi.se2018.view.UIInterface;
 public class CliController implements UIInterface, ViewVisitor, ViewControllerVisitor, ViewModelVisitor {
 
     private CliMessage cliMessage;
-    private CliParser cliParser;
+    private CliParserNonBlocking cliParser;
     private ClientController client;
 
     private DiceStack[] roundTrack;
@@ -41,12 +43,14 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private int playerId;
 
     private Thread currentTask;
+    private AtomicBoolean isInputActive;
 
 
     public CliController(ClientController clientController) {
         client = clientController;
         cliMessage = new CliMessage();
-        cliParser = new CliParser();
+        isInputActive = new AtomicBoolean(true);
+        cliParser = new CliParserNonBlocking(isInputActive);
         cliMessage.splashScreen();
         cliParser.readSplash();
         initConnection();
@@ -68,11 +72,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             Thread.currentThread().setName("Visitor Handler: " + event.getClass().getSimpleName());
             event.acceptControllerEvent(this);
         };
-        System.out.println("Visitor Handler: " + event.getClass().getSimpleName());
-        if (currentTask != null) {
-            currentTask.stop();
-            System.out.println("Stopped: " + currentTask.getName());
-        }
         currentTask = new Thread(exec);
         currentTask.start();
     }
@@ -141,12 +140,14 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(MoveTimeoutExpired event) {
+        isInputActive.set(false);
         cliMessage.showMoveTimeoutExpired();
         //if(currentTask!=null) currentTask.stop();
     }
 
     @Override
     public void visit(SelectInitialWindowPatternCard event) {
+        isInputActive.set(true);
         cliMessage.showYourTurnScreen();
         cliMessage.showMessage("Quando sei pronto per scegliere la carta");
         cliParser.readSplash();
@@ -157,11 +158,13 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
         cliMessage.showInitialWindowPatternCardSelection();
         int selection = cliParser.parseInt(4);
-        cliMessage.eraseScreen();
-        EventController packet = new ControllerSelectInitialWindowPatternCard();
-        packet.setPlayerId(playerId);
-        ((ControllerSelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
-        client.sendEventToController(packet);
+        if (selection != -1) {
+            cliMessage.eraseScreen();
+            EventController packet = new ControllerSelectInitialWindowPatternCard();
+            packet.setPlayerId(playerId);
+            ((ControllerSelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
+            client.sendEventToController(packet);
+        }
     }
 
     @Override
@@ -185,6 +188,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
      */
     @Override
     public void visit(StartPlayerTurn event) {
+        isInputActive.set(true);
         turn();
     }
 
@@ -210,10 +214,12 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     public void visit(SelectDiceFromDraftPool event) {
         cliMessage.showDicePool(dicePool);
         int diceIndex = cliParser.parseInt();
-        ControllerSelectDiceFromDraftPool packet = new ControllerSelectDiceFromDraftPool();
-        packet.setPlayerId(playerId);
-        packet.setIndex(diceIndex);
-        client.sendEventToController(packet);
+        if (diceIndex != -1) {
+            ControllerSelectDiceFromDraftPool packet = new ControllerSelectDiceFromDraftPool();
+            packet.setPlayerId(playerId);
+            packet.setIndex(diceIndex);
+            client.sendEventToController(packet);
+        }
     }
 
     @Override
@@ -222,11 +228,14 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         int row = cliParser.parseInt();
         cliMessage.showInsertDiceColumn();
         int column = cliParser.parseInt();
-        ControllerSelectCellOfWindow packet = new ControllerSelectCellOfWindow();
-        packet.setPlayerId(playerId);
-        packet.setLine(row - 1);
-        packet.setColumn(column - 1);
-        client.sendEventToController(packet);
+
+        if (row != -1 && column != -1) {
+            ControllerSelectCellOfWindow packet = new ControllerSelectCellOfWindow();
+            packet.setPlayerId(playerId);
+            packet.setLine(row - 1);
+            packet.setColumn(column - 1);
+            client.sendEventToController(packet);
+        }
     }
 
     @Override
@@ -244,10 +253,12 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         }
         cliMessage.showToolCardChoise(toolCard);
         int indexTooLCard = cliParser.parsePositiveInt(toolCard.length) - 1;
-        ControllerSelectToolCard packet = new ControllerSelectToolCard();
-        packet.setPlayerId(playerId);
-        packet.setIndexToolCard(indexTooLCard);
-        client.sendEventToController(packet);
+        if (indexTooLCard != -1) {
+            ControllerSelectToolCard packet = new ControllerSelectToolCard();
+            packet.setPlayerId(playerId);
+            packet.setIndexToolCard(indexTooLCard);
+            client.sendEventToController(packet);
+        }
     }
 
     @Override
@@ -379,73 +390,75 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         cliMessage.showMainMenu();
         int option = cliParser.parsePositiveInt(7);
 
-        switch (option) {
-            //insert a dice in the window
-            case 1:
-                EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
-                packetInsertDice.setPlayerId(playerId);
-                client.sendEventToController(packetInsertDice);
-                break;
-            //Use tool card
-            case 2:
-                EventController packetUseTool = new ControllerMoveDrawAndPlaceDie();
-                packetUseTool.setPlayerId(playerId);
-                client.sendEventToController(packetUseTool);
-                break;
+        if (option != -1) {
+            switch (option) {
+                //insert a dice in the window
+                case 1:
+                    EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
+                    packetInsertDice.setPlayerId(playerId);
+                    client.sendEventToController(packetInsertDice);
+                    break;
+                //Use tool card
+                case 2:
+                    EventController packetUseTool = new ControllerMoveDrawAndPlaceDie();
+                    packetUseTool.setPlayerId(playerId);
+                    client.sendEventToController(packetUseTool);
+                    break;
 
-            //End turn
-            case 3:
-                EventController packetEnd = new ControllerEndTurn();
-                packetEnd.setPlayerId(playerId);
-                client.sendEventToController(packetEnd);
-                break;
+                //End turn
+                case 3:
+                    EventController packetEnd = new ControllerEndTurn();
+                    packetEnd.setPlayerId(playerId);
+                    client.sendEventToController(packetEnd);
+                    break;
 
-            //Show private object
-            case 4:
-                cliMessage.eraseScreen();
-                cliMessage.showObjectivePrivateCardMessage();
-                cliMessage.showObjectivePrivateCard(objectivePrivateCardOfEachPlayers[playerId]);
-                cliParser.readSplash();
-                turn();
-                break;
+                //Show private object
+                case 4:
+                    cliMessage.eraseScreen();
+                    cliMessage.showObjectivePrivateCardMessage();
+                    cliMessage.showObjectivePrivateCard(objectivePrivateCardOfEachPlayers[playerId]);
+                    cliParser.readSplash();
+                    turn();
+                    break;
 
-            //Show public object
-            case 5:
-                cliMessage.eraseScreen();
-                cliMessage.showObjectivePublicCardMessage();
-                for (ObjectivePublicCard card : objectivePublicCards) {
-                    cliMessage.showObjectivePublicCard(card);
-                    cliMessage.println();
-                }
-                cliParser.readSplash();
-                turn();
-                break;
+                //Show public object
+                case 5:
+                    cliMessage.eraseScreen();
+                    cliMessage.showObjectivePublicCardMessage();
+                    for (ObjectivePublicCard card : objectivePublicCards) {
+                        cliMessage.showObjectivePublicCard(card);
+                        cliMessage.println();
+                    }
+                    cliParser.readSplash();
+                    turn();
+                    break;
 
-            //Show opponents window pattern card
-            case 6:
-                cliMessage.eraseScreen();
-                cliMessage.showOpponentWindowMessage();
-                for (int i = 0; i < windowPatternCardOfEachPlayer.length; i++) {
-                    if (i == playerId) continue;
-                    cliMessage.showOpponentWindow(playersName[i]);
-                    cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[i]);
-                    cliMessage.println();
-                }
-                turn();
-                break;
+                //Show opponents window pattern card
+                case 6:
+                    cliMessage.eraseScreen();
+                    cliMessage.showOpponentWindowMessage();
+                    for (int i = 0; i < windowPatternCardOfEachPlayer.length; i++) {
+                        if (i == playerId) continue;
+                        cliMessage.showOpponentWindow(playersName[i]);
+                        cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[i]);
+                        cliMessage.println();
+                    }
+                    turn();
+                    break;
 
-            //Show dice pool
-            case 7:
-                cliMessage.showDiceStack(dicePool);
-                cliParser.readSplash();
-                turn();
-                break;
+                //Show dice pool
+                case 7:
+                    cliMessage.showDiceStack(dicePool);
+                    cliParser.readSplash();
+                    turn();
+                    break;
 
-            //Show round track
-            case 8:
-                //TODO tracciato round
-                turn();
-                break;
+                //Show round track
+                case 8:
+                    //TODO tracciato round
+                    turn();
+                    break;
+            }
         }
     }
 
