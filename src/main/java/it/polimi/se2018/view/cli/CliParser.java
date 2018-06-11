@@ -16,10 +16,11 @@ public class CliParser {
         cliMessage = new CliMessage();
     }
 
-    public void readSplash() {
+    public int readSplash() {
         Scanner in = new Scanner(System.in);
         cliMessage.showWaitInput();
         in.next();
+        return 0;
     }
 
     public int parseInt() {

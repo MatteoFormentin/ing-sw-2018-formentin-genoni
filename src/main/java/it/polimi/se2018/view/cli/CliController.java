@@ -150,20 +150,21 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         isInputActive.set(true);
         cliMessage.showYourTurnScreen();
         cliMessage.showMessage("Quando sei pronto per scegliere la carta");
-        cliParser.readSplash();
+        int read = cliParser.readSplash();
+        if (read != -1) {
+            for (WindowPatternCard card : windowPatternCardsToChoose) {
+                cliMessage.showWindowPatternCard(card);
+            }
 
-        for (WindowPatternCard card : windowPatternCardsToChoose) {
-            cliMessage.showWindowPatternCard(card);
-        }
-
-        cliMessage.showInitialWindowPatternCardSelection();
-        int selection = cliParser.parseInt(4);
-        if (selection != -1) {
-            cliMessage.eraseScreen();
-            EventController packet = new ControllerSelectInitialWindowPatternCard();
-            packet.setPlayerId(playerId);
-            ((ControllerSelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
-            client.sendEventToController(packet);
+            cliMessage.showInitialWindowPatternCardSelection();
+            int selection = cliParser.parseInt(3);
+            if (selection != -1) {
+                cliMessage.eraseScreen();
+                EventController packet = new ControllerSelectInitialWindowPatternCard();
+                packet.setPlayerId(playerId);
+                ((ControllerSelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
+                client.sendEventToController(packet);
+            }
         }
     }
 

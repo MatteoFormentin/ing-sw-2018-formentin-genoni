@@ -17,19 +17,20 @@ public class CliParserNonBlocking extends CliParser {
         this.isInputActive = isInputActive;
     }
 
-    public void readSplash() {
+    public int readSplash() {
         cliMessage.showWaitInput();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         while (isInputActive.get()) {
             try {
                 if (bufferedReader.ready()) {
                     bufferedReader.readLine();
-                    return;
+                    return 0;
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
+        return -1;
     }
 
     public int parseInt() {
