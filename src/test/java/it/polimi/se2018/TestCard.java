@@ -69,6 +69,57 @@ public class TestCard {
     @Test
     public void testCard() throws WindowRestriction {
 
+        //diagonal public object
+        ObjectivePublicCard p_card = new ColoredDiagonal();
+//        assertEquals(0, p_card.calculatePoint(testWindowPatternCard));
+
+
+        //color public object
+        p_card = new DifferentColorColumn();
+        assertEquals(25, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentColorRow();
+        assertEquals(24, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentColor();
+        assertEquals(0, p_card.calculatePoint(testWindowPatternCard));
+
+        //number public object
+        p_card = new DifferentNumberColumn();
+        assertEquals(20, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentNumberRow();
+        assertEquals(20, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentNumber();
+        assertEquals(0, p_card.calculatePoint(testWindowPatternCard));
+
+        //set dice public object
+        p_card = new DarkNumber();
+        assertEquals(0, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new MidNumber();
+        assertEquals(0, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new LightNumber();
+        assertEquals(0, p_card.calculatePoint(testWindowPatternCard));
+
+        //private Object
+        ObjectivePrivateCard pr_card = new BlueObjectivePrivateCard();
+        assertEquals(0, pr_card.calculatePoint(testWindowPatternCard));
+
+        pr_card = new GreenObjectivePrivateCard();
+        assertEquals(0, pr_card.calculatePoint(testWindowPatternCard));
+
+        pr_card = new PurpleObjectivePrivateCard();
+        assertEquals(0, pr_card.calculatePoint(testWindowPatternCard));
+
+        pr_card = new RedObjectivePrivateCard();
+        assertEquals(0, pr_card.calculatePoint(testWindowPatternCard));
+
+        pr_card = new YellowObjectivePrivateCard();
+        assertEquals(0, pr_card.calculatePoint(testWindowPatternCard));
+
         factoryDice.setDiceValueColor(1, DiceColor.BLUE);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(3, 0, dice);
@@ -172,7 +223,7 @@ public class TestCard {
         testWindowPatternCard.insertDice(0, 4, dice);
 
         //diagonal public object
-        ObjectivePublicCard p_card = new ColoredDiagonal();
+        p_card = new ColoredDiagonal();
         assertEquals(12, p_card.calculatePoint(testWindowPatternCard));
 
         //color public object
@@ -206,7 +257,7 @@ public class TestCard {
         assertEquals(6, p_card.calculatePoint(testWindowPatternCard));
 
         //private Object
-        ObjectivePrivateCard pr_card = new BlueObjectivePrivateCard();
+        pr_card = new BlueObjectivePrivateCard();
         assertEquals(4, pr_card.calculatePoint(testWindowPatternCard));
 
         pr_card = new GreenObjectivePrivateCard();

@@ -35,6 +35,8 @@ public class DifferentNumberColumn extends ObjectivePublicCard {
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 4; i++) {
                 currentCellDice = matrix[i][j].getDice();
+                if (currentCellDice == null) continue;
+
                 if (currentCellDice.getValue() == 1) {
                     one++;
                 }

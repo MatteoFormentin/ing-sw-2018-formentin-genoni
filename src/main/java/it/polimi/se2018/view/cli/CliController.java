@@ -1,7 +1,8 @@
 package it.polimi.se2018.view.cli;
 
 import it.polimi.se2018.list_event.event_received_by_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.*;
+import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
@@ -17,7 +18,7 @@ import it.polimi.se2018.view.UIInterface;
  *
  * @author Matteo Formentin
  */
-public class CliController implements UIInterface, ViewVisitor,ViewControllerVisitor,ViewModelVisitor {
+public class CliController implements UIInterface, ViewVisitor, ViewControllerVisitor, ViewModelVisitor {
 
     private CliMessage cliMessage;
     private CliParser cliParser;
@@ -34,12 +35,12 @@ public class CliController implements UIInterface, ViewVisitor,ViewControllerVis
     private String[] playersName;
     private WindowPatternCard[] windowPatternCardOfEachPlayer;
     private DiceStack[] handOfEachPlayer;
-    private int[] FavorTokenOfEachPlayer;
-    private int[] PointsOfEachPlayer;
+    private int[] favorTokenOfEachPlayer;
+    private int[] pointsOfEachPlayer;
     private ObjectivePrivateCard[] objectivePrivateCardOfEachPlayers;//almost all null until the end game
     private int playerId;
 
-    Thread currentTask;
+    private Thread currentTask;
 
 
     public CliController(ClientController clientController) {
@@ -58,24 +59,31 @@ public class CliController implements UIInterface, ViewVisitor,ViewControllerVis
     //*****************************************Visitor Pattern************************************************************************
 
     public void showMessage(EventView eventView) {
-       // cliParser.setInputActive(true);
+        eventView.acceptGeneric(this);
+    }
+
+    @Override
+    public void visit(EventViewFromController event) {
         Runnable exec = () -> {
-            Thread.currentThread().setName("Visitor Handler");
-            // System.out.println("Visitor Handler");
-            eventView.acceptGeneric(this);
+            Thread.currentThread().setName("Visitor Handler: " + event.getClass().getSimpleName());
+            event.acceptControllerEvent(this);
         };
+        System.out.println("Visitor Handler: " + event.getClass().getSimpleName());
+        if (currentTask != null) {
+            currentTask.stop();
+            System.out.println("Stopped: " + currentTask.getName());
+        }
         currentTask = new Thread(exec);
         currentTask.start();
     }
 
     @Override
-    public void visit(EventViewFromController event) {
-        event.acceptControllerEvent(this);
-    }
-
-    @Override
     public void visit(EventViewFromModel event) {
-        event.acceptModelEvent(this);
+        Runnable exec = () -> {
+            Thread.currentThread().setName("Visitor Handler");
+            event.acceptModelEvent(this);
+        };
+        new Thread(exec).start();
     }
 
     /*
@@ -99,17 +107,19 @@ public class CliController implements UIInterface, ViewVisitor,ViewControllerVis
     //*******************************************Visit for Controller event*******************************************************************************
 
 
+    @Override
     public void visit(StartGame event) {
         playerId = event.getPlayerId();
         playersName = event.getPlayersName();
         windowPatternCardOfEachPlayer = new WindowPatternCard[playersName.length];
         objectivePrivateCardOfEachPlayers = new ObjectivePrivateCard[playersName.length];
         handOfEachPlayer = new DiceStack[playersName.length];
-        FavorTokenOfEachPlayer = new int[playersName.length];
-        PointsOfEachPlayer = new int[playersName.length];
+        favorTokenOfEachPlayer = new int[playersName.length];
+        pointsOfEachPlayer = new int[playersName.length];
         cliMessage.showGameStarted(playersName);
     }
 
+    @Override
     public void visit(ShowAllCards event) {
         cliMessage.showObjectivePublicCardMessage();
         for (ObjectivePublicCard card : objectivePublicCards) {
@@ -132,6 +142,7 @@ public class CliController implements UIInterface, ViewVisitor,ViewControllerVis
     @Override
     public void visit(MoveTimeoutExpired event) {
         cliMessage.showMoveTimeoutExpired();
+        //if(currentTask!=null) currentTask.stop();
     }
 
     @Override
@@ -293,8 +304,8 @@ public class CliController implements UIInterface, ViewVisitor,ViewControllerVis
     }
 
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
-        FavorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
-        PointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
+        favorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
+        pointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
     }
 
     public void visit(UpdateSinglePrivateObject event) {

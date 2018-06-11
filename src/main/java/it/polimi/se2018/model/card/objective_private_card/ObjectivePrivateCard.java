@@ -102,6 +102,7 @@ public abstract class ObjectivePrivateCard implements Serializable {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
                 Dice currentCellDice = matrix[i][j].getDice();
+                if (currentCellDice == null) continue;
                 if (currentCellDice.getColor() == this.getDiceColor()) {
                     points += currentCellDice.getValue();
                 }

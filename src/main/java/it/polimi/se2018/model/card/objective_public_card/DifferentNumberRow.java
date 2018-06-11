@@ -35,6 +35,7 @@ public class DifferentNumberRow extends ObjectivePublicCard {
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
                 currentCellDice = matrix[i][j].getDice();
+                if (currentCellDice == null) continue;
                 if (currentCellDice.getValue() == 1) {
                     one++;
                 }
