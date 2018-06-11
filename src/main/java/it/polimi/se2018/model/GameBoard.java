@@ -1,9 +1,10 @@
 package it.polimi.se2018.model;
 
 
+import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.*;
 import it.polimi.se2018.exception.player_exception.*;
-import it.polimi.se2018.exception.window_exception.*;
+import it.polimi.se2018.exception.window_exception.WindowRestriction;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
@@ -19,7 +20,7 @@ import it.polimi.se2018.network.server.ServerController;
  *
  * @author Luca Genoni
  */
-public class GameBoard{
+public class GameBoard {
     private int currentRound;//can have only the get
     private int currentTurn;//can have only the get
     private int indexCurrentPlayer;//can have only the get
@@ -82,7 +83,8 @@ public class GameBoard{
         server.sendEventToView(packetRound);
         System.err.println("inviati tutti le info iniziali a " + indexPlayer);
     }
-    private void broadcast(EventView event){
+
+    private void broadcast(EventView event) {
         for (int i = 0; i < player.length; i++) {
             event.setPlayerId(i);
             server.sendEventToView(event);
@@ -220,11 +222,13 @@ public class GameBoard{
         updateHand(indexPlayer);
         updateDicePool();
     }
-    private void updateHand(int indexPlayer){
+
+    private void updateHand(int indexPlayer) {
         UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
         broadcast(packet);
     }
-    private void updateDicePool(){
+
+    private void updateDicePool() {
         UpdateDicePool packet = new UpdateDicePool(dicePool);
         broadcast(packet);
     }
@@ -329,7 +333,7 @@ public class GameBoard{
             playerX.setPoints(pointCounter);
         }
         //inolra a tutti il punteggio
-        for (int i = 0; i < player.length; i++){
+        for (int i = 0; i < player.length; i++) {
             UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
             broadcast(packet);
         }
@@ -339,7 +343,7 @@ public class GameBoard{
     /**
      * move for select the window Pattern
      *
-     * @param idPlayer who want to set the window
+     * @param idPlayer         who want to set the window
      * @param indexOfTheWindow of the window selected
      */
     public void setWindowOfPlayer(int idPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException {
@@ -350,7 +354,7 @@ public class GameBoard{
             packet.setPlayerId(i);
             server.sendEventToView(packet);
             UpdateSinglePlayerTokenAndPoints packetToken = new UpdateSinglePlayerTokenAndPoints(idPlayer,
-                    player[idPlayer].getFavorToken(),player[idPlayer].getPoints());
+                    player[idPlayer].getFavorToken(), player[idPlayer].getPoints());
             packetToken.setPlayerId(idPlayer);
             server.sendEventToView(packetToken);
         }
@@ -372,8 +376,8 @@ public class GameBoard{
      * @param indexDicePool index of the dice chosen
      * @throws NoDiceException there is no dice in the selected position
      */
-    public void addNewDiceToHandFromDicePool(int indexPlayer, int indexDicePool) throws NoDiceException,GameIsBlockedException,
-            CurrentPlayerException,AlreadyDrawANewDiceException {
+    public void addNewDiceToHandFromDicePool(int indexPlayer, int indexDicePool) throws NoDiceException, GameIsBlockedException,
+            CurrentPlayerException, AlreadyDrawANewDiceException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (player[indexPlayer].isHasDrawNewDice()) throw new AlreadyDrawANewDiceException();
@@ -394,13 +398,11 @@ public class GameBoard{
      * @param column
      * @return
      */
-    public void insertDice(int indexPlayer, int line, int column) throws RestrictionCellOccupiedException, RestrictionValueViolatedException,
-            RestrictionColorViolatedException, RestrictionAdjacentViolatedException, NoDiceInHandException, AlreadyPlaceANewDiceException,
-            GameIsBlockedException,CurrentPlayerException{
+    public void insertDice(int indexPlayer, int line, int column) throws WindowRestriction,PlayerException, GameIsBlockedException,CurrentPlayerException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
-        player[indexPlayer].insertDice(line, column);
+        player[indexPlayer].insertDice(line, column,true);
         player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
@@ -478,7 +480,7 @@ public class GameBoard{
      * @return
      */
     public void moveDiceFromWindowPatternToHandWithRestriction(int indexPlayer, int round, int indexStack,
-                                                               int line, int column) throws Exception {
+                                                               int line, int column) throws GameException {
        /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false;//not your turn
@@ -499,7 +501,7 @@ public class GameBoard{
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
-    public void rollDicePool(int indexPlayer) throws Exception {
+    public void rollDicePool(int indexPlayer) throws GameException {
        /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false;//not your turn
@@ -528,15 +530,15 @@ public class GameBoard{
      * @return
      */
     public void insertDice(int indexPlayer, int line, int column, boolean adjacentRestriction,
-                           boolean colorRestriction, boolean valueRestriction) throws Exception {
-       /* try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            if (player[indexPlayer].isHasPlaceANewDice()) return false;
-            return player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction);
-        } catch (Exception e) {
-            return false;
-        }*/
+                           boolean colorRestriction, boolean valueRestriction, boolean singleNewDice) throws GameException {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (singleNewDice && player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
+        player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction,true);
+        if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
+        updateHand(indexPlayer);
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
+        broadcast(packetCell);
     }
 
     /**
@@ -545,7 +547,7 @@ public class GameBoard{
      * @param column
      * @return
      */
-    public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column) throws Exception {
+    public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column) throws GameException {
       /*  try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn

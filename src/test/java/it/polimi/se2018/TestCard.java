@@ -1,25 +1,35 @@
 package it.polimi.se2018;
 
-import it.polimi.se2018.exception.window_exception.RestrictionAdjacentViolatedException;
-import it.polimi.se2018.exception.window_exception.RestrictionColorViolatedException;
-import it.polimi.se2018.exception.window_exception.RestrictionValueViolatedException;
+import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellColorViolatedException;
+import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellValueViolatedException;
+import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionAdjacentFirstDiceViolatedException;
+import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionAdjacentViolatedException;
+import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionColorViolatedException;
+import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionValueViolatedException;
+import it.polimi.se2018.exception.window_exception.WindowRestriction;
 import it.polimi.se2018.model.card.objective_private_card.*;
 import it.polimi.se2018.model.card.objective_public_card.*;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
+import it.polimi.se2018.model.dice.TestFactory;
 import org.junit.*;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestCard {
 
+    private static final RestrictionCellValueViolatedException valueCellR = new RestrictionCellValueViolatedException();
+    private static final RestrictionCellColorViolatedException colorCellR = new RestrictionCellColorViolatedException();
     private static final RestrictionAdjacentViolatedException adjacentR = new RestrictionAdjacentViolatedException();
     private static final RestrictionValueViolatedException valueR = new RestrictionValueViolatedException();
     private static final RestrictionColorViolatedException colorR = new RestrictionColorViolatedException();
+    private static final RestrictionAdjacentFirstDiceViolatedException firstR = new RestrictionAdjacentFirstDiceViolatedException();
     private WindowPatternCard testWindowPatternCard;
-
+    private Dice dice;
+    private TestFactory factoryDice;
 
     @Before
     public void initTestWindowPatternCard() {
@@ -45,312 +55,182 @@ public class TestCard {
         matrix[2][2].setValueRestriction(6);
         matrix[2][4].setColorRestriction(DiceColor.Purple);
 
-        matrix[3][1].setValueRestriction(1);
+        matrix[3][0].setValueRestriction(1);
         matrix[3][3].setColorRestriction(DiceColor.Green);
         matrix[3][4].setValueRestriction(4);
 
         testWindowPatternCard = new WindowPatternCard("test", 5, matrix);
+        factoryDice= new TestFactory();
     }
+/*
+        assertThrows(adjacentR.getClass(), () ->);
+*/
 
     @Test
-    public void testCard() {
-        Dice dice = new Dice(DiceColor.Blue);
+    public void testCard() throws WindowRestriction {
+        factoryDice.setDiceValueColor(1, DiceColor.Blue);
+        dice = factoryDice.createDice();
+
+        //Wrong move - First die cant be placed on board center.
+        assertThrows(firstR.getClass(), () -> testWindowPatternCard.insertDice(1, 2, dice));
+        assertThrows(firstR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice));
+        //Wrong move - Try to place a First die in a cell with restriction but on correct position (board edge)
+        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 0, dice));
+        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
+
+        //Wrong move - First die without adjacent restriction but other one
+        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice,false,true,true));
+        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice,false,false,true));
+        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 1, dice,false,true,true));
+        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 1, dice,false,true,false));
+
+        //Correct move - first die on edge and with correct number
+        testWindowPatternCard.insertDice(3, 0, dice);
+
+        //Wrong move - Try to place a die in a cell with color restriction near a die with same color
+        factoryDice.setDiceValueColor(2, DiceColor.Blue);
+        dice = factoryDice.createDice();
+        assertThrows(colorR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
+
+        //Wrong move - Try to place a die in a cell near a die with same color
+        assertThrows(colorR.getClass(), () -> testWindowPatternCard.insertDice(3, 1, dice));
+
+        //Wrong move - Try to place a die in a cell with color restriction near a die with same value
+        factoryDice.setDiceValueColor(1, DiceColor.Green);
+        dice = factoryDice.createDice();
+        assertThrows(valueR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
+
+        //Wrong move - Try to place a die in a cell near a die with same value
+        assertThrows(valueR.getClass(), () -> testWindowPatternCard.insertDice(3, 1, dice));
+
+        //Wrong move - Try to place a die in a cell away from some dice
+        assertThrows(adjacentR.getClass(), () -> testWindowPatternCard.insertDice(3, 3, dice));
+
+        //Correct move - Die witch correct color and correct adj restriction
         dice.setValue(2);
-        //Wrong move - First dice cant be placed on board center.
-        String e=null;
-        try {
-            testWindowPatternCard.insertDice(1, 2, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertEquals(adjacentR.getMessage(),e);
-        //Wrong move - Try to place a dice in a cell with number restriction but on correct position (board edge)
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 0, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertEquals(valueR.getMessage(),e);
+        testWindowPatternCard.insertDice(3, 1, dice);
 
-        //Correct move - first dice on edge and with correct number
-        dice.setValue(5);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 0, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //from now on all correct move
+        //3° die
+        factoryDice.setDiceValueColor(3, DiceColor.Yellow);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 0, dice);
 
-        //Wrong move - Try to place a dice in a cell with color restriction but on correct position (adj restr ok)
-        dice = new Dice(DiceColor.Blue);
-        dice.setValue(5);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 1, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertEquals(colorR.getMessage(),e);
+        //4° die
+        factoryDice.setDiceValueColor(1, DiceColor.Blue);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 1, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Green);
-        dice.setValue(3);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 1, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //5° die
+        factoryDice.setDiceValueColor(6, DiceColor.Green);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 2, dice);
 
-        //Wrong move - Try to place a dice in a cell away from last dice
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(3);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(1, 4, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertEquals(adjacentR.getMessage(),e);
+        //****************************************************************************************
+        //6° die
+        factoryDice.setDiceValueColor(4, DiceColor.Purple);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(3, 2, dice);
 
-        ///Wrong move - Try to place a dice in a cell with correct color restr but adjacentR a dice with same value
-        dice = new Dice(DiceColor.Blue);
-        dice.setValue(3);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 2, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertEquals(valueR.getMessage(),e);
+        //7° die
+        factoryDice.setDiceValueColor(5, DiceColor.Green);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(3, 3, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Blue);
-        dice.setValue(4);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 2, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //8° die
+        factoryDice.setDiceValueColor(4, DiceColor.Red);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(3, 4, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Purple);
-        dice.setValue(1);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 3, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //9° die
+        factoryDice.setDiceValueColor(2, DiceColor.Purple);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 4, dice);
 
-        //Wrong move - Try to place a dice in a cell with correct number restr but adjacentR a dice with same color
-        dice = new Dice(DiceColor.Purple);
-        dice.setValue(6);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 4, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertEquals(colorR.getMessage(),e);
+        //10° die
+        factoryDice.setDiceValueColor(4, DiceColor.Red);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 3, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Green);
-        dice.setValue(2);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(0, 4, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //****************************************************************************************
+        //11° die
+        factoryDice.setDiceValueColor(3, DiceColor.Yellow);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(1, 4, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Purple);
-        dice.setValue(3);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(1, 0, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //12° die
+        factoryDice.setDiceValueColor(2, DiceColor.Green);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(1, 3, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(4);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(1, 1, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //13° die
+        factoryDice.setDiceValueColor(5, DiceColor.Red);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(1, 2, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Green);
-        dice.setValue(5);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(1, 2, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //14° die
+        factoryDice.setDiceValueColor(6, DiceColor.Yellow);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(1, 1, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Red);
-        dice.setValue(2);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(1, 3, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //15° die
+        factoryDice.setDiceValueColor(1, DiceColor.Purple);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(1, 0, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(4);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(1, 4, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //****************************************************************************************
+        //16° die
+        factoryDice.setDiceValueColor(5, DiceColor.Yellow);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(0, 0, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(2);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(2, 0, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //17° die
+        factoryDice.setDiceValueColor(4, DiceColor.Green);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(0, 1, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Red);
-        dice.setValue(5);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(2, 1, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //18° die
+        factoryDice.setDiceValueColor(2, DiceColor.Blue);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(0, 2, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Blue);
-        dice.setValue(6);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(2, 2, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //19° die
+        factoryDice.setDiceValueColor(3, DiceColor.Purple);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(0, 3, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(1);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(2,3, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
+        //20° die
+        factoryDice.setDiceValueColor(2, DiceColor.Red);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(0, 4, dice);
 
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Purple);
-        dice.setValue(5);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(2,4, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
-
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Purple);
-        dice.setValue(3);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(3, 0, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
-
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(1);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(3,1, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Red);
-        dice.setValue(5);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(3,2, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Green);
-        dice.setValue(2);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(3,3, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
-        //Correct move - Dice witch correct color and correct adj restriction
-        dice = new Dice(DiceColor.Blue);
-        dice.setValue(4);
-        e=null;
-        try {
-            testWindowPatternCard.insertDice(3,4, dice);
-        }catch(Exception ex){
-            e= ex.getMessage();
-        }
-        assertNull(e);
-        //CliMessage cli = new CliMessage();
-        //cli.showWindowPatternCard(testWindowPatternCard);
-
+        //diagonal public object
         ObjectivePublicCard p_card = new ColoredDiagonal();
-        assertEquals(9, p_card.calculatePoint(testWindowPatternCard));
+        assertEquals(12, p_card.calculatePoint(testWindowPatternCard));
 
-        //Test DifferentColorColumn card
+        //color public object
         p_card = new DifferentColorColumn();
-        assertEquals(10, p_card.calculatePoint(testWindowPatternCard));
+        assertEquals(5, p_card.calculatePoint(testWindowPatternCard));
 
-        //Test DifferentColorRow card
         p_card = new DifferentColorRow();
-        assertEquals(6, p_card.calculatePoint(testWindowPatternCard));
+        assertEquals(12, p_card.calculatePoint(testWindowPatternCard));
 
         p_card = new DifferentColor();
         assertEquals(12, p_card.calculatePoint(testWindowPatternCard));
 
+        //number public object
+        p_card = new DifferentNumberColumn();
+        assertEquals(12, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentNumberRow();
+        assertEquals(10, p_card.calculatePoint(testWindowPatternCard));
+
+        p_card = new DifferentNumber();
+        assertEquals(10, p_card.calculatePoint(testWindowPatternCard));
+
+        //set dice public object
         p_card = new DarkNumber();
-        assertEquals(2, p_card.calculatePoint(testWindowPatternCard));
+        assertEquals(4, p_card.calculatePoint(testWindowPatternCard));
 
         p_card = new MidNumber();
         assertEquals(6, p_card.calculatePoint(testWindowPatternCard));
@@ -358,66 +238,25 @@ public class TestCard {
         p_card = new LightNumber();
         assertEquals(6, p_card.calculatePoint(testWindowPatternCard));
 
-        p_card = new DifferentNumberColumn();
-        assertEquals(4, p_card.calculatePoint(testWindowPatternCard));
-
-        p_card = new DifferentNumberRow();
-        assertEquals(10, p_card.calculatePoint(testWindowPatternCard));
-
-        p_card = new DifferentNumber();
-        assertEquals(5, p_card.calculatePoint(testWindowPatternCard));
-
+        //private Object
         ObjectivePrivateCard pr_card = new BlueObjectivePrivateCard();
-        assertEquals(19, pr_card.calculatePoint(testWindowPatternCard));
+        assertEquals(4, pr_card.calculatePoint(testWindowPatternCard));
 
         pr_card = new GreenObjectivePrivateCard();
-        assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
+        assertEquals(19, pr_card.calculatePoint(testWindowPatternCard));
 
         pr_card = new PurpleObjectivePrivateCard();
-        assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
+        assertEquals(10, pr_card.calculatePoint(testWindowPatternCard));
 
         pr_card = new RedObjectivePrivateCard();
-        assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
+        assertEquals(15, pr_card.calculatePoint(testWindowPatternCard));
 
         pr_card = new YellowObjectivePrivateCard();
-        assertEquals(12, pr_card.calculatePoint(testWindowPatternCard));
-
-
+        assertEquals(17, pr_card.calculatePoint(testWindowPatternCard));
     }
 
     @Test
     public void testBoolInsertDice() {
-        Dice dice = new Dice(DiceColor.Green);
-        dice.setValue(2);
-        assertTrue(testWindowPatternCard.insertDice(2, 2, dice, false, false, false));
-
-        dice = new Dice(DiceColor.Blue);
-        dice.setValue(2);
-        assertTrue(testWindowPatternCard.insertDice(1, 1, dice, true, false, false));
-
-        testWindowPatternCard.removeDice(1, 1);
-
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(2);
-        assertTrue(testWindowPatternCard.insertDice(1, 1, dice, true, true, false));
-
-        testWindowPatternCard.removeDice(1, 1);
-
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(2);
-        assertTrue(testWindowPatternCard.insertDice(1, 1, dice, true, true, true));
-
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(2);
-        assertFalse(testWindowPatternCard.insertDice(0, 1, dice, true, true, true));
-
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(2);
-        assertFalse(testWindowPatternCard.insertDice(0, 0, dice, true, true, true));
-
-        dice = new Dice(DiceColor.Yellow);
-        dice.setValue(5);
-        assertTrue(testWindowPatternCard.insertDice(0, 0, dice, true, true, true));
 
     }
 }

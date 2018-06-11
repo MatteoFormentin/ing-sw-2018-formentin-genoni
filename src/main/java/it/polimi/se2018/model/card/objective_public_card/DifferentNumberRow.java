@@ -32,8 +32,8 @@ public class DifferentNumberRow extends ObjectivePublicCard {
         int five = 0;
         int six = 0;
         Dice currentCellDice;
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
                 currentCellDice = matrix[i][j].getDice();
                 if (currentCellDice.getValue() == 1) {
                     one++;

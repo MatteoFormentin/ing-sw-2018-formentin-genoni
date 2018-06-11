@@ -10,8 +10,8 @@ import it.polimi.se2018.exception.GameException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class NoDiceInHandException extends GameException {
+public class NoDiceInHandException extends PlayerException {
     public NoDiceInHandException() {
-        super("There is no active die in hand");
+        super("Non hai dadi in mano");
     }
 }

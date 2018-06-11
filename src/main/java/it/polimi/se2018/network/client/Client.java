@@ -124,7 +124,7 @@ public class Client implements ClientController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.exit(0);
+            // the main finish
         }
     }
 

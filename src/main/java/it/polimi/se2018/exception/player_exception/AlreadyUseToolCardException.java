@@ -10,8 +10,8 @@ import it.polimi.se2018.exception.GameException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class AlreadyUseToolCardException extends GameException {
+public class AlreadyUseToolCardException extends PlayerException {
     public AlreadyUseToolCardException() {
-        super("You have already use a Tool Card in this turn");
+        super("Hai già utilizzato una toolcard in questo turno");
     }
 }

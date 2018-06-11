@@ -15,5 +15,7 @@ public class EventViewFromModel extends EventView {
     public void acceptGeneric(ViewVisitor viewVisitor) {viewVisitor.visit(this);}
 
     //ha bisogno dell'overriding
-    public void acceptModelEvent(ViewModelVisitor visitor){}
+    public void acceptModelEvent(ViewModelVisitor visitor){
+        throw new UnsupportedOperationException();
+    }
 }

@@ -26,9 +26,6 @@ public enum DiceColor implements Serializable {
      * @return DiceColor associated with the input number, null if there is no match.
      */
     public static DiceColor getDiceColor(int ordinal) {
-        /* exchangeable with
-         * return Arrays.stream(DiceColor.values()).filter(p -> p.ordinal() == ordinal).findFirst().orElse(null);
-         */
         for (DiceColor p : values()) {
             if (p.ordinal() == ordinal) return p;
         }

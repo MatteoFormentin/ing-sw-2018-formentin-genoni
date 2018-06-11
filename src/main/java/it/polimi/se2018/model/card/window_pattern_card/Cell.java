@@ -1,8 +1,10 @@
 package it.polimi.se2018.model.card.window_pattern_card;
 
-import it.polimi.se2018.exception.window_exception.RestrictionCellOccupiedException;
-import it.polimi.se2018.exception.window_exception.RestrictionColorViolatedException;
-import it.polimi.se2018.exception.window_exception.RestrictionValueViolatedException;
+import it.polimi.se2018.exception.window_exception.*;
+import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellColorViolatedException;
+import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellOccupiedException;
+import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellValueViolatedException;
+import it.polimi.se2018.exception.window_exception.InsertDice.*;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
@@ -17,8 +19,18 @@ import java.io.Serializable;
 public class Cell implements Serializable {
 
     private Dice dice;
-    private int valueRestriction = 0;
-    private DiceColor colorRestriction = null;
+    private int valueRestriction;
+    private DiceColor colorRestriction;
+    public Cell(){
+        dice= null;
+        valueRestriction=0;
+        colorRestriction=null;
+    }
+    public Cell(Dice dice,int valueRestriction,DiceColor colorRestriction){
+        this.dice=dice;
+        this.valueRestriction=valueRestriction;
+        this.colorRestriction=colorRestriction;
+    }
     //************************************getter**********************************************
     //************************************getter**********************************************
     //************************************getter**********************************************
@@ -89,46 +101,35 @@ public class Cell implements Serializable {
      * Check if the dice is allowed based on the color restriction of the cell.
      *
      * @param color color of the dice that i wanna check
-     * @return true if the dice respect the restriction so it can be insert, false otherwise
+     * @return true if the dice violate the restriction, false otherwise
      */
-    private boolean checkColorRestriction(DiceColor color) {
-        return colorRestriction == null || colorRestriction == color;
+    private boolean colorRestrictionViolated(DiceColor color) {
+        return colorRestriction != null && colorRestriction != color;
     }
 
     /**
      * Check if the dice is allowed based on the value restriction of the cell.
      *
-     * @return true if the dice respect the restriction so it can be insert, false otherwise
+     * @return true if the dice violate the restriction, false otherwise
      */
-    private boolean checkValueRestriction(int value) {
-        return valueRestriction == 0 || valueRestriction == value;
+    private boolean valueRestrictionViolated(int value) {
+        return valueRestriction != 0 && valueRestriction != value;
     }
 
     /**
      * Insert the dice in the cell if the restriction of the cell are respected.
      *
-     * @param dice to insert
+     * @param newDice                  to insert in the cell
+     * @param checkColorRestriction true if i need to check the restriction
+     * @param checkValueRestriction true if i need to check the restriction
      */
-    public void insertDice(Dice dice) throws RestrictionCellOccupiedException,RestrictionValueViolatedException,RestrictionColorViolatedException{
-        if (this.dice != null) throw new RestrictionCellOccupiedException();
-        if (!checkValueRestriction(dice.getValue())) throw new RestrictionValueViolatedException();
-        if (!checkColorRestriction(dice.getColor())) throw new RestrictionColorViolatedException();
-        this.dice = dice;
-    }
-
-    /**
-     * Insert the dice in the cell if the restriction of the cell are respected.
-     *
-     * @param dice             to insert in the cell
-     * @param colorRestriction true if i need to check the restriction
-     * @param valueRestriction true if i need to check the restriction
-     */
-    public boolean insertDice(Dice dice, boolean colorRestriction, boolean valueRestriction){
-        if (this.dice != null) return false;// cell occupied
-        if (colorRestriction) if(!checkColorRestriction(dice.getColor())) return false;//color restriction
-        if (valueRestriction) if(!checkValueRestriction(dice.getValue())) return false;//value restriction
-        this.dice = dice;
-        return true;
+    public void insertDice(Dice newDice, boolean checkColorRestriction, boolean checkValueRestriction)
+            throws WindowRestriction {
+        if (newDice==null) throw new NullDiceToAddException();
+        if (dice != null) throw new RestrictionCellOccupiedException();
+        if (checkColorRestriction && colorRestrictionViolated(newDice.getColor())) throw new RestrictionCellColorViolatedException();
+        if (checkValueRestriction && valueRestrictionViolated(newDice.getValue())) throw new RestrictionCellValueViolatedException();
+        this.dice = newDice;
     }
 
     /**
@@ -136,9 +137,10 @@ public class Cell implements Serializable {
      *
      * @return the dice removed
      */
-    public Dice removeDice(){
-        Dice dice= this.dice;
-        this.dice=null;
-        return dice;
+    public Dice removeDice() throws NoDiceInThisCell {
+        if (this.dice == null) throw new NoDiceInThisCell();
+        Dice diceToRemove = this.dice;
+        this.dice = null;
+        return diceToRemove;
     }
 }
