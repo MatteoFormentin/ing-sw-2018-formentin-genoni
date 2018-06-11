@@ -16,7 +16,7 @@ public class PurpleObjectivePrivateCard extends ObjectivePrivateCard implements 
     public PurpleObjectivePrivateCard() {
         super();
         super.setId(4);
-        super.setDiceColor(DiceColor.Purple);
+        super.setDiceColor(DiceColor.PURPLE);
         super.setName("Sfumature Viola");
         super.setDescription("Somma dei valori su tutti i dadi viola");
     }

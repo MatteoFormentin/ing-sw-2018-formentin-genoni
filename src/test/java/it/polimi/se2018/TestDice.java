@@ -11,7 +11,7 @@ public class TestDice {
 
     @Test
     public void testOppositeValue() {
-        Dice dice = new Dice(DiceColor.Green);
+        Dice dice = new Dice(DiceColor.GREEN);
         dice.setValue(1);
         assertEquals(6, dice.oppositeValue());
 

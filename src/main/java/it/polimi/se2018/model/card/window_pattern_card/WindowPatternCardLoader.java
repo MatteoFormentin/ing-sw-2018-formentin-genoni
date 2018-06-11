@@ -91,19 +91,19 @@ public class WindowPatternCardLoader {
                         matrix[i][j].setValueRestriction(6);
                         break;
                     case "Red":
-                        matrix[i][j].setColorRestriction(Red);
+                        matrix[i][j].setColorRestriction(RED);
                         break;
                     case "Yellow":
-                        matrix[i][j].setColorRestriction(Yellow);
+                        matrix[i][j].setColorRestriction(YELLOW);
                         break;
                     case "Green":
-                        matrix[i][j].setColorRestriction(Green);
+                        matrix[i][j].setColorRestriction(GREEN);
                         break;
                     case "Blue":
-                        matrix[i][j].setColorRestriction(Blue);
+                        matrix[i][j].setColorRestriction(BLUE);
                         break;
                     case "Purple":
-                        matrix[i][j].setColorRestriction(Purple);
+                        matrix[i][j].setColorRestriction(PURPLE);
                         break;
                 }
                 j++;

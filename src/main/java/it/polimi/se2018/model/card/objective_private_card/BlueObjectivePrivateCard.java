@@ -16,7 +16,7 @@ public class BlueObjectivePrivateCard extends ObjectivePrivateCard implements Se
     public BlueObjectivePrivateCard() {
         super();
         super.setId(3);
-        super.setDiceColor(DiceColor.Blue);
+        super.setDiceColor(DiceColor.BLUE);
         super.setName("Sfumature Blu");
         super.setDescription("Somma dei valori su tutti i dadi blu");
     }

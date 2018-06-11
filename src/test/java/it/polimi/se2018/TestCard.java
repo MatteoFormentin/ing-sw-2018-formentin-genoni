@@ -43,20 +43,20 @@ public class TestCard {
 
         //Test with "Aurorae Magnificus"
         matrix[0][0].setValueRestriction(5);
-        matrix[0][1].setColorRestriction(DiceColor.Green);
-        matrix[0][2].setColorRestriction(DiceColor.Blue);
-        matrix[0][3].setColorRestriction(DiceColor.Purple);
+        matrix[0][1].setColorRestriction(DiceColor.GREEN);
+        matrix[0][2].setColorRestriction(DiceColor.BLUE);
+        matrix[0][3].setColorRestriction(DiceColor.PURPLE);
         matrix[0][4].setValueRestriction(2);
 
-        matrix[1][0].setColorRestriction(DiceColor.Purple);
-        matrix[1][4].setColorRestriction(DiceColor.Yellow);
+        matrix[1][0].setColorRestriction(DiceColor.PURPLE);
+        matrix[1][4].setColorRestriction(DiceColor.YELLOW);
 
-        matrix[2][0].setColorRestriction(DiceColor.Yellow);
+        matrix[2][0].setColorRestriction(DiceColor.YELLOW);
         matrix[2][2].setValueRestriction(6);
-        matrix[2][4].setColorRestriction(DiceColor.Purple);
+        matrix[2][4].setColorRestriction(DiceColor.PURPLE);
 
         matrix[3][0].setValueRestriction(1);
-        matrix[3][3].setColorRestriction(DiceColor.Green);
+        matrix[3][3].setColorRestriction(DiceColor.GREEN);
         matrix[3][4].setValueRestriction(4);
 
         testWindowPatternCard = new WindowPatternCard("test", 5, matrix);
@@ -68,7 +68,7 @@ public class TestCard {
 
     @Test
     public void testCard() throws WindowRestriction {
-        factoryDice.setDiceValueColor(1, DiceColor.Blue);
+        factoryDice.setDiceValueColor(1, DiceColor.BLUE);
         dice = factoryDice.createDice();
 
         //Wrong move - First die cant be placed on board center.
@@ -88,7 +88,7 @@ public class TestCard {
         testWindowPatternCard.insertDice(3, 0, dice);
 
         //Wrong move - Try to place a die in a cell with color restriction near a die with same color
-        factoryDice.setDiceValueColor(2, DiceColor.Blue);
+        factoryDice.setDiceValueColor(2, DiceColor.BLUE);
         dice = factoryDice.createDice();
         assertThrows(colorR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
 
@@ -96,7 +96,7 @@ public class TestCard {
         assertThrows(colorR.getClass(), () -> testWindowPatternCard.insertDice(3, 1, dice));
 
         //Wrong move - Try to place a die in a cell with color restriction near a die with same value
-        factoryDice.setDiceValueColor(1, DiceColor.Green);
+        factoryDice.setDiceValueColor(1, DiceColor.GREEN);
         dice = factoryDice.createDice();
         assertThrows(valueR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
 
@@ -112,95 +112,95 @@ public class TestCard {
 
         //from now on all correct move
         //3° die
-        factoryDice.setDiceValueColor(3, DiceColor.Yellow);
+        factoryDice.setDiceValueColor(3, DiceColor.YELLOW);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(2, 0, dice);
 
         //4° die
-        factoryDice.setDiceValueColor(1, DiceColor.Blue);
+        factoryDice.setDiceValueColor(1, DiceColor.BLUE);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(2, 1, dice);
 
         //5° die
-        factoryDice.setDiceValueColor(6, DiceColor.Green);
+        factoryDice.setDiceValueColor(6, DiceColor.GREEN);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(2, 2, dice);
 
         //****************************************************************************************
         //6° die
-        factoryDice.setDiceValueColor(4, DiceColor.Purple);
+        factoryDice.setDiceValueColor(4, DiceColor.PURPLE);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(3, 2, dice);
 
         //7° die
-        factoryDice.setDiceValueColor(5, DiceColor.Green);
+        factoryDice.setDiceValueColor(5, DiceColor.GREEN);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(3, 3, dice);
 
         //8° die
-        factoryDice.setDiceValueColor(4, DiceColor.Red);
+        factoryDice.setDiceValueColor(4, DiceColor.RED);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(3, 4, dice);
 
         //9° die
-        factoryDice.setDiceValueColor(2, DiceColor.Purple);
+        factoryDice.setDiceValueColor(2, DiceColor.PURPLE);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(2, 4, dice);
 
         //10° die
-        factoryDice.setDiceValueColor(4, DiceColor.Red);
+        factoryDice.setDiceValueColor(4, DiceColor.RED);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(2, 3, dice);
 
         //****************************************************************************************
         //11° die
-        factoryDice.setDiceValueColor(3, DiceColor.Yellow);
+        factoryDice.setDiceValueColor(3, DiceColor.YELLOW);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(1, 4, dice);
 
         //12° die
-        factoryDice.setDiceValueColor(2, DiceColor.Green);
+        factoryDice.setDiceValueColor(2, DiceColor.GREEN);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(1, 3, dice);
 
         //13° die
-        factoryDice.setDiceValueColor(5, DiceColor.Red);
+        factoryDice.setDiceValueColor(5, DiceColor.RED);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(1, 2, dice);
 
         //14° die
-        factoryDice.setDiceValueColor(6, DiceColor.Yellow);
+        factoryDice.setDiceValueColor(6, DiceColor.YELLOW);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(1, 1, dice);
 
         //15° die
-        factoryDice.setDiceValueColor(1, DiceColor.Purple);
+        factoryDice.setDiceValueColor(1, DiceColor.PURPLE);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(1, 0, dice);
 
         //****************************************************************************************
         //16° die
-        factoryDice.setDiceValueColor(5, DiceColor.Yellow);
+        factoryDice.setDiceValueColor(5, DiceColor.YELLOW);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(0, 0, dice);
 
         //17° die
-        factoryDice.setDiceValueColor(4, DiceColor.Green);
+        factoryDice.setDiceValueColor(4, DiceColor.GREEN);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(0, 1, dice);
 
         //18° die
-        factoryDice.setDiceValueColor(2, DiceColor.Blue);
+        factoryDice.setDiceValueColor(2, DiceColor.BLUE);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(0, 2, dice);
 
         //19° die
-        factoryDice.setDiceValueColor(3, DiceColor.Purple);
+        factoryDice.setDiceValueColor(3, DiceColor.PURPLE);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(0, 3, dice);
 
         //20° die
-        factoryDice.setDiceValueColor(2, DiceColor.Red);
+        factoryDice.setDiceValueColor(2, DiceColor.RED);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(0, 4, dice);
 

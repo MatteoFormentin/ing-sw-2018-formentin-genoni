@@ -4,8 +4,6 @@ import it.polimi.se2018.exception.window_exception.CellException.RestrictionCell
 import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellValueViolatedException;
 import it.polimi.se2018.exception.window_exception.InsertDice.NullDiceToAddException;
 import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellOccupiedException;
-import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionColorViolatedException;
-import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionValueViolatedException;
 import it.polimi.se2018.exception.window_exception.NoDiceInThisCell;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.dice.Dice;
@@ -51,11 +49,11 @@ public class TestCell {
         for (int i = 0; i < allValue.length; i++) {
             allValue[i] = new Cell();
             allValue[i].setValueRestriction(i + 1);
-            factoryDice.setDiceValueColor((i + 1), DiceColor.Red);
+            factoryDice.setDiceValueColor((i + 1), DiceColor.RED);
             diceRedAllValue[i] = factoryDice.createDice();
         }
         free = new Cell();
-        factoryDice.setDiceValueColor(3, DiceColor.Blue);
+        factoryDice.setDiceValueColor(3, DiceColor.BLUE);
         dice3Blue = factoryDice.createDice();
     }
 

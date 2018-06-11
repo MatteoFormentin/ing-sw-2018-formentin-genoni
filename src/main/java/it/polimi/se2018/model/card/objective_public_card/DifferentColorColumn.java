@@ -35,19 +35,19 @@ public class DifferentColorColumn extends ObjectivePublicCard {
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 4; i++) {
                 currentCellDice = matrix[i][j].getDice();
-                if (currentCellDice.getColor() == DiceColor.Red) {
+                if (currentCellDice.getColor() == DiceColor.RED) {
                     red++;
                 }
-                if (currentCellDice.getColor() == DiceColor.Yellow) {
+                if (currentCellDice.getColor() == DiceColor.YELLOW) {
                     yellow++;
                 }
-                if (currentCellDice.getColor() == DiceColor.Green) {
+                if (currentCellDice.getColor() == DiceColor.GREEN) {
                     green++;
                 }
-                if (currentCellDice.getColor() == DiceColor.Blue) {
+                if (currentCellDice.getColor() == DiceColor.BLUE) {
                     blue++;
                 }
-                if (currentCellDice.getColor() == DiceColor.Purple) {
+                if (currentCellDice.getColor() == DiceColor.PURPLE) {
                     purple++;
                 }
             }

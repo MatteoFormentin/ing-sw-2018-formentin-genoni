@@ -16,7 +16,7 @@ public class YellowObjectivePrivateCard extends ObjectivePrivateCard implements 
     public YellowObjectivePrivateCard() {
         super();
         super.setId(1);
-        super.setDiceColor(DiceColor.Yellow);
+        super.setDiceColor(DiceColor.YELLOW);
         super.setName("Sfumature Gialle");
         super.setDescription("Somma dei valori su tutti i dadi gialli");
     }

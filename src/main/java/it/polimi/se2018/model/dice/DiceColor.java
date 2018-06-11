@@ -9,14 +9,14 @@ import java.util.Arrays;
  * @author Luca Genoni
  */
 public enum DiceColor implements Serializable {
-    Red,
-    Yellow,
-    Green,
-    Blue,
-    Purple;
+    RED,
+    YELLOW,
+    GREEN,
+    BLUE,
+    PURPLE;
 
-    private static class numberDiceColor {
-        private static final int numberOfColors = (int) Arrays.stream(DiceColor.values()).count();
+    private static class NumberDiceColor {
+        private static final int NUMBER_COLOR = (int) Arrays.stream(DiceColor.values()).count();
     }
 
     /**
@@ -38,7 +38,7 @@ public enum DiceColor implements Serializable {
      * @return int number of color types
      */
     public static int getNumberOfDiceColors() {
-        return numberDiceColor.numberOfColors;
+        return NumberDiceColor.NUMBER_COLOR;
     }
 }
 

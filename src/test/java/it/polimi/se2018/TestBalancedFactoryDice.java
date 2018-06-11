@@ -24,19 +24,19 @@ public class TestBalancedFactoryDice {
         for (int i = 0; i < factoryBalancedDice.getMaxNumberOfDice(); i++) {
             Dice extract = factoryBalancedDice.createDice();
             switch (extract.getColor()) {
-                case Yellow:
+                case YELLOW:
                     currentNumberOfEachColor[0]++;
                     break;
-                case Purple:
+                case PURPLE:
                     currentNumberOfEachColor[1]++;
                     break;
-                case Red:
+                case RED:
                     currentNumberOfEachColor[2]++;
                     break;
-                case Green:
+                case GREEN:
                     currentNumberOfEachColor[3]++;
                     break;
-                case Blue:
+                case BLUE:
                     currentNumberOfEachColor[4]++;
                     break;
             }
