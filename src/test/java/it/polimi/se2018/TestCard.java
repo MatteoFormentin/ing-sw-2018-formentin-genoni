@@ -68,89 +68,56 @@ public class TestCard {
 
     @Test
     public void testCard() throws WindowRestriction {
+
         factoryDice.setDiceValueColor(1, DiceColor.BLUE);
         dice = factoryDice.createDice();
-
-        //Wrong move - First die cant be placed on board center.
-        assertThrows(firstR.getClass(), () -> testWindowPatternCard.insertDice(1, 2, dice));
-        assertThrows(firstR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice));
-        //Wrong move - Try to place a First die in a cell with restriction but on correct position (board edge)
-        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 0, dice));
-        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
-
-        //Wrong move - First die without adjacent restriction but other one
-        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice,false,true,true));
-        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice,false,false,true));
-        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 1, dice,false,true,true));
-        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 1, dice,false,true,false));
-
-        //Correct move - first die on edge and with correct number
         testWindowPatternCard.insertDice(3, 0, dice);
 
-        //Wrong move - Try to place a die in a cell with color restriction near a die with same color
-        factoryDice.setDiceValueColor(2, DiceColor.BLUE);
-        dice = factoryDice.createDice();
-        assertThrows(colorR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
-
-        //Wrong move - Try to place a die in a cell near a die with same color
-        assertThrows(colorR.getClass(), () -> testWindowPatternCard.insertDice(3, 1, dice));
-
-        //Wrong move - Try to place a die in a cell with color restriction near a die with same value
-        factoryDice.setDiceValueColor(1, DiceColor.GREEN);
-        dice = factoryDice.createDice();
-        assertThrows(valueR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
-
-        //Wrong move - Try to place a die in a cell near a die with same value
-        assertThrows(valueR.getClass(), () -> testWindowPatternCard.insertDice(3, 1, dice));
-
-        //Wrong move - Try to place a die in a cell away from some dice
-        assertThrows(adjacentR.getClass(), () -> testWindowPatternCard.insertDice(3, 3, dice));
-
         //Correct move - Die witch correct color and correct adj restriction
-        dice.setValue(2);
+        factoryDice.setDiceValueColor(2, DiceColor.GREEN);
+        dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(3, 1, dice);
 
-        //from now on all correct move
         //3° die
-        factoryDice.setDiceValueColor(3, DiceColor.YELLOW);
-        dice = factoryDice.createDice();
-        testWindowPatternCard.insertDice(2, 0, dice);
-
-        //4° die
-        factoryDice.setDiceValueColor(1, DiceColor.BLUE);
-        dice = factoryDice.createDice();
-        testWindowPatternCard.insertDice(2, 1, dice);
-
-        //5° die
-        factoryDice.setDiceValueColor(6, DiceColor.GREEN);
-        dice = factoryDice.createDice();
-        testWindowPatternCard.insertDice(2, 2, dice);
-
-        //****************************************************************************************
-        //6° die
         factoryDice.setDiceValueColor(4, DiceColor.PURPLE);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(3, 2, dice);
 
-        //7° die
+        //4° die
         factoryDice.setDiceValueColor(5, DiceColor.GREEN);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(3, 3, dice);
 
-        //8° die
+        //5° die
         factoryDice.setDiceValueColor(4, DiceColor.RED);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(3, 4, dice);
 
-        //9° die
-        factoryDice.setDiceValueColor(2, DiceColor.PURPLE);
+        //****************************************************************************************
+        //6° die
+        factoryDice.setDiceValueColor(3, DiceColor.YELLOW);
         dice = factoryDice.createDice();
-        testWindowPatternCard.insertDice(2, 4, dice);
+        testWindowPatternCard.insertDice(2, 0, dice);
 
-        //10° die
+        //7° die
+        factoryDice.setDiceValueColor(1, DiceColor.BLUE);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 1, dice);
+
+        //8° die
+        factoryDice.setDiceValueColor(6, DiceColor.GREEN);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 2, dice);
+
+        //9° die
         factoryDice.setDiceValueColor(4, DiceColor.RED);
         dice = factoryDice.createDice();
         testWindowPatternCard.insertDice(2, 3, dice);
+
+        //10° die
+        factoryDice.setDiceValueColor(2, DiceColor.PURPLE);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 4, dice);
 
         //****************************************************************************************
         //11° die
@@ -256,7 +223,53 @@ public class TestCard {
     }
 
     @Test
-    public void testBoolInsertDice() {
+    public void testBoolInsertDice() throws WindowRestriction {
+        factoryDice.setDiceValueColor(1, DiceColor.BLUE);
+        dice = factoryDice.createDice();
 
+        //Wrong move - First die cant be placed on board center.
+        assertThrows(firstR.getClass(), () -> testWindowPatternCard.insertDice(1, 2, dice));
+        assertThrows(firstR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice));
+        //Wrong move - Try to place a First die in a cell with restriction but on correct position (board edge)
+        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 0, dice));
+        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
+
+        //Wrong move - First die without adjacent restriction but other one
+        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice,false,true,true));
+        assertThrows(valueCellR.getClass(), () -> testWindowPatternCard.insertDice(2, 2, dice,false,false,true));
+        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 1, dice,false,true,true));
+        assertThrows(colorCellR.getClass(), () -> testWindowPatternCard.insertDice(0, 1, dice,false,true,false));
+
+        //Correct move - first die on edge and with correct number
+        testWindowPatternCard.insertDice(3, 0, dice);
+
+        //Wrong move - Try to place a die in a cell with color restriction near a die with same color
+        factoryDice.setDiceValueColor(2, DiceColor.BLUE);
+        dice = factoryDice.createDice();
+        assertThrows(colorR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
+
+        //Wrong move - Try to place a die in a cell near a die with same color
+        assertThrows(colorR.getClass(), () -> testWindowPatternCard.insertDice(3, 1, dice));
+
+        //Wrong move - Try to place a die in a cell with color restriction near a die with same value
+        factoryDice.setDiceValueColor(1, DiceColor.GREEN);
+        dice = factoryDice.createDice();
+        assertThrows(valueR.getClass(), () -> testWindowPatternCard.insertDice(2, 0, dice));
+
+        //Wrong move - Try to place a die in a cell near a die with same value
+        assertThrows(valueR.getClass(), () -> testWindowPatternCard.insertDice(3, 1, dice));
+
+        //Wrong move - Try to place a die in a cell away from some dice
+        assertThrows(adjacentR.getClass(), () -> testWindowPatternCard.insertDice(3, 3, dice));
+
+        //Correct move - Die witch correct color and correct adj restriction
+        dice.setValue(2);
+        testWindowPatternCard.insertDice(3, 1, dice);
+
+        //from now on all correct move
+        //3° die
+        factoryDice.setDiceValueColor(3, DiceColor.YELLOW);
+        dice = factoryDice.createDice();
+        testWindowPatternCard.insertDice(2, 0, dice);
     }
 }
