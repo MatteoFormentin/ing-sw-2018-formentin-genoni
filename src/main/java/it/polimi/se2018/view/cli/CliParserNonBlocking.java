@@ -3,7 +3,6 @@ package it.polimi.se2018.view.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CliParserNonBlocking extends CliParser {
@@ -18,8 +17,9 @@ public class CliParserNonBlocking extends CliParser {
     }
 
     public int readSplash() {
-        cliMessage.showWaitInput();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        flush(bufferedReader);
+        cliMessage.showWaitInput();
         while (isInputActive.get()) {
             try {
                 if (bufferedReader.ready()) {
@@ -37,7 +37,7 @@ public class CliParserNonBlocking extends CliParser {
         int parsed = 0;
         boolean flag = false;
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-
+        flush(bufferedReader);
         while (!flag && isInputActive.get()) {
             try {
                 if (bufferedReader.ready()) {
@@ -88,5 +88,15 @@ public class CliParserNonBlocking extends CliParser {
         } while (!flag && isInputActive.get());
         if (!isInputActive.get()) return -1; //Move Timeout
         return parsed;
+    }
+
+    private void flush(BufferedReader bufferedReader) {
+        try {
+            if (bufferedReader.ready()) {
+                bufferedReader.readLine();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
