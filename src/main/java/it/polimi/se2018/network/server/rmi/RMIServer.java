@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -26,7 +26,9 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     private static Registry registry;
 
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
-    private ArrayList<RMIPlayer> rmiPlayers;
+    //private ArrayList<RMIPlayer> rmiPlayers;
+
+    private HashMap<String, RMIPlayer> rmiPlayerHashMap = new HashMap<>();
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -39,7 +41,6 @@ public class RMIServer extends AbstractServer implements IRMIServer {
      */
     public RMIServer(ServerController serverController) {
         super(serverController);
-        rmiPlayers=new ArrayList<>();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -64,6 +65,8 @@ public class RMIServer extends AbstractServer implements IRMIServer {
         try {
             registry.bind("IRMIServer", this);
             UnicastRemoteObject.exportObject(this, port);
+
+            rmiPlayerHashMap=new HashMap<>();
 
             System.out.println("RMI Server running at " + port + " port...");
         } catch (RemoteException e) {
@@ -119,6 +122,7 @@ public class RMIServer extends AbstractServer implements IRMIServer {
     public void login(String nickname, IRMIClient iRMIClient) throws RemoteException {
         RMIPlayer player = new RMIPlayer(iRMIClient);
         player.setNickname(nickname);
+        rmiPlayerHashMap.put(nickname, player);
         try {
             if (!getServerController().login(player)) {
                 throw new RemoteException();

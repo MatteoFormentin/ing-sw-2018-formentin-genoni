@@ -28,6 +28,8 @@ public class RMIPlayer extends RemotePlayer {
      */
     public RMIPlayer(IRMIClient iRMIClient) {
         this.iRMIClient = iRMIClient;
+        // TODO VERIFICARE CHE FUNZIONI REALMENTE
+        playerRunning=true;
     }
 
     //------------------------------------------------------------------------------------------------------------------

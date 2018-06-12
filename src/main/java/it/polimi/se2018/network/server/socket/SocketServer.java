@@ -56,12 +56,12 @@ public class SocketServer extends AbstractServer {
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // CLIENT GATHERER
+    // CLIENT GATHERER - REQUEST LISTENER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Gatherer for client.
-     * This thread manage new socket client connections.
+     * This thread manage new socket client connection.
      */
     private class ClientGatherer extends Thread{
 
@@ -80,9 +80,12 @@ public class SocketServer extends AbstractServer {
                     newClientConnection = serverSocket.accept();
 
                     System.out.println("A new client connected!");
+
                     // Aggiungo il client
                     //server.addClient(newClientConnection);
                     SocketPlayer socketPlayer = new SocketPlayer(getServerController(), newClientConnection);
+
+                    // Faccio partire il thread del socket player
                     new Thread(socketPlayer).start();
 
                 } catch (IOException e) {

@@ -46,8 +46,8 @@ public abstract class AbstractServer {
 
     /**
      * Start every:
-     * RMI Connection
-     * Socket Connection
+     * RMI Server
+     * Socket Server
      *
      * @param port number of port that will be used on the connection.
      */

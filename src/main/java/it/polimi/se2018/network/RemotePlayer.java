@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 /**
  * Class that give to the player the possibility to utilize different type of connection (RMI or Socket).
  * This class will be extended from RMI or Socket Player class.
+ * It will be essentially used as a Client Handler.
  *
  * @author DavideMammarella
  */
@@ -25,7 +26,7 @@ public abstract class RemotePlayer {
     // Si ricollega alla logica dei thread (vedi Timer)
     // Setto una variabile booleana grazie la quale posso fornire lo stato del giocatore
     // Ovvero se c'è una connessione ancora valida (Running / true) o meno (Not Running / false)
-    private boolean playerRunning=false;
+    protected boolean playerRunning=false;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR

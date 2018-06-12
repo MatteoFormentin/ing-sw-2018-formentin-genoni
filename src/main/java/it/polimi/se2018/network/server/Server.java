@@ -7,6 +7,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.StartGame;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
+import it.polimi.se2018.network.server.socket.SocketServer;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
@@ -26,7 +27,7 @@ import java.util.Properties;
 public class Server implements ServerController, TimerCallback {
 
     //Porta su cui si appoggierà la comunicazione Socket
-    //public static int SOCKET_PORT;
+    public static int SOCKET_PORT;
     //Porta su cui si appoggierà la comunicazione RMI
     public static int RMI_PORT;
     // NUM MINIMO DI GIOCATORI PER PARTITA
@@ -40,7 +41,7 @@ public class Server implements ServerController, TimerCallback {
     ServerController serverController;
     boolean flag = true;
     // Socket Server
-    //private SocketServer socketServer;
+    private SocketServer socketServer;
     // RMI Server
     private RMIServer rmiServer;
     // GAME DELLA ROOM
@@ -70,7 +71,7 @@ public class Server implements ServerController, TimerCallback {
     // ORA SOLO RMI, MANCA EXCEPTION
     public Server() {
         rmiServer = new RMIServer(this);
-        //socketServer = new SocketServer(this);
+        socketServer = new SocketServer(this);
 
         roomJoinable = true;
         players = new ArrayList<>();
@@ -125,19 +126,19 @@ public class Server implements ServerController, TimerCallback {
             System.out.println("RMI port set to "+configProperties.getProperty("RMI_PORT"));
 
             // SOCKET PORT LOAD
-            //SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
-            //System.out.println("Socket port set to "+configProperties.getProperty("SOCKET_PORT"));
+            SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+            System.out.println("Socket port set to "+configProperties.getProperty("SOCKET_PORT"));
         } catch (IOException e) {
             // LOAD FAILED
             System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
             // Default RMI PORT in case of exception.
             RMI_PORT = 31415;
             // Default Socket PORT in case of exception.
-            //SOCKET_PORT = 16180;
+            SOCKET_PORT = 16180;
         }
 
         int rmiPort = RMI_PORT;
-        //int socketPort = SOCKET_PORT;
+        int socketPort = SOCKET_PORT;
 
         try {
             Server server = new Server();
@@ -154,11 +155,10 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param rmiPort port used on RMI connection.
      */
-    // int socketPort
-    // socketServer.StartServer (socketPort)
-    public void startServer(int rmiPort) throws Exception {
+    public void startServer(int rmiPort/*, int socketPort*/) throws Exception {
         System.out.println("RMI Server started...");
         rmiServer.startServer(rmiPort);
+        // socketServer.startServer (socketPort);
     }
 
     //------------------------------------------------------------------------------------------------------------------
