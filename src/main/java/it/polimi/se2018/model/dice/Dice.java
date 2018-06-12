@@ -29,7 +29,7 @@ public class Dice implements Serializable {
      * @param value to set on the dice
      */
     public void setValue(int value) {
-        if(value>0&&value<7) this.value = value;
+        if (value > 0 && value < 7) this.value = value;
     }
 
     /**
@@ -86,16 +86,18 @@ public class Dice implements Serializable {
             case 6:
                 opposite = 1;
                 break;
+            default:
+                opposite = 0;
         }
         return opposite;
     }
 
-    public boolean increaseOrDecrease(boolean increase){
-        if(increase){
-            if (value==6) return false;
-            value ++;
-        }else{//decrease
-            if(value==1) return false;
+    public boolean increaseOrDecrease(boolean increase) {
+        if (increase) {
+            if (value == 6) return false;
+            value++;
+        } else {//decrease
+            if (value == 1) return false;
             value--;
         }
         return true;

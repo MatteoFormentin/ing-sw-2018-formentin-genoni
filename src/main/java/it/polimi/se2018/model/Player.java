@@ -3,12 +3,11 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
 import it.polimi.se2018.exception.*;
+import it.polimi.se2018.exception.player_exception.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.exception.player_exception.NoDiceInHandException;
 import it.polimi.se2018.exception.player_exception.NoEnoughTokenException;
-import it.polimi.se2018.exception.window_exception.RestrictionAdjacentViolatedException;
-import it.polimi.se2018.exception.window_exception.RestrictionCellOccupiedException;
-import it.polimi.se2018.exception.window_exception.RestrictionColorViolatedException;
-import it.polimi.se2018.exception.window_exception.RestrictionValueViolatedException;
+import it.polimi.se2018.exception.player_exception.PlayerException;
+import it.polimi.se2018.exception.window_exception.*;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
@@ -210,7 +209,7 @@ public class Player {
      */
     void addDiceToHand(Dice dice) throws NoDiceException {
         if (dice == null) throw new NoDiceException();
-        handDice.add(dice);
+        handDice.addFirst(dice);
     }
 
     /**
@@ -219,11 +218,8 @@ public class Player {
      * @param line   of the cell of the playerWindowPattern
      * @param column of the cell of the playerWindowPattern
      */
-    public void insertDice(int line, int column) throws RestrictionCellOccupiedException, RestrictionValueViolatedException,
-            RestrictionColorViolatedException, RestrictionAdjacentViolatedException, NoDiceInHandException {
-        if (handDice.get(0) == null) throw new NoDiceInHandException();
-        playerWindowPattern.insertDice(line, column, handDice.get(0)); // can't insert the dice
-        handDice.remove(0);
+    public void insertDice(int line, int column, boolean firstDice) throws WindowRestriction, PlayerException {
+       insertDice(line,column,true,true,true,firstDice);
     }
 
     /**
@@ -257,44 +253,36 @@ public class Player {
     //*********************************************Tool's method*************************************************
 
     /**
-     * Insert the dice. Available when using a tool card
+     * Method for insert the dice
      *
-     * @param line                index [0,3] of the WindowsPattern
-     * @param column              index [0,4] of the WindowsPattern
-     * @param colorRestriction    true if the Restriction need to be respected, false if it is ignored:
-     *                            colorRestriction->the dice respect the restriction, == !valueRestriction || respect the restriction
-     *                            if this logic produce true can insert the dice
-     * @param valueRestriction    true if the Restriction need to be respected, false if it is ignored:
-     *                            valueRestriction->the dice respect the restriction, == !valueRestriction || respect the restriction
-     *                            if this logic produce true can insert the dice
-     * @param adjacentRestriction true if the Restriction need to be respected, false if the Restriction need to be violated
-     *                            adjacentRestriction==the dice respect the restriction
-     *                            if this logic produce true can insert the dice
+     * @param line index of the window's line
+     * @param column index of the window's column
+     * @param adjacentR true if need to be near a dice, false otherwise
+     * @param colorR true if need to check this restriction
+     * @param valueR true if need to check this restriction
+     * @param firstInsert true if it insert a new dice for the turn
+     * @throws WindowRestriction the specific exception of the insert
+     * @throws PlayerException the exception regarding the state of the player
      */
-    boolean insertDice(int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
-        if (!hasUsedToolCard) return false; //didn't use toolcard
-        if (handDice.size() == 0) return false;// no dice in hand
-        if (!playerWindowPattern.insertDice(line, column, handDice.get(0), adjacentRestriction, colorRestriction, valueRestriction))
-            return false; // can't insert the dice
-       // removeDiceFromHand();
-        hasPlaceANewDice = true;
-        return true;
+    void insertDice(int line, int column, boolean adjacentR, boolean colorR, boolean valueR,boolean firstInsert)
+            throws WindowRestriction,PlayerException {
+        if (handDice.isEmpty()) throw new NoDiceInHandException();
+        if (firstInsert && hasPlaceANewDice) throw new AlreadyPlaceANewDiceException();
+        playerWindowPattern.insertDice(line, column, handDice.get(0), adjacentR, colorR, valueR);
+        handDice.remove(0);
+        if (firstInsert) hasPlaceANewDice = true;
     }
 
     /**
      * move the dice from the indicated coordinate by hand. Available when using a tool card
      *
-     * @param line   of cell
-     * @param column of cell
-     * @return false if didn't select a tool card,true otherwise
+     * @param line index of the wind's line
+     * @param column index of the window's column
+     * @throws WindowRestriction if something isn't right
      */
-    boolean moveDiceFromWindowPatternToHand(int line, int column) {
-        if (!hasUsedToolCard) return false;
-        Dice dice = playerWindowPattern.getCell(line, column).getDice();
-        if (dice == null) return false;
-        playerWindowPattern.removeDice(line, column);
-        handDice.add(dice);
-        return true;
+    void removeDiceFromWindow(int line, int column) throws WindowRestriction{
+        Dice dice = playerWindowPattern.removeDice(line, column);
+        handDice.addFirst(dice);
     }
 
 

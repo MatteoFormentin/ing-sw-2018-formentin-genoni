@@ -16,7 +16,7 @@ public class GreenObjectivePrivateCard extends ObjectivePrivateCard implements S
     public GreenObjectivePrivateCard() {
         super();
         super.setId(2);
-        super.setDiceColor(DiceColor.Green);
+        super.setDiceColor(DiceColor.GREEN);
         super.setName("Sfumature Verdi");
         super.setDescription("Somma dei valori su tutti i dadi verdi");
     }

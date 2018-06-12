@@ -11,15 +11,15 @@ public class TestFactory extends FactoryDice {
      */
     @Override
     public Dice createDice() {
-        if(color==null){
-            System.err.println("Non hai settato il colore del nuovo dado, fai TestFactory.setColor, volendo puoi anche settare il valore con TestFactory.setValue");
+        if(color==null ||value==0){
+            System.err.println("Non hai settato il colore o il valore");
             return null;
         }
-        if(value==0) return new Dice(color);
         Dice dice= new Dice(color);
         dice.setValue(value);
         return dice;
     }
+
     /**
      * nothing
      *
@@ -28,11 +28,8 @@ public class TestFactory extends FactoryDice {
     @Override
     public void removeDice(Dice dice){}
 
-    public void setValue(int value) {
+    public void setDiceValueColor(int value, DiceColor color) {
         this.value = value;
-    }
-
-    public void setColor(DiceColor color) {
         this.color = color;
     }
 }

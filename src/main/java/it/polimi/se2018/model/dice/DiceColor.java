@@ -9,14 +9,14 @@ import java.util.Arrays;
  * @author Luca Genoni
  */
 public enum DiceColor implements Serializable {
-    Red,
-    Yellow,
-    Green,
-    Blue,
-    Purple;
+    RED,
+    YELLOW,
+    GREEN,
+    BLUE,
+    PURPLE;
 
-    private static class numberDiceColor {
-        private static final int numberOfColors = (int) Arrays.stream(DiceColor.values()).count();
+    private static class NumberDiceColor {
+        private static final int NUMBER_COLOR = (int) Arrays.stream(DiceColor.values()).count();
     }
 
     /**
@@ -26,9 +26,6 @@ public enum DiceColor implements Serializable {
      * @return DiceColor associated with the input number, null if there is no match.
      */
     public static DiceColor getDiceColor(int ordinal) {
-        /* exchangeable with
-         * return Arrays.stream(DiceColor.values()).filter(p -> p.ordinal() == ordinal).findFirst().orElse(null);
-         */
         for (DiceColor p : values()) {
             if (p.ordinal() == ordinal) return p;
         }
@@ -41,7 +38,7 @@ public enum DiceColor implements Serializable {
      * @return int number of color types
      */
     public static int getNumberOfDiceColors() {
-        return numberDiceColor.numberOfColors;
+        return NumberDiceColor.NUMBER_COLOR;
     }
 }
 

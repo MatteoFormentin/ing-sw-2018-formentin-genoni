@@ -16,7 +16,7 @@ public class RedObjectivePrivateCard extends ObjectivePrivateCard implements Ser
     public RedObjectivePrivateCard() {
         super();
         super.setId(0);
-        super.setDiceColor(DiceColor.Red);
+        super.setDiceColor(DiceColor.RED);
         super.setName("Sfumature Rosse");
         super.setDescription("Somma dei valori su tutti i dadi rossi");
     }

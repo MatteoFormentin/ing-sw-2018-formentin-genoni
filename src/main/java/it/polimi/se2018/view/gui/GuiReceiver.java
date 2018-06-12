@@ -3,6 +3,7 @@ package it.polimi.se2018.view.gui;
 import it.polimi.se2018.view.gui.gamestage.GuiGame;
 import it.polimi.se2018.view.gui.stage.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -90,7 +91,7 @@ public class GuiReceiver extends Application {
         Boolean result = new ConfirmBox(primaryStage).displayMessage("Sei sicuro di voler uscire dal gioco?");
         if (result) {
             primaryStage.close();
-            System.exit(0);
+            Platform.exit();
         }
     }
 }

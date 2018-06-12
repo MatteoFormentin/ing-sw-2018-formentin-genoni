@@ -31,6 +31,7 @@ public class DarkNumber extends ObjectivePublicCard {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
                 currentCellDice = matrix[i][j].getDice();
+                if (currentCellDice == null) continue;
                 if (currentCellDice.getValue() == 5) {
                     five++;
                 }

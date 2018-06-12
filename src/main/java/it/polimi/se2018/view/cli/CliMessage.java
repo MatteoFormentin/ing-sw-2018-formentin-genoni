@@ -150,19 +150,19 @@ class CliMessage {
                     showDice(matrix[m][n].getDice());
                 } else if (matrix[m][n].getColorRestriction() != null) {
                     switch (matrix[m][n].getColorRestriction()) {
-                        case Blue:
+                        case BLUE:
                             AnsiConsole.out.print(ansi().fg(BLUE).a("@"));
                             break;
-                        case Purple:
+                        case PURPLE:
                             AnsiConsole.out.print(ansi().fg(MAGENTA).a("@"));
                             break;
-                        case Yellow:
+                        case YELLOW:
                             AnsiConsole.out.print(ansi().fg(YELLOW).a("@"));
                             break;
-                        case Green:
+                        case GREEN:
                             AnsiConsole.out.print(ansi().fg(GREEN).a("@"));
                             break;
-                        case Red:
+                        case RED:
                             AnsiConsole.out.print(ansi().fg(RED).a("@"));
                             break;
                     }
@@ -230,19 +230,19 @@ class CliMessage {
     void showDice(Dice dice) {
         Color color = DEFAULT;
         switch (dice.getColor()) {
-            case Red:
+            case RED:
                 color = RED;
                 break;
-            case Green:
+            case GREEN:
                 color = GREEN;
                 break;
-            case Yellow:
+            case YELLOW:
                 color = YELLOW;
                 break;
-            case Blue:
+            case BLUE:
                 color = BLUE;
                 break;
-            case Purple:
+            case PURPLE:
                 color = MAGENTA;
                 break;
         }

@@ -1,6 +1,7 @@
-package it.polimi.se2018.exception.window_exception;
+package it.polimi.se2018.exception.window_exception.InsertDice;
 
 import it.polimi.se2018.exception.GameException;
+import it.polimi.se2018.exception.window_exception.WindowRestriction;
 
 /**
  * The class {@code RestrictionColorViolatedException} is a subclass of {@code Exception}
@@ -13,6 +14,6 @@ import it.polimi.se2018.exception.GameException;
 public class RestrictionAdjacentViolatedException extends WindowRestriction {
 
     public RestrictionAdjacentViolatedException() {
-        super("You can not place the die in this cell because it violates the adjacent restriction");
+        super("Volevi piazzare il dado in una posizione isolata");
     }
 }

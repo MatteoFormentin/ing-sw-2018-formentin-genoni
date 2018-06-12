@@ -10,9 +10,9 @@ import it.polimi.se2018.exception.GameException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class AlreadyDrawANewDiceException extends GameException {
+public class AlreadyDrawANewDiceException extends PlayerException {
 
     public AlreadyDrawANewDiceException() {
-        super("You have already draw a die in this turn");
+        super("Hai già pescato un dado dalla riserva");
     }
 }

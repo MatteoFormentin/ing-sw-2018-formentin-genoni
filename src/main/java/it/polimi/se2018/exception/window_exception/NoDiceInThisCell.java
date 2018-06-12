@@ -1,7 +1,5 @@
 package it.polimi.se2018.exception.window_exception;
 
-import it.polimi.se2018.exception.GameException;
-
 /**
  * * The class {@code RestrictionColorViolatedException} is a subclass of {@code Exception}
  * <p>
@@ -10,9 +8,10 @@ import it.polimi.se2018.exception.GameException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class RestrictionCellOccupiedException extends WindowRestriction {
+public class NoDiceInThisCell extends WindowRestriction {
 
-    public RestrictionCellOccupiedException() {
-        super("This Cell is occupied by another dice");
+    public NoDiceInThisCell() {
+        super("Non ci sono dadi da rimuovere in questa cella.");
     }
+
 }
