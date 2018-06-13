@@ -3,7 +3,7 @@ package it.polimi.se2018.exception.gameboard_exception;
 import it.polimi.se2018.exception.GameException;
 
 /**
- * The class {@code NumberOfPlayerException} is a subclass of {@code Exception}
+ * The class {@code WindowSettingCompleteException} is a subclass of {@code Exception}
  * <p>
  * So it's a checked exceptions and it need to be declared in a
  * method or constructor's {@code throws} clause if they can be thrown

@@ -1,7 +1,7 @@
 package it.polimi.se2018.model.dice;
 
 
-public class TestFactory extends FactoryDice {
+public class TestFactory implements FactoryDice {
     private int value;
     private DiceColor color;
     /**

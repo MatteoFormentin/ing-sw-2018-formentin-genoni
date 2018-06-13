@@ -2,11 +2,8 @@ package it.polimi.se2018.model;
 
 
 import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
-import it.polimi.se2018.exception.*;
-import it.polimi.se2018.exception.player_exception.AlreadyPlaceANewDiceException;
-import it.polimi.se2018.exception.player_exception.NoDiceInHandException;
-import it.polimi.se2018.exception.player_exception.NoEnoughTokenException;
-import it.polimi.se2018.exception.player_exception.PlayerException;
+import it.polimi.se2018.exception.player_exception.*;
+import it.polimi.se2018.exception.tool_exception.NoEnoughTokenException;
 import it.polimi.se2018.exception.window_exception.*;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
@@ -31,20 +28,6 @@ public class Player {
     private boolean hasDrawNewDice;
     private boolean hasPlaceANewDice;
     private boolean hasUsedToolCard;
-    //sarebbe carino uno state pattern......... ma troppo sbatti
-
-    public Player() {
-        indexInGame = 0;
-        favorToken = 0;
-        points = 0;
-        privateObject = null;
-        playerWindowPattern = null;
-        handDice = null;
-        firstTurn = true;
-        hasDrawNewDice = false;
-        hasPlaceANewDice = false;
-        hasUsedToolCard = false;
-    }
 
     /**
      * Constructor for a new player
@@ -63,25 +46,6 @@ public class Player {
         hasPlaceANewDice = false;
         hasUsedToolCard = false;
     }
-    /*
-    public Player clone(){
-        Player copyPlayer =new Player();
-        copyPlayer.setIndexInGame(indexInGame);
-        copyPlayer.setNickName(nickName);
-        copyPlayer.setFavorToken(favorToken);
-        copyPlayer.setPoints(points);
-        /*
-        ObjectivePrivateCard privateObject;
-        WindowPatternCard playerWindowPattern;
-        WindowPatternCard[] the4WindowPattern;
-        DiceStack handDice;*/
-/*
-        copyPlayer.setFirstTurn(firstTurn);
-        copyPlayer.setHasDrawNewDice(hasDrawNewDice);
-        copyPlayer.setHasPlaceANewDice(hasPlaceANewDice);
-        copyPlayer.setHasUsedToolCard(hasUsedToolCard);
-        return copyPlayer;
-    }*/
     //************************************getter**********************************************
     //************************************getter**********************************************
     //************************************getter**********************************************
@@ -207,50 +171,12 @@ public class Player {
      * @param dice the dice to add
      * @return true if it's all ok, false otherwise
      */
-    void addDiceToHand(Dice dice) throws NoDiceException {
+    void addDiceToHand(Dice dice,boolean fromDicePool) throws NoDiceException,AlreadyDrawANewDiceException {
         if (dice == null) throw new NoDiceException();
+        if(fromDicePool && hasDrawNewDice) throw new AlreadyDrawANewDiceException();
         handDice.addFirst(dice);
+        if(fromDicePool) hasDrawNewDice=true;
     }
-
-    /**
-     * A method for insert the Dice (in position 0 in hand) in the player's window with all the window restriction activated
-     *
-     * @param line   of the cell of the playerWindowPattern
-     * @param column of the cell of the playerWindowPattern
-     */
-    public void insertDice(int line, int column, boolean firstDice) throws WindowRestriction, PlayerException {
-       insertDice(line,column,true,true,true,firstDice);
-    }
-
-    /**
-     * A method for activated the use of the toolCard methods
-     * Check the state of the player and his money.
-     *
-     * @param cost of the tool card
-     * @return true id it's all ok, false if player can't use toolcard
-     */
-    public void useToolCard(int cost) throws StatePlayerException,NoEnoughTokenException{
-        if (hasUsedToolCard) throw new StatePlayerException();
-        if (cost > favorToken) throw new NoEnoughTokenException();
-        hasUsedToolCard = true;
-        favorToken -= cost;
-    }
-
-    void endTrun(boolean nextTurnIsATypeFirstTurn) {
-        hasUsedToolCard = false;
-        hasDrawNewDice = false;
-        hasPlaceANewDice = false;
-        firstTurn = nextTurnIsATypeFirstTurn;
-    }
-
-
-
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
 
     /**
      * Method for insert the dice
@@ -272,6 +198,38 @@ public class Player {
         handDice.remove(0);
         if (firstInsert) hasPlaceANewDice = true;
     }
+
+    /**
+     * A method for activated the use of the toolCard methods
+     * Check the state of the player and his money.
+     *
+     * @param cost of the tool card
+     * @return true id it's all ok, false if player can't use toolcard
+     */
+    void useToolCard(int cost) throws AlreadyUseToolCardException,NoEnoughTokenException {
+        if (hasUsedToolCard) throw new AlreadyUseToolCardException();
+        if (cost > favorToken) throw new NoEnoughTokenException();
+        hasUsedToolCard = true;
+        favorToken -= cost;
+    }
+
+    void endTrun(boolean nextTurnIsATypeFirstTurn) {
+        hasUsedToolCard = false;
+        hasDrawNewDice = false;
+        hasPlaceANewDice = false;
+        firstTurn = nextTurnIsATypeFirstTurn;
+    }
+
+
+
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+    //*********************************************Tool's method*************************************************
+
+
 
     /**
      * move the dice from the indicated coordinate by hand. Available when using a tool card

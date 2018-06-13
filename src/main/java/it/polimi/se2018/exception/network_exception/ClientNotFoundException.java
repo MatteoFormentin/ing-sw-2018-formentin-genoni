@@ -1,4 +1,4 @@
-package it.polimi.se2018.exception.NetworkException;
+package it.polimi.se2018.exception.network_exception;
 
 /**
  * Class that define a client exception.

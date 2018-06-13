@@ -5,8 +5,7 @@ package it.polimi.se2018.model.dice;
  *
  * @author Luca Genoni
  */
-public abstract class FactoryDice {
-    public abstract Dice createDice();
-    public abstract void removeDice(Dice dice);
-
+public interface FactoryDice {
+    Dice createDice();
+    void removeDice(Dice dice);
 }

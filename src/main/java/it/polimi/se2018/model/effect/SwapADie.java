@@ -5,23 +5,30 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.dice.Dice;
 
-public class TakeDiceFromDraftPool extends EffectGame {
+public class SwapADie extends EffectGame {
 
-    private int indexDiceOfDicePool;
+    private int round;
+    private int index;
+    private boolean trueRoundFalseFactory;
 
-    public TakeDiceFromDraftPool(int indexDiceOfDicePool) {
-        this.indexDiceOfDicePool = indexDiceOfDicePool;
+    public SwapADie(boolean trueRoundFalseFactory) {
+        this.trueRoundFalseFactory = trueRoundFalseFactory;
     }
 
     @Override
     public void doEffect(GameBoard gameBoard, int idPlayer) throws GameException {
-        gameBoard.addNewDiceToHandFromDicePool(idPlayer, indexDiceOfDicePool);
+        if(trueRoundFalseFactory);
     }
 
     @Override
     public void undo(GameBoard gameBoard, int idPlayer) throws GameException {
-        Dice dice = gameBoard.getPlayer(idPlayer).getHandDice().remove(0);
-        gameBoard.getDicePool().add(indexDiceOfDicePool, dice);
+        if(trueRoundFalseFactory){
+
+        }else{
+            Dice dice = gameBoard.getPlayer(idPlayer).getHandDice().remove(0);
+            gameBoard.getDicePool().add(index,dice);
+        }
+
     }
 
     @Override

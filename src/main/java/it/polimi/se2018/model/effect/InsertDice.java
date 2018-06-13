@@ -1,6 +1,8 @@
 package it.polimi.se2018.model.effect;
 
+import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.exception.GameException;
+import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.dice.Dice;
 
@@ -13,55 +15,29 @@ public class InsertDice extends EffectGame {
     private boolean adjacentR;
     private boolean colorR;
     private boolean valueR;
-    private boolean firstDieOfTheTrun;
+    private boolean firstDieOfTheTurn;
 
-    /**
-     * Constructor for the normal insert dice
-     *
-     * @param gameBoard the Game board where to apply the effect
-     * @param idPlayer  the id of the player who request the Action
-     * @param line   the line of the window
-     * @param column    the column of the window
-     */
-    public InsertDice(GameBoard gameBoard, int idPlayer, int line, int column) {
-        super(gameBoard, idPlayer);
-        this.line = line;
-        this.column = column;
-        this.adjacentR = true;
-        this.colorR = true;
-        this.valueR = true;
-        this.firstDieOfTheTrun= true;
-    }
-    /**
-     * Constructor for the normal insert dice
-     *
-     * @param gameBoard the Game board where to apply the effect
-     * @param idPlayer  the id of the player who request the Action
-     * @param line the line of the window
-     * @param column the column of the window
-     * @param adjacentR true if need to be respected, false otherwise
-     * @param colorR true if need to be respected, false otherwise
-     * @param valueR true if need to be respected, false otherwise
-     */
-    public InsertDice(GameBoard gameBoard, int idPlayer, int line, int column, boolean adjacentR, boolean colorR, boolean valueR,boolean firstDieOfTheTrun) {
-        super(gameBoard, idPlayer);
-        this.line = line;
-        this.column = column;
+    public InsertDice(boolean adjacentR, boolean colorR, boolean valueR, boolean firstDieOfTheTurn) {
         this.adjacentR = adjacentR;
         this.colorR = colorR;
         this.valueR = valueR;
-        this.firstDieOfTheTrun= firstDieOfTheTrun;
+        this.firstDieOfTheTurn = firstDieOfTheTurn;
     }
 
     @Override
-    public void doEffect() throws GameException {
-        gameBoard.insertDice(idPlayer,line,column,adjacentR,colorR,valueR,firstDieOfTheTrun);
+    public void doEffect(GameBoard gameBoard, int idPlayer) throws GameException {
+        gameBoard.insertDice(idPlayer,line,column,adjacentR,colorR,valueR, firstDieOfTheTurn);
     }
 
     @Override
-    public void undo() throws GameException{
+    public void undo(GameBoard gameBoard, int idPlayer) throws GameException {
         Dice dice =gameBoard.getPlayer(idPlayer).getPlayerWindowPattern().removeDice(line,column);
         gameBoard.getPlayer(idPlayer).getHandDice().addFirst(dice);
+    }
+
+    @Override
+    public EventView askTheViewTheInfo() {
+        return null;
     }
 
 }

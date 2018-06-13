@@ -61,8 +61,6 @@ public class GameBoard {
         for (int i = 0; i < toolCard.length; i++) toolCard[i] = deck.drawToolCard();
 
         for (int i = 0; i < objectivePublicCard.length; i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
-
-        System.err.println("Gameboard Creata con " + number + " giocatori");
     }
 
     public void notifyAllCards(int indexPlayer) {
@@ -81,7 +79,6 @@ public class GameBoard {
         UpdateInitDimRound packetRound = new UpdateInitDimRound(roundTrack);
         packetRound.setPlayerId(indexPlayer);
         server.sendEventToView(packetRound);
-        System.err.println("inviati tutti le info iniziali a " + indexPlayer);
     }
 
     private void broadcast(EventView event) {
@@ -211,11 +208,6 @@ public class GameBoard {
     }
 
     private void freeHandPlayer(int indexPlayer) {
-        /*
-        while (player[indexPlayer].getHandDice().size() != 0) {
-            dicePool.addLast(player[indexPlayer].getHandDice().remove(0));
-        }
-         */
         while (!player[indexPlayer].getHandDice().isEmpty()) {
             dicePool.addLast(player[indexPlayer].getHandDice().remove(0));
         }
@@ -232,7 +224,10 @@ public class GameBoard {
         UpdateDicePool packet = new UpdateDicePool(dicePool);
         broadcast(packet);
     }
-
+    private void updateTokenPoints(int indexPlayer) {
+        UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer,player[indexPlayer].getFavorToken(),player[indexPlayer].getPoints());
+        broadcast(packet);
+    }
     /**
      * change the current player to the next and end the game.
      * check the state of the player for the first/second turn
@@ -353,11 +348,9 @@ public class GameBoard {
             UpdateSingleWindow packet = new UpdateSingleWindow(idPlayer, player[idPlayer].getPlayerWindowPattern());
             packet.setPlayerId(i);
             server.sendEventToView(packet);
-            UpdateSinglePlayerTokenAndPoints packetToken = new UpdateSinglePlayerTokenAndPoints(idPlayer,
-                    player[idPlayer].getFavorToken(), player[idPlayer].getPoints());
-            packetToken.setPlayerId(idPlayer);
-            server.sendEventToView(packetToken);
+
         }
+        updateTokenPoints(idPlayer);
         countSetWindow++;
         if (countSetWindow == player.length) {
             setUpFirstRound();
@@ -383,9 +376,8 @@ public class GameBoard {
         if (player[indexPlayer].isHasDrawNewDice()) throw new AlreadyDrawANewDiceException();
         Dice dice = dicePool.getDice(indexDicePool);
         if (dice == null) throw new NoDiceException();
-        player[indexPlayer].addDiceToHand(dice);
+        player[indexPlayer].addDiceToHand(dice, true);
         dicePool.remove(indexDicePool);
-        player[indexPlayer].setHasDrawNewDice(true);
         updateHand(indexPlayer);
         updateDicePool();
     }
@@ -398,11 +390,11 @@ public class GameBoard {
      * @param column
      * @return
      */
-    public void insertDice(int indexPlayer, int line, int column) throws WindowRestriction,PlayerException, GameIsBlockedException,CurrentPlayerException {
+    public void insertDice(int indexPlayer, int line, int column, boolean firstTurnDie) throws WindowRestriction, PlayerException, GameIsBlockedException, CurrentPlayerException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
-        player[indexPlayer].insertDice(line, column,true);
+        player[indexPlayer].insertDice(line, column, true, true, true, firstTurnDie);
         player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
@@ -410,13 +402,10 @@ public class GameBoard {
     }
 
 
-    public void useToolCard(int indexPlayer, int indexOfToolInGame) throws Exception {
-        throw new UnsupportedOperationException();
-    /*
+    public void useToolCard(int indexPlayer, int indexOfToolInGame) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
-        if (cost < 0) throw new NegativeCostException();
-        player[indexPlayer].useToolCard(cost);*/
+        player[indexPlayer].useToolCard(toolCard[indexOfToolInGame].getFavorToken());
 
     }
     //*****************************************Tool's method of Gameboard **********************************************
@@ -468,6 +457,7 @@ public class GameBoard {
             roundTrack[round].add(indexStack, dice);*/
 
     }
+
 
     /**
      * remove the dice from the window pattern, but the dice need to be of the same color of the die selected in the roundTrack
@@ -534,7 +524,7 @@ public class GameBoard {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (singleNewDice && player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
-        player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction,true);
+        player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction, true);
         if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
@@ -582,7 +572,7 @@ public class GameBoard {
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
-    public void rollDiceInHand(int indexPlayer) throws Exception {
+    public void rollDiceInHand(int indexPlayer) throws GameException {
        /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
@@ -597,7 +587,7 @@ public class GameBoard {
      * @param increase    if true increase by 1, if false decrease by 1 the value of the active dice in hand (index 0)
      * @return
      */
-    public void increaseOrDecrease(int indexPlayer, boolean increase) throws Exception {
+    public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameException {
       /*  try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
@@ -611,7 +601,7 @@ public class GameBoard {
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
-    public void oppositeFaceDice(int indexPlayer) throws Exception {
+    public void oppositeFaceDice(int indexPlayer) throws GameException {
       /*  try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
@@ -625,7 +615,7 @@ public class GameBoard {
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return
      */
-    public void endSpecialFirstTurn(int indexPlayer) throws Exception {
+    public void endSpecialFirstTurn(int indexPlayer) throws GameException {
        /* try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn
@@ -646,7 +636,7 @@ public class GameBoard {
      * @param index       of the die in hand
      * @return
      */
-    public void selectDiceInHand(int indexPlayer, int index) throws Exception {
+    public void selectDiceInHand(int indexPlayer, int index) throws GameException {
      /*   try {
             if (stopGame) return false;// game stopped
             if (indexPlayer != indexCurrentPlayer) return false; //not your turn

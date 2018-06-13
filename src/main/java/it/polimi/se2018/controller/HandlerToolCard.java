@@ -30,6 +30,11 @@ public class HandlerToolCard implements ControllerVisitor {
 
     }
 
+    @Override
+    public void visit(ControllerSendInfoIndex event) {
+
+    }
+
 
     @Override
     public void visit(ControllerSelectCellOfWindow event) {
