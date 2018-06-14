@@ -51,7 +51,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
         gameBoard = new GameBoard(playerNumber, server);
         handlerToolCard = new HandlerToolCard(gameBoard, this);
         toolcard = false;
-
         playerTimeout = new TimerThread(this, PLAYER_TIMEOUT);
     }
 
@@ -185,7 +184,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     @Override
     public void visit(ControllerSelectCellOfWindow event) {
         try {
-            gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn());
+            gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn(),true);
             EventView packet =new MessageOk("la massa si è conclusa con successo",true);
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
@@ -221,6 +220,11 @@ public class Controller implements ControllerVisitor, TimerCallback {
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(),false);
         }
+    }
+
+    @Override
+    public void visit(ControllerSendInfoIndex event) {
+
     }
 
     @Override

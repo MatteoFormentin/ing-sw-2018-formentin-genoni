@@ -19,6 +19,7 @@ public interface ControllerVisitor {
     void visit(ControllerEndTurn event);
 
     //for the info required
+    void visit(ControllerSendInfoIndex event);
     void visit(ControllerSelectCellOfWindow event);
     void visit(ControllerSelectDiceFromDraftPool event);
     void visit(ControllerSelectToolCard event);

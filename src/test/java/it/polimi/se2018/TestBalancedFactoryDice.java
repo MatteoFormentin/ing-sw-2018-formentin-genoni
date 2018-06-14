@@ -16,7 +16,7 @@ public class TestBalancedFactoryDice {
     @Before
     public void initDeck() {
         factoryBalancedDice = new BalancedFactoryDice();
-        currentNumberOfEachColor = new int[factoryBalancedDice.getAvailableColours().size()];
+        currentNumberOfEachColor = new int[factoryBalancedDice.getNumberAvailableColours()];
     }
 
     @Test

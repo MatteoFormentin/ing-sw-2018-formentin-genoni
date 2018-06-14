@@ -2,7 +2,6 @@ package it.polimi.se2018.model.dice;
 
 import java.io.Serializable;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * DiceStack is a comfortable class that extends from LinkedList and have some utils

@@ -9,11 +9,11 @@ import java.util.Random;
  *
  * @author Luca Genoni
  */
-public class BalancedFactoryDice extends FactoryDice {
+public class BalancedFactoryDice implements FactoryDice {
     private int currentNumberOfDice;
     //currentNumberOfEachDice stores the number of dice for each color. It is indexed with the ordinal number relative to each color
     private int[] currentNumberOfEachDice;
-    private final int MaxNumberOfDice = 90;
+    private static final int MAX_NUMBER_OF_DICE = 90;
     //availableColours stores the ordinal number linked to the color
     private LinkedList<DiceColor> availableColours;
 
@@ -21,10 +21,10 @@ public class BalancedFactoryDice extends FactoryDice {
      * Create a Balance Factory with only 90 Dice
      */
     public BalancedFactoryDice() {
-        currentNumberOfDice = MaxNumberOfDice;
+        currentNumberOfDice = MAX_NUMBER_OF_DICE;
         currentNumberOfEachDice = new int[DiceColor.getNumberOfDiceColors()];
         availableColours = new LinkedList<>();
-        int maxNumberOfEachDice = MaxNumberOfDice / DiceColor.getNumberOfDiceColors();
+        int maxNumberOfEachDice = MAX_NUMBER_OF_DICE / DiceColor.getNumberOfDiceColors();
         for (int i = 0; i < DiceColor.getNumberOfDiceColors(); i++) {
             currentNumberOfEachDice[i] = maxNumberOfEachDice;
             availableColours.add(DiceColor.getDiceColor(i));
@@ -35,10 +35,10 @@ public class BalancedFactoryDice extends FactoryDice {
      * reset the balanced factory as if it was a new one
      */
     public void reset() {
-        currentNumberOfDice = MaxNumberOfDice;
+        currentNumberOfDice = MAX_NUMBER_OF_DICE;
         currentNumberOfEachDice = new int[DiceColor.getNumberOfDiceColors()];
         availableColours = new LinkedList<>();
-        int maxNumberOfEachDice = MaxNumberOfDice / DiceColor.getNumberOfDiceColors();
+        int maxNumberOfEachDice = MAX_NUMBER_OF_DICE / DiceColor.getNumberOfDiceColors();
         for (int i = 0; i < currentNumberOfEachDice.length; i++) {
             currentNumberOfEachDice[i] = maxNumberOfEachDice;
             availableColours.add(DiceColor.getDiceColor(i));
@@ -47,7 +47,7 @@ public class BalancedFactoryDice extends FactoryDice {
 
 
     public int getMaxNumberOfDice() {
-        return MaxNumberOfDice;
+        return MAX_NUMBER_OF_DICE;
     }
 
     public int getCurrentNumberOfDice() {
@@ -58,8 +58,8 @@ public class BalancedFactoryDice extends FactoryDice {
         return currentNumberOfEachDice;
     }
 
-    public LinkedList<DiceColor> getAvailableColours() {
-        return availableColours;
+    public int getNumberAvailableColours() {
+        return availableColours.size();
     }
 
     /**
