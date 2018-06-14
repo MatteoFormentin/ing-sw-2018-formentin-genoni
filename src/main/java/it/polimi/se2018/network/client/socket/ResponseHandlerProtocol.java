@@ -1,51 +1,50 @@
-package it.polimi.se2018.network.server.socket;
+package it.polimi.se2018.network.client.socket;
 
-import it.polimi.se2018.exception.NetworkException.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.NetworkException.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
- * Class that define the request handler protocol for client request.
+ * Class that define the response handler protocol for server response.
  *
  * @author DavideMammarella
  */
-public class RequestHandlerProtocol{
+public class ResponseHandlerProtocol {
 
-    // giocatore remoto
-    private SocketPlayer socketPlayer;
+    // comunicazione con il socket client
+    private SocketClient socketClient;
 
     // stream di input
     private final ObjectInputStream protocolInputStream;
     // stream di output
     private final ObjectOutputStream protocolOutputStream;
 
-    // mappa di eventi su server, saranno poi associati ai rispettivi metodi
-    private final HashMap<Object, RequestHandlerInterface> eventsOnServer;
+    // mappa di eventi su client, saranno poi associati ai rispettivi metodi
+    private final HashMap<Object, ResponseHandlerInterface> eventsOnClient;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Request Handler Protocol constructor.
+     * Response Handler Protocol constructor.
      *
-     * @param socketPlayer remote player associated to a client.
+     * @param socketClient socket client that represent a user.
      * @param inputStream input stream, used to receive object.
      * @param outputStream output stream, used to send object.
      */
-    public RequestHandlerProtocol(SocketPlayer socketPlayer, ObjectInputStream inputStream, ObjectOutputStream outputStream) throws IOException {
-        this.socketPlayer=socketPlayer;
+    public ResponseHandlerProtocol(SocketClient socketClient, ObjectInputStream inputStream, ObjectOutputStream outputStream) throws IOException {
+        this.socketClient=socketClient;
 
         this.protocolInputStream = inputStream;
         this.protocolOutputStream = outputStream;
 
-        eventsOnServer=new HashMap<>();
+        eventsOnClient=new HashMap<>();
         this.associateEventsToMethods();
     }
 
@@ -55,22 +54,22 @@ public class RequestHandlerProtocol{
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Handler for the client request.
-     * CLIENT REQUEST (EVENT) -> handleRequest -> METHOD INVOCATION (OF THE METHOD ASSOCIATED TO THE EVENT ON THE eventsOnServer)
+     * Handler for the server response.
+     * SERVER RESPONSE (EVENT) -> handleResponse -> METHOD INVOCATION (OF THE METHOD ASSOCIATED TO THE EVENT ON THE eventsOnClient)
      *
-     * @param object client request (event).
+     * @param object server response (event).
      */
-    public void handleRequest(Object object) {
-        RequestHandlerInterface requestHandler = eventsOnServer.get(object);
-        if(requestHandler != null)
-            requestHandler.handle();
+    public void handleResponse(Object object) {
+        ResponseHandlerInterface responseHandler = eventsOnClient.get(object);
+        if(responseHandler != null)
+            responseHandler.handle();
     }
 
     /**
-     * Interface used to handle every client request.
+     * Interface used to handle every server response.
      */
     @FunctionalInterface
-    private interface RequestHandlerInterface{
+    private interface ResponseHandlerInterface{
         void handle();
     }
 
@@ -79,11 +78,10 @@ public class RequestHandlerProtocol{
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Method used to connect every event that can be requested from client to the respective method on the server.
+     * Method used to connect every event that can be responded from server to the respective method on the client.
      */
     private void associateEventsToMethods() {
-        // login
-        // sendEventToController
+        // sendEventToView
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -94,27 +92,15 @@ public class RequestHandlerProtocol{
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    private void login() {
-        try {
-            // leggo nickname con inputStream
-            String nickname = (String) protocolInputStream.readObject();
-            // chiamo il login su server
-            this.socketPlayer.login(nickname);
-        } catch (PlayerAlreadyLoggedException | RoomIsFullException | IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        // TODO GESTISCO ECCEZIONI
+    private void login(String nickname) {
+        // comunico al server il nickname
+        // faccio il writeObject del login
+        // gestisco eccezioni??
     }
 
-    private void sendEventToController() {
-        try {
-            // leggo evento richiesto da server
-            EventController eventController = (EventController) protocolInputStream.readObject();
-            // mando l'evento al socketplayer che lo scatenerà
-            this.socketPlayer.sendEventToController(eventController);
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void sendEventToController(EventController eventController) {
+        // comunico al server l'evento richiesto
+        // faccio il writeObject dell'evento
         // gestisco eccezioni??
     }
 
@@ -122,8 +108,16 @@ public class RequestHandlerProtocol{
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
 
-    public void sendEventToView(EventView eventView) {
-        // synchronized per gli output
-        // mando evento al client
+    /**
+     * Method used to call the send event to view on the socket client.
+     */
+    public void sendEventToView() throws RemoteException {
+        try {
+            EventView eventView = (EventView) protocolInputStream.readObject();
+            this.socketClient.sendEventToView(eventView);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
+
 }

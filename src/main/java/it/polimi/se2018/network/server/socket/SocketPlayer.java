@@ -2,11 +2,14 @@ package it.polimi.se2018.network.server.socket;
 
 import it.polimi.se2018.exception.NetworkException.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.NetworkException.RoomIsFullException;
+import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
@@ -60,7 +63,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Runner for Socket Player.
+     * Runner for Socket Player thread.
      *
      * @see Thread#run()
      */
@@ -76,6 +79,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
                 System.out.println("Waiting for event...");
 
                 Object object = inputStream.readObject();
+                // CLIENT REQUEST (EVENT) -> PROTOCOL -> METHOD INVOCATION
                 requestHandlerProtocol.handleRequest(object);
 
                 }
@@ -100,7 +104,9 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      */
     @Override
     public void sendEventToView (EventView eventView)throws RemoteException{
-
+        // comunico al client l'evento richiesto
+        // faccio il writeObject dell'evento
+        // gestisco eccezioni??
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -113,7 +119,17 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * @param nickname name of the player.
      */
     public void login(String nickname) throws PlayerAlreadyLoggedException, RoomIsFullException {
+        setNickname(nickname);
         this.serverController.login(this);
+    }
+
+    /**
+     * Method used to send to the server a request to unleash an event.
+     *
+     * @param eventController object that will use the server to unleash the event associated.
+     */
+    public void sendEventToController(EventController eventController){
+        this.serverController.sendEventToController(eventController);
     }
 
     //------------------------------------------------------------------------------------------------------------------
