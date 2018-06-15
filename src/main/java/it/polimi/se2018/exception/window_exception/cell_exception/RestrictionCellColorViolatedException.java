@@ -1,4 +1,4 @@
-package it.polimi.se2018.exception.window_exception.CellException;
+package it.polimi.se2018.exception.window_exception.cell_exception;
 
 import it.polimi.se2018.exception.window_exception.WindowRestriction;
 
@@ -10,9 +10,9 @@ import it.polimi.se2018.exception.window_exception.WindowRestriction;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class RestrictionCellValueViolatedException extends WindowRestriction {
+public class RestrictionCellColorViolatedException extends WindowRestriction {
 
-    public RestrictionCellValueViolatedException() {
-        super("Hai violato la restrizione di valore della cella");
+    public RestrictionCellColorViolatedException() {
+        super("Hai violato la restrizione di colore della cella");
     }
 }

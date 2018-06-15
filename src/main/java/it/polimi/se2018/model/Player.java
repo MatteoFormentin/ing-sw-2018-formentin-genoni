@@ -238,11 +238,15 @@ public class Player {
      * @param column index of the window's column
      * @throws WindowRestriction if something isn't right
      */
-    void removeDiceFromWindow(int line, int column) throws WindowRestriction{
+    void removeDiceFromWindowAndAddToHand(int line, int column) throws WindowRestriction{
         Dice dice = playerWindowPattern.removeDice(line, column);
         handDice.addFirst(dice);
     }
 
+    Dice removeDiceFromHand() throws NoDiceInHandException{
+        if (handDice.isEmpty()) throw new NoDiceInHandException();
+        return handDice.remove(0);
+    }
 
     /**
      * the player roll the active dice (index=0) in hand. Available when using a tool card

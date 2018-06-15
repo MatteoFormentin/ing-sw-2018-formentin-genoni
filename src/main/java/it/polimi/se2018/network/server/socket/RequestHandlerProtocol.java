@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.server.socket;
 
-import it.polimi.se2018.exception.NetworkException.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.NetworkException.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
+import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 

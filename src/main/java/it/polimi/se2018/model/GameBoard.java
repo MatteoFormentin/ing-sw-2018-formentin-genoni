@@ -4,8 +4,10 @@ package it.polimi.se2018.model;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.*;
 import it.polimi.se2018.exception.player_exception.*;
-import it.polimi.se2018.exception.window_exception.WindowRestriction;
+import it.polimi.se2018.exception.tool_exception.ColorNotRightException;
+import it.polimi.se2018.exception.tool_exception.RoundTrackIndexException;
 import it.polimi.se2018.list_event.event_received_by_view.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.MessageOk;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
@@ -32,6 +34,7 @@ public class GameBoard {
     private ObjectivePublicCard[] objectivePublicCard;//can have only the get
     private DiceStack dicePool;//can have only the get
     private FactoryDice factoryDiceForThisGame; //nobody can see it
+    private DiceColor colorRestriction;
     private ServerController server;
 
 
@@ -189,7 +192,7 @@ public class GameBoard {
         this.server = server;
     }
 
-    //no setter
+//no setter
 
     //**************************************Observer/observable**************************************************
 
@@ -383,14 +386,15 @@ public class GameBoard {
     }
 
     /**
-     * method for insert the a new Dice in the Window Pattern
+     * method for inser a normal die in the window
      *
-     * @param indexPlayer who send the request of the move,(it should be the current player)
+     * @param indexPlayer
      * @param line
      * @param column
-     * @return
+     * @param firstTurnDie
+     * @throws GameException
      */
-    public void insertDice(int indexPlayer, int line, int column, boolean firstTurnDie) throws WindowRestriction, PlayerException, GameIsBlockedException, CurrentPlayerException {
+    public void insertDice(int indexPlayer, int line, int column, boolean firstTurnDie) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
@@ -413,6 +417,43 @@ public class GameBoard {
     //*****************************************Tool's method of Gameboard **********************************************
     //*****************************************Tool's method of Gameboard **********************************************
     //*****************************************Tool's method of Gameboard **********************************************
+
+    /**
+     * Method to select the restriction for remove the next dice form the window pattern
+     *
+     * @param indexPlayer
+     * @param round
+     * @param index
+     * @throws GameException
+     */
+    public void imposeColorRestriction(int indexPlayer, int round, int index) throws GameException  {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (round >=currentRound || round<0) throw new RoundTrackIndexException();
+        if (index<0 || index >= roundTrack[round].size()) throw new NoDiceException();
+        colorRestriction = roundTrack[round].getDice(index).getColor();
+    }
+    /**
+     * method for remove a dice from the window pattern
+     *
+     * @param indexPlayer
+     * @param line
+     * @param column
+     * @param checkRestriction if the color restriction need to be verified
+     * @throws GameException
+     */
+    public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column, boolean checkRestriction) throws GameException {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (checkRestriction && !colorRestriction.equals(player[indexPlayer].getPlayerWindowPattern().getCell(line,column).getDice().getColor()))
+            throw new ColorNotRightException();
+        player[indexPlayer].removeDiceFromWindowAndAddToHand(line,column);
+        updateHand(indexPlayer);
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
+        broadcast(packetCell);
+    }
+
+
 
     /**
      * move for take the active dice in hand and change it with a new one
@@ -442,49 +483,20 @@ public class GameBoard {
      * @param indexStack
      * @return
      */
-    public void changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) throws Exception {
-       /*
-            if (stopGame) throw new GameIsBlockedException();
-            if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
-            if (!player[indexPlayer].isHasUsedToolCard()) throw new NoToolCardInUseException();
-           if (round >= currentRound || round < 0) throw new NoDiceStackException();//can't select a round that didn't exist
-            if (indexStack >= roundTrack[round].size() || indexStack < 0) return false;// index wrong
-            if (!player[indexPlayer].isHasDrawNewDice()) throw new NoDiceException();
-            if (player[indexPlayer].isHasPlaceANewDice()) return false;
-            Dice dice = player[indexPlayer].removeDiceFromHand();
-            if (dice == null) return false; // no dice in hand wtf
-            player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack));
-            roundTrack[round].add(indexStack, dice);*/
-
+    public void changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) throws GameException {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (round >= currentRound || round < 0) throw new RoundTrackIndexException();//can't select a round that didn't exist
+        if (indexStack >= roundTrack[round].size() || indexStack < 0) throw new NoDiceException();
+        Dice dicePlayer = player[indexPlayer].removeDiceFromHand();
+        player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack),false);
+        roundTrack[round].add(indexStack, dicePlayer);
+        updateHand(indexPlayer);
+        EventView packetCell = new UpdateSingleTurnRoundTrack(round,roundTrack[round]);
+        broadcast(packetCell);
     }
 
 
-    /**
-     * remove the dice from the window pattern, but the dice need to be of the same color of the die selected in the roundTrack
-     *
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param round
-     * @param indexStack
-     * @param line
-     * @param column
-     * @return
-     */
-    public void moveDiceFromWindowPatternToHandWithRestriction(int indexPlayer, int round, int indexStack,
-                                                               int line, int column) throws GameException {
-       /* try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false;//not your turn
-            if (round >= currentRound || round < 0) return false;//can't select a round that didn't exist
-            if (indexStack >= roundTrack[round].size() || indexStack < 0) return false;// index wrong
-            if (!player[indexPlayer].isHasUsedToolCard()) return false;//you didn't use a tool card
-            Dice dHand = player[indexPlayer].getPlayerWindowPattern().getDice(line, column).getDice();
-            if (dHand == null) return false;   //no dice in this cell
-            if (dHand.getColor() != roundTrack[round].get(indexStack).getColor()) return false; // color isn't the same
-            return player[indexPlayer].moveDiceFromWindowPatternToHand(line, column);
-        } catch (Exception e) {
-            return false;
-        }*/
-    }
 
 
     /**
@@ -511,13 +523,16 @@ public class GameBoard {
     //*********************************************Tool's method*************************************************
 
     /**
-     * @param indexPlayer         who send the request of the move,(it should be the current player)
+     * method for insert a dice in the window
+     *
+     * @param indexPlayer
      * @param line
      * @param column
      * @param adjacentRestriction
      * @param colorRestriction
      * @param valueRestriction
-     * @return
+     * @param singleNewDice
+     * @throws GameException
      */
     public void insertDice(int indexPlayer, int line, int column, boolean adjacentRestriction,
                            boolean colorRestriction, boolean valueRestriction, boolean singleNewDice) throws GameException {
@@ -531,21 +546,6 @@ public class GameBoard {
         broadcast(packetCell);
     }
 
-    /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param line
-     * @param column
-     * @return
-     */
-    public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column) throws GameException {
-      /*  try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            return player[indexPlayer].moveDiceFromWindowPatternToHand(line, column);
-        } catch (Exception e) {
-            return false;
-        }*/
-    }
 
     /**
      * method for move a dice(already placed one time in the window) from hand to window pattern

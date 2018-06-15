@@ -1,4 +1,4 @@
-package it.polimi.se2018.exception.window_exception.InsertDice;
+package it.polimi.se2018.exception.window_exception.insert_dice;
 
 import it.polimi.se2018.exception.window_exception.WindowRestriction;
 
@@ -10,9 +10,9 @@ import it.polimi.se2018.exception.window_exception.WindowRestriction;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class RestrictionAdjacentFirstDiceViolatedException extends WindowRestriction {
+public class RestrictionAdjacentViolatedException extends WindowRestriction {
 
-    public RestrictionAdjacentFirstDiceViolatedException() {
-        super("Il primo dado devi metterlo sui bordi.");
+    public RestrictionAdjacentViolatedException() {
+        super("Volevi piazzare il dado in una posizione isolata");
     }
 }

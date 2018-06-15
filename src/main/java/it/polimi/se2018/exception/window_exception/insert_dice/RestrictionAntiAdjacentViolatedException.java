@@ -1,6 +1,5 @@
-package it.polimi.se2018.exception.window_exception.InsertDice;
+package it.polimi.se2018.exception.window_exception.insert_dice;
 
-import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.window_exception.WindowRestriction;
 
 /**
@@ -11,9 +10,9 @@ import it.polimi.se2018.exception.window_exception.WindowRestriction;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class RestrictionColorViolatedException extends WindowRestriction {
+public class RestrictionAntiAdjacentViolatedException extends WindowRestriction {
 
-    public RestrictionColorViolatedException() {
-        super("Hai violato la restrizione di colore");
+    public RestrictionAntiAdjacentViolatedException() {
+        super("Volevi piazzare il dado vicino ad altri.");
     }
 }

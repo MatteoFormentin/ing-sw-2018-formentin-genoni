@@ -1,6 +1,6 @@
-package it.polimi.se2018.exception.window_exception.InsertDice;
+package it.polimi.se2018.exception.tool_exception;
 
-import it.polimi.se2018.exception.window_exception.WindowRestriction;
+import it.polimi.se2018.exception.player_exception.PlayerException;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}
@@ -10,10 +10,8 @@ import it.polimi.se2018.exception.window_exception.WindowRestriction;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class NoValueDiceAllowed extends WindowRestriction {
-
-    public NoValueDiceAllowed() {
-        super("Valore del dado non accettabile.");
+public class RoundTrackIndexException extends PlayerException {
+    public RoundTrackIndexException() {
+        super("Il round non può essere selezionato");
     }
-
 }

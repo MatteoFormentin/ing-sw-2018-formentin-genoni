@@ -1,6 +1,5 @@
-package it.polimi.se2018.exception.window_exception.InsertDice;
+package it.polimi.se2018.exception.window_exception.cell_exception;
 
-import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.window_exception.WindowRestriction;
 
 /**
@@ -11,9 +10,9 @@ import it.polimi.se2018.exception.window_exception.WindowRestriction;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class RestrictionValueViolatedException extends WindowRestriction {
+public class RestrictionCellValueViolatedException extends WindowRestriction {
 
-    public RestrictionValueViolatedException() {
-        super("Hai violato la restrizione di valore");
+    public RestrictionCellValueViolatedException() {
+        super("Hai violato la restrizione di valore della cella");
     }
 }

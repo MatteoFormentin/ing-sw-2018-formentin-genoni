@@ -10,9 +10,9 @@ import it.polimi.se2018.exception.GameException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class NoInfoSetted extends GameException {
+public class NumberInfoWrongException extends GameException {
 
-    public NoInfoSetted(){
-        super("You should wait your turn...");
+    public NumberInfoWrongException(){
+        super("The number of the info is wrong");
     }
 }

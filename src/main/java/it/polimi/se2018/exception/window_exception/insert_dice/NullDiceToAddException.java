@@ -1,6 +1,5 @@
-package it.polimi.se2018.exception.window_exception.InsertDice;
+package it.polimi.se2018.exception.window_exception.insert_dice;
 
-import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.window_exception.WindowRestriction;
 
 /**

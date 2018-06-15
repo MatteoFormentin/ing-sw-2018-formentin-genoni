@@ -1,5 +1,7 @@
 package it.polimi.se2018.controller;
 
+import it.polimi.se2018.controller.effect.EffectGame;
+import it.polimi.se2018.controller.effect.EndTurn;
 import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
 import it.polimi.se2018.exception.gameboard_exception.WindowPatternAlreadyTakenException;
 import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteException;
@@ -209,7 +211,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
     @Override
     public void visit(ControllerEndTurn event) {
         try {
-            gameBoard.nextPlayer(event.getPlayerId());
+            EffectGame endTurn = new EndTurn(false);
+            endTurn.doEffect(gameBoard,event.getPlayerId(),null);
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             StartPlayerTurn turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());

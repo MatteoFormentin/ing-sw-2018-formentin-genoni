@@ -1,11 +1,11 @@
 package it.polimi.se2018;
 
-import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellColorViolatedException;
-import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellValueViolatedException;
-import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionAdjacentFirstDiceViolatedException;
-import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionAdjacentViolatedException;
-import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionColorViolatedException;
-import it.polimi.se2018.exception.window_exception.InsertDice.RestrictionValueViolatedException;
+import it.polimi.se2018.exception.window_exception.cell_exception.RestrictionCellColorViolatedException;
+import it.polimi.se2018.exception.window_exception.cell_exception.RestrictionCellValueViolatedException;
+import it.polimi.se2018.exception.window_exception.insert_dice.RestrictionAdjacentFirstDiceViolatedException;
+import it.polimi.se2018.exception.window_exception.insert_dice.RestrictionAdjacentViolatedException;
+import it.polimi.se2018.exception.window_exception.insert_dice.RestrictionColorViolatedException;
+import it.polimi.se2018.exception.window_exception.insert_dice.RestrictionValueViolatedException;
 import it.polimi.se2018.exception.window_exception.WindowRestriction;
 import it.polimi.se2018.model.card.objective_private_card.*;
 import it.polimi.se2018.model.card.objective_public_card.*;

@@ -1,9 +1,9 @@
 package it.polimi.se2018;
 
-import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellColorViolatedException;
-import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellValueViolatedException;
-import it.polimi.se2018.exception.window_exception.InsertDice.NullDiceToAddException;
-import it.polimi.se2018.exception.window_exception.CellException.RestrictionCellOccupiedException;
+import it.polimi.se2018.exception.window_exception.cell_exception.RestrictionCellColorViolatedException;
+import it.polimi.se2018.exception.window_exception.cell_exception.RestrictionCellValueViolatedException;
+import it.polimi.se2018.exception.window_exception.insert_dice.NullDiceToAddException;
+import it.polimi.se2018.exception.window_exception.cell_exception.RestrictionCellOccupiedException;
 import it.polimi.se2018.exception.window_exception.NoDiceInThisCell;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.dice.Dice;

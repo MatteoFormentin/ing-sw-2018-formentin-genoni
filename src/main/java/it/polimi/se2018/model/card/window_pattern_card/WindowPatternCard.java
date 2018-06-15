@@ -1,7 +1,7 @@
 package it.polimi.se2018.model.card.window_pattern_card;
 
 import it.polimi.se2018.exception.window_exception.*;
-import it.polimi.se2018.exception.window_exception.InsertDice.*;
+import it.polimi.se2018.exception.window_exception.insert_dice.*;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
