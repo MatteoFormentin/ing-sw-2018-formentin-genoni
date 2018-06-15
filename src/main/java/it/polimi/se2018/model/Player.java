@@ -1,6 +1,7 @@
 package it.polimi.se2018.model;
 
 
+import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
 import it.polimi.se2018.exception.player_exception.*;
 import it.polimi.se2018.exception.tool_exception.NoEnoughTokenException;
@@ -251,13 +252,19 @@ public class Player {
     /**
      * the player roll the active dice (index=0) in hand. Available when using a tool card
      *
-     * @return true if it's all ok, false otherwise
      */
-    boolean rollDiceInHand() {
-        if (!hasUsedToolCard) return false;
-        if (handDice.size() == 0) return false;
-        handDice.get(0).rollDice();
-        return true;
+    void rollDiceInHand() throws NoDiceInHandException,NoDiceException {
+        if (handDice.isEmpty()) throw new NoDiceInHandException();
+        handDice.getDice(0).rollDice();
+    }
+
+    /**
+     * the player change the face of the dice. Available when using a tool card
+     *
+     */
+    void oppositeFaceDice() throws NoDiceInHandException,NoDiceException{
+        if (handDice.isEmpty()) throw new NoDiceInHandException();
+        handDice.getDice(0).oppositeValue();
     }
 
     /**
@@ -266,38 +273,29 @@ public class Player {
      * @param increase true if the player want to increase the value, false for decrease
      * @return true if it's all ok, false otherwise
      */
-    boolean increaseOrDecrease(boolean increase) {
-        if (!hasUsedToolCard) return false;
-        if (handDice.size() == 0) return false;
-        handDice.get(0).increaseOrDecrease(increase);
-        return true;
+    public void increaseOrDecrease(boolean increase) throws NoDiceInHandException,NoDiceException {
+        if (handDice.isEmpty()) throw new NoDiceInHandException();
+        handDice.getDice(0).increaseOrDecrease(increase);
     }
 
-    /**
-     * the player change the face of the dice. Available when using a tool card
-     *
-     * @return true if it's all ok, false otherwise
-     */
-    boolean oppositeFaceDice() {
-        if (!hasUsedToolCard) return false;
-        if (handDice.size() == 0) return false;
-        handDice.get(0).oppositeValue();
-        return true;
+
+    public void setValueDiceHand(int value) throws NoDiceInHandException,NoDiceException{
+        if (handDice.isEmpty()) throw new NoDiceInHandException();
+        handDice.getDice(0).setValue(value);
     }
+
 
     /**
      * the player can now place a new dice but the second turn will be skipped. Available when using a tool card
      *
      * @return true if it's all ok, false otherwise
      */
-    boolean endSpecialFirstTurn() {
-        if (!hasUsedToolCard) return false;
-        if (!firstTurn) return false;
+    void endSpecialFirstTurn() throws GameException{
+        if (!firstTurn) throw new GameException("non puoi usare questo effetto adesso");
         hasUsedToolCard = true;
         hasDrawNewDice = false;
         hasPlaceANewDice = false;
-        this.firstTurn = true;
-        return true;
+        firstTurn = false;
     }
 
     //*********************************************Utils*************************************************

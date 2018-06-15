@@ -1,7 +1,7 @@
-package it.polimi.se2018.list_event.event_received_by_view.event_from_controller;
+package it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller;
 
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 
 /**
  * Extends EventView, tells the view the name of the players and their number.

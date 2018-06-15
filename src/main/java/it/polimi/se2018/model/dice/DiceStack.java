@@ -1,5 +1,8 @@
 package it.polimi.se2018.model.dice;
 
+import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
+import it.polimi.se2018.exception.player_exception.NoDiceInHandException;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 
@@ -16,8 +19,8 @@ public class DiceStack extends LinkedList<Dice> implements Serializable{
      * @param index of the dice
      * @return dice or null
      */
-    public Dice getDice(int index) {
-        if(index>=this.size()) return null;
+    public Dice getDice(int index) throws NoDiceException {
+        if(index>=this.size()) throw new NoDiceException();
         return this.get(index);
     }
 

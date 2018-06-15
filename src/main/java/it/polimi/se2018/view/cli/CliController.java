@@ -4,6 +4,8 @@ import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;

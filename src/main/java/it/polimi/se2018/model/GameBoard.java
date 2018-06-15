@@ -7,7 +7,6 @@ import it.polimi.se2018.exception.player_exception.*;
 import it.polimi.se2018.exception.tool_exception.ColorNotRightException;
 import it.polimi.se2018.exception.tool_exception.RoundTrackIndexException;
 import it.polimi.se2018.list_event.event_received_by_view.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.MessageOk;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
@@ -461,18 +460,14 @@ public class GameBoard {
      * @param indexPlayer who send the request of the move,(it should be the current player)
      * @return true if is gone all ok, false otherwise
      */
-    public void changeDiceBetweenHandAndFactory(int indexPlayer) throws Exception {
-/*
+    public void changeDiceBetweenHandAndFactory(int indexPlayer) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
-        if (!player[indexPlayer].isHasUsedToolCard()) throw new NoToolCardInUseException();
-        if (!player[indexPlayer].isHasDrawNewDice()) throw new NoDiceException();
-        if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         Dice dice = player[indexPlayer].removeDiceFromHand();
-        if (dice == null) throw new NoDiceException();
         factoryDiceForThisGame.removeDice(dice);
         dice = factoryDiceForThisGame.createDice();
-        player[indexPlayer].addDiceToHand(dice);*/
+        player[indexPlayer].addDiceToHand(dice,false);
+        updateHand(indexPlayer);
     }
 
     /**
@@ -504,16 +499,12 @@ public class GameBoard {
      * @return
      */
     public void rollDicePool(int indexPlayer) throws GameException {
-       /* try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false;//not your turn
-            if (player[indexPlayer].isFirstTurn()) return false;
-            dicePool.reRollAllDiceInStack();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }*/
-
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (currentRound<player.length) throw new GameException("Non effettuare questa mossa adesso");
+        dicePool.reRollAllDiceInStack();
+        EventView packetCell = new UpdateDicePool(dicePool);
+        broadcast(packetCell);
     }
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
@@ -546,69 +537,28 @@ public class GameBoard {
         broadcast(packetCell);
     }
 
-
     /**
-     * method for move a dice(already placed one time in the window) from hand to window pattern
      *
      * @param indexPlayer
-     * @param line
-     * @param column
-     * @param adjacentRestriction
-     * @param colorRestriction
-     * @param valueRestriction
-     * @return
-     */
- /*   public void moveOldDiceFromHandToWindowPattern(int indexPlayer, int line, int column, boolean adjacentRestriction, boolean colorRestriction, boolean valueRestriction) {
-        try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false;//not your turn
-            return player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction);
-        } catch (Exception e) {
-            return false;
-        }
-    }*/
-
-    /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @return
+     * @throws GameException
      */
     public void rollDiceInHand(int indexPlayer) throws GameException {
-       /* try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            return player[indexPlayer].rollDiceInHand();
-        } catch (Exception e) {
-            return false;
-        }*/
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        player[indexPlayer].rollDiceInHand();
+        updateHand(indexPlayer);
     }
 
     /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param increase    if true increase by 1, if false decrease by 1 the value of the active dice in hand (index 0)
-     * @return
-     */
-    public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameException {
-      /*  try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            return player[indexCurrentPlayer].increaseOrDecrease(increase);
-        } catch (Exception e) {
-            return false;
-        }*/
-    }
-
-    /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @return
+     *
+     * @param indexPlayer
+     * @throws GameException
      */
     public void oppositeFaceDice(int indexPlayer) throws GameException {
-      /*  try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            return player[indexCurrentPlayer].oppositeFaceDice();
-        } catch (Exception e) {
-            return false;
-        }*/
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        player[indexPlayer].oppositeFaceDice();
+        updateHand(indexPlayer);
     }
 
     /**
@@ -616,13 +566,10 @@ public class GameBoard {
      * @return
      */
     public void endSpecialFirstTurn(int indexPlayer) throws GameException {
-       /* try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            return player[indexCurrentPlayer].endSpecialFirstTurn();
-        } catch (Exception e) {
-            return false;
-        }*/
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        player[indexCurrentPlayer].endSpecialFirstTurn();
+        freeHandPlayer(indexPlayer);
     }
 
     //*********************************************Utils*************************************************
