@@ -572,6 +572,19 @@ public class GameBoard {
         freeHandPlayer(indexPlayer);
     }
 
+    public void setValueDiceHand(int indexPlayer, int value) throws GameException{
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        player[indexPlayer].setValueDiceHand(value);
+        updateHand(indexPlayer);
+    }
+
+    public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameException {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        player[indexPlayer].increaseOrDecrease(increase);
+        updateHand(indexPlayer);
+    }
     //*********************************************Utils*************************************************
     //*********************************************Utils*************************************************
     //*********************************************Utils*************************************************

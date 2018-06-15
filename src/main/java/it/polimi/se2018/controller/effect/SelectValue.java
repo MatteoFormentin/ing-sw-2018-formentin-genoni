@@ -22,10 +22,10 @@ public class SelectValue extends EffectGame {
         this.setGameBoard(gameBoard);
         this.setIdPlayer(idPlayer);
         valueDice = infoMove[0];
-        if(trueSetValueFalseIncrementDec) getGameBoard().getPlayer(getIdPlayer()).setValueDiceHand(valueDice);
+        if(trueSetValueFalseIncrementDec) getGameBoard().setValueDiceHand(getIdPlayer(),valueDice);
         else {
-            if(valueDice==1) getGameBoard().getPlayer(idPlayer).increaseOrDecrease(true);
-            else if(valueDice==-1) getGameBoard().getPlayer(idPlayer).increaseOrDecrease(false);
+            if(valueDice==1) getGameBoard().increaseOrDecrease(getIdPlayer(),true);
+            else if(valueDice==-1) getGameBoard().increaseOrDecrease(getIdPlayer(),false);
             else throw new GameException("View implementata male");
         }
     }

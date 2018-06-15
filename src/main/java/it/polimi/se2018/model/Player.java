@@ -273,13 +273,13 @@ public class Player {
      * @param increase true if the player want to increase the value, false for decrease
      * @return true if it's all ok, false otherwise
      */
-    public void increaseOrDecrease(boolean increase) throws NoDiceInHandException,NoDiceException {
+    void increaseOrDecrease(boolean increase) throws NoDiceInHandException,NoDiceException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).increaseOrDecrease(increase);
     }
 
 
-    public void setValueDiceHand(int value) throws NoDiceInHandException,NoDiceException{
+    void setValueDiceHand(int value) throws NoDiceInHandException,NoDiceException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).setValue(value);
     }
