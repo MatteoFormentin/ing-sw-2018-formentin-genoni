@@ -2,7 +2,11 @@ package it.polimi.se2018.network.client.socket;
 
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,7 +29,7 @@ public class ResponseHandlerProtocol {
     private final ObjectOutputStream protocolOutputStream;
 
     // mappa di eventi su client, saranno poi associati ai rispettivi metodi
-    private final HashMap<Object, ResponseHandlerInterface> eventsOnClient;
+    private final HashMap<String, ResponseHandlerInterface> eventsOnClient;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -57,12 +61,25 @@ public class ResponseHandlerProtocol {
      * Handler for the server response.
      * SERVER RESPONSE (EVENT) -> handleResponse -> METHOD INVOCATION (OF THE METHOD ASSOCIATED TO THE EVENT ON THE eventsOnClient)
      *
-     * @param object server response (event).
+     * @param jsonObject server response (event).
      */
-    public void handleResponse(Object object) {
-        ResponseHandlerInterface responseHandler = eventsOnClient.get(object);
-        if(responseHandler != null)
-            responseHandler.handle();
+    public void handleResponse(JSONObject jsonObject) throws RemoteException {
+        JSONParser jsonParser = new JSONParser();
+        try {
+            Object parsedObject = jsonParser.parse(new FileReader(String.valueOf(jsonObject)));
+
+            JSONObject jsonParsedObject = (JSONObject) parsedObject;
+            System.out.println(jsonParsedObject);
+
+            String constant = (String) jsonParsedObject.get("Constant");
+
+            ResponseHandlerInterface responseHandler = eventsOnClient.get(constant);
+
+            if(responseHandler != null)
+                responseHandler.handle();
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -81,7 +98,7 @@ public class ResponseHandlerProtocol {
      * Method used to connect every event that can be responded from server to the respective method on the client.
      */
     private void associateEventsToMethods() {
-        // sendEventToView
+        eventsOnClient.put("sendEventToView", this::sendEventToView);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -92,15 +109,33 @@ public class ResponseHandlerProtocol {
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    private void login(String nickname) {
-        // comunico al server il nickname
-        // faccio il writeObject del login
+    public void login(String nickname) {
+        try {
+        JSONObject loginJson = new JSONObject();
+        loginJson.put("Constant", "login");
+        loginJson.put("Nickname", nickname);
+
+        protocolOutputStream.writeObject(loginJson.toJSONString());
+        protocolOutputStream.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // gestisco eccezioni??
     }
 
-    private void sendEventToController(EventController eventController) {
-        // comunico al server l'evento richiesto
-        // faccio il writeObject dell'evento
+    public void sendEventToController(EventController eventController) {
+        try {
+            JSONObject event = new JSONObject();
+            event.put("Constant", "sendEventToController");
+            event.put("Event", eventController);
+
+            protocolOutputStream.writeObject(event.toJSONString());
+            protocolOutputStream.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // gestisco eccezioni??
     }
 
@@ -111,13 +146,23 @@ public class ResponseHandlerProtocol {
     /**
      * Method used to call the send event to view on the socket client.
      */
-    public void sendEventToView() throws RemoteException {
-        try {
-            EventView eventView = (EventView) protocolInputStream.readObject();
-            this.socketClient.sendEventToView(eventView);
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void sendEventToView(){
+            JSONParser jsonParser = new JSONParser();
+            try {
+
+                JSONObject jsonObject = (JSONObject) protocolInputStream.readObject();
+                Object parsedObject = jsonParser.parse(new FileReader(String.valueOf(jsonObject)));
+
+                JSONObject jsonParsedObject = (JSONObject) parsedObject;
+                System.out.println(jsonParsedObject);
+
+                EventView eventView = (EventView) jsonParsedObject.get("Event");
+
+                this.socketClient.sendEventToView(eventView);
+
+            } catch (ParseException | IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
     }
 
 }

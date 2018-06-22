@@ -6,6 +6,7 @@ import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
+import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -78,9 +79,9 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
                 // IL SERVER è SEMPRE IN ASCOLTO
                 System.out.println("Waiting for event...");
 
-                Object object = inputStream.readObject();
+                JSONObject jsonObject = (JSONObject) inputStream.readObject();
                 // CLIENT REQUEST (EVENT) -> PROTOCOL -> METHOD INVOCATION
-                requestHandlerProtocol.handleRequest(object);
+                requestHandlerProtocol.handleRequest(jsonObject);
 
                 }
 
@@ -104,8 +105,17 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      */
     @Override
     public void sendEventToView (EventView eventView)throws RemoteException{
-        // comunico al client l'evento richiesto
-        // faccio il writeObject dell'evento
+        try {
+            JSONObject event = new JSONObject();
+            event.put("Constant", "sendEventToView");
+            event.put("Event", eventView);
+
+            outputStream.writeObject(event.toJSONString());
+            outputStream.flush();
+            outputStream.reset();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // gestisco eccezioni??
     }
 

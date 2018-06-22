@@ -80,6 +80,7 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     public void sendEventToController(EventController eventController) throws RemoteException {
         iRMIServer.sendEventToController(eventController);
     }
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------

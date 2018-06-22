@@ -4,10 +4,9 @@ import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
+import org.json.simple.JSONObject;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
@@ -63,23 +62,10 @@ public class SocketClient extends AbstractClient {
             outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
             outputStream.flush();
 
+            this.responseHandlerProtocol = new ResponseHandlerProtocol(this, this.inputStream,this.outputStream);
+
         } catch (IOException e) {
             // eccezione di errore connessione client
-            e.printStackTrace();
-        }
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-    // PROTOCOL STARTER
-    //------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Starter for the response handler protocol.
-     */
-    public void responseHandlerProtocolStarter(){
-        try {
-            this.responseHandlerProtocol = new ResponseHandlerProtocol(this, this.inputStream,this.outputStream);
-        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -109,6 +95,7 @@ public class SocketClient extends AbstractClient {
          */
         @Override
         public void run() {
+
             try {
 
                 boolean loop = true;
@@ -117,16 +104,14 @@ public class SocketClient extends AbstractClient {
                 // Ogni messaggio verrà mandato al protocollo per la gestione
                 while (loop) {
 
-                    Object object = inputStream.readObject();
-                    responseHandlerProtocol.handleResponse(object);
+                    JSONObject jsonObject = (JSONObject) inputStream.readObject();
+                    responseHandlerProtocol.handleResponse(jsonObject);
 
                 }
-            } catch (ClassNotFoundException | IOException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 // eccezione nella lettura della messaggio del server
                 e.printStackTrace();
-            }
-
-            finally {
+            } finally {
                 closeConnections();
             }
         }
@@ -144,9 +129,9 @@ public class SocketClient extends AbstractClient {
      */
     @Override
     public void login(String nickname) throws RemoteException {
-        //this.responseHandlerProtocol.login(nickname);
+        this.responseHandlerProtocol.login(nickname);
         // faccio partire il thread che resterà in ascolto di messaggi dal server
-        //this.responseListenerStarter();
+        this.responseListenerStarter();
     }
 
     /**
@@ -156,7 +141,7 @@ public class SocketClient extends AbstractClient {
      */
     @Override
     public void sendEventToController(EventController eventController) throws RemoteException {
-        //this.responseHandlerProtocol.sendEventToController(eventController);
+        this.responseHandlerProtocol.sendEventToController(eventController);
     }
 
     //------------------------------------------------------------------------------------------------------------------

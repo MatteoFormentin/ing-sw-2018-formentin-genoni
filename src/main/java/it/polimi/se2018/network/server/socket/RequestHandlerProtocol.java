@@ -4,7 +4,11 @@ import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,8 +29,11 @@ public class RequestHandlerProtocol{
     // stream di output
     private final ObjectOutputStream protocolOutputStream;
 
+    //MUTEX usato per gestire un output alla volta (senza questo potrebbe crearsi congestione durante il login)
+    private static final Object OUTPUT_MUTEX = new Object();
+
     // mappa di eventi su server, saranno poi associati ai rispettivi metodi
-    private final HashMap<Object, RequestHandlerInterface> eventsOnServer;
+    private final HashMap<String, RequestHandlerInterface> eventsOnServer;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -58,12 +65,26 @@ public class RequestHandlerProtocol{
      * Handler for the client request.
      * CLIENT REQUEST (EVENT) -> handleRequest -> METHOD INVOCATION (OF THE METHOD ASSOCIATED TO THE EVENT ON THE eventsOnServer)
      *
-     * @param object client request (event).
+     * @param jsonObject client request (event).
      */
-    public void handleRequest(Object object) {
-        RequestHandlerInterface requestHandler = eventsOnServer.get(object);
-        if(requestHandler != null)
-            requestHandler.handle();
+    public void handleRequest(JSONObject jsonObject) {
+        JSONParser jsonParser = new JSONParser();
+        try {
+            Object parsedObject = jsonParser.parse(new FileReader(String.valueOf(jsonObject)));
+
+            JSONObject jsonParsedObject = (JSONObject) parsedObject;
+            System.out.println(jsonParsedObject);
+
+            String constant = (String) jsonParsedObject.get("Constant");
+
+            RequestHandlerInterface requestHandler = eventsOnServer.get(constant);
+
+            if(requestHandler != null)
+                requestHandler.handle();
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -82,8 +103,8 @@ public class RequestHandlerProtocol{
      * Method used to connect every event that can be requested from client to the respective method on the server.
      */
     private void associateEventsToMethods() {
-        // login
-        // sendEventToController
+        eventsOnServer.put("login", this::login);
+        eventsOnServer.put("sendEventToController", this::sendEventToController);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -95,24 +116,42 @@ public class RequestHandlerProtocol{
     //------------------------------------------------------------------------------------------------------------------
 
     private void login() {
+        JSONParser jsonParser = new JSONParser();
         try {
-            // leggo nickname con inputStream
-            String nickname = (String) protocolInputStream.readObject();
-            // chiamo il login su server
+            // leggo evento richiesto da server
+            JSONObject jsonObject = (JSONObject) protocolInputStream.readObject();
+            Object parsedObject = jsonParser.parse(new FileReader(String.valueOf(jsonObject)));
+
+            JSONObject jsonParsedObject = (JSONObject) parsedObject;
+            System.out.println(jsonParsedObject);
+
+            String nickname = (String) jsonParsedObject.get("Nickname");
+
+            // mando l'evento al socketplayer che lo scatenerà
             this.socketPlayer.login(nickname);
-        } catch (PlayerAlreadyLoggedException | RoomIsFullException | IOException | ClassNotFoundException e) {
+
+        } catch (ParseException | PlayerAlreadyLoggedException | RoomIsFullException | IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         // TODO GESTISCO ECCEZIONI
     }
 
     private void sendEventToController() {
+        JSONParser jsonParser = new JSONParser();
         try {
             // leggo evento richiesto da server
-            EventController eventController = (EventController) protocolInputStream.readObject();
+            JSONObject jsonObject = (JSONObject) protocolInputStream.readObject();
+            Object parsedObject = jsonParser.parse(new FileReader(String.valueOf(jsonObject)));
+
+            JSONObject jsonParsedObject = (JSONObject) parsedObject;
+            System.out.println(jsonParsedObject);
+
+            EventController eventController = (EventController) jsonParsedObject.get("Event");
+
             // mando l'evento al socketplayer che lo scatenerà
             this.socketPlayer.sendEventToController(eventController);
-        } catch (IOException | ClassNotFoundException e) {
+
+        } catch (ParseException | IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         // gestisco eccezioni??
@@ -123,7 +162,21 @@ public class RequestHandlerProtocol{
     //------------------------------------------------------------------------------------------------------------------
 
     public void sendEventToView(EventView eventView) {
-        // synchronized per gli output
-        // mando evento al client
+        synchronized (OUTPUT_MUTEX) {
+            try {
+                JSONObject event = new JSONObject();
+                event.put("Constant", "sendEventToView");
+                event.put("Event", eventView);
+
+                protocolOutputStream.writeObject(event.toJSONString());
+                protocolOutputStream.flush();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // gestisco eccezioni??
+            // synchronized per gli output
+            // mando evento al client
+        }
     }
 }
