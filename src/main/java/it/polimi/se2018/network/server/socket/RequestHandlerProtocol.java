@@ -115,6 +115,9 @@ public class RequestHandlerProtocol{
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Method used to unleash the login method on the server.
+     */
     private void login() {
         JSONParser jsonParser = new JSONParser();
         try {
@@ -136,6 +139,9 @@ public class RequestHandlerProtocol{
         // TODO GESTISCO ECCEZIONI
     }
 
+    /**
+     * Method used to unleash the sendEventToController on the server.
+     */
     private void sendEventToController() {
         JSONParser jsonParser = new JSONParser();
         try {
@@ -161,6 +167,11 @@ public class RequestHandlerProtocol{
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
+     */
     public void sendEventToView(EventView eventView) {
         synchronized (OUTPUT_MUTEX) {
             try {

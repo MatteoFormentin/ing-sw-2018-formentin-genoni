@@ -109,6 +109,11 @@ public class ResponseHandlerProtocol {
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Method used to log the user to the server with his nickname.
+     *
+     * @param nickname   name of the player.
+     */
     public void login(String nickname) {
         try {
         JSONObject loginJson = new JSONObject();
@@ -124,6 +129,11 @@ public class ResponseHandlerProtocol {
         // gestisco eccezioni??
     }
 
+    /**
+     * Method used to send to the server a request to unleash an event.
+     *
+     * @param eventController object that will use the server to unleash the event associated.
+     */
     public void sendEventToController(EventController eventController) {
         try {
             JSONObject event = new JSONObject();
@@ -144,7 +154,7 @@ public class ResponseHandlerProtocol {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Method used to call the send event to view on the socket client.
+     * Method used to unleash the sendEventToView on the client.
      */
     public void sendEventToView(){
             JSONParser jsonParser = new JSONParser();

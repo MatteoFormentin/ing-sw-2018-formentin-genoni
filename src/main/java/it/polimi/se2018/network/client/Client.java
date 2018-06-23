@@ -3,6 +3,7 @@ package it.polimi.se2018.network.client;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
+import it.polimi.se2018.network.client.socket.SocketClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
 import it.polimi.se2018.view.gui.GuiInstance;
@@ -28,7 +29,7 @@ public class Client implements ClientController {
     // Indirizzo su cui le comunicazioni sono aperte a lato server
     private static String SERVER_ADDRESS;
     //Porta su cui si appoggierà la comunicazione socket
-    //private static int SERVER_SOCKET_PORT;
+    private static int SERVER_SOCKET_PORT;
     //Porta su cui si appoggierà la comunicazione RMI
     private static int SERVER_RMI_PORT;
     private static UIInterface view;
@@ -91,8 +92,8 @@ public class Client implements ClientController {
             System.out.println("RMI port set to "+configProperties.getProperty("RMI_PORT"));
 
             // SOCKET PORT LOAD
-            //SERVER_SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
-            //System.out.println("Socket port set to "+configProperties.getProperty("SOCKET_PORT"));
+            SERVER_SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+            System.out.println("Socket port set to "+configProperties.getProperty("SOCKET_PORT"));
         } catch (IOException e) {
             // LOAD FAILED
             System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
@@ -101,15 +102,14 @@ public class Client implements ClientController {
             // Default RMI PORT in case of exception.
             SERVER_RMI_PORT = 31415;
             // Default Socket PORT in case of exception.
-            //SERVER_SOCKET_PORT = 16180;
+            SERVER_SOCKET_PORT = 16180;
         }
 
         String serverIpAddress= SERVER_ADDRESS;
         int rmiPort= SERVER_RMI_PORT;
+        int socketPort = SERVER_SOCKET_PORT;
 
         try {
-            /*serverIpAddress = args[0];
-            rmiPort = Integer.parseInt(args[0]);*/
             ClientController client = new Client();
 
 
@@ -133,11 +133,11 @@ public class Client implements ClientController {
      *
      * @param rmiPort port used for RMI connection.
      */
-    //TODO:AGGIUNGI int socketPort se aggiungi socket
-    //TODO:Se aggiungi socket qui ci dovrà essere la selezione, data da cli o gui fra RMI o Socket ed in base alla scelta bisogna far partire connessioni diverse
-    /*public void startClient(String serverIpAddress, int rmiPort) {
+    public void startClient(String serverIpAddress, int rmiPort, int socketPort) {
+        // TODO selezione tipo di connessione
         startRMIClient(serverIpAddress, rmiPort);
-    }*/
+        startSocketClient(serverIpAddress, socketPort);
+    }
 
     /**
      * Starter for the RMI connection.
@@ -146,10 +146,26 @@ public class Client implements ClientController {
      * @param rmiPort         port used for RMI connection.
      * @return true if the connection is established, false otherwise.
      */
-    @Override
     public boolean startRMIClient(String serverIpAddress, int rmiPort) {
         try {
             abstractClient = new RMIClient(this, serverIpAddress, rmiPort);
+            abstractClient.connectToServer();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Starter for the Socket connection.
+     *
+     * @param serverIpAddress address on where the server side communication are open.
+     * @param socketPort         port used for Socket connection.
+     * @return true if the connection is established, false otherwise.
+     */
+    public boolean startSocketClient(String serverIpAddress, int socketPort){
+        try {
+            abstractClient = new SocketClient(this, serverIpAddress, socketPort);
             abstractClient.connectToServer();
             return true;
         } catch (Exception e) {
