@@ -247,6 +247,16 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
+    public void visit(SelectValueDice event) {
+
+    }
+
+    @Override
+    public void visit(SelectIncrementOrDecreaseDice event) {
+
+    }
+
+    @Override
     public void visit(SelectToolCard event) {
         cliMessage.eraseScreen();
         cliMessage.showToolCardMessage();

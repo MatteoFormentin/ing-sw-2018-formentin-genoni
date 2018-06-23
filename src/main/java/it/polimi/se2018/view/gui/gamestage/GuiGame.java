@@ -431,6 +431,16 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         new AlertMessage(gameStage).displayMessage("Seleziona un dado del RoundTrack");
     }
 
+    @Override
+    public void visit(SelectValueDice event) {
+
+    }
+
+    @Override
+    public void visit(SelectIncrementOrDecreaseDice event) {
+
+    }
+
     private void activeRoundTrack() {
         for (int i = 0; i < comboBoxSingleRound.length; i++) {
             if (!comboBoxSingleRound[i].getItems().isEmpty()) {
@@ -715,8 +725,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
             if (event.getRoundTrack(i) != null) {
                 for (int j = 0; j < event.getRoundTrack(i).size(); j++) {
-                    Image newImage = new Image(diceSource + event.getRoundTrack(i).getDice(j).getColor()
-                            + "Dice" + event.getRoundTrack(i).getDice(j).getValue() + ".jpg");
+                    Image newImage = new Image(diceSource + event.getRoundTrack(i).get(j).getColor()
+                            + "Dice" + event.getRoundTrack(i).get(j).getValue() + ".jpg");
                     comboBoxSingleRound[i].getItems().add(newImage);
                 }
             }
@@ -871,8 +881,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             comboBoxSingleRound[event.getIndexRound()].getItems().remove(0);
         }
         for (int i = 0; i < event.getRoundDice().size(); i++) {
-            Image newImage = new Image(diceSource + event.getRoundDice().getDice(i).getColor()
-                    + "Dice" + event.getRoundDice().getDice(i).getValue() + ".jpg");
+            Image newImage = new Image(diceSource + event.getRoundDice().get(i).getColor()
+                    + "Dice" + event.getRoundDice().get(i).getValue() + ".jpg");
             comboBoxSingleRound[event.getIndexRound()].getItems().add(newImage);
         }
         for (ComboBox<Image> aComboBoxSingleRound : comboBoxSingleRound) {
