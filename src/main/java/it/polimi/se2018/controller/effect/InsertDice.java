@@ -42,7 +42,7 @@ public class InsertDice extends EffectGame {
     }
 
     @Override
-    public EventView askTheViewTheInfo() {
+    public EventView eventViewToAsk() {
         return new SelectCellOfWindow();
     }
 

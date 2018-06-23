@@ -30,7 +30,7 @@ public class EndTurn extends EffectGame {
     }
 
     @Override
-    public EventView askTheViewTheInfo() {
+    public EventView eventViewToAsk() {
         return null;
     }
 

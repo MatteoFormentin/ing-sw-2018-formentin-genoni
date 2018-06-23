@@ -1,6 +1,6 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
-import it.polimi.se2018.model.card.tool_card.ToolCard;
+import it.polimi.se2018.model.card.ToolCard;
 
 /**
  * Extends EventView, updates all the tool cards

@@ -37,7 +37,7 @@ public class RoundTrackEffect extends EffectGame {
     }
 
     @Override
-    public EventView askTheViewTheInfo() {
+    public EventView eventViewToAsk() {
         return new SelectDiceFromRoundTrack();
     }
 }

@@ -1,7 +1,6 @@
 package it.polimi.se2018.model.dice;
 
 import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
-import it.polimi.se2018.exception.player_exception.NoDiceInHandException;
 
 import java.io.Serializable;
 import java.util.LinkedList;

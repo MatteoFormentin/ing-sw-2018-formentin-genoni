@@ -36,7 +36,7 @@ public class SelectValue extends EffectGame {
     }
 
     @Override
-    public EventView askTheViewTheInfo() {
+    public EventView eventViewToAsk() {
         if(trueSetValueFalseIncrementDec) return new SelectValueDice();
         else return new SelectIncrementOrDecreaseDice();
     }

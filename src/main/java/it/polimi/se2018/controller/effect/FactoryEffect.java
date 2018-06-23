@@ -23,7 +23,7 @@ public class FactoryEffect extends EffectGame {
     }
 
     @Override
-    public EventView askTheViewTheInfo() {
+    public EventView eventViewToAsk() {
         return null;
     }
 }

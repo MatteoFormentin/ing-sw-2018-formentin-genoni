@@ -1,12 +1,13 @@
 package it.polimi.se2018.model.card;
 
+import it.polimi.se2018.controller.effect.*;
 import it.polimi.se2018.model.card.objective_private_card.*;
 import it.polimi.se2018.model.card.objective_public_card.*;
-import it.polimi.se2018.model.card.tool_card.*;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCardLoader;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -165,31 +166,125 @@ public class Deck {
      * @throws IndexOutOfBoundsException if random error.
      */
     public ToolCard drawToolCard() {
+        ToolCard newToolCard = new ToolCard();
+        LinkedList<EffectGame> effect = new LinkedList<>();
         switch (extractInt(toolCardNumber, extractedTool)) {
             case 0:
-                return new PinzaSgrossatrice();
+                newToolCard.setId(0);
+                newToolCard.setName("Pinza Sgrossatrice");
+                newToolCard.setDescription("Dopo aver scelto un dado, aumenta o dominuisci il valore del dado scelto di 1\n" +
+                        "Non puoi cambiare un 6 in 1 o un 1 in 6");
+                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
+                effect.addLast(new SelectValue(false));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 1:
-                return new PennelloEglomise();
+                newToolCard.setId(1);
+                newToolCard.setName("Pennello per Eglomise");
+                newToolCard.setDescription("Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di colore.\n" +
+                        "Devi rispettare tutte le altre restrizioni di piazzamento");
+                effect.addLast(new RemoveDiceFromWindow(false));
+                effect.addLast(new InsertDice(true,false,true,true));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 2:
-                return new AlesatoreLaminaRame();
+                newToolCard.setId(2);
+                newToolCard.setName("Alesatore per lamina di rame");
+                newToolCard.setDescription("Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di valore\n" +
+                        "Devi rispettare tutte le altre restrizioni di piazzamento");
+                effect.addLast(new RemoveDiceFromWindow(false));
+                effect.addLast(new InsertDice(true,true,false,true));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 3:
-                return new Lathekin();
+                newToolCard.setId(3);
+                newToolCard.setName("Lathekin");
+                newToolCard.setDescription("Muovi  esattamente  due  dadi,  rispettando  tutte  le  restrizioni  di  piazzamento");
+                effect.addLast(new RemoveDiceFromWindow(false));
+                effect.addLast(new InsertDice(true,true,true,false));
+                effect.addLast(new RemoveDiceFromWindow(false));
+                effect.addLast(new InsertDice(true,true,true,false));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 4:
-                return new TaglierinaCircolare();
+                newToolCard.setId(4);
+                newToolCard.setName("Taglierina Circolare");
+                newToolCard.setDescription("Dopo aver scelto un dado, scambia quel dado con un dado sul Tracciato dei Round");
+                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
+                effect.addLast(new RoundTrackEffect(true));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 5:
-                return new PennelloPastaSalda();
+                newToolCard.setId(5);
+                newToolCard.setName("Pennello per Pasta Salda");
+                newToolCard.setDescription("Dopo aver scelto un dado, tira nuovamente quel dado\n" +
+                        "Se non puoi piazzarlo, riponilo nella Riserva");
+                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
+                effect.addLast(new ChangeDiceValue(true));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 6:
-                return new Martelletto();
+                newToolCard.setId(6);
+                newToolCard.setName("Martelletto");
+                newToolCard.setDescription("Tira nuovamente tutti i dadi della Riserva\n" +
+                        "Questa carta può essera usata solo durante il tuo secondo turno, prima di scegliere il secondo dado");
+                //TODO aggiungere un modo per fare un controllo
+                effect.addLast(new DicePoolEffect(false));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 7:
-                return new TenagliaRotelle();
+                newToolCard.setId(7);
+                newToolCard.setName("Tenaglia a Rotelle");
+                newToolCard.setDescription("Dopo il tuo primo turno scegli immediatamente un altro dado\n" +
+                        "Salta il tuo secondo turno in questo round");
+                //TODO aggiungere un modo per fare un controllo
+                effect.addLast(new EndTurn(true));
+                effect.addLast(new DicePoolEffect(true));
+                effect.addLast(new InsertDice(true,true,true,true));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 8:
-                return new RigaSughero();
+                newToolCard.setId(8);
+                newToolCard.setName("Riga in Sughero");
+                newToolCard.setDescription("Dopo aver scelto un dado, piazzalo in una casella che non sia adiacente a un altro dado\n" +
+                        "Devi rispettare tutte le restrizioni di piazzamento");
+                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
+                effect.addLast(new InsertDice(false,true,true,true));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 9:
-                return new TamponeDiamantato();
+                newToolCard.setId(9);
+                newToolCard.setName("Tampone Diamantato");
+                newToolCard.setDescription("Dopo aver scelto un dado, giralo sulla faccia opposta \n" +
+                        "6 diventa 1, 5 diventa 2, 4 diventa 3 ecc.");
+                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
+                effect.addLast(new ChangeDiceValue(false));
+                //TODO inserisci o no?
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 10:
-                return new DiluentePastaSalda();
+                newToolCard.setId(10);
+                newToolCard.setName("Diluente per Pasta Salda");
+                newToolCard.setDescription("Dopo aver scelto un dado, riponilo nel Sacchetto, poi pescane uno dal Sacchetto\n" +
+                        "Scegli il valore del nuovo dado e piazzalo, rispettando tutte le restrizioni di piazzamento");
+                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
+                effect.addLast(new FactoryEffect());
+                effect.addLast(new SelectValue(true));
+                effect.addLast(new InsertDice(true,true,true,true));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             case 11:
-                return new TaglierinaManuale();
+                newToolCard.setId(11);
+                newToolCard.setName("Taglierina Manuale");
+                newToolCard.setDescription("Muovi fino a due dadi dello stesso colore di un solo dado sul Tracciato dei Round\n" +
+                        "Devi rispettare tutte le restrizioni di piazzamento");
+                effect.addLast(new RoundTrackEffect(false));
+                effect.addLast(new RemoveDiceFromWindow(true));
+                effect.addLast(new InsertDice(true,true,true,false));
+                effect.addLast(new RemoveDiceFromWindow(true));
+                effect.addLast(new InsertDice(true,true,true,false));
+                newToolCard.setListEffect(effect);
+                return newToolCard;
             default:
                 throw new IndexOutOfBoundsException("Error");
         }

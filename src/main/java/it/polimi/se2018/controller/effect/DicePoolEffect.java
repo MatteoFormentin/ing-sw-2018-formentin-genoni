@@ -10,15 +10,15 @@ import it.polimi.se2018.model.dice.Dice;
 public class DicePoolEffect extends EffectGame {
 
     private int indexDiceOfDicePool;
-    private boolean drawDice;
+    private boolean trueDrawDieFalseRollDice;
 
-    public DicePoolEffect(boolean drawDice) {
-        this.drawDice = drawDice;
+    public DicePoolEffect(boolean trueDrawDieFalseRollDice) {
+        this.trueDrawDieFalseRollDice = trueDrawDieFalseRollDice;
     }
 
     @Override
     public void doEffect(GameBoard gameBoard, int idPlayer, int[] infoMove) throws GameException {
-        if(drawDice){
+        if(trueDrawDieFalseRollDice){
             if (infoMove.length != 1) throw new NumberInfoWrongException();
             this.setGameBoard(gameBoard);
             this.setIdPlayer(idPlayer);
@@ -30,7 +30,6 @@ public class DicePoolEffect extends EffectGame {
             this.setIdPlayer(idPlayer);
             gameBoard.rollDicePool(idPlayer);
         }
-
     }
 
     @Override
@@ -40,8 +39,8 @@ public class DicePoolEffect extends EffectGame {
     }
 
     @Override
-    public EventView askTheViewTheInfo() {
-        if(drawDice) return new SelectDiceFromDraftPool();
+    public EventView eventViewToAsk() {
+        if(trueDrawDieFalseRollDice) return new SelectDiceFromDraftPool();
         return null;
     }
 }

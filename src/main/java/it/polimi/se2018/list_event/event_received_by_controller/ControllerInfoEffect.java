@@ -6,8 +6,16 @@ package it.polimi.se2018.list_event.event_received_by_controller;
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class ControllerSendInfoIndex extends EventController {
-    private int[] arrayIndex;
+public class ControllerInfoEffect extends EventController {
+    private int[] Info;
+
+    public int[] getInfo() {
+        return Info;
+    }
+
+    public void setInfo(int[] info) {
+        Info = info;
+    }
 
     public void accept(ControllerVisitor visitor) {
         visitor.visit(this);

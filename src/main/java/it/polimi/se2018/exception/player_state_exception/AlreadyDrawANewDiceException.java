@@ -1,6 +1,4 @@
-package it.polimi.se2018.exception.player_exception;
-
-import it.polimi.se2018.exception.GameException;
+package it.polimi.se2018.exception.player_state_exception;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}
@@ -10,8 +8,9 @@ import it.polimi.se2018.exception.GameException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class AlreadyUseToolCardException extends PlayerException {
-    public AlreadyUseToolCardException() {
-        super("Hai già utilizzato una toolcard in questo turno");
+public class AlreadyDrawANewDiceException extends PlayerException {
+
+    public AlreadyDrawANewDiceException() {
+        super("Hai già pescato un dado dalla riserva");
     }
 }

@@ -13,10 +13,10 @@ import it.polimi.se2018.model.dice.Dice;
 public class RemoveDiceFromWindow extends EffectGame {
     private int line;
     private int column;
-    private boolean specialRemove;
+    private boolean trueSpecialRemoveFalseNormal;
 
-    public RemoveDiceFromWindow(boolean specialRemove) {
-        this.specialRemove = specialRemove;
+    public RemoveDiceFromWindow(boolean trueSpecialRemoveFalseNormal) {
+        this.trueSpecialRemoveFalseNormal = trueSpecialRemoveFalseNormal;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class RemoveDiceFromWindow extends EffectGame {
         this.setIdPlayer(idPlayer);
         line=infoMove[0];
         column=infoMove[1];
-        if(specialRemove) gameBoard.moveDiceFromWindowPatternToHand(getIdPlayer(),line,column,specialRemove);
+        if(trueSpecialRemoveFalseNormal) gameBoard.moveDiceFromWindowPatternToHand(getIdPlayer(),line,column,trueSpecialRemoveFalseNormal);
         else {
             Dice dice =gameBoard.getPlayer(getIdPlayer()).getPlayerWindowPattern().removeDice(line,column);
             gameBoard.getPlayer(getIdPlayer()).getHandDice().addFirst(dice);
@@ -39,7 +39,7 @@ public class RemoveDiceFromWindow extends EffectGame {
     }
 
     @Override
-    public EventView askTheViewTheInfo() {
+    public EventView eventViewToAsk() {
         return new SelectCellOfWindow();
     }
 }
