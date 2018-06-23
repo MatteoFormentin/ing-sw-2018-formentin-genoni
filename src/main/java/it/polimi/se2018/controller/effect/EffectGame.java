@@ -12,20 +12,19 @@ public abstract class EffectGame {
     public abstract void undo() throws GameException;
     public abstract EventView askTheViewTheInfo();
 
-
-    public GameBoard getGameBoard() {
+    GameBoard getGameBoard() {
         return gameBoard;
     }
 
-    public void setGameBoard(GameBoard gameBoard) {
+    void setGameBoard(GameBoard gameBoard) {
         this.gameBoard = gameBoard;
     }
 
-    public int getIdPlayer() {
+    int getIdPlayer() {
         return idPlayer;
     }
 
-    public void setIdPlayer(int idPlayer) {
+    void setIdPlayer(int idPlayer) {
         this.idPlayer = idPlayer;
     }
 }
