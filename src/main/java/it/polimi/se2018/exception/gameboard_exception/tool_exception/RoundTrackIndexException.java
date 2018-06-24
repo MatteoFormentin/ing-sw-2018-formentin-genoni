@@ -1,4 +1,6 @@
-package it.polimi.se2018.exception.player_state_exception;
+package it.polimi.se2018.exception.gameboard_exception.tool_exception;
+
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}
@@ -8,9 +10,8 @@ package it.polimi.se2018.exception.player_state_exception;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class AlreadyDrawANewDiceException extends PlayerException {
-
-    public AlreadyDrawANewDiceException() {
-        super("Hai già pescato un dado dalla riserva");
+public class RoundTrackIndexException extends PlayerException {
+    public RoundTrackIndexException() {
+        super("Il round non può essere selezionato");
     }
 }

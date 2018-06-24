@@ -1,19 +1,19 @@
 package it.polimi.se2018.controller;
 
+import it.polimi.se2018.controller.effect.DicePoolEffect;
 import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.EndTurn;
-import it.polimi.se2018.exception.GameException;
+import it.polimi.se2018.controller.effect.InsertDice;
 import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
 import it.polimi.se2018.exception.gameboard_exception.WindowPatternAlreadyTakenException;
 import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteException;
-import it.polimi.se2018.exception.player_state_exception.AlreadyPlaceANewDiceException;
-import it.polimi.se2018.exception.player_state_exception.AlreadyUseToolCardException;
-import it.polimi.se2018.exception.player_state_exception.PlayerException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectDiceFromDraftPool;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectInitialWindowPatternCard;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectToolCard;
 import it.polimi.se2018.model.GameBoard;
@@ -22,7 +22,6 @@ import it.polimi.se2018.network.server.ServerController;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
-import java.lang.instrument.IllegalClassFormatException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -143,15 +142,21 @@ public class Controller implements ControllerVisitor, TimerCallback {
      */
     @Override
     public void visit(ControllerMoveDrawAndPlaceDie event) {
+        EffectGame insertDice = new InsertDice(true,true,true,true);
+        EffectGame drawDice = new DicePoolEffect(true);
+        LinkedList<EffectGame> newList = new LinkedList<>();
         if (event.getPlayerId() == gameBoard.getIndexCurrentPlayer()) {
-            if (gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()) {
+            if(gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()){
                 showErrorMessage(new AlreadyPlaceANewDiceException(), event.getPlayerId(), true);
-            } else if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
-                SelectCellOfWindow packet = new SelectCellOfWindow();
-                packet.setPlayerId(event.getPlayerId());
-                sendEventToView(packet);
-            } else {
-                SelectDiceFromDraftPool packet = new SelectDiceFromDraftPool();
+            }else{
+                if(gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()){
+                    newList.addLast(insertDice);
+                }else{
+                    newList.addLast(drawDice);
+                    newList.addLast(insertDice);
+                }
+                effectToRead = newList;
+                EventView packet = effectToRead.getFirst().eventViewToAsk();
                 packet.setPlayerId(event.getPlayerId());
                 sendEventToView(packet);
             }
@@ -236,36 +241,31 @@ public class Controller implements ControllerVisitor, TimerCallback {
         }
     }
 
+
+
+    /**
+     * method for select the toolcard
+     * @param event
+     */
     public void visit(ControllerSelectToolCard event) {
         try {
             gameBoard.useToolCard(event.getPlayerId(), event.getIndexToolCard());
-            showErrorMessage(new IllegalClassFormatException(), event.getPlayerId(), true);
+            //load the effect of the tool card
+            effectToRead = gameBoard.getToolCard(event.getIndexToolCard()).getCopyListEffect();
+            effectToRead.addFirst(null);
+            accessToEffect(event.getPlayerId(),null);
         } catch (CurrentPlayerException ex) {
             showErrorMessage(ex, event.getPlayerId(), false);
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(), true);
         }
     }
-    @Override
-    public void visit(ControllerSelectDiceFromHand event) {
-        // impossibile senza una tool card, rimane non implementata
-        for (int i = 0; i < 100; i++) {
-            System.err.println("ERRORE NELLA LOGICA DEL CONTROLLER!!!!!!!!!!!!!!!!");
-        }
-        System.err.println(event);
-    }
 
-
-    @Override
-    public void visit(ControllerSelectDiceFromRoundTrack event) {
-        // impossibile senza una tool card, rimane non implementata
-        for (int i = 0; i < 100; i++) {
-            System.err.println("ERRORE NELLA LOGICA DEL CONTROLLER!!!!!!!!!!!!!!!!");
-        }
-        System.err.println(event);
-    }
-
-
+    /**
+     * method for receive the parameter of some moves.
+     *
+     * @param event
+     */
     @Override
     public void visit(ControllerInfoEffect event) {
         if (!effectToRead.isEmpty()) {// se ci sono effetti da leggere
@@ -285,13 +285,16 @@ public class Controller implements ControllerVisitor, TimerCallback {
     }
 
     private void accessToEffect(int idPlayer,int[] info )throws Exception {
-        effectToRead.getFirst().doEffect(gameBoard, idPlayer, info);
-        effectGamesStored.addLast(effectToRead.getFirst());
-        effectToRead.removeFirst();
-
+        if(effectToRead.getFirst()!=null){
+            effectToRead.getFirst().doEffect(gameBoard, idPlayer, info);
+            effectGamesStored.addLast(effectToRead.getFirst());
+            effectToRead.removeFirst();
+        }else{
+            effectToRead.removeFirst(); //first flow move
+        }
         //lettura nuovo effetto
         if(effectToRead.isEmpty()){
-            EventView packet = new MessageOk("il flusso di mosse si è concluso con successo, mostra il menu", true);
+            EventView packet = new MessageOk("il flusso di mosse si è concluso con successo, mostra il menu\n THE EFFECT FLOW", true);
             packet.setPlayerId(idPlayer);
             sendEventToView(packet);
         }else{ //there is a another effect to read

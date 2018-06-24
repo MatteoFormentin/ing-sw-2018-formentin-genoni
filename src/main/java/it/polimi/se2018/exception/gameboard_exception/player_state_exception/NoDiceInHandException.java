@@ -1,6 +1,4 @@
-package it.polimi.se2018.exception.tool_exception;
-
-import it.polimi.se2018.exception.player_state_exception.PlayerException;
+package it.polimi.se2018.exception.gameboard_exception.player_state_exception;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}
@@ -10,8 +8,8 @@ import it.polimi.se2018.exception.player_state_exception.PlayerException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class NoEnoughTokenException extends PlayerException {
-    public NoEnoughTokenException() {
-        super("Non hai abbastanza Segnalini");
+public class NoDiceInHandException extends PlayerException {
+    public NoDiceInHandException() {
+        super("Non hai dadi in mano");
     }
 }

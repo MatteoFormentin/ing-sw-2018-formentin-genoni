@@ -3,9 +3,9 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
-import it.polimi.se2018.exception.player_state_exception.*;
-import it.polimi.se2018.exception.tool_exception.NoEnoughTokenException;
-import it.polimi.se2018.exception.window_exception.*;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.NoEnoughTokenException;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.*;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
@@ -172,7 +172,7 @@ public class Player {
      * @param dice the dice to add
      * @return true if it's all ok, false otherwise
      */
-    void addDiceToHand(Dice dice,boolean fromDicePool) throws NoDiceException,AlreadyDrawANewDiceException {
+    public void addDiceToHand(Dice dice,boolean fromDicePool) throws NoDiceException,AlreadyDrawANewDiceException {
         if (dice == null) throw new NoDiceException();
         if(fromDicePool && hasDrawNewDice) throw new AlreadyDrawANewDiceException();
         handDice.addFirst(dice);
@@ -191,7 +191,7 @@ public class Player {
      * @throws WindowRestriction the specific exception of the insert
      * @throws PlayerException the exception regarding the state of the player
      */
-    void insertDice(int line, int column, boolean adjacentR, boolean colorR, boolean valueR,boolean firstInsert)
+    public void insertDice(int line, int column, boolean adjacentR, boolean colorR, boolean valueR,boolean firstInsert)
             throws WindowRestriction,PlayerException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         if (firstInsert && hasPlaceANewDice) throw new AlreadyPlaceANewDiceException();
@@ -207,14 +207,14 @@ public class Player {
      * @param cost of the tool card
      * @return true id it's all ok, false if player can't use toolcard
      */
-    void useToolCard(int cost) throws AlreadyUseToolCardException,NoEnoughTokenException {
+    public void useToolCard(int cost) throws AlreadyUseToolCardException,NoEnoughTokenException {
         if (hasUsedToolCard) throw new AlreadyUseToolCardException();
         if (cost > favorToken) throw new NoEnoughTokenException();
         hasUsedToolCard = true;
         favorToken -= cost;
     }
 
-    void endTrun(boolean nextTurnIsATypeFirstTurn) {
+    public void endTrun(boolean nextTurnIsATypeFirstTurn) {
         hasUsedToolCard = false;
         hasDrawNewDice = false;
         hasPlaceANewDice = false;

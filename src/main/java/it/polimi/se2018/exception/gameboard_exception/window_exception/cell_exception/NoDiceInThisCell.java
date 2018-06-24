@@ -1,4 +1,6 @@
-package it.polimi.se2018.exception.window_exception;
+package it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception;
+
+import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
 
 /**
  * * The class {@code RestrictionColorViolatedException} is a subclass of {@code Exception}

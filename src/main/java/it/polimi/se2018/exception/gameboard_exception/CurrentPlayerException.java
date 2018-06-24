@@ -1,7 +1,6 @@
 package it.polimi.se2018.exception.gameboard_exception;
 
 import it.polimi.se2018.exception.GameException;
-import it.polimi.se2018.exception.player_state_exception.PlayerException;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code GameException}

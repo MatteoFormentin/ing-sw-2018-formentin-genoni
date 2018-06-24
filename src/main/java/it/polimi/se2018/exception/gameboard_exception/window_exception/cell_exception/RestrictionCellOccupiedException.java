@@ -1,4 +1,6 @@
-package it.polimi.se2018.exception.window_exception;
+package it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception;
+
+import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
 
 /**
  * * The class {@code RestrictionColorViolatedException} is a subclass of {@code Exception}
@@ -8,10 +10,9 @@ package it.polimi.se2018.exception.window_exception;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class IndexLineOutOfWindowException extends WindowRestriction {
+public class RestrictionCellOccupiedException extends WindowRestriction {
 
-    public IndexLineOutOfWindowException() {
-        super("L'indice della riga è fuori dal dominio");
+    public RestrictionCellOccupiedException() {
+        super("In questa cella c'è un altro dado");
     }
-
 }

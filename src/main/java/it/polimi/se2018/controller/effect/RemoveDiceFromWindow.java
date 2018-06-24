@@ -26,11 +26,7 @@ public class RemoveDiceFromWindow extends EffectGame {
         this.setIdPlayer(idPlayer);
         line=infoMove[0];
         column=infoMove[1];
-        if(trueSpecialRemoveFalseNormal) gameBoard.moveDiceFromWindowPatternToHand(getIdPlayer(),line,column,trueSpecialRemoveFalseNormal);
-        else {
-            Dice dice =gameBoard.getPlayer(getIdPlayer()).getPlayerWindowPattern().removeDice(line,column);
-            gameBoard.getPlayer(getIdPlayer()).getHandDice().addFirst(dice);
-        }
+        gameBoard.moveDiceFromWindowPatternToHand(getIdPlayer(),line,column,trueSpecialRemoveFalseNormal);
     }
 
     @Override

@@ -1,6 +1,6 @@
-package it.polimi.se2018.exception.window_exception.insert_dice;
+package it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception;
 
-import it.polimi.se2018.exception.window_exception.WindowRestriction;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}
@@ -10,10 +10,10 @@ import it.polimi.se2018.exception.window_exception.WindowRestriction;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class NoValueDiceAllowed extends WindowRestriction {
+public class NullDiceToAddException extends WindowRestriction {
 
-    public NoValueDiceAllowed() {
-        super("Valore del dado non accettabile.");
+    public NullDiceToAddException() {
+        super("Non puoi aggiungere il nulla nella cella.");
     }
 
 }

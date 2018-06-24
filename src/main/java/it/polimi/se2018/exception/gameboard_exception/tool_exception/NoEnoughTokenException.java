@@ -1,6 +1,6 @@
-package it.polimi.se2018.exception.window_exception.insert_dice;
+package it.polimi.se2018.exception.gameboard_exception.tool_exception;
 
-import it.polimi.se2018.exception.window_exception.WindowRestriction;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}
@@ -10,10 +10,8 @@ import it.polimi.se2018.exception.window_exception.WindowRestriction;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class NullDiceToAddException extends WindowRestriction {
-
-    public NullDiceToAddException() {
-        super("Non puoi aggiungere il nulla nella cella.");
+public class NoEnoughTokenException extends PlayerException {
+    public NoEnoughTokenException() {
+        super("Non hai abbastanza Segnalini");
     }
-
 }

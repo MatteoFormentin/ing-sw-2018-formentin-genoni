@@ -9,6 +9,7 @@ package it.polimi.se2018.list_event.event_received_by_controller;
 public class ControllerInfoEffect extends EventController {
     private int[] Info;
 
+
     public int[] getInfo() {
         return Info;
     }

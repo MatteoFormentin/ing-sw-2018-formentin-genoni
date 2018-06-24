@@ -86,14 +86,23 @@ public class ToolCard implements Serializable {
         this.favorToken = favorToken;
     }
 
+
+    void setListEffect(LinkedList<EffectGame> listEffect) {
+        this.listEffect = listEffect;
+    }
+
     public LinkedList getListEffect() {
         return listEffect;
     }
 
-    public void setListEffect(LinkedList<EffectGame> listEffect) {
-        this.listEffect = listEffect;
+    public LinkedList getCopyListEffect(){
+        LinkedList<EffectGame> copyListEffect = new LinkedList<>();
+        for (int i = 0; i < listEffect.size(); i++) {
+            EffectGame effectGame = listEffect.get(i);
+            copyListEffect.addLast(effectGame);
+        }
+        return  copyListEffect;
     }
-
     //************************************************************method for a general tool Card*************************
     public void incrementFavorToken() {
         favorToken = 2;

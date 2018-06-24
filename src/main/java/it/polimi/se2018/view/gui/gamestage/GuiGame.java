@@ -277,7 +277,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(StartGame event) {
-        System.out.println("viene accettato :" + event.toString());
+        System.err.println("viene accettato :" + event.toString());
         int numberOfPlayer = event.getPlayersName().length;
         playerId = event.getPlayerId();
         boxAllDataPlayer = new HBox[numberOfPlayer];
@@ -330,7 +330,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         flowPaneDicePool = new FlowPane(5, 5);
         flowPaneDicePool.setOrientation(Orientation.HORIZONTAL);
         flowPaneDicePool.setAlignment(Pos.BOTTOM_CENTER);
-        dicePool = new LinkedList<ImageView>();
+        dicePool = new LinkedList<>();
         for (int i = 0; i < (2 * numberOfPlayer + 1); i++) {
             dicePool.add(createNewImageViewForDicePool());
             flowPaneDicePool.getChildren().add(dicePool.get(i));
@@ -340,7 +340,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(JoinGame event) {
-        System.out.println("Finalmente è arrivato questo pacchetto, non l'ho mai visto prima d'ora viene accettato :" + event.toString());
+        System.err.println("è arrivato il pacchetto join, non l'ho mai visto prima d'ora viene accettato :" + event.toString());
         gameStage.show();
     }
 
@@ -404,9 +404,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private void activeCell(int indexWindow, int indexRow, int indexColumn) {
         imageViewsCellPlayer[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {
             disableWindow(indexWindow);
-            ControllerSelectCellOfWindow packet = new ControllerSelectCellOfWindow();
-            packet.setLine(indexRow);
-            packet.setColumn(indexColumn);
+            ControllerInfoEffect packet = new ControllerInfoEffect();
+            packet.setPlayerId(playerId);
+            int[] info = new int[2];
+            info[0] = indexRow;
+            info[1] = indexColumn;
+            packet.setInfo(info);
             sendEventAndSetTheId(packet);
         });
     }
@@ -454,9 +457,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             comboBoxSingleRound[indexRound].getSelectionModel().clearSelection();
             comboBoxSingleRound[indexRound].setOnAction(e -> {
                 disableAllRound();
-                ControllerSelectDiceFromRoundTrack packet = new ControllerSelectDiceFromRoundTrack(
-                        indexRound, comboBoxSingleRound[indexRound].getSelectionModel().getSelectedIndex()
-                );
+                ControllerInfoEffect packet = new ControllerInfoEffect();
+                packet.setPlayerId(playerId);
+                int[] info = new int[2];
+                info[0] = indexRound;
+                info[1] = comboBoxSingleRound[indexRound].getSelectionModel().getSelectedIndex();
+                packet.setInfo(info);
                 sendEventAndSetTheId(packet);
             });
         }
@@ -481,9 +487,11 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private void activeDiceOfDicePool(int index) {
         dicePool.get(index).setOnMouseClicked(e -> {
                     disableDiceOfDicePool();
-                    ControllerSelectDiceFromDraftPool packet = new ControllerSelectDiceFromDraftPool();
-                    packet.setIndex(index);
+                    ControllerInfoEffect packet = new ControllerInfoEffect();
                     packet.setPlayerId(playerId);
+                    int[] info = new int[1];
+                    info[0] = index;
+                    packet.setInfo(info);
                     sendEventAndSetTheId(packet);
                 }
         );

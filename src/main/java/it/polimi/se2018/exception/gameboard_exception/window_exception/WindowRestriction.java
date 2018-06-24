@@ -1,4 +1,4 @@
-package it.polimi.se2018.exception.window_exception;
+package it.polimi.se2018.exception.gameboard_exception.window_exception;
 
 import it.polimi.se2018.exception.GameException;
 

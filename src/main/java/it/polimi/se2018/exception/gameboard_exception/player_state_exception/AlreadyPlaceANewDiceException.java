@@ -1,6 +1,4 @@
-package it.polimi.se2018.exception.tool_exception;
-
-import it.polimi.se2018.exception.player_state_exception.PlayerException;
+package it.polimi.se2018.exception.gameboard_exception.player_state_exception;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}
@@ -10,8 +8,8 @@ import it.polimi.se2018.exception.player_state_exception.PlayerException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class ColorNotRightException extends PlayerException {
-    public ColorNotRightException() {
-        super("Il colore del dado non coincide con quello selezionato nel round");
+public class AlreadyPlaceANewDiceException extends PlayerException {
+    public AlreadyPlaceANewDiceException() {
+        super("Hai già inserito un nuovo dado nella vetrata");
     }
 }

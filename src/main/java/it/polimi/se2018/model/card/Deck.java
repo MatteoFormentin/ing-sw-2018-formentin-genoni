@@ -184,7 +184,7 @@ public class Deck {
                 newToolCard.setDescription("Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di colore.\n" +
                         "Devi rispettare tutte le altre restrizioni di piazzamento");
                 effect.addLast(new RemoveDiceFromWindow(false));
-                effect.addLast(new InsertDice(true,false,true,true));
+                effect.addLast(new InsertDice(true,false,true,false));
                 newToolCard.setListEffect(effect);
                 return newToolCard;
             case 2:
@@ -193,7 +193,7 @@ public class Deck {
                 newToolCard.setDescription("Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di valore\n" +
                         "Devi rispettare tutte le altre restrizioni di piazzamento");
                 effect.addLast(new RemoveDiceFromWindow(false));
-                effect.addLast(new InsertDice(true,true,false,true));
+                effect.addLast(new InsertDice(true,true,false,false));
                 newToolCard.setListEffect(effect);
                 return newToolCard;
             case 3:

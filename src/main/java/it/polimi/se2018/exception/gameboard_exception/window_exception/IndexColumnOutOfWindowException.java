@@ -1,6 +1,4 @@
-package it.polimi.se2018.exception.window_exception.cell_exception;
-
-import it.polimi.se2018.exception.window_exception.WindowRestriction;
+package it.polimi.se2018.exception.gameboard_exception.window_exception;
 
 /**
  * * The class {@code RestrictionColorViolatedException} is a subclass of {@code Exception}
@@ -10,9 +8,9 @@ import it.polimi.se2018.exception.window_exception.WindowRestriction;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class RestrictionCellValueViolatedException extends WindowRestriction {
+public class IndexColumnOutOfWindowException extends WindowRestriction {
 
-    public RestrictionCellValueViolatedException() {
-        super("Hai violato la restrizione di valore della cella");
+    public IndexColumnOutOfWindowException() {
+        super("L'indice della colonna è fuori dal dominio");
     }
 }

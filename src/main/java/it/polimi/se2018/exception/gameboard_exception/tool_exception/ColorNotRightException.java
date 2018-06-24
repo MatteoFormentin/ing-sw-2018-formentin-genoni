@@ -1,6 +1,6 @@
-package it.polimi.se2018.exception.tool_exception;
+package it.polimi.se2018.exception.gameboard_exception.tool_exception;
 
-import it.polimi.se2018.exception.player_state_exception.PlayerException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
 
 /**
  * The class {@code CurrentPlayerException} is a subclass of {@code Exception}
@@ -10,8 +10,8 @@ import it.polimi.se2018.exception.player_state_exception.PlayerException;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  */
-public class RoundTrackIndexException extends PlayerException {
-    public RoundTrackIndexException() {
-        super("Il round non può essere selezionato");
+public class ColorNotRightException extends PlayerException {
+    public ColorNotRightException() {
+        super("Il colore del dado non coincide con quello selezionato nel round");
     }
 }

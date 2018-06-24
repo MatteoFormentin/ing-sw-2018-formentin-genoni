@@ -3,9 +3,9 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.*;
-import it.polimi.se2018.exception.player_state_exception.*;
-import it.polimi.se2018.exception.tool_exception.ColorNotRightException;
-import it.polimi.se2018.exception.tool_exception.RoundTrackIndexException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.ColorNotRightException;
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.RoundTrackIndexException;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
@@ -409,7 +409,6 @@ public class GameBoard {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         player[indexPlayer].useToolCard(toolCard[indexOfToolInGame].getFavorToken());
-
     }
     //*****************************************Tool's method of Gameboard **********************************************
     //*****************************************Tool's method of Gameboard **********************************************
@@ -530,7 +529,7 @@ public class GameBoard {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (singleNewDice && player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
-        player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction, true);
+        player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction, singleNewDice);
         if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());

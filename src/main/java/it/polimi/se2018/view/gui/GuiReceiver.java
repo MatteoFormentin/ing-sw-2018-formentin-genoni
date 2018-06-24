@@ -92,7 +92,7 @@ public class GuiReceiver extends Application {
         if (result) {
             primaryStage.close();
             Platform.exit();
-            System.out.println("Se non termina controllare i thread ancora attivi sul client divesi da quello della gui");
+            System.err.println("Se non termina controllare i thread ancora attivi sul client divesi da quello della gui");
         }
     }
 }

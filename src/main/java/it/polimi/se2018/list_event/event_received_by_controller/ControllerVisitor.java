@@ -24,8 +24,6 @@ public interface ControllerVisitor {
     void visit(ControllerSelectCellOfWindow event);
     void visit(ControllerSelectDiceFromDraftPool event);
     void visit(ControllerSelectToolCard event);
-    void visit(ControllerSelectDiceFromHand event);
-    void visit(ControllerSelectDiceFromRoundTrack event);
 
 
 }
