@@ -88,7 +88,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     //fields for cards
     private VBox cardBox;
+
     private HBox toolBox; //pane for add/remove the Tool card
+    private VBox[] toolCardInfoBox;
+    private Text[] costToolCard;
     private ImageView[] toolCard; //store the Tool card
     private HBox objectivePublicBox; //pane for add/remove the Public card
     private ImageView[] objectivePublicCard; //store the Public card
@@ -691,10 +694,14 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     @Override
     public void visit(UpdateAllToolCard event) {
         toolCard = new ImageView[event.getToolCard().length];
+        costToolCard = new Text[event.getToolCard().length];
+        toolCardInfoBox = new VBox[event.getToolCard().length];
         //ForEach made for enable the click
         IntStream.range(0, event.getToolCard().length).forEach(i -> {
             toolCard[i] = createNewImageViewForCard();
-            toolBox.getChildren().add(toolCard[i]);
+            costToolCard[i] = new Text("Costo: "+ event.getToolCard(i).getFavorToken());
+            toolCardInfoBox[i] = new VBox(toolCard[i],costToolCard[i]);
+            toolBox.getChildren().add(toolCardInfoBox[i]);
             Image newImage = new Image(toolCardSource + event.getToolCard(i).getId() + ".jpg");
             toolCard[i].setImage(newImage);
             toolCard[i].setOnMouseClicked(e -> {
@@ -827,8 +834,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(UpdateSingleToolCardCost event) {
-        //TODO aggiornate il costo della carta
-        System.out.println("viene accettato :" + event.toString());
+        costToolCard[event.getIndexToolCard()].setText("Costo: "+event.getCostToolCard());
     }
 
     /**
