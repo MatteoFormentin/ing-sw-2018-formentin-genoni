@@ -137,10 +137,6 @@ public class Player {
     public void setThe4WindowPattern(WindowPatternCard[] the4WindowPattern) {
         this.the4WindowPattern = the4WindowPattern;
     }
-/*
-    public void setHandDice(DiceStack handDice) {
-        this.handDice = handDice;
-    }*/
 
     public void setFirstTurn(boolean firstTurn) {
         this.firstTurn = firstTurn;
@@ -238,12 +234,12 @@ public class Player {
      * @param column index of the window's column
      * @throws WindowRestriction if something isn't right
      */
-    void removeDiceFromWindowAndAddToHand(int line, int column) throws WindowRestriction{
+    public void removeDiceFromWindowAndAddToHand(int line, int column) throws WindowRestriction{
         Dice dice = playerWindowPattern.removeDice(line, column);
         handDice.addFirst(dice);
     }
 
-    Dice removeDiceFromHand() throws NoDiceInHandException{
+    public Dice removeDiceFromHand() throws NoDiceInHandException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         return handDice.remove(0);
     }
@@ -252,7 +248,7 @@ public class Player {
      * the player roll the active dice (index=0) in hand. Available when using a tool card
      *
      */
-    void rollDiceInHand() throws NoDiceInHandException,NoDiceException {
+    public void rollDiceInHand() throws NoDiceInHandException,NoDiceException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.reRollAllDiceInStack();
     }
@@ -261,7 +257,7 @@ public class Player {
      * the player change the face of the dice. Available when using a tool card
      *
      */
-    void oppositeFaceDice() throws NoDiceInHandException,NoDiceException{
+    public void oppositeFaceDice() throws NoDiceInHandException,NoDiceException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).oppositeValue();
     }
@@ -272,13 +268,13 @@ public class Player {
      * @param increase true if the player want to increase the value, false for decrease
      * @return true if it's all ok, false otherwise
      */
-    void increaseOrDecrease(boolean increase) throws NoDiceInHandException,NoDiceException {
+    public void increaseOrDecrease(boolean increase) throws NoDiceInHandException,NoDiceException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).increaseOrDecrease(increase);
     }
 
 
-    void setValueDiceHand(int value) throws NoDiceInHandException,NoDiceException{
+    public void setValueDiceHand(int value) throws NoDiceInHandException,NoDiceException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).setValue(value);
     }
@@ -289,7 +285,7 @@ public class Player {
      *
      * @return true if it's all ok, false otherwise
      */
-    void endSpecialFirstTurn() throws GameException{
+    public void endSpecialFirstTurn() throws GameException{
         if (!firstTurn) throw new GameException("non puoi usare questo effetto adesso");
         hasUsedToolCard = true;
         hasDrawNewDice = false;
@@ -309,7 +305,7 @@ public class Player {
      * @param index of the selected dice
      * @return true if it's all ok, false otherwise
      */
-    boolean selectDiceInHand(int index) {
+    public boolean selectDiceInHand(int index) {
         if (!hasUsedToolCard) return false;
         if (index >= handDice.size() || index < 0) return false;
         handDice.moveDiceToTheTop(index);
