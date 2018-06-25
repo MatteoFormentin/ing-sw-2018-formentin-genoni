@@ -226,10 +226,12 @@ public class GameBoard {
         UpdateDicePool packet = new UpdateDicePool(dicePool);
         broadcast(packet);
     }
+
     private void updateTokenPoints(int indexPlayer) {
-        UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer,player[indexPlayer].getFavorToken(),player[indexPlayer].getPoints());
+        UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
         broadcast(packet);
     }
+
     /**
      * change the current player to the next and end the game.
      * check the state of the player for the first/second turn
@@ -408,7 +410,14 @@ public class GameBoard {
     public void useToolCard(int indexPlayer, int indexOfToolInGame) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (player[indexPlayer].isHasUsedToolCard()) throw new AlreadyUseToolCardException();
+        toolCard[indexOfToolInGame].checkUsabilityToolCard(currentRound, player[indexPlayer]);
         player[indexPlayer].useToolCard(toolCard[indexOfToolInGame].getFavorToken());
+        toolCard[indexOfToolInGame].incrementUsage();
+        UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
+        broadcast(packet);
+        UpdateSingleToolCardCost packet2 = new UpdateSingleToolCardCost(indexOfToolInGame,toolCard[indexOfToolInGame].getFavorToken());
+        broadcast(packet2);
     }
     //*****************************************Tool's method of Gameboard **********************************************
     //*****************************************Tool's method of Gameboard **********************************************
@@ -424,13 +433,14 @@ public class GameBoard {
      * @param index
      * @throws GameException
      */
-    public void imposeColorRestriction(int indexPlayer, int round, int index) throws GameException  {
+    public void imposeColorRestriction(int indexPlayer, int round, int index) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
-        if (round >=currentRound || round<0) throw new RoundTrackIndexException();
-        if (index<0 || index >= roundTrack[round].size()) throw new NoDiceException();
+        if (round >= currentRound || round < 0) throw new RoundTrackIndexException();
+        if (index < 0 || index >= roundTrack[round].size()) throw new NoDiceException();
         colorRestriction = roundTrack[round].getDice(index).getColor();
     }
+
     /**
      * method for remove a dice from the window pattern
      *
@@ -443,14 +453,13 @@ public class GameBoard {
     public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column, boolean checkRestriction) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
-        if (checkRestriction && !colorRestriction.equals(player[indexPlayer].getPlayerWindowPattern().getCell(line,column).getDice().getColor()))
+        if (checkRestriction && !colorRestriction.equals(player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice().getColor()))
             throw new ColorNotRightException();
-        player[indexPlayer].removeDiceFromWindowAndAddToHand(line,column);
+        player[indexPlayer].removeDiceFromWindowAndAddToHand(line, column);
         updateHand(indexPlayer);
         UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
         broadcast(packetCell);
     }
-
 
 
     /**
@@ -465,7 +474,7 @@ public class GameBoard {
         Dice dice = player[indexPlayer].removeDiceFromHand();
         factoryDiceForThisGame.removeDice(dice);
         dice = factoryDiceForThisGame.createDice();
-        player[indexPlayer].addDiceToHand(dice,false);
+        player[indexPlayer].addDiceToHand(dice, false);
         updateHand(indexPlayer);
     }
 
@@ -480,17 +489,16 @@ public class GameBoard {
     public void changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
-        if (round >= currentRound || round < 0) throw new RoundTrackIndexException();//can't select a round that didn't exist
+        if (round >= currentRound || round < 0)
+            throw new RoundTrackIndexException();//can't select a round that didn't exist
         if (indexStack >= roundTrack[round].size() || indexStack < 0) throw new NoDiceException();
         Dice dicePlayer = player[indexPlayer].removeDiceFromHand();
-        player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack),false);
+        player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack), false);
         roundTrack[round].add(indexStack, dicePlayer);
         updateHand(indexPlayer);
-        EventView packetCell = new UpdateSingleTurnRoundTrack(round,roundTrack[round]);
+        EventView packetCell = new UpdateSingleTurnRoundTrack(round, roundTrack[round]);
         broadcast(packetCell);
     }
-
-
 
 
     /**
@@ -500,7 +508,7 @@ public class GameBoard {
     public void rollDicePool(int indexPlayer) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
-        if (currentRound<player.length) throw new GameException("Non effettuare questa mossa adesso");
+        if (currentRound < player.length) throw new GameException("Non effettuare questa mossa adesso");
         dicePool.reRollAllDiceInStack();
         EventView packetCell = new UpdateDicePool(dicePool);
         broadcast(packetCell);
@@ -537,7 +545,6 @@ public class GameBoard {
     }
 
     /**
-     *
      * @param indexPlayer
      * @throws GameException
      */
@@ -549,7 +556,6 @@ public class GameBoard {
     }
 
     /**
-     *
      * @param indexPlayer
      * @throws GameException
      */
@@ -571,7 +577,7 @@ public class GameBoard {
         freeHandPlayer(indexPlayer);
     }
 
-    public void setValueDiceHand(int indexPlayer, int value) throws GameException{
+    public void setValueDiceHand(int indexPlayer, int value) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         player[indexPlayer].setValueDiceHand(value);

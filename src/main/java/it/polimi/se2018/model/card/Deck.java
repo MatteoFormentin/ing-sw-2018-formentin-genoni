@@ -174,9 +174,9 @@ public class Deck {
                 newToolCard.setName("Pinza Sgrossatrice");
                 newToolCard.setDescription("Dopo aver scelto un dado, aumenta o dominuisci il valore del dado scelto di 1\n" +
                         "Non puoi cambiare un 6 in 1 o un 1 in 6");
-                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
                 effect.addLast(new SelectValue(false));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(true,true,true);
                 return newToolCard;
             case 1:
                 newToolCard.setId(1);
@@ -186,6 +186,7 @@ public class Deck {
                 effect.addLast(new RemoveDiceFromWindow(false));
                 effect.addLast(new InsertDice(true,false,true,false));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(false,true,false);
                 return newToolCard;
             case 2:
                 newToolCard.setId(2);
@@ -195,6 +196,7 @@ public class Deck {
                 effect.addLast(new RemoveDiceFromWindow(false));
                 effect.addLast(new InsertDice(true,true,false,false));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(false,true,false);
                 return newToolCard;
             case 3:
                 newToolCard.setId(3);
@@ -205,73 +207,76 @@ public class Deck {
                 effect.addLast(new RemoveDiceFromWindow(false));
                 effect.addLast(new InsertDice(true,true,true,false));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(false,true,false);
                 return newToolCard;
             case 4:
                 newToolCard.setId(4);
                 newToolCard.setName("Taglierina Circolare");
                 newToolCard.setDescription("Dopo aver scelto un dado, scambia quel dado con un dado sul Tracciato dei Round");
-                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
                 effect.addLast(new RoundTrackEffect(true));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(true,true,true);
+                newToolCard.setCheckFirstRound(true);
                 return newToolCard;
             case 5:
                 newToolCard.setId(5);
                 newToolCard.setName("Pennello per Pasta Salda");
                 newToolCard.setDescription("Dopo aver scelto un dado, tira nuovamente quel dado\n" +
                         "Se non puoi piazzarlo, riponilo nella Riserva");
-                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
                 effect.addLast(new ChangeDiceValue(true));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(true,true,true);
                 return newToolCard;
             case 6:
                 newToolCard.setId(6);
                 newToolCard.setName("Martelletto");
                 newToolCard.setDescription("Tira nuovamente tutti i dadi della Riserva\n" +
                         "Questa carta può essera usata solo durante il tuo secondo turno, prima di scegliere il secondo dado");
-                //TODO aggiungere un modo per fare un controllo
                 effect.addLast(new DicePoolEffect(false));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(true,true,false);
+                newToolCard.setCheckTrun(false);
                 return newToolCard;
             case 7:
                 newToolCard.setId(7);
                 newToolCard.setName("Tenaglia a Rotelle");
                 newToolCard.setDescription("Dopo il tuo primo turno scegli immediatamente un altro dado\n" +
                         "Salta il tuo secondo turno in questo round");
-                //TODO aggiungere un modo per fare un controllo
                 effect.addLast(new EndTurn(true));
                 effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new InsertDice(true,true,true,true));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(false);
+                newToolCard.setCheckTrun(true);
                 return newToolCard;
             case 8:
                 newToolCard.setId(8);
                 newToolCard.setName("Riga in Sughero");
                 newToolCard.setDescription("Dopo aver scelto un dado, piazzalo in una casella che non sia adiacente a un altro dado\n" +
                         "Devi rispettare tutte le restrizioni di piazzamento");
-                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
                 effect.addLast(new InsertDice(false,true,true,true));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(true,true,true);
                 return newToolCard;
             case 9:
                 newToolCard.setId(9);
                 newToolCard.setName("Tampone Diamantato");
                 newToolCard.setDescription("Dopo aver scelto un dado, giralo sulla faccia opposta \n" +
                         "6 diventa 1, 5 diventa 2, 4 diventa 3 ecc.");
-                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
                 effect.addLast(new ChangeDiceValue(false));
-                //TODO inserisci o no?
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(true,true,true);
                 return newToolCard;
             case 10:
                 newToolCard.setId(10);
                 newToolCard.setName("Diluente per Pasta Salda");
                 newToolCard.setDescription("Dopo aver scelto un dado, riponilo nel Sacchetto, poi pescane uno dal Sacchetto\n" +
                         "Scegli il valore del nuovo dado e piazzalo, rispettando tutte le restrizioni di piazzamento");
-                //TODO aggiungere effetto per controllare se è stato pescato il dado? o farlo pescare? mettere un tipo nela toolcard? boh
                 effect.addLast(new FactoryEffect());
                 effect.addLast(new SelectValue(true));
                 effect.addLast(new InsertDice(true,true,true,true));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(true,true,true);
                 return newToolCard;
             case 11:
                 newToolCard.setId(11);
@@ -284,6 +289,8 @@ public class Deck {
                 effect.addLast(new RemoveDiceFromWindow(true));
                 effect.addLast(new InsertDice(true,true,true,false));
                 newToolCard.setListEffect(effect);
+                newToolCard.setCheckDiceHand(false,true,false);
+                newToolCard.setCheckFirstRound(true);
                 return newToolCard;
             default:
                 throw new IndexOutOfBoundsException("Error");

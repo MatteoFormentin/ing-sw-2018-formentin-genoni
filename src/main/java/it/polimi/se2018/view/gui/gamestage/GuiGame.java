@@ -258,7 +258,11 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         event.acceptModelEvent(this);
     }
 
-    //***************************************************From Controller
+    //*************************************************From Controller*********************************************************************************
+    //*************************************************From Controller*********************************************************************************
+    //*************************************************From Controller*********************************************************************************
+    //*************************************************From Controller*********************************************************************************
+
     @Override
     public void visit(EndGame event) {
         System.out.println("viene accettato :" + event.toString());
@@ -340,6 +344,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(JoinGame event) {
+        //TODO aggiungere cose speciale del join game
         System.err.println("è arrivato il pacchetto join, non l'ho mai visto prima d'ora viene accettato :" + event.toString());
         gameStage.show();
     }
@@ -376,7 +381,14 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(WaitYourTurn event) {
+        //TODO disattivare tutti i comandi
+        //disattiva il menu
         IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
+        //disattiva dicepool, windowPattern, roundtrack, toolcard
+        disableDiceOfDicePool();
+        disableWindow(playerId);
+        disableAllRound();
+        cardShow.setClickIsOn(false);
         new AlertMessage(gameStage).displayMessage("Adesso tocca a " + playersName[event.getIndexCurrentPlayer()].getText());
     }
 
@@ -389,7 +401,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(SelectCellOfWindow event) {
+        disableDiceOfDicePool();
         activeWindow(playerId);
+        disableAllRound();
+        cardShow.setClickIsOn(false);
         new AlertMessage(gameStage).displayMessage("Clicca su una cella della tua windowPattern");
     }
 
@@ -403,7 +418,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     private void activeCell(int indexWindow, int indexRow, int indexColumn) {
         imageViewsCellPlayer[indexWindow][indexRow][indexColumn].setOnMouseClicked(e -> {
-            disableWindow(indexWindow);
             ControllerInfoEffect packet = new ControllerInfoEffect();
             packet.setPlayerId(playerId);
             int[] info = new int[2];
@@ -431,6 +445,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     @Override
     public void visit(SelectDiceFromRoundTrack event) {
         activeRoundTrack();
+        disableDiceOfDicePool();
+        disableWindow(playerId);
+        disableAllRound();
+        cardShow.setClickIsOn(false);
         new AlertMessage(gameStage).displayMessage("Seleziona un dado del RoundTrack");
     }
 
@@ -456,7 +474,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         for (int i = 0; i < comboBoxSingleRound[indexRound].getItems().size(); i++) {
             comboBoxSingleRound[indexRound].getSelectionModel().clearSelection();
             comboBoxSingleRound[indexRound].setOnAction(e -> {
-                disableAllRound();
                 ControllerInfoEffect packet = new ControllerInfoEffect();
                 packet.setPlayerId(playerId);
                 int[] info = new int[2];
@@ -481,12 +498,14 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     @Override
     public void visit(SelectDiceFromDraftPool event) {
         for (int i = 0; i < dicePool.size(); i++) activeDiceOfDicePool(i);
+        disableWindow(playerId);
+        disableAllRound();
+        cardShow.setClickIsOn(false);
         new AlertMessage(gameStage).displayMessage("Seleziona un dado nella DraftPool");
     }
 
     private void activeDiceOfDicePool(int index) {
         dicePool.get(index).setOnMouseClicked(e -> {
-                    disableDiceOfDicePool();
                     ControllerInfoEffect packet = new ControllerInfoEffect();
                     packet.setPlayerId(playerId);
                     int[] info = new int[1];
@@ -509,6 +528,9 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(SelectToolCard event) {
+        disableDiceOfDicePool();
+        disableWindow(playerId);
+        disableAllRound();
         cardShow.setClickIsOn(true);
         new AlertMessage(gameStage).displayMessage(
                 "Mentre la carta strumento viene mostrata in grande cliccala per utilizzarla");
@@ -634,7 +656,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             gridCellPoolChoice[i].setPadding(new Insets(10, 0, 10, 0));
             gridCellPoolChoice[i].setVgap(5);
             gridCellPoolChoice[i].setHgap(5);
-            difficultyWindowPoolChoice[i] = new Text(Integer.toString(event.getInitialWindowPatternCard(i).getDifficulty()));
+            difficultyWindowPoolChoice[i] = new Text("Livello "+Integer.toString(event.getInitialWindowPatternCard(i).getDifficulty()));
+            difficultyWindowPoolChoice[i].setTextAlignment(TextAlignment.RIGHT);
             nameWindowPoolChoice[i] = new Text(event.getInitialWindowPatternCard(i).getName());
             boxWindowPoolChoice[i] = new VBox(nameWindowPoolChoice[i], gridCellPoolChoice[i], difficultyWindowPoolChoice[i]);
             boxAllWindowPoolChoice.getChildren().add(boxWindowPoolChoice[i]);

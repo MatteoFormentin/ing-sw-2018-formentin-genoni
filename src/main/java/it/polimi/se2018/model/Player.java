@@ -208,7 +208,6 @@ public class Player {
      * @return true id it's all ok, false if player can't use toolcard
      */
     public void useToolCard(int cost) throws AlreadyUseToolCardException,NoEnoughTokenException {
-        if (hasUsedToolCard) throw new AlreadyUseToolCardException();
         if (cost > favorToken) throw new NoEnoughTokenException();
         hasUsedToolCard = true;
         favorToken -= cost;
@@ -255,7 +254,7 @@ public class Player {
      */
     void rollDiceInHand() throws NoDiceInHandException,NoDiceException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
-        handDice.getDice(0).rollDice();
+        handDice.reRollAllDiceInStack();
     }
 
     /**

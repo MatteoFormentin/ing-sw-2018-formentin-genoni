@@ -19,7 +19,7 @@ public class Dice implements Serializable {
      * @param color of the dice
      */
     public Dice(DiceColor color) {
-        value = rollDice();
+        rollDice();
         this.color = color;
     }
 
@@ -55,9 +55,9 @@ public class Dice implements Serializable {
      *
      * @return integer randomly generated
      */
-    public int rollDice() {
+    public void rollDice() {
         Random r = new Random();
-        return r.nextInt(6) + 1;
+        value = r.nextInt(6) + 1;
     }
 
     /**
@@ -66,30 +66,29 @@ public class Dice implements Serializable {
      * @return the opposite value of the die
      */
     public int oppositeValue() {
-        int opposite = value;
-        switch (opposite) {
+        switch (value) {
             case 1:
-                opposite = 6;
+                value = 6;
                 break;
             case 2:
-                opposite = 5;
+                value = 5;
                 break;
             case 3:
-                opposite = 4;
+                value = 4;
                 break;
             case 4:
-                opposite = 3;
+                value = 3;
                 break;
             case 5:
-                opposite = 2;
+                value = 2;
                 break;
             case 6:
-                opposite = 1;
+                value = 1;
                 break;
             default:
-                opposite = 0;
+                value = 0;
         }
-        return opposite;
+        return value;
     }
 
     public boolean increaseOrDecrease(boolean increase) {

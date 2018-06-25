@@ -35,6 +35,7 @@ public class DiceStack extends LinkedList<Dice> implements Serializable{
     }
     public void reRollAllDiceInStack(){
         for (Dice dice : this) {
+
             dice.rollDice();
         }
     }
