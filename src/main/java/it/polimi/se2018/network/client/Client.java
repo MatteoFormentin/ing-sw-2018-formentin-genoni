@@ -1,9 +1,13 @@
 package it.polimi.se2018.network.client;
 
+import it.polimi.se2018.exception.network_exception.NoPortRightException;
+import it.polimi.se2018.exception.network_exception.NoServerRightException;
+import it.polimi.se2018.exception.network_exception.ProblemConnectionException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.network.client.socket.SocketClient;
+import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
 import it.polimi.se2018.view.gui.GuiInstance;
@@ -129,15 +133,30 @@ public class Client implements ClientController {
         }
     }
 
-    /**
-     * Starter for the client connection.
-     *
-     * @param rmiPort port used for RMI connection.
-     */
-    public void startClient(String serverIpAddress, int rmiPort, int socketPort) {
-        // TODO selezione tipo di connessione
-        startRMIClient(serverIpAddress, rmiPort);
-        startSocketClient(serverIpAddress, socketPort);
+    public void startClient(String serverIpAddress, int port) throws Exception{
+        Properties configProperties = new Properties();
+        String connectionConfig = "src/resources/configurations/connection_configuration.properties";
+        FileInputStream inputConnection = new FileInputStream(connectionConfig);
+        configProperties.load(inputConnection);
+
+        String ipServerTrue =configProperties.getProperty("SERVER_ADDRESS");
+        if(serverIpAddress.equals(ipServerTrue) || serverIpAddress.equals("") || serverIpAddress.equals("0")){
+            serverIpAddress = ipServerTrue;
+        }else throw new NoServerRightException();
+        int numberPort;
+        if(port==0) {
+            numberPort = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
+            //TODO rimuovere i boolean e mettere eccezioni
+            boolean connected= startRMIClient (serverIpAddress, numberPort);
+            if (!connected) throw new ProblemConnectionException();
+        }
+        else if(port==1) {
+            numberPort = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+            //TODO rimuovere i boolean e mettere eccezioni
+            boolean connected= startSocketClient(serverIpAddress, numberPort);
+            if (!connected) throw new ProblemConnectionException();
+        }
+        else throw new NoPortRightException();
     }
 
     /**
