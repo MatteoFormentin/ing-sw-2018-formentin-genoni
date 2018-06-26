@@ -48,7 +48,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     //Lista di effetti andati a buon fine e memorizzati. qui avviene il ripescagglio degli undo che rimette
     private LinkedList<EffectGame> effectGamesStored;
 
-    long PLAYER_TIMEOUT = 50000; //ms!!
+    long PLAYER_TIMEOUT = 30000; //ms!!
     private TimerThread playerTimeout;
 
     /**

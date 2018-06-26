@@ -9,7 +9,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import static it.polimi.se2018.view.gui.GuiReceiver.closeProgram;
+import static it.polimi.se2018.view.gui.GuiMain.closeProgram;
 
 /**
  * Class for handle the waiting

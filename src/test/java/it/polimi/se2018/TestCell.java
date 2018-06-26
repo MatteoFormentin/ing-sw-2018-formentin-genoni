@@ -1,5 +1,6 @@
 package it.polimi.se2018;
 
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.RestrictionCellColorViolatedException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.RestrictionCellValueViolatedException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.NullDiceToAddException;
@@ -34,7 +35,7 @@ public class TestCell {
     private Dice dice3Blue;
 
     @Before
-    public void initTestWindowPatternCard() {
+    public void initTestWindowPatternCard() throws ValueDiceWrongException {
         allColor = new Cell[DiceColor.getNumberOfDiceColors()];
         dice3AllColor = new Dice[DiceColor.getNumberOfDiceColors()];
         allValue = new Cell[6];

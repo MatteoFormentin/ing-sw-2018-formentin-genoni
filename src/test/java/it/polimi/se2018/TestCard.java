@@ -1,5 +1,6 @@
 package it.polimi.se2018;
 
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.RestrictionCellColorViolatedException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.RestrictionCellValueViolatedException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionAdjacentFirstDiceViolatedException;
@@ -67,8 +68,7 @@ public class TestCard {
 */
 
     @Test
-    public void testCard() throws WindowRestriction {
-
+    public void testCard() throws WindowRestriction, ValueDiceWrongException {
         //diagonal public object
         ObjectivePublicCard p_card = new ColoredDiagonal();
 //        assertEquals(0, p_card.calculatePoint(testWindowPatternCard));
@@ -274,7 +274,7 @@ public class TestCard {
     }
 
     @Test
-    public void testBoolInsertDice() throws WindowRestriction {
+    public void testBoolInsertDice() throws WindowRestriction,ValueDiceWrongException {
         factoryDice.setDiceValueColor(1, DiceColor.BLUE);
         dice = factoryDice.createDice();
 

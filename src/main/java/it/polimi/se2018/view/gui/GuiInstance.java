@@ -5,7 +5,7 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
-import static it.polimi.se2018.view.gui.GuiReceiver.launchGui;
+import static it.polimi.se2018.view.gui.GuiMain.launchGui;
 import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
 
 /**

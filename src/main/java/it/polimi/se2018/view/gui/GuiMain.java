@@ -1,6 +1,7 @@
 package it.polimi.se2018.view.gui;
 
 import it.polimi.se2018.view.gui.gamestage.GuiGame;
+import it.polimi.se2018.view.gui.gamestage.ShowValue;
 import it.polimi.se2018.view.gui.stage.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -9,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -21,7 +23,7 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.createGuiGame;
  *
  * @author Luca Genoni
  */
-public class GuiReceiver extends Application {
+public class GuiMain extends Application {
     private static Stage primaryStage;
     private GuiGame game;
 
@@ -42,6 +44,7 @@ public class GuiReceiver extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         setPrimaryStage(primaryStage);
+
         //creating a Group object
         VBox menu = new VBox();
         Scene startMenu = new Scene(menu, 779, 261);
@@ -65,6 +68,7 @@ public class GuiReceiver extends Application {
         // add button to the menu
         Button playButton = new Button("Fai il Login e inizia una partita");
         playButton.setOnAction(e -> {
+
             boolean login = new Login(primaryStage).display();
             if (login) {
                 game = createGuiGame();

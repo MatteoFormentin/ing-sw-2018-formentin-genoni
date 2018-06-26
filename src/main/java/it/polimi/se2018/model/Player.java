@@ -5,6 +5,7 @@ import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.NoEnoughTokenException;
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.*;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
@@ -268,13 +269,13 @@ public class Player {
      * @param increase true if the player want to increase the value, false for decrease
      * @return true if it's all ok, false otherwise
      */
-    public void increaseOrDecrease(boolean increase) throws NoDiceInHandException,NoDiceException {
+    public void increaseOrDecrease(boolean increase) throws NoDiceInHandException,NoDiceException,ValueDiceWrongException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).increaseOrDecrease(increase);
     }
 
 
-    public void setValueDiceHand(int value) throws NoDiceInHandException,NoDiceException{
+    public void setValueDiceHand(int value) throws NoDiceInHandException,NoDiceException, ValueDiceWrongException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).setValue(value);
     }

@@ -1,5 +1,8 @@
 package it.polimi.se2018.model.dice;
 
+import it.polimi.se2018.exception.GameException;
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
+
 import java.io.Serializable;
 import java.util.Random;
 
@@ -28,8 +31,9 @@ public class Dice implements Serializable {
      *
      * @param value to set on the dice
      */
-    public void setValue(int value) {
+    public void setValue(int value) throws ValueDiceWrongException{
         if (value > 0 && value < 7) this.value = value;
+        else throw new ValueDiceWrongException();
     }
 
     /**
@@ -91,15 +95,14 @@ public class Dice implements Serializable {
         return value;
     }
 
-    public boolean increaseOrDecrease(boolean increase) {
+    public void increaseOrDecrease(boolean increase) throws ValueDiceWrongException {
         if (increase) {
-            if (value == 6) return false;
+            if (value == 6) throw new ValueDiceWrongException();
             value++;
         } else {//decrease
-            if (value == 1) return false;
+            if (value == 1) throw new ValueDiceWrongException();
             value--;
         }
-        return true;
     }
 
 

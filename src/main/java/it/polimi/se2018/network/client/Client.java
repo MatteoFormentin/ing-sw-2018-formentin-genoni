@@ -124,7 +124,8 @@ public class Client implements ClientController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            // the main finish
+            // the main finish by it self only if there are no thread
+            System.exit(0);
         }
     }
 

@@ -1,6 +1,8 @@
 package it.polimi.se2018.model.dice;
 
 
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
+
 public class TestFactory implements FactoryDice {
     private int value;
     private DiceColor color;
@@ -10,7 +12,7 @@ public class TestFactory implements FactoryDice {
      * @return the dice created
      */
     @Override
-    public Dice createDice() {
+    public Dice createDice() throws ValueDiceWrongException{
         if(color==null ||value==0){
             System.err.println("Non hai settato il colore o il valore");
             return null;

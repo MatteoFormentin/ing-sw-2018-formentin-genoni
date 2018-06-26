@@ -19,16 +19,19 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
 import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
+import static it.polimi.se2018.view.gui.GuiMain.closeProgram;
 
 /**
  * Class for handle the Gui gameboard
@@ -38,7 +41,7 @@ import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
 public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, ViewControllerVisitor {
     private static GuiGame instance;
     private WaitGame waitGame;
-    private Stage gameStage, utilStage;
+    private Stage gameStage, utilStage,toolStage;
     private Scene sceneGame, sceneInit;
 
     private static final String diceSource = "file:src/resources/dadijpg/";
@@ -47,6 +50,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private static final String publicObjectSource = "file:src/resources/carte_jpg/carte_pubbliche_";
     //variables for show card
     private ShowCardBox cardShow;
+    private ShowValue value;
     private AlertMessage popUpGame, popUpWait;
     private boolean init;
 
@@ -141,6 +145,11 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         utilStage.initOwner(owner);
         closeGame(utilStage);
 
+        //utils for tool card
+        toolStage = new Stage(StageStyle.TRANSPARENT);
+        toolStage.initModality(Modality.APPLICATION_MODAL);
+        toolStage.initOwner(gameStage);
+        value = new ShowValue(toolStage);
         //setClass For show a bigger card
         cardShow = new ShowCardBox(gameStage, 700, 600);
         popUpGame = new AlertMessage(gameStage);
@@ -151,9 +160,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     private void closeGame(Stage gameStage) {
         gameStage.setOnCloseRequest(e -> {
-            Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
+            closeProgram();
+            Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare il gioco?");
             if (result) {
-                instance = null;
+                //TODO resettare la gameboard(le image view o i box boh)
             } else e.consume();
         });
     }
@@ -273,7 +283,13 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(MoveTimeoutExpired event) {
-
+        IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
+        //disattiva dicepool, windowPattern, roundtrack, toolcard
+        disableDiceOfDicePool();
+        disableWindow(playerId);
+        disableAllRound();
+        if(value.isDisplaying()) toolStage.close();
+        new AlertMessage(gameStage).displayMessage("Hai finito il tempo a disposizione");
     }
 
     /**
@@ -360,6 +376,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(StartPlayerTurn event) {
+        for (Text t : playersName) t.setFill(Color.BLACK);
+        playersName[playerId].setFill(Color.RED);
         gameButton[0].setOnAction(e -> {
             ControllerMoveDrawAndPlaceDie packet = new ControllerMoveDrawAndPlaceDie();
             sendEventAndSetTheId(packet);
@@ -392,7 +410,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         disableWindow(playerId);
         disableAllRound();
         cardShow.setClickIsOn(false);
-        new AlertMessage(gameStage).displayMessage("Adesso tocca a " + playersName[event.getIndexCurrentPlayer()].getText());
+        for (Text t : playersName) t.setFill(Color.BLACK);
+        playersName[event.getIndexCurrentPlayer()].setFill(Color.RED);
     }
 
 
@@ -455,15 +474,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         new AlertMessage(gameStage).displayMessage("Seleziona un dado del RoundTrack");
     }
 
-    @Override
-    public void visit(SelectValueDice event) {
 
-    }
-
-    @Override
-    public void visit(SelectIncrementOrDecreaseDice event) {
-
-    }
 
     private void activeRoundTrack() {
         for (int i = 0; i < comboBoxSingleRound.length; i++) {
@@ -492,6 +503,27 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         IntStream.range(0, comboBoxSingleRound.length).forEach(i -> comboBoxSingleRound[i].setOnAction(null));
     }
 
+    @Override
+    public void visit(SelectValueDice event) {
+        int param =value.displayValuePool();
+        ControllerInfoEffect packet = new ControllerInfoEffect();
+        packet.setPlayerId(playerId);
+        int[] info = new int[1];
+        info[0] = param;
+        packet.setInfo(info);
+        sendEventAndSetTheId(packet);
+    }
+
+    @Override
+    public void visit(SelectIncrementOrDecreaseDice event) {
+        int param =value.displayIncreaseDecrease();
+        ControllerInfoEffect packet = new ControllerInfoEffect();
+        packet.setPlayerId(playerId);
+        int[] info = new int[1];
+        info[0] = param;
+        packet.setInfo(info);
+        sendEventAndSetTheId(packet);
+    }
     /**
      * Method of the Visitor Pattern, event received from the controller
      * to let the player pick a dice from the draft pool
@@ -811,7 +843,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         }
         imageViewsCellPlayer[event.getIndexPlayer()] = new ImageView[numberLine][numberColumn];
         nameWindowPlayer[event.getIndexPlayer()].setText(event.getWindowPatternCard().getName());
-        difficultyWindowPlayer[event.getIndexPlayer()].setText(Integer.toString(event.getWindowPatternCard().getDifficulty()));
+        difficultyWindowPlayer[event.getIndexPlayer()].setText("Livello "+Integer.toString(event.getWindowPatternCard().getDifficulty()));
+        difficultyWindowPlayer[event.getIndexPlayer()].setTextAlignment(TextAlignment.RIGHT);
         for (int line = 0; line < numberLine; line++) {
             for (int column = 0; column < numberColumn; column++) {
                 String color;

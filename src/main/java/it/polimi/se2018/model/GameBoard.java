@@ -6,6 +6,7 @@ import it.polimi.se2018.exception.gameboard_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ColorNotRightException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.RoundTrackIndexException;
+import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
@@ -199,7 +200,7 @@ public class GameBoard {
     //************************************class's method**********************************************
     //************************************class's method**********************************************
     //************************************class's method**********************************************
-    private void setUpFirstRound() {
+    private void setUpFirstRound() throws ValueDiceWrongException {
         //create the First Round
         stopGame = false;
         dicePool = new DiceStack();
@@ -244,7 +245,7 @@ public class GameBoard {
      * @throws FatalGameErrorException if the game is corrupted
      */
     public void nextPlayer(int indexPlayer) throws GameIsBlockedException, CurrentPlayerException,
-            GameIsOverException, FatalGameErrorException {
+            GameIsOverException, FatalGameErrorException,ValueDiceWrongException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (currentTurn < player.length) {
@@ -345,7 +346,7 @@ public class GameBoard {
      * @param idPlayer         who want to set the window
      * @param indexOfTheWindow of the window selected
      */
-    public void setWindowOfPlayer(int idPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException {
+    public void setWindowOfPlayer(int idPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException,ValueDiceWrongException{
         if (player[idPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
         player[idPlayer].choosePlayerWindowPattern(indexOfTheWindow);
         for (int i = 0; i < player.length; i++) {
