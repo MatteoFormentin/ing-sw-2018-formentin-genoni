@@ -21,9 +21,11 @@ public interface ControllerVisitor {
     //for the info required
 
     void visit(ControllerInfoEffect event);
+    void visit(ControllerSelectToolCard event);
+
     void visit(ControllerSelectCellOfWindow event);
     void visit(ControllerSelectDiceFromDraftPool event);
-    void visit(ControllerSelectToolCard event);
+
 
 
 }

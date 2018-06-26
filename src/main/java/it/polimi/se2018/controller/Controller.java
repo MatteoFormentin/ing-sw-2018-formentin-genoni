@@ -55,7 +55,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
      * Controller constructor.
      *
      * @param server server on when the game is on.
-     * @author Davide Mammarella
      */
     public Controller(ServerController server, int playerNumber) {
         //set up actual game

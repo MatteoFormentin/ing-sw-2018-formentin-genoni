@@ -65,19 +65,21 @@ public class SetUpConnection {
         form.addRow(2, back, connect);
         //components action
         connect.setOnAction(e -> {
-           /* try {
+            try {
                 if (isInt(portInput)) {
-                    if (getGuiInstance().getClient().startRMIClient(ipInput.getText(), Integer.parseInt(portInput.getText()))) {
-                        new AlertMessage(stage).displayMessage("Dati del server corretti");
+                    try{
+                        getGuiInstance().getClient().startClient(ipInput.getText(), Integer.parseInt(portInput.getText()));
                         stage.close();
-                    } else new AlertMessage(stage).displayMessage("Non è stato trovato il server.");
+                    } catch (Exception ex){
+                        new AlertMessage(stage).displayMessage(ex.getMessage());
+                    }
                 } else {
                     new AlertMessage(stage).displayMessage("Per favore, inserisci un numero per la porta...");
                 }
             } catch (Exception ex) {
                 new AlertMessage(stage).displayMessage("Errore inaspettato durante il setup della connessione\n" +
                         "Oppure sono state finalmente implementate le eccezioni per il setup");
-            }*/
+            }
         });
         back.setOnAction(e -> stage.close());
         stage.showAndWait();
