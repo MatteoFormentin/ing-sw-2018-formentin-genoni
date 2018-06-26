@@ -64,6 +64,11 @@ class CliMessage {
     //--------------------------
     //  CONNECTION MESSAGES
     //--------------------------
+
+    void showSocketRmi() {
+        AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita 0 per utilizzare RMI, 1 per socket: "));
+    }
+
     void showIpRequest() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci indirizzo ip del server (0 per default): "));
     }

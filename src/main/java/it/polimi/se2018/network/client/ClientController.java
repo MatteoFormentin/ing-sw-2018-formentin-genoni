@@ -18,7 +18,7 @@ public interface ClientController {
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    boolean startRMIClient(String serverIpAddress, int rmiPort);
+    void startClient(String serverIpAddress, int rmiPort) throws Exception;
 
     /**
      * Remote method used to log the user to the server with his nickname.

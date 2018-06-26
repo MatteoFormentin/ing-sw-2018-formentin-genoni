@@ -3,13 +3,14 @@ package it.polimi.se2018.view.cli;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
+import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
-import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.DiceStack;
 import it.polimi.se2018.network.client.ClientController;
@@ -349,32 +350,22 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private void initConnection() {
         boolean flag = false;
         do {
+            int socketRmi = 0;
+            cliMessage.showSocketRmi();
+            cliParser.parseInt(1);
             String ip;
-            int port;
 
             cliMessage.showIpRequest();
             ip = cliParser.parseIp();
 
-            if (ip.equals("0")) {
-                if (client.startRMIClient("localhost", 31415)) {
-                    flag = true;
-                    cliMessage.showConnectionSuccessful();
-                    cliMessage.println();
-                } else {
-                    cliMessage.showConnectionFailed();
-                }
+            try {
 
-            } else {
-                cliMessage.showPortRequest();
-                port = cliParser.parseInt();
-
-                if (client.startRMIClient(ip, port)) {
-                    flag = true;
-                    cliMessage.showConnectionSuccessful();
-                    cliMessage.println();
-                } else {
-                    cliMessage.showConnectionFailed();
-                }
+                client.startClient(ip, socketRmi);
+                flag = true;
+                cliMessage.showConnectionSuccessful();
+                cliMessage.println();
+            } catch (Exception ex) {
+                cliMessage.showMessage(ex.getMessage());
             }
 
         } while (!flag);

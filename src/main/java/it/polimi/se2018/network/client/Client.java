@@ -7,7 +7,6 @@ import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.network.client.socket.SocketClient;
-import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
 import it.polimi.se2018.view.gui.GuiInstance;
@@ -60,7 +59,7 @@ public class Client implements ClientController {
     public Client() {
         this.nickname = "Mr.Nessuno";
         this.turn = 0;
-        this.clientRunning=false;
+        this.clientRunning = false;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -89,15 +88,15 @@ public class Client implements ClientController {
 
             // SERVER ADDRESS LOAD
             SERVER_ADDRESS = configProperties.getProperty("SERVER_ADDRESS");
-            System.out.println("Server address set to "+configProperties.getProperty("SERVER_ADDRESS"));
+            System.out.println("Server address set to " + configProperties.getProperty("SERVER_ADDRESS"));
 
             // RMI PORT LOAD
             SERVER_RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
-            System.out.println("RMI port set to "+configProperties.getProperty("RMI_PORT"));
+            System.out.println("RMI port set to " + configProperties.getProperty("RMI_PORT"));
 
             // SOCKET PORT LOAD
             SERVER_SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
-            System.out.println("Socket port set to "+configProperties.getProperty("SOCKET_PORT"));
+            System.out.println("Socket port set to " + configProperties.getProperty("SOCKET_PORT"));
         } catch (IOException e) {
             // LOAD FAILED
             System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
@@ -109,8 +108,8 @@ public class Client implements ClientController {
             SERVER_SOCKET_PORT = 16180;
         }
 
-        String serverIpAddress= SERVER_ADDRESS;
-        int rmiPort= SERVER_RMI_PORT;
+        String serverIpAddress = SERVER_ADDRESS;
+        int rmiPort = SERVER_RMI_PORT;
         int socketPort = SERVER_SOCKET_PORT;
 
         try {
@@ -133,30 +132,26 @@ public class Client implements ClientController {
         }
     }
 
-    public void startClient(String serverIpAddress, int port) throws Exception{
+    public void startClient(String serverIpAddress, int socketRmi) throws Exception {
         Properties configProperties = new Properties();
         String connectionConfig = "src/resources/configurations/connection_configuration.properties";
         FileInputStream inputConnection = new FileInputStream(connectionConfig);
         configProperties.load(inputConnection);
 
-        String ipServerTrue =configProperties.getProperty("SERVER_ADDRESS");
-        if(serverIpAddress.equals(ipServerTrue) || serverIpAddress.equals("") || serverIpAddress.equals("0")){
-            serverIpAddress = ipServerTrue;
-        }else throw new NoServerRightException();
+        String ipServerTrue = configProperties.getProperty("SERVER_ADDRESS");
+        if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = ipServerTrue;
         int numberPort;
-        if(port==0) {
+        if (socketRmi == 0) {
             numberPort = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
             //TODO rimuovere i boolean e mettere eccezioni
-            boolean connected= startRMIClient (serverIpAddress, numberPort);
+            boolean connected = startRMIClient(serverIpAddress, numberPort);
             if (!connected) throw new ProblemConnectionException();
-        }
-        else if(port==1) {
+        } else if (socketRmi == 1) {
             numberPort = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
             //TODO rimuovere i boolean e mettere eccezioni
-            boolean connected= startSocketClient(serverIpAddress, numberPort);
+            boolean connected = startSocketClient(serverIpAddress, numberPort);
             if (!connected) throw new ProblemConnectionException();
-        }
-        else throw new NoPortRightException();
+        } else throw new NoPortRightException();
     }
 
     /**
@@ -180,10 +175,10 @@ public class Client implements ClientController {
      * Starter for the Socket connection.
      *
      * @param serverIpAddress address on where the server side communication are open.
-     * @param socketPort         port used for Socket connection.
+     * @param socketPort      port used for Socket connection.
      * @return true if the connection is established, false otherwise.
      */
-    public boolean startSocketClient(String serverIpAddress, int socketPort){
+    public boolean startSocketClient(String serverIpAddress, int socketPort) {
         try {
             abstractClient = new SocketClient(this, serverIpAddress, socketPort);
             abstractClient.connectToServer();
@@ -208,7 +203,7 @@ public class Client implements ClientController {
         try {
             abstractClient.login(nickname);
             this.nickname = nickname;
-            this.clientRunning=true;
+            this.clientRunning = true;
             return true;
         } catch (RemoteException e) {
             return false;
