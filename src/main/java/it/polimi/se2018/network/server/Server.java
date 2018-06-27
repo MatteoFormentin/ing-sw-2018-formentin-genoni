@@ -294,7 +294,7 @@ public class Server implements ServerController, TimerCallback {
 
                     // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
                     //TODO
-                }else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !searchPlayerByNickname(remotePlayer.getNickname())){
+                }else if (checkPlayerNicknameExists(remotePlayer.getNickname())){
                         // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
 
                         // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
@@ -378,9 +378,9 @@ public class Server implements ServerController, TimerCallback {
         try {
             searchPlayerById(eventView.getPlayerId()).sendEventToView(eventView);
         }catch (RemoteException ex){
+            removeRMIPlayer(searchPlayerById(eventView.getPlayerId()));
             ex.printStackTrace();
-            //TODO:Disconnessione
-            }
+        }
     }
 
     /**
@@ -393,19 +393,6 @@ public class Server implements ServerController, TimerCallback {
     @Override
     public RemotePlayer searchPlayerById(int id){
         return players.get(id);
-    }
-
-
-    public boolean searchPlayerByNickname(String nickname){
-        for (RemotePlayer player : players) {
-            if (player.getNickname().equals(nickname)) {
-            int id = player.getPlayerId();
-            if(searchPlayerById(id)!=null){
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -461,9 +448,8 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to RMI or Socket Player.
      */
-    private void disconnectPlayer(RemotePlayer remotePlayer){
-        remotePlayer.setPlayerRunning(false);
-        String nickname = remotePlayer.getNickname();
-        System.out.println("Player "+nickname+" has been disconnected!");
+    private void removeRMIPlayer(RemotePlayer remotePlayer){
+        rmiServer.removePlayer(remotePlayer);
+        System.out.println("Player disconnected!");
     }
 }

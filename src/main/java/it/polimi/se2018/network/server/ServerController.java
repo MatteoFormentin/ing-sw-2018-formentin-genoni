@@ -48,6 +48,7 @@ public interface ServerController {
      */
     void joinGame(RemotePlayer remotePlayer);
 
+    RemotePlayer searchPlayerById(int id);
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
@@ -59,7 +60,6 @@ public interface ServerController {
      */
     void sendEventToView(EventView eventView);
 
-    RemotePlayer searchPlayerById(int id);
 
 }
 
