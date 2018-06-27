@@ -160,11 +160,11 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     private void closeGame(Stage gameStage) {
         gameStage.setOnCloseRequest(e -> {
-            closeProgram();
-            Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare il gioco?");
+            closeProgram();/*
+            Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
             if (result) {
-                //TODO resettare la gameboard(le image view o i box boh)
-            } else e.consume();
+
+            } else e.consume();*/
         });
     }
 
@@ -817,9 +817,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         protected void updateItem(Image item, boolean empty) {
             super.updateItem(item, empty);
 
-            if (item == null || empty) {
-                setGraphic(null);
-            } else {
+            if (item == null || empty) setGraphic(null);
+            else {
                 image.setImage(item);
                 setGraphic(image);
             }
@@ -836,11 +835,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         int numberLine = event.getWindowPatternCard().getMatrix().length;
         int numberColumn = event.getWindowPatternCard().getColumn(0).length;
         int dimCell;
-        if (event.getIndexPlayer() == playerId) {
-            dimCell = 50;
-        } else {
-            dimCell = 25;
-        }
+        if (event.getIndexPlayer() == playerId) dimCell = 50;
+        else dimCell = 25;
         imageViewsCellPlayer[event.getIndexPlayer()] = new ImageView[numberLine][numberColumn];
         nameWindowPlayer[event.getIndexPlayer()].setText(event.getWindowPatternCard().getName());
         difficultyWindowPlayer[event.getIndexPlayer()].setText("Livello "+Integer.toString(event.getWindowPatternCard().getDifficulty()));
@@ -848,14 +844,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         for (int line = 0; line < numberLine; line++) {
             for (int column = 0; column < numberColumn; column++) {
                 String color;
-                if (event.getWindowPatternCard().getCell(line, column).getColorRestriction() == null) {
-                    color = "";
-                } else {
-                    color = event.getWindowPatternCard().getCell(line, column).getColorRestriction().toString();
-                }
-                Image newImage = new Image(diceSource
-                        + color
-                        + "Dice" + Integer.toString(event.getWindowPatternCard().getCell(line, column).getValueRestriction()) + ".jpg");
+                if (event.getWindowPatternCard().getCell(line, column).getColorRestriction() == null)color = "";
+                else color = event.getWindowPatternCard().getCell(line, column).getColorRestriction().toString();
+                Image newImage = new Image(diceSource + color + "Dice"
+                        + Integer.toString(event.getWindowPatternCard().getCell(line, column).getValueRestriction()) + ".jpg");
                 imageViewsCellPlayer[event.getIndexPlayer()][line][column] = new ImageView(newImage);
                 imageViewsCellPlayer[event.getIndexPlayer()][line][column].setFitHeight(dimCell);
                 imageViewsCellPlayer[event.getIndexPlayer()][line][column].setFitWidth(dimCell);
@@ -880,8 +872,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         if (event.getDicePool() != null) {
             for (int i = 0; i < dicePool.size(); i++) {
                 try {
-                    Image newImage = new Image(diceSource
-                            + event.getDicePool().getDice(i).getColor()
+                    Image newImage = new Image(diceSource + event.getDicePool().getDice(i).getColor()
                             + "Dice" + event.getDicePool().getDice(i).getValue() + ".jpg");
                     dicePool.get(i).setImage(newImage);
                 } catch (Exception e) {
@@ -901,8 +892,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         if (event.getHandPlayer() != null) {
             for (int i = 0; i < imageViewsHandPlayer[event.getIndexPlayer()].length; i++) {
                 try {
-                    Image newImage = new Image(diceSource
-                            + event.getHandPlayer().getDice(i).getColor()
+                    Image newImage = new Image(diceSource + event.getHandPlayer().getDice(i).getColor()
                             + "Dice" + event.getHandPlayer().getDice(i).getValue() + ".jpg");
                     imageViewsHandPlayer[event.getIndexPlayer()][i].setImage(newImage);
                 } catch (Exception e) {
@@ -921,7 +911,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     public void visit(UpdateSingleCell event) {
         Image newImage;
         if (event.getDice() == null) {
-            newImage = new Image(diceSource + "Dice0.jpg");
+            String color;
+            if (event.getColorRestriction() == null) color = "";
+            else color = event.getColorRestriction().toString();
+            newImage = new Image(diceSource+ color+ "Dice" + Integer.toString(event.getValueRestriction()) + ".jpg");
         } else {
             newImage = new Image(diceSource + event.getDice().getColor()
                     + "Dice" + Integer.toString(event.getDice().getValue()) + ".jpg");

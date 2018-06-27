@@ -274,14 +274,25 @@ class CliMessage {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita il numero corrispondente: "));
     }
 
-    void showInsertDiceRow() {
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale riga vuoi inserire il dado? "));
+    void showChoiceRow() {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale riga della window vuoi selezionare?"));
     }
 
-    void showInsertDiceColumn() {
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("In quale colonna vuoi inserire il dado?"));
+    void showChoiceColumn() {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale colonna della window vuoi selezionare? "));
     }
-
+    void showChoiceRound(){
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale round vuoi selezionare? "));
+    }
+    void showChoiceInRound(){
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale dado del round vuoi selezionare? "));
+    }
+    void showValueDice(){
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale valore vuoi impostare per il dado? "));
+    }
+    void showIncrementDecrement(){
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Inserisci 0 per decrementare 1 per incrementare il valore "));
+    }
 
     void showDiceStack(DiceStack diceStack) {
         for (int i = 0; i < diceStack.size(); i++) {
@@ -307,7 +318,7 @@ class CliMessage {
         }
     }
 
-    void showToolCardChoise(ToolCard[] toolCard) {
+    void showToolCardChoice(ToolCard[] toolCard) {
         for (int i = 0; i < toolCard.length; i++) {
             showToolCard(toolCard[i]);
         }

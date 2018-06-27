@@ -12,6 +12,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.ToolCard;
+import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
 import it.polimi.se2018.network.server.ServerController;
@@ -337,6 +338,10 @@ public class GameBoard {
             UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
             broadcast(packet);
         }
+        for (int i = 0; i < player.length; i++) {
+            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
+            broadcast(packet);
+        }
 
     }
 
@@ -403,7 +408,8 @@ public class GameBoard {
         player[indexPlayer].insertDice(line, column, true, true, true, firstTurnDie);
         player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
+        Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(),cell.getValueRestriction(),cell.getColorRestriction());
         broadcast(packetCell);
     }
 
@@ -458,7 +464,8 @@ public class GameBoard {
             throw new ColorNotRightException();
         player[indexPlayer].removeDiceFromWindowAndAddToHand(line, column);
         updateHand(indexPlayer);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
+        Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(),cell.getValueRestriction(),cell.getColorRestriction());
         broadcast(packetCell);
     }
 
@@ -541,7 +548,8 @@ public class GameBoard {
         player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction, singleNewDice);
         if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice());
+        Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(),cell.getValueRestriction(),cell.getColorRestriction());
         broadcast(packetCell);
     }
 

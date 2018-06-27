@@ -98,10 +98,9 @@ public class TestEffect {
 */
 
     @Test
-    public void testEffect() throws GameException {
+    public void testEffectRight() throws GameException {
         EffectGame effectGame = new InsertDice(true,true,true,true);
         assertEquals(SelectCellOfWindow.class,effectGame.eventViewToAsk().getClass());
-
     }
 
     @Test

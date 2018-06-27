@@ -1,6 +1,7 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
 import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.DiceColor;
 
 /**
  * Extends EventView, updates the single dice of the cell
@@ -13,12 +14,16 @@ public class UpdateSingleCell extends EventViewFromModel {
     private int line;
     private int column;
     private Dice dice;
+    private int valueRestriction;
+    private DiceColor colorRestriction;
 
-    public UpdateSingleCell(int indexPlayer, int line, int column, Dice dice) {
+    public UpdateSingleCell(int indexPlayer, int line, int column, Dice dice,int valueRestriction,DiceColor colorRestriction) {
         this.indexPlayer = indexPlayer;
         this.line = line;
         this.column = column;
         this.dice = dice;
+        this.valueRestriction=valueRestriction;
+        this.colorRestriction=colorRestriction;
     }
 
     public int getIndexPlayer() {
@@ -35,6 +40,14 @@ public class UpdateSingleCell extends EventViewFromModel {
 
     public Dice getDice() {
         return dice;
+    }
+
+    public int getValueRestriction() {
+        return valueRestriction;
+    }
+
+    public DiceColor getColorRestriction() {
+        return colorRestriction;
     }
 
     public void acceptModelEvent(ViewModelVisitor visitor) {

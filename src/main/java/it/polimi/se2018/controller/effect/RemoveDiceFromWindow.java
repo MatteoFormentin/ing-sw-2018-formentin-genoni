@@ -31,7 +31,8 @@ public class RemoveDiceFromWindow extends EffectGame {
 
     @Override
     public void undo() throws GameException {
-        getGameBoard().insertDice(getIdPlayer(),line,column,false,false,false,false);
+        Dice dice= getGameBoard().getPlayer(getIdPlayer()).removeDiceFromHand();
+        getGameBoard().getPlayer(getIdPlayer()).getPlayerWindowPattern().getCell(line,column).insertDice(dice,false,false);
     }
 
     @Override

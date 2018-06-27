@@ -13,6 +13,6 @@ import it.polimi.se2018.exception.GameException;
 public class FatalGameErrorException extends GameException {
 
     public FatalGameErrorException() {
-        super("Il gioco è stato corrotto in qualche modo, non si può più giocare");
+        super("Il gioco si trova in uno stato non corretto");
     }
 }
