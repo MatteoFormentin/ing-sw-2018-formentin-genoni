@@ -174,9 +174,13 @@ public class Deck {
                 newToolCard.setName("Pinza Sgrossatrice");
                 newToolCard.setDescription("Dopo aver scelto un dado, aumenta o dominuisci il valore del dado scelto di 1\n" +
                         "Non puoi cambiare un 6 in 1 o un 1 in 6");
+                //-------------load effect tool
+                effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new SelectValue(false));
+                effect.addLast(new InsertDice(true,true,true,true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(true,true,true);
+                //-------------load preCheck tool
+                newToolCard.setCheck(true,true);
                 return newToolCard;
             case 1:
                 newToolCard.setId(1);
@@ -186,7 +190,7 @@ public class Deck {
                 effect.addLast(new RemoveDiceFromWindow(false));
                 effect.addLast(new InsertDice(true,false,true,false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(false,true,false);
+                newToolCard.setCheck(false,1);
                 return newToolCard;
             case 2:
                 newToolCard.setId(2);
@@ -196,7 +200,7 @@ public class Deck {
                 effect.addLast(new RemoveDiceFromWindow(false));
                 effect.addLast(new InsertDice(true,true,false,false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(false,true,false);
+                newToolCard.setCheck(false,1);
                 return newToolCard;
             case 3:
                 newToolCard.setId(3);
@@ -207,25 +211,27 @@ public class Deck {
                 effect.addLast(new RemoveDiceFromWindow(false));
                 effect.addLast(new InsertDice(true,true,true,false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(false,true,false);
+                newToolCard.setCheck(false,2);
                 return newToolCard;
             case 4:
                 newToolCard.setId(4);
                 newToolCard.setName("Taglierina Circolare");
                 newToolCard.setDescription("Dopo aver scelto un dado, scambia quel dado con un dado sul Tracciato dei Round");
+                effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new RoundTrackEffect(true));
+                effect.addLast(new InsertDice(true,true,true,true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(true,true,true);
-                newToolCard.setCheckFirstRound(true);
+                newToolCard.setCheck(true,true,true);
                 return newToolCard;
             case 5:
                 newToolCard.setId(5);
                 newToolCard.setName("Pennello per Pasta Salda");
                 newToolCard.setDescription("Dopo aver scelto un dado, tira nuovamente quel dado\n" +
                         "Se non puoi piazzarlo, riponilo nella Riserva");
+                effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new ChangeDiceValue(true));
+                newToolCard.setCheck(true,true);
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(true,true,true);
                 return newToolCard;
             case 6:
                 newToolCard.setId(6);
@@ -234,8 +240,7 @@ public class Deck {
                         "Questa carta può essera usata solo durante il tuo secondo turno, prima di scegliere il secondo dado");
                 effect.addLast(new DicePoolEffect(false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(true,true,false);
-                newToolCard.setCheckTrun(false);
+                newToolCard.setCheck(true,false,false,false);
                 return newToolCard;
             case 7:
                 newToolCard.setId(7);
@@ -246,51 +251,54 @@ public class Deck {
                 effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new InsertDice(true,true,true,true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(false);
-                newToolCard.setCheckTrun(true);
+                newToolCard.setCheck(false,false,false,true);
                 return newToolCard;
             case 8:
                 newToolCard.setId(8);
                 newToolCard.setName("Riga in Sughero");
                 newToolCard.setDescription("Dopo aver scelto un dado, piazzalo in una casella che non sia adiacente a un altro dado\n" +
                         "Devi rispettare tutte le restrizioni di piazzamento");
+                effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new InsertDice(false,true,true,true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(true,true,true);
+                newToolCard.setCheck(true,true);
                 return newToolCard;
             case 9:
                 newToolCard.setId(9);
                 newToolCard.setName("Tampone Diamantato");
                 newToolCard.setDescription("Dopo aver scelto un dado, giralo sulla faccia opposta \n" +
                         "6 diventa 1, 5 diventa 2, 4 diventa 3 ecc.");
+                effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new ChangeDiceValue(false));
+                effect.addLast(new InsertDice(true,true,true,true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(true,true,true);
+                newToolCard.setCheck(true,true);
                 return newToolCard;
             case 10:
                 newToolCard.setId(10);
                 newToolCard.setName("Diluente per Pasta Salda");
                 newToolCard.setDescription("Dopo aver scelto un dado, riponilo nel Sacchetto, poi pescane uno dal Sacchetto\n" +
                         "Scegli il valore del nuovo dado e piazzalo, rispettando tutte le restrizioni di piazzamento");
+                effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new FactoryEffect());
                 effect.addLast(new SelectValue(true));
                 effect.addLast(new InsertDice(true,true,true,true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(true,true,true);
+                newToolCard.setCheck(true,true);
                 return newToolCard;
             case 11:
                 newToolCard.setId(11);
                 newToolCard.setName("Taglierina Manuale");
                 newToolCard.setDescription("Muovi fino a due dadi dello stesso colore di un solo dado sul Tracciato dei Round\n" +
                         "Devi rispettare tutte le restrizioni di piazzamento");
+
                 effect.addLast(new RoundTrackEffect(false));
                 effect.addLast(new RemoveDiceFromWindow(true));
                 effect.addLast(new InsertDice(true,true,true,false));
                 effect.addLast(new RemoveDiceFromWindow(true));
                 effect.addLast(new InsertDice(true,true,true,false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheckDiceHand(false,true,false);
-                newToolCard.setCheckFirstRound(true);
+                newToolCard.setCheck(false,2);
                 return newToolCard;
             default:
                 throw new IndexOutOfBoundsException("Error");

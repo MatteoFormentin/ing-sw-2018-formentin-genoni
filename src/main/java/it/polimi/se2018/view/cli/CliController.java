@@ -88,22 +88,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         new Thread(exec).start();
     }
 
-    /*
-    public void showMessage(EventView eventView) {
-        Runnable exec = () -> {
-                Thread.currentThread().setName("Visitor Handler: "+ eventView.getClass());
-                eventView.accept(this);
-
-        };
-        currentTask = new Thread(exec);
-        currentTask.start();
-    }
-
-    /*public void showMessage(MoveTimeoutExpired eventView) {
-        currentTask.stop();
-        cliMessage.showMoveTimeoutExpired();
-    }*/
-
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
@@ -219,42 +203,68 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         cliMessage.showDicePool(dicePool);
         int diceIndex = cliParser.parseInt();
         if (diceIndex != -1) {
-            ControllerSelectDiceFromDraftPool packet = new ControllerSelectDiceFromDraftPool();
-            packet.setPlayerId(playerId);
-            packet.setIndex(diceIndex);
-            client.sendEventToController(packet);
+            sendInfo(diceIndex);
         }
     }
 
     @Override
     public void visit(SelectCellOfWindow event) {// meglio inserire da 1 a 5 più comprensibile
-        cliMessage.showInsertDiceRow();
+        cliMessage.showChoiceRow();
         int row = cliParser.parseInt();
-        cliMessage.showInsertDiceColumn();
+        cliMessage.showChoiceColumn();
         int column = cliParser.parseInt();
 
         if (row != -1 && column != -1) {
-            ControllerSelectCellOfWindow packet = new ControllerSelectCellOfWindow();
-            packet.setPlayerId(playerId);
-            packet.setLine(row - 1);
-            packet.setColumn(column - 1);
-            client.sendEventToController(packet);
+            sendInfo(row-1,column-1);
+        }
+    }
+    @Override
+    public void visit(SelectDiceFromRoundTrack event) {
+        cliMessage.showChoiceRound();
+        int round = cliParser.parseInt();
+        cliMessage.showChoiceInRound();
+        int index = cliParser.parseInt();
+
+        if (round != -1 && index != -1) {
+            sendInfo(round-1,index);
         }
     }
 
     @Override
-    public void visit(SelectDiceFromRoundTrack event) {
-
-    }
-
-    @Override
     public void visit(SelectValueDice event) {
-
+        cliMessage.showValueDice();
+        int value = cliParser.parseInt();
+        if (value != -1 ) {
+            sendInfo(value);
+        }
     }
 
     @Override
     public void visit(SelectIncrementOrDecreaseDice event) {
+        cliMessage.showIncrementDecrement();
+        int value = cliParser.parseInt();
 
+        if (value != -1 ) {
+            sendInfo(value);
+        }
+    }
+
+    public void sendInfo(int info){
+        ControllerInfoEffect packet = new ControllerInfoEffect();
+        packet.setPlayerId(playerId);
+        int[] infoPacket = new int[1];
+        infoPacket[0] = info;
+        packet.setInfo(infoPacket);
+        client.sendEventToController(packet);
+    }
+    public void sendInfo(int info1, int info2){
+        ControllerInfoEffect packet = new ControllerInfoEffect();
+        packet.setPlayerId(playerId);
+        int[] infoPacket = new int[2];
+        infoPacket[0] = info1;
+        infoPacket[1] = info2;
+        packet.setInfo(infoPacket);
+        client.sendEventToController(packet);
     }
 
     @Override
@@ -265,7 +275,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             cliMessage.showToolCard(card);
             cliMessage.println();
         }
-        cliMessage.showToolCardChoise(toolCard);
+        cliMessage.showToolCardChoice(toolCard);
         int indexTooLCard = cliParser.parsePositiveInt(toolCard.length) - 1;
         if (indexTooLCard != -1) {
             ControllerSelectToolCard packet = new ControllerSelectToolCard();
@@ -351,12 +361,12 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         boolean flag = false;
         do {
             int socketRmi = 0;
-            cliMessage.showSocketRmi();
-            cliParser.parseInt(1);
             String ip;
-
             cliMessage.showIpRequest();
             ip = cliParser.parseIp();
+
+            cliMessage.showSocketRmi();
+            cliParser.parseInt(1);
 
             try {
 
@@ -404,7 +414,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                     break;
                 //Use tool card
                 case 2:
-                    EventController packetUseTool = new ControllerMoveDrawAndPlaceDie();
+                    EventController packetUseTool = new ControllerMoveUseToolCard();
                     packetUseTool.setPlayerId(playerId);
                     client.sendEventToController(packetUseTool);
                     break;

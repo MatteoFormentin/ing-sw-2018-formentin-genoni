@@ -13,6 +13,6 @@ import it.polimi.se2018.exception.GameException;
 public class NoDiceException extends GameException {
 
     public NoDiceException() {
-        super("There is no die in such position");
+        super("Non ci sono dadi necessari per fare questa mossa");
     }
 }

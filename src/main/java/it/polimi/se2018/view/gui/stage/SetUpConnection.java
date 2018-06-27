@@ -3,9 +3,7 @@ package it.polimi.se2018.view.gui.stage;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -55,43 +53,34 @@ public class SetUpConnection {
         ip.setLabelFor(ipInput);
         form.addRow(0, ip, ipInput);
         //port
-        TextField portInput = new TextField();
-        Label port = new Label("Server Port :");
-        ip.setLabelFor(portInput);
-        form.addRow(1, port, portInput);
+        final ToggleGroup group = new ToggleGroup();
+
+        RadioButton rb1 = new RadioButton("RMI");
+        rb1.setUserData(0);
+        rb1.setToggleGroup(group);
+        rb1.setSelected(true);
+
+
+        RadioButton rb2 = new RadioButton("SOCKET");
+        rb2.setUserData(1);
+        rb2.setToggleGroup(group);
+
+        form.addRow(1, rb1, rb2);
         //escape
         Button connect = new Button("Connect");
         Button back = new Button("Back");
         form.addRow(2, back, connect);
         //components action
         connect.setOnAction(e -> {
+            int i = Integer.parseInt(group.getSelectedToggle().getUserData().toString());
             try {
-                if (isInt(portInput)) {
-                    try{
-                        getGuiInstance().getClient().startClient(ipInput.getText(), Integer.parseInt(portInput.getText()));
-                        stage.close();
-                    } catch (Exception ex){
-                        new AlertMessage(stage).displayMessage(ex.getMessage());
-                    }
-                } else {
-                    new AlertMessage(stage).displayMessage("Per favore, inserisci un numero per la porta...");
-                }
+                getGuiInstance().getClient().startClient(ipInput.getText(), i);
+                stage.close();
             } catch (Exception ex) {
-                new AlertMessage(stage).displayMessage("Errore inaspettato durante il setup della connessione\n" +
-                        "Oppure sono state finalmente implementate le eccezioni per il setup");
+                new AlertMessage(stage).displayMessage(ex.getMessage());
             }
         });
         back.setOnAction(e -> stage.close());
         stage.showAndWait();
-    }
-
-    private boolean isInt(TextField input) {
-        try {
-            Integer.parseInt(input.getText());
-            return true;
-        } catch (NumberFormatException e) {
-            input.setStyle("-fx-text-inner-color: red;");
-            return false;
-        }
     }
 }

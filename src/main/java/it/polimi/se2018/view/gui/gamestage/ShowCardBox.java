@@ -40,7 +40,7 @@ class ShowCardBox {
         ImageView imageViewCard = new ImageView(big);
 
         Pane cardPane = new Pane(imageViewCard);
-        //imageViewCard.setOnMouseExited(e -> stage.close());
+        imageViewCard.setOnMouseExited(e -> stage.close());
         if (canCanUseCard && clickIsOn) {
             imageViewCard.setOnMouseClicked(e -> {
                 clicked = true;
