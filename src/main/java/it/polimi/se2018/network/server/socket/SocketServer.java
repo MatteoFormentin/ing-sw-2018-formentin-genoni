@@ -3,9 +3,7 @@ package it.polimi.se2018.network.server.socket;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
 
-import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -18,6 +16,7 @@ public class SocketServer extends AbstractServer {
 
     // socket lato server
     private ServerSocket serverSocket;
+    private ClientGatherer clientGatherer;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -28,8 +27,8 @@ public class SocketServer extends AbstractServer {
      *
      * @param serverController server interface, used as controller to communicate with the server.
      */
-    public SocketServer(ServerController serverController){
-        super (serverController);
+    public SocketServer(ServerController serverController) {
+        super(serverController);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -42,59 +41,14 @@ public class SocketServer extends AbstractServer {
      * @param port number of port that will be used on the connection.
      */
     @Override
-    public void startServer(int port){
-        try {
-            // Inizializzo il server socket
-            serverSocket=new ServerSocket(port);
-            System.out.println("Socket Server running at " + port + " port...");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Faccio partire il Client Gatherer
-        new ClientGatherer().start();
+    public void startServer(int port) {
+        // Inizializzo il server socket
+        System.out.println("Socket Server running at " + port + " port...");
+        clientGatherer = new ClientGatherer(port, getServerController());
+        new Thread(clientGatherer).start();
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // CLIENT GATHERER - REQUEST LISTENER
-    //------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Gatherer for client.
-     * This thread manage new socket client connection.
-     */
-    private class ClientGatherer extends Thread{
-
-        @Override
-        public void run(){
-
-            // In loop attendo la connessione di nuovi client
-            // Per ogni client che si collega viene fatto partire un SocketPlayer
-            System.out.println("Waiting for clients...\n");
-
-            while(true) {
-
-                Socket newClientConnection;
-
-                try {
-                    newClientConnection = serverSocket.accept();
-
-                    System.out.println("A new client connected!");
-
-                    // Aggiungo il client
-                    //server.addClient(newClientConnection);
-                    SocketPlayer socketPlayer = new SocketPlayer(getServerController(), newClientConnection);
-
-                    // Faccio partire il thread del socket player
-                    new Thread(socketPlayer).start();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
+    public void stopServer() {
+        clientGatherer.stop();
     }
-
-    // END
 }

@@ -5,13 +5,14 @@ import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
+import it.polimi.se2018.network.SocketObject;
 import it.polimi.se2018.network.server.ServerController;
-import org.json.simple.JSONObject;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.rmi.RemoteException;
 
 /**
@@ -23,17 +24,12 @@ import java.rmi.RemoteException;
 public class SocketPlayer extends RemotePlayer implements Runnable {
 
     // comunicazione con il server
-    private final transient ServerController serverController;
-    // comunicazione con il socket
-    private final transient Socket clientConnection;
+    private final ServerController serverController;
+    private Socket tunnel;
 
-    // stream di input
-    private final transient ObjectInputStream inputStream;
-    // stream di output
-    private final transient ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
+    private ObjectOutputStream outputStream;
 
-    // protocollo che verrà usato per gestire le richieste da client
-    private final transient RequestHandlerProtocol requestHandlerProtocol;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -43,60 +39,96 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * Socket Player Constructor.
      *
      * @param serverController server interface, used as controller to communicate with the server.
-     * @param socket           socket used for server/client communication..
      * @throws IOException
      */
-    public SocketPlayer(ServerController serverController, Socket socket) throws IOException {
-        playerRunning=true;
-
-        this.clientConnection = socket;
+    public SocketPlayer(ServerController serverController, Socket connection) throws IOException {
         this.serverController = serverController;
+        playerRunning = true;
 
-        this.inputStream = new ObjectInputStream(this.clientConnection.getInputStream());
-        this.outputStream = new ObjectOutputStream(this.clientConnection.getOutputStream());
-        this.outputStream.flush(); //USATO PER NON AVERE DEADLOCK
+        this.tunnel = connection;
 
-        this.requestHandlerProtocol = new RequestHandlerProtocol(this, inputStream,outputStream);
+        try {
+            this.outputStream = new ObjectOutputStream(tunnel.getOutputStream());
+            this.inputStream = new ObjectInputStream(tunnel.getInputStream());
+            this.outputStream.flush();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void run() {
+        boolean flag = true;
+        while (flag && tunnel.isConnected()) {
+            try {
+                SocketObject received = (SocketObject) inputStream.readObject();
+
+                socketObjectTraducer(received);
+
+            } catch (IOException | ClassNotFoundException ex) {
+                ex.printStackTrace();
+                flag = false;
+            }
+        }
+        closeConnection();
+    }
+
+    public void sendObject(SocketObject socketObject) {
+        try {
+            outputStream.writeObject(socketObject);
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    private void socketObjectTraducer(SocketObject socketObject) {
+        String type = socketObject.getType();
+
+        if (type.equals("Login")) {
+            try {
+                login(socketObject.getStringField());
+                sendAck();
+                System.out.println("LOGIN OK VIA SOCKET");
+
+            } catch (PlayerAlreadyLoggedException ex) {
+                System.out.println("LOGIN NO VIA SOCKET");
+                sendNack();
+            } catch (RoomIsFullException ex) {
+                System.out.println("LOGIN NO VIA SOCKET");
+                sendNack();
+            }
+        }
+
+        if (type.equals("Event")) {
+            sendEventToController((EventController) socketObject.getObject());
+        }
+
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // RUNNER
     //------------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Runner for Socket Player thread.
-     *
-     * @see Thread#run()
-     */
-    @Override
-    public void run (){
-        try {
-
-            boolean loop = true;
-
-            while (loop) {
-
-                // IL SERVER è SEMPRE IN ASCOLTO
-                System.out.println("Waiting for event...");
-
-                JSONObject jsonObject = (JSONObject) inputStream.readObject();
-                // CLIENT REQUEST (EVENT) -> PROTOCOL -> METHOD INVOCATION
-                requestHandlerProtocol.handleRequest(jsonObject);
-
-                }
-
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        finally {
-            closeConnections();
-        }
-    }
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
+
+
+    public void sendAck() {
+        SocketObject packet = new SocketObject();
+        packet.setType("Ack");
+        sendObject(packet);
+    }
+
+    public void sendNack() {
+        SocketObject packet = new SocketObject();
+        packet.setType("Nack");
+        sendObject(packet);
+    }
 
     /**
      * Remote method used to send to the client an update of the game.
@@ -104,19 +136,11 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * @param eventView object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView (EventView eventView)throws RemoteException{
-        try {
-            JSONObject event = new JSONObject();
-            event.put("Constant", "sendEventToView");
-            event.put("Event", eventView);
-
-            outputStream.writeObject(event.toJSONString());
-            outputStream.flush();
-            outputStream.reset();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // gestisco eccezioni??
+    public void sendEventToView(EventView eventView) throws RemoteException {
+        SocketObject packet = new SocketObject();
+        packet.setType("Event");
+        packet.setObject(eventView);
+        sendObject(packet);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -130,7 +154,9 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      */
     public void login(String nickname) throws PlayerAlreadyLoggedException, RoomIsFullException {
         setNickname(nickname);
-        this.serverController.login(this);
+        if (!this.serverController.login(this)) {
+            throw new PlayerAlreadyLoggedException("error");
+        }
     }
 
     /**
@@ -138,7 +164,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      *
      * @param eventController object that will use the server to unleash the event associated.
      */
-    public void sendEventToController(EventController eventController){
+    public void sendEventToController(EventController eventController) {
         this.serverController.sendEventToController(eventController);
     }
 
@@ -150,16 +176,12 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * Connection closer for socket player.
      * This method close the connection of the client and tell it to the remote player.
      */
-    public void closeConnections(){
+    public void closeConnection() {
         try {
-            playerRunning = false;
-            inputStream.close();
-            outputStream.close();
-            clientConnection.close();
+            tunnel.close();
 
-            System.out.println("Connection closed!");
-        }catch(IOException e){
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }

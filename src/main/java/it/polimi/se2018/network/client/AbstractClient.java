@@ -1,5 +1,6 @@
 package it.polimi.se2018.network.client;
 
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 
 import java.rmi.NotBoundException;
@@ -54,7 +55,7 @@ public abstract class AbstractClient {
      *
      * @param nickname name of the player associated to the client.
      */
-    public abstract void login(String nickname) throws RemoteException;
+    public abstract void login(String nickname) throws RemoteException, PlayerAlreadyLoggedException;
 
     /**
      * Remote method used to send to the server a request to unleash an event.

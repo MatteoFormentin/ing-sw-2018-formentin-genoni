@@ -2,6 +2,7 @@ package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.exception.network_exception.NoPortRightException;
 import it.polimi.se2018.exception.network_exception.NoServerRightException;
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.ProblemConnectionException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
@@ -142,11 +143,16 @@ public class Client implements ClientController {
         if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = ipServerTrue;
         int numberPort;
         if (socketRmi == 0) {
+
+            System.out.println("RMI!!!");
+
             numberPort = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
             //TODO rimuovere i boolean e mettere eccezioni
             boolean connected = startRMIClient(serverIpAddress, numberPort);
             if (!connected) throw new ProblemConnectionException();
         } else if (socketRmi == 1) {
+            System.out.println("SOCKET!!!");
+
             numberPort = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
             //TODO rimuovere i boolean e mettere eccezioni
             boolean connected = startSocketClient(serverIpAddress, numberPort);
@@ -205,7 +211,7 @@ public class Client implements ClientController {
             this.nickname = nickname;
             this.clientRunning = true;
             return true;
-        } catch (RemoteException e) {
+        } catch (RemoteException | PlayerAlreadyLoggedException e) {
             return false;
         }
     }

@@ -1,12 +1,15 @@
 package it.polimi.se2018.network.client.socket;
 
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.network.SocketObject;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
-import org.json.simple.JSONObject;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
@@ -28,7 +31,6 @@ public class SocketClient extends AbstractClient {
     private ObjectOutputStream outputStream;
 
     // protocollo che verrà usato per gestire le risposte da server
-    private ResponseHandlerProtocol responseHandlerProtocol;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -58,11 +60,10 @@ public class SocketClient extends AbstractClient {
 
             clientConnection = new Socket(getServerIpAddress(), getServerPort());
 
-            inputStream = new ObjectInputStream(clientConnection.getInputStream());
             outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
+            inputStream = new ObjectInputStream(clientConnection.getInputStream());
             outputStream.flush();
 
-            this.responseHandlerProtocol = new ResponseHandlerProtocol(this, this.inputStream,this.outputStream);
 
         } catch (IOException e) {
             // eccezione di errore connessione client
@@ -77,50 +78,32 @@ public class SocketClient extends AbstractClient {
     /**
      * Starter for the server response listener thread.
      */
-    private void responseListenerStarter() {
-        ResponseListener responseListener = new ResponseListener();
-        responseListener.start();
-    }
+
 
     /**
      * Class that define the listener for the server response.
      * This class will start a thread that will be on hold for a message from server, and will manage it with the protocol.
      */
-    private class ResponseListener extends Thread {
 
-        /**
-         * Runner for Response Listener thread.
-         *
-         * @see Thread#run()
-         */
-        @Override
-        public void run() {
-
-            try {
-
-                boolean loop = true;
-
-                // In loop attendo l'arrivo di messaggi dal server
-                // Ogni messaggio verrà mandato al protocollo per la gestione
-                while (loop) {
-
-                    JSONObject jsonObject = (JSONObject) inputStream.readObject();
-                    responseHandlerProtocol.handleResponse(jsonObject);
-
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                // eccezione nella lettura della messaggio del server
-                e.printStackTrace();
-            } finally {
-                closeConnections();
-            }
+    public void sendObject(SocketObject socketObject) {
+        try {
+            outputStream.writeObject(socketObject);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER (PROTOCOL CALL ONLY)
-    //------------------------------------------------------------------------------------------------------------------
+    private void socketObjectTraducer(SocketObject socketObject) {
+        String type = socketObject.getType();
+        if (type.equals("Event")) {
+            try {
+                sendEventToView((EventView) socketObject.getObject());
+            } catch (RemoteException ex) {
+                //TODO socket non lancia RemoteException!!! sistemare le interfaccie
+                ex.printStackTrace();
+            }
+        }
+    }
 
     /**
      * Method used to call the login event on the protocol.
@@ -128,11 +111,35 @@ public class SocketClient extends AbstractClient {
      * @param nickname name of the player associated to the client.
      */
     @Override
-    public void login(String nickname) throws RemoteException {
-        this.responseHandlerProtocol.login(nickname);
-        // faccio partire il thread che resterà in ascolto di messaggi dal server
-        this.responseListenerStarter();
+    public void login(String nickname) throws PlayerAlreadyLoggedException {
+        SocketObject packet = new SocketObject();
+        packet.setType("Login");
+        packet.setStringField(nickname);
+        sendObject(packet);
+
+
+        try {
+            SocketObject socketObject = (SocketObject) inputStream.readObject();
+
+
+            if (socketObject.getType().equals("Ack")) {
+                (new Thread(new ServerReceiver())).start();
+            }
+
+            if (socketObject.getType().equals("Nack")) {
+                throw new PlayerAlreadyLoggedException("error");
+            }
+
+        } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+
     }
+
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER (PROTOCOL CALL ONLY)
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Method used to call the send event to controller on the protocol.
@@ -141,7 +148,28 @@ public class SocketClient extends AbstractClient {
      */
     @Override
     public void sendEventToController(EventController eventController) throws RemoteException {
-        this.responseHandlerProtocol.sendEventToController(eventController);
+        SocketObject packet = new SocketObject();
+        packet.setType("Event");
+        packet.setObject(eventController);
+        sendObject(packet);
+    }
+
+    /**
+     * Connection closer for socket client.
+     * This method close the connection of the client.
+     */
+    public void closeConnection() {
+        try {
+
+            inputStream.close();
+            outputStream.close();
+            clientConnection.close();
+
+            System.out.println("Connection closed!");
+        } catch (IOException e) {
+            // eccezione che dice che c'è stato un errore durante la chiusura di input/output/client
+            e.printStackTrace();
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -166,20 +194,26 @@ public class SocketClient extends AbstractClient {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Connection closer for socket client.
-     * This method close the connection of the client.
+     * Runner for Response Listener thread.
+     *
+     * @see Thread#run()
      */
-    public void closeConnections(){
-        try {
+    private class ServerReceiver implements Runnable {
+        @Override
+        public void run() {
+            boolean flag = true;
+            while (flag) {
+                try {
+                    SocketObject received = (SocketObject) inputStream.readObject();
 
-            inputStream.close();
-            outputStream.close();
-            clientConnection.close();
+                    socketObjectTraducer(received);
 
-            System.out.println("Connection closed!");
-        }catch(IOException e){
-            // eccezione che dice che c'è stato un errore durante la chiusura di input/output/client
-            e.printStackTrace();
+                } catch (IOException | ClassNotFoundException ex) {
+                    flag = false;
+                    ex.printStackTrace();
+                }
+            }
+            closeConnection();
         }
     }
 

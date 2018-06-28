@@ -142,8 +142,7 @@ public class Server implements ServerController, TimerCallback {
 
         try {
             Server server = new Server();
-            server.startServer(rmiPort);
-            //server.startServer(socketPort, rmiPort);
+            server.startServer(rmiPort, socketPort);
         } catch (Exception e) {
             System.err.println("Server già in esecuzione!");
         }
@@ -155,10 +154,10 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param rmiPort port used on RMI connection.
      */
-    public void startServer(int rmiPort/*, int socketPort*/) throws Exception {
+    public void startServer(int rmiPort, int socketPort) throws Exception {
         System.out.println("RMI Server started...");
         rmiServer.startServer(rmiPort);
-        // socketServer.startServer (socketPort);
+        socketServer.startServer(socketPort);
     }
 
     //------------------------------------------------------------------------------------------------------------------

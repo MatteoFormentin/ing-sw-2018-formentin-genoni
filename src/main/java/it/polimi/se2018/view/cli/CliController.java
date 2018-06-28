@@ -363,13 +363,13 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private void initConnection() {
         boolean flag = false;
         do {
-            int socketRmi = 0;
+            int socketRmi;
             String ip;
             cliMessage.showIpRequest();
             ip = cliParser.parseIp();
 
             cliMessage.showSocketRmi();
-            cliParser.parseInt(1);
+            socketRmi = cliParser.parseInt(1);
 
             try {
 
