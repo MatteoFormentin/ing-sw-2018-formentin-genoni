@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
  *
  * @author DavideMammarella
  */
-public class SocketClient extends AbstractClient {
+public class SocketClient extends AbstractClient implements Runnable {
 
     // comunicazione con il socket
     private Socket clientConnection;
@@ -56,14 +56,12 @@ public class SocketClient extends AbstractClient {
      * Method used to establish a connection with the Server.
      */
     //TODO: EXCEPTION
-    public void connectToServer() throws UnknownHostException, IOException{
-            clientConnection = new Socket(getServerIpAddress(), getServerPort());
+    public void connectToServer() throws UnknownHostException, IOException {
+        clientConnection = new Socket(getServerIpAddress(), getServerPort());
 
-            outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
-            inputStream = new ObjectInputStream(clientConnection.getInputStream());
-            outputStream.flush();
-
-
+        outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
+        inputStream = new ObjectInputStream(clientConnection.getInputStream());
+        outputStream.flush();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -118,7 +116,7 @@ public class SocketClient extends AbstractClient {
 
 
             if (socketObject.getType().equals("Ack")) {
-                (new Thread(new ServerReceiver())).start();
+                (new Thread(this)).start();
             }
 
             if (socketObject.getType().equals("Nack")) {
@@ -193,23 +191,21 @@ public class SocketClient extends AbstractClient {
      *
      * @see Thread#run()
      */
-    private class ServerReceiver implements Runnable {
-        @Override
-        public void run() {
-            boolean flag = true;
-            while (flag) {
-                try {
-                    SocketObject received = (SocketObject) inputStream.readObject();
+    @Override
+    public void run() {
+        boolean flag = true;
+        while (flag) {
+            try {
+                SocketObject received = (SocketObject) inputStream.readObject();
 
-                    socketObjectTraducer(received);
+                socketObjectTraducer(received);
 
-                } catch (IOException | ClassNotFoundException ex) {
-                    flag = false;
-                    ex.printStackTrace();
-                }
+            } catch (IOException | ClassNotFoundException ex) {
+                flag = false;
+                ex.printStackTrace();
             }
-            closeConnection();
         }
+        closeConnection();
     }
 
 
