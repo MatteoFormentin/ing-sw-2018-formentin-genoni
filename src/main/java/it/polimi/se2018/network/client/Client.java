@@ -134,24 +134,30 @@ public class Client implements ClientController {
 
     public void startClient(String serverIpAddress, int socketRmi) throws Exception {
         Properties configProperties = new Properties();
-        String connectionConfig = "src/resources/configurations/connection_configuration.properties";
+        String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
         FileInputStream inputConnection = new FileInputStream(connectionConfig);
         configProperties.load(inputConnection);
 
         String ipServerTrue = configProperties.getProperty("SERVER_ADDRESS");
         if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = ipServerTrue;
-        int numberPort;
         if (socketRmi == 0) {
-            numberPort = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
-            //TODO rimuovere i boolean e mettere eccezioni
-            boolean connected = startRMIClient(serverIpAddress, numberPort);
+            socketRmi = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
+            //TODO rimuovere i boolean e mettere eccezioni per distiguere il tipo di problema:
+            //TODO Eccezione server non trovato(Ip errato riscrivere) con la scelta di rmi/socket a numeri
+            //TODO Eccezione porta sbagliata (nel caso far inserire manualmente il numero)
+            boolean connected = startRMIClient(serverIpAddress, socketRmi);
             if (!connected) throw new ProblemConnectionException();
         } else if (socketRmi == 1) {
-            numberPort = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+            socketRmi = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+            socketRmi = 10;
             //TODO rimuovere i boolean e mettere eccezioni
-            boolean connected = startSocketClient(serverIpAddress, numberPort);
+            boolean connected = startSocketClient(serverIpAddress, socketRmi);
             if (!connected) throw new ProblemConnectionException();
-        } else throw new NoPortRightException();
+        } else {
+            //TODO rimuovere i boolean e mettere eccezioni
+            boolean connected = startSocketClient(serverIpAddress, socketRmi);
+            if (!connected) throw new NoPortRightException();
+        }
     }
 
     /**
@@ -167,6 +173,8 @@ public class Client implements ClientController {
             abstractClient.connectToServer();
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Generatore eccezione: Client startRMIClient");
             return false;
         }
     }
@@ -184,6 +192,8 @@ public class Client implements ClientController {
             abstractClient.connectToServer();
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Generatore eccezione: Client startSocketClient");
             return false;
         }
     }

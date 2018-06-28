@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 
 /**
@@ -53,9 +54,7 @@ public class SocketClient extends AbstractClient {
      * Method used to establish a connection with the Server.
      */
     //TODO: EXCEPTION
-    public void connectToServer() {
-        try {
-
+    public void connectToServer() throws UnknownHostException, IOException{
             clientConnection = new Socket(getServerIpAddress(), getServerPort());
 
             inputStream = new ObjectInputStream(clientConnection.getInputStream());
@@ -64,10 +63,6 @@ public class SocketClient extends AbstractClient {
 
             this.responseHandlerProtocol = new ResponseHandlerProtocol(this, this.inputStream,this.outputStream);
 
-        } catch (IOException e) {
-            // eccezione di errore connessione client
-            e.printStackTrace();
-        }
     }
 
     //------------------------------------------------------------------------------------------------------------------

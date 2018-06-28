@@ -29,7 +29,6 @@ public class SagradaLauncher{
                         args2[0] = "gui";
                         break;
                 }
-
                 Client.main(args2);
         }
     }

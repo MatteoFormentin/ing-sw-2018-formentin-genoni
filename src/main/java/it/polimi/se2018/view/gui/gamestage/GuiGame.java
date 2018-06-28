@@ -42,10 +42,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private Stage gameStage, utilStage,toolStage;
     private Scene sceneGame, sceneInit;
 
-    private static final String diceSource = "file:src/resources/dadijpg/";
-    private static final String toolCardSource = "file:src/resources/carte_jpg/carte_strumento_";
-    private static final String privateObjectSource = "file:src/resources/carte_jpg/carte_private_";
-    private static final String publicObjectSource = "file:src/resources/carte_jpg/carte_pubbliche_";
+    private static String diceSource = "file:src/main/java/it/polimi/se2018/resources/dadijpg/";
+    private static String toolCardSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_";
+    private static String privateObjectSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_";
+    private static String publicObjectSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_";
     //variables for show card
     private ShowCardBox cardShow;
     private ShowValue value;
@@ -383,6 +383,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(StartPlayerTurn event) {
+        IntStream.range(0, comboBoxSingleRound.length).forEach(i ->comboBoxSingleRound[i].getSelectionModel().clearSelection());
         for (Text t : playersName) t.setFill(Color.BLACK);
         playersName[playerId].setFill(Color.RED);
         gameButton[0].setOnAction(e -> {
@@ -411,6 +412,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     public void visit(WaitYourTurn event) {
         //TODO disattivare tutti i comandi
         //disattiva il menu
+        IntStream.range(0, comboBoxSingleRound.length).forEach(i ->comboBoxSingleRound[i].getSelectionModel().clearSelection());
         IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
         //disattiva dicepool, windowPattern, roundtrack, toolcard
         disableDiceOfDicePool();
@@ -476,7 +478,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         activeRoundTrack();
         disableDiceOfDicePool();
         disableWindow(playerId);
-        disableAllRound();
         cardShow.setClickIsOn(false);
         new AlertMessage(gameStage).displayMessage("Seleziona un dado del RoundTrack");
     }
@@ -484,6 +485,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
 
     private void activeRoundTrack() {
+        IntStream.range(0, comboBoxSingleRound.length).forEach(i ->comboBoxSingleRound[i].getSelectionModel().clearSelection());
         for (int i = 0; i < comboBoxSingleRound.length; i++) {
             if (!comboBoxSingleRound[i].getItems().isEmpty()) {
                 activeSingleRound(i);
@@ -493,8 +495,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     private void activeSingleRound(int indexRound) {
         for (int i = 0; i < comboBoxSingleRound[indexRound].getItems().size(); i++) {
-            comboBoxSingleRound[indexRound].getSelectionModel().clearSelection();
             comboBoxSingleRound[indexRound].setOnAction(e -> {
+                disableAllRound();
                 ControllerInfoEffect packet = new ControllerInfoEffect();
                 packet.setPlayerId(playerId);
                 int[] info = new int[2];
@@ -987,7 +989,9 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             win = new Text("Hai Vinto!!!!!");
         else win = new Text("Hai Perso!!!!!");
         win.setTextAlignment(TextAlignment.CENTER);
-        paneWin.getChildren().addAll(win,pane);
+
+        Button game = new Button("clicca per vedere la gameBoard");
+        paneWin.getChildren().addAll(win,pane,game);
         paneWin.setAlignment(Pos.CENTER);
         paneWin.setSpacing(30);
         pane.setAlignment(Pos.CENTER);
@@ -1018,6 +1022,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         gameStage.setOnCloseRequest(e-> gameStage.close());
         gameStage.close();
         utilStage.setScene(scenePoint);
+        game.setOnAction(e-> utilStage.setScene(sceneGame));
         utilStage.show();
     }
 }

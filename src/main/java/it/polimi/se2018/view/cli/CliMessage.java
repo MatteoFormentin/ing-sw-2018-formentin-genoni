@@ -333,6 +333,10 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per continuare"));
     }
 
+    void showRoundAndTurn(int round, int turn){
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("      Round: "+round));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("      Turn: "+turn));
+    }
     void showMessage(String message) {
         println();
         AnsiConsole.out.println(ansi().fg(RED).a(message));
