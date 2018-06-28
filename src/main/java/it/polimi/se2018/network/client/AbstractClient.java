@@ -3,6 +3,7 @@ package it.polimi.se2018.network.client;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
@@ -48,8 +49,7 @@ public abstract class AbstractClient {
     /**
      * Remote method used to establish a connection with the RMI Registry (on the server).
      */
-    public abstract void connectToServer() throws RemoteException, NotBoundException;
-
+    public abstract void connectToServer() throws Exception;
     /**
      * Remote method used to log the user to the server with his nickname.
      *

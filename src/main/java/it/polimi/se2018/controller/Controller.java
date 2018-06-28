@@ -23,8 +23,11 @@ import it.polimi.se2018.network.server.ServerController;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  * Class that implements the {@code ControllerVisitor} for execute the event that the view produced
@@ -49,7 +52,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     //Lista di effetti andati a buon fine e memorizzati. qui avviene il ripescagglio degli undo che rimette
     private LinkedList<EffectGame> effectGamesStored;
 
-    long PLAYER_TIMEOUT = 10; //ms!!
+    long PLAYER_TIMEOUT; //ms!!
     private TimerThread playerTimeout;
 
     /**
@@ -65,6 +68,19 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
         //set up utils for the game
         restoreAble = false;
+        try {
+            Properties configProperties = new Properties();
+
+            String timeConfig ="src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
+            FileInputStream inputConnection = new FileInputStream(timeConfig);
+
+            configProperties.load(inputConnection);
+            // SERVER ADDRESS LOAD
+            PLAYER_TIMEOUT = Integer.parseInt(configProperties.getProperty("turnTimeout"))*1000;
+        }catch(Exception e){
+            PLAYER_TIMEOUT=90*1000;
+            System.out.println("Errore caricamento");
+        }
         playerTimeout = new TimerThread(this, PLAYER_TIMEOUT);
 
         //List for effect
@@ -188,7 +204,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     @Override
     public void visit(ControllerEndTurn event) {
         try {
-            if (restoreAble) effectGamesStored.getLast().undo();
+            if (restoreAble && !gameBoard.getPlayer(event.getPlayerId()).getHandDice().isEmpty()) effectGamesStored.getLast().undo();
             EffectGame endTurn = new EndTurn(false);
             endTurn.doEffect(gameBoard, event.getPlayerId(), null);
             effectGamesStored.addLast(endTurn);

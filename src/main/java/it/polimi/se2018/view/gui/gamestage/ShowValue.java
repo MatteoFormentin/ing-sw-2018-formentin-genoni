@@ -41,7 +41,7 @@ public class ShowValue {
         ImageView[] imageView = new ImageView[6];
         for (int i = 0; i < 6; i++) {
 
-            valueDice = new Image("file:src/resources/dadijpg/" + "Dice" + (i + 1) + ".jpg");
+            valueDice = new Image("file:src/it.polimi.se2018.resources/dadijpg/" + "Dice" + (i + 1) + ".jpg");
             imageView[i] = new ImageView(valueDice);
             imageView[i].setFitHeight(100);
             imageView[i].setFitWidth(100);
@@ -66,8 +66,8 @@ public class ShowValue {
         displaying = true;
         value = 0;
         ImageView[] imageTrun = new ImageView[2];
-        imageTrun[0]= new ImageView(new Image("file:src/resources/utility/TurnUp.png"));
-        imageTrun[1]= new ImageView(new Image("file:src/resources/utility/TurnDown.png"));
+        imageTrun[0]= new ImageView(new Image("file:src/it.polimi.se2018.resources/utility/TurnUp.png"));
+        imageTrun[1]= new ImageView(new Image("file:src/it.polimi.se2018.resources/utility/TurnDown.png"));
         imageTrun[0].setFitWidth(50);
         imageTrun[0].setFitHeight(50);
         imageTrun[1].setFitWidth(50);

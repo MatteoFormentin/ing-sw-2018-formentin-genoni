@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 
 /**
@@ -55,9 +56,7 @@ public class SocketClient extends AbstractClient {
      * Method used to establish a connection with the Server.
      */
     //TODO: EXCEPTION
-    public void connectToServer() {
-        try {
-
+    public void connectToServer() throws UnknownHostException, IOException{
             clientConnection = new Socket(getServerIpAddress(), getServerPort());
 
             outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
@@ -65,10 +64,6 @@ public class SocketClient extends AbstractClient {
             outputStream.flush();
 
 
-        } catch (IOException e) {
-            // eccezione di errore connessione client
-            e.printStackTrace();
-        }
     }
 
     //------------------------------------------------------------------------------------------------------------------

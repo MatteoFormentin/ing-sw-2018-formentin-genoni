@@ -29,11 +29,13 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private CliParserNonBlocking cliParser;
     private ClientController client;
 
+    private int currentRound;
+    private int currentTurn;
     private DiceStack[] roundTrack;
     private ToolCard[] toolCard;
     private DiceStack dicePool;
     private ObjectivePublicCard[] objectivePublicCards;
-    // need for 1/2 times
+    // need for 1 time
     private WindowPatternCard[] windowPatternCardsToChoose;
 
     //the players
@@ -302,36 +304,43 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     //*******************************************Visit for model event*******************************************************************************
     //*******************************************Visit for model event*******************************************************************************
     //*******************************************Visit for model event*******************************************************************************
+
+    @Override
+    public void visit(UpdateInfoCurrentTurn event) {
+        currentRound=event.getCurrentRound();
+        currentTurn=event.getCurrentTurn();
+    }
+    @Override
     public void visit(UpdateInitialWindowPatternCard event) {
         windowPatternCardsToChoose = event.getInitialWindowPatternCard();
     }
-
+    @Override
     public void visit(UpdateAllToolCard event) {
         toolCard = event.getToolCard();
     }
-
+    @Override
     public void visit(UpdateAllPublicObject event) {
         objectivePublicCards = event.getPublicCards();
     }
-
+    @Override
     public void visit(UpdateInitDimRound event) {
         roundTrack = event.getRoundTrack();
     }
-
+    @Override
     public void visit(UpdateSingleToolCardCost event) {
         toolCard[event.getIndexToolCard()].setFavorToken(event.getCostToolCard());
     }
-
+    @Override
     public void visit(UpdateDicePool event) {
         dicePool = event.getDicePool();
     }
 
 
-
+    @Override
     public void visit(UpdateSinglePlayerHand event) {
         handOfEachPlayer[event.getIndexPlayer()] = event.getHandPlayer();
     }
-
+    @Override
     public void visit(UpdateSingleCell event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()].getCell(event.getLine(), event.getColumn()).setDice(event.getDice());
         if (event.getIndexPlayer() != playerId) {
@@ -339,21 +348,21 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[event.getIndexPlayer()]);
         }
     }
-
+    @Override
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
         favorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
         pointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
     }
-
+    @Override
     public void visit(UpdateSinglePrivateObject event) {
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = event.getPrivateCard();
     }
-
+    @Override
     public void visit(UpdateSingleTurnRoundTrack event) {
         roundTrack[event.getIndexRound()] = event.getRoundDice();
     }
 
-
+    @Override
     public void visit(UpdateSingleWindow event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()] = event.getWindowPatternCard();
     }
@@ -402,6 +411,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private void turn() {
         cliMessage.eraseScreen();
         cliMessage.showYourTurnScreen();
+        cliMessage.showRoundAndTurn(currentRound,currentTurn);
         cliMessage.showWindowPatternCard(getMyWindowPatternCard());
         cliMessage.showHandPlayer(getMyHand());
         cliMessage.showMainMenu();
@@ -490,15 +500,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private String getMyName() {
         return playersName[playerId];
     }
-    /**
-     * Non sono utilizzabili come indici, sono solo info da mostrare
-     *
-     * @param event
-     */
-    @Override
-    public void visit(UpdateInfoCurrentTurn event) {
-        //TODO aggiornare le info del round corrente e turno corrente da mostrare N.B. non sono utilizzabili come indici
-    }
+
     @Override
     public void visit(UpdateStatPodium event) {
         for(int i=0; i<event.getSortedPlayer().length;i++){
