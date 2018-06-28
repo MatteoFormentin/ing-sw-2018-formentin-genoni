@@ -326,6 +326,8 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         dicePool = event.getDicePool();
     }
 
+
+
     public void visit(UpdateSinglePlayerHand event) {
         handOfEachPlayer[event.getIndexPlayer()] = event.getHandPlayer();
     }
@@ -350,6 +352,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     public void visit(UpdateSingleTurnRoundTrack event) {
         roundTrack[event.getIndexRound()] = event.getRoundDice();
     }
+
 
     public void visit(UpdateSingleWindow event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()] = event.getWindowPatternCard();
@@ -487,5 +490,24 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private String getMyName() {
         return playersName[playerId];
     }
-
+    /**
+     * Non sono utilizzabili come indici, sono solo info da mostrare
+     *
+     * @param event
+     */
+    @Override
+    public void visit(UpdateInfoCurrentTurn event) {
+        //TODO aggiornare le info del round corrente e turno corrente da mostrare N.B. non sono utilizzabili come indici
+    }
+    @Override
+    public void visit(UpdateStatPodium event) {
+        for(int i=0; i<event.getSortedPlayer().length;i++){
+            System.out.println();
+            System.out.print( (i+1)+"° Posto: "+playersName[event.getOneSortedPlayerInfo(i,0)]);
+            for(int j=1; j<event.getOneSortedPlayer(i).length;j++){
+                System.out.print(" | " +event.getDescription(j)+": "+event.getOneSortedPlayerInfo(i,j));
+            }
+            System.out.println();
+        }
+    }
 }

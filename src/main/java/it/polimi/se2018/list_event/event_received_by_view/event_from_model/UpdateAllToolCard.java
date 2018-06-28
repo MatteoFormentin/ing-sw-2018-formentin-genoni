@@ -23,6 +23,7 @@ public class UpdateAllToolCard extends EventViewFromModel {
         return toolCards[index];
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

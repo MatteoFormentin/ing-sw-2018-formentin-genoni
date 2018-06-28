@@ -12,6 +12,9 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Player state and data. his active dice in hand is in position 0, convention
  *
@@ -22,6 +25,7 @@ public class Player {
     private int indexInGame;
     private int favorToken;
     private int points;
+    private LinkedList detailedPoint;
     private ObjectivePrivateCard privateObject;
     private WindowPatternCard playerWindowPattern;
     private WindowPatternCard[] the4WindowPattern;
@@ -84,6 +88,7 @@ public class Player {
         return firstTurn;
     }
 
+
     public boolean isHasDrawNewDice() {
         return hasDrawNewDice;
     }
@@ -119,6 +124,10 @@ public class Player {
 
     public void setPoints(int points) {
         this.points = points;
+    }
+
+    public void setDetailedPoint(List detailedPoint) {
+        this.detailedPoint = (LinkedList) detailedPoint;
     }
 
     public void setPrivateObject(ObjectivePrivateCard privateObject) {
@@ -210,7 +219,7 @@ public class Player {
         favorToken -= cost;
     }
 
-    public void endTrun(boolean nextTurnIsATypeFirstTurn) {
+    public void endTurn(boolean nextTurnIsATypeFirstTurn) {
         hasUsedToolCard = false;
         hasDrawNewDice = false;
         hasPlaceANewDice = false;

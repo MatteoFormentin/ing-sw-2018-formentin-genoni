@@ -17,20 +17,33 @@ public interface ViewModelVisitor {
 
     //setup update
     void visit(UpdateInitDimRound event);
+
     void visit(UpdateAllToolCard event);
+
     void visit(UpdateAllPublicObject event);
+
     void visit(UpdateSinglePrivateObject event);
+
     void visit(UpdateInitialWindowPatternCard event);
+
     void visit(UpdateSingleWindow event);
 
     //during the game
     void visit(UpdateSinglePlayerHand event);
+
     void visit(UpdateSingleCell event);
+
     void visit(UpdateDicePool event);
 
+    void visit(UpdateInfoCurrentTurn event);
+
     void visit(UpdateSinglePlayerTokenAndPoints event);
+
     void visit(UpdateSingleToolCardCost event);
 
-     void visit(UpdateSingleTurnRoundTrack event);
+    void visit(UpdateSingleTurnRoundTrack event);
+
+    //endgame
+    void visit(UpdateStatPodium event);
 
 }

@@ -22,6 +22,7 @@ public class UpdateInitialWindowPatternCard extends EventViewFromModel {
         return initialWindowPatternCard[i];
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

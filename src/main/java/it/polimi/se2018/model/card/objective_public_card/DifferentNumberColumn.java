@@ -31,11 +31,15 @@ public class DifferentNumberColumn extends ObjectivePublicCard {
         int four = 0;
         int five = 0;
         int six = 0;
+        int nul=0;
         Dice currentCellDice;
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 4; i++) {
                 currentCellDice = matrix[i][j].getDice();
-                if (currentCellDice == null) continue;
+                if (currentCellDice == null) {
+                    nul++;
+                    continue;
+                }
 
                 if (currentCellDice.getValue() == 1) {
                     one++;
@@ -56,7 +60,7 @@ public class DifferentNumberColumn extends ObjectivePublicCard {
                     six++;
                 }
             }
-            if (one <= 1 && two <= 1 && three <= 1 && four <= 1 && five <= 1 && six <= 1) {
+            if (one <= 1 && two <= 1 && three <= 1 && four <= 1 && five <= 1 && six <= 1 && nul==0) {
                 points += this.getPoint();
             }
             one = 0;

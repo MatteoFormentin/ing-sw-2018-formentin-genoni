@@ -31,11 +31,15 @@ public class DifferentColorRow extends ObjectivePublicCard {
         int green = 0;
         int blue = 0;
         int purple = 0;
+        int nul=0;
         Dice currentCellDice;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 5; j++) {
                 currentCellDice = matrix[i][j].getDice();
-                if (currentCellDice == null) continue;
+                if (currentCellDice == null) {
+                     nul++;
+                    continue;
+                }
                 if (currentCellDice.getColor() == DiceColor.RED) {
                     red++;
                 }
@@ -52,7 +56,7 @@ public class DifferentColorRow extends ObjectivePublicCard {
                     purple++;
                 }
             }
-            if (red <= 1 && yellow <= 1 && green <= 1 && blue <= 1 && purple <= 1) {
+            if (red <= 1 && yellow <= 1 && green <= 1 && blue <= 1 && purple <= 1 && nul==0) {
                 points += this.getPoint();
             }
             red = 0;

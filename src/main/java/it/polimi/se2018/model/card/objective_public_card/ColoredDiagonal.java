@@ -52,7 +52,7 @@ public class ColoredDiagonal extends ObjectivePublicCard {
         }
 
         private int pointDiagonal(int diagonal) {
-            if (color == diagonalColorCell.get(diagonal).color) {
+            if (color == diagonalColorCell.get(diagonal).color && color !=null) {
                 if (diagonalColorCell.get(diagonal).hasBeenVisited && this.hasBeenVisited) return 0;
                 if (!diagonalColorCell.get(diagonal).hasBeenVisited && !this.hasBeenVisited) {
                     diagonalColorCell.get(diagonal).setHasBeenVisited(true);
@@ -142,7 +142,7 @@ public class ColoredDiagonal extends ObjectivePublicCard {
         //set the color of each ColorCell and HasBeenVisited to false
         for (int line = 0; line < windowOfColor.length; line++) {
             for (int column = 0; column < windowOfColor[0].length; column++) {
-                windowOfColor[line][column].setColor(matrix[line][column].getDice().getColor());
+                if(matrix[line][column].getDice()!=null) windowOfColor[line][column].setColor(matrix[line][column].getDice().getColor());
                 windowOfColor[line][column].setHasBeenVisited(false);
             }
         }

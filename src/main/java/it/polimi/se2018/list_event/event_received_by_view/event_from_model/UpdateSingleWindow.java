@@ -25,6 +25,7 @@ public class UpdateSingleWindow extends EventViewFromModel {
         return windowPatternCard;
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

@@ -17,6 +17,8 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
 import it.polimi.se2018.network.server.ServerController;
 
+import java.util.LinkedList;
+
 
 /**
  * the game board for one game with all the method that can be used in a game
@@ -239,52 +241,62 @@ public class GameBoard {
      * check the state of the player for the first/second turn
      * move the dice in hand to the DicePool.
      *
-     * @param indexPlayer that request the move
+     * @param indexPlayerEnded that request the move
      * @throws GameIsBlockedException  if the game can't be modified
      * @throws CurrentPlayerException  if the requester isn't the current player
      * @throws GameIsOverException     if the game is over
      * @throws FatalGameErrorException if the game is corrupted
      */
-    public void nextPlayer(int indexPlayer) throws GameIsBlockedException, CurrentPlayerException,
-            GameIsOverException, FatalGameErrorException,ValueDiceWrongException {
+    public void nextPlayer(int indexPlayerEnded) throws GameIsBlockedException, CurrentPlayerException,
+            GameIsOverException, FatalGameErrorException, ValueDiceWrongException {
         if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        if (indexPlayerEnded != indexCurrentPlayer) throw new CurrentPlayerException();
         if (currentTurn < player.length) {
-            if (player[indexPlayer].isFirstTurn()) {
-                player[indexPlayer].endTrun(false);
-            }//else he use a tool card that alter the normal circle
-            freeHandPlayer(indexPlayer);
-
-            roundTrack[currentRound] = dicePool;
-            indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
+            //se arrivi dal primo turno il tuo prossimo è un secondo turno
+            //se non arrivi dal primo turno il tuo prossimo è un primo turno
+            if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
+            else player[indexPlayerEnded].endTurn(true);
+            //   System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
+            indexCurrentPlayer = (indexPlayerEnded + 1) % player.length;
+            freeHandPlayer(indexPlayerEnded);
             currentTurn++;
+            EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+            broadcast(infoTurn);
+            //se il prossimo giocatore non è nel primo allora passo al prossimo giocatore
             if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
-            //se è uguale siamo nella fare tra il 1° e il 2° giro
         } else if (currentTurn == player.length) {
-            if (player[indexPlayer].isFirstTurn()) {
-                player[indexPlayer].endTrun(false);
-            }//else he use a tool card that alter the normal circle
-            freeHandPlayer(indexPlayer);
-
+            //se arrivi dal primo turno il tuo prossimo è un secondo turno
+            //se non arrivi dal primo turno il tuo prossimo è un primo turno
+            if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
+            else player[indexPlayerEnded].endTurn(true);
+            //   System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
+            freeHandPlayer(indexPlayerEnded);
             currentTurn++;
+            EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+            broadcast(infoTurn);
+            //inizio del secondo giro se il giocatore deve fare il primo turno passa avanti
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
-            //siamo in pieno 2°giro
         } else if (currentTurn < (2 * player.length)) {
-            if (!player[indexPlayer].isFirstTurn()) {
-                player[indexPlayer].endTrun(true);
-            }//else he use a tool card that alter the normal circle
-            freeHandPlayer(indexPlayer);
-
+            //se arrivi dal secondo turno il tuo prossimo turno è un secondo
+            //se non arrivi dal secondo turno il tuo prossimo turno è un primo
+            if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
+            else player[indexPlayerEnded].endTurn(true);
+            //    System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
             indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
             if (indexCurrentPlayer < 0) indexCurrentPlayer = player.length + indexCurrentPlayer;
             currentTurn++;
+            freeHandPlayer(indexPlayerEnded);
+            EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+            broadcast(infoTurn);
+            //se il giocatore deve fare il primo turno passa avanti
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
-            //siamo tra il 2° e il 1° giro/endgame
         } else if (currentTurn == (2 * player.length)) { //fine round
-            if (!player[indexPlayer].isFirstTurn()) {
-                player[indexPlayer].endTrun(true);
-            }//else he use a tool card that alter the normal circle
-            freeHandPlayer(indexPlayer);//rimette dadi rimanenti in mano nella draftpool
+            //se arrivi dal secondo turno il tuo prossimo turno è un secondo
+            //se non arrivi dal secondo turno il tuo prossimo turno è un primo
+            if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
+            else player[indexPlayerEnded].endTurn(true);
+            //  System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
+            freeHandPlayer(indexPlayerEnded);
             roundTrack[currentRound] = dicePool;
             UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
             broadcast(packetRound);
@@ -292,6 +304,8 @@ public class GameBoard {
             if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
                 currentTurn = 1;
+                EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                broadcast(infoTurn);
                 dicePool = new DiceStack();
                 for (int i = 0; i < (2 * player.length + 1); i++) {
                     Dice dice = factoryDiceForThisGame.createDice();
@@ -306,44 +320,136 @@ public class GameBoard {
                 stopGame = true;
                 currentTurn = 2 * player.length + 1;
                 //method for the end game
+                try{
                 calculatePoint();
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
                 System.err.println("Il gioco è finito");
                 throw new GameIsOverException();
             }
         } else {
             System.err.println("I turni sono impazziti.");
+            stopGame = true;
             throw new FatalGameErrorException();
+        }
+        System.err.println("Round: " + currentRound + " ------- Turno :" + currentTurn + " ------- tocca a :" + indexCurrentPlayer);
+    }
+
+    private class NodePodium {
+        private NodePodium father;
+        private NodePodium leftLessPoint;
+        private NodePodium rightMorePoint;
+        private int indexPlayer;
+        private int totalPoint;
+        private LinkedList detailedPoints;
+
+        private NodePodium(int indexPlayer, int totalPoint, LinkedList detailedPoints) {
+            this.indexPlayer = indexPlayer;
+            this.totalPoint = totalPoint;
+            this.detailedPoints = detailedPoints;
+        }
+    }
+
+    private class TreePodium {
+        private NodePodium root;
+
+        public NodePodium getRoot() {
+            return root;
+        }
+
+        /**
+         * a parità di punteggio con < quello inserito più tardi vince
+         *                       con <= quello inserito per primo vince
+         * @param newNodePlayer
+         */
+        void insertNodePlayer(NodePodium newNodePlayer) {
+            NodePodium y = null;
+            NodePodium x = root;
+            while (x != null) {
+                y = x;
+                if (newNodePlayer.totalPoint <= x.totalPoint) x = x.leftLessPoint;
+                else x = x.rightMorePoint;
+            }
+            newNodePlayer.father = y;
+            if (y == null) this.root = newNodePlayer;
+            else if (newNodePlayer.totalPoint <= y.totalPoint) y.leftLessPoint = newNodePlayer;
+            else y.rightMorePoint = newNodePlayer;
+        }
+
+        NodePodium max(NodePodium node) {
+            while (node.rightMorePoint != null) node = node.rightMorePoint;
+            return node;
+        }
+
+        NodePodium predecessor(NodePodium nodePlayer) {
+            if (nodePlayer.leftLessPoint != null) return max(nodePlayer.leftLessPoint);
+            NodePodium y = nodePlayer.father;
+            if (y != null) if (y.rightMorePoint == nodePlayer) return y;
+            return null;
+        }
+        int[] returnDetailedArrayInt (NodePodium nodePlayer){
+            int[] infoNode= new int[nodePlayer.detailedPoints.size()];
+            for(int i=0; i<nodePlayer.detailedPoints.size();i++)  infoNode[i] = (int)nodePlayer.detailedPoints.get(i);
+            return infoNode;
         }
     }
 
     private void calculatePoint() {
-        int pointCounter;
-        for (Player playerX : this.player) {
-            pointCounter = 0;
-            //calculate point for the public object
-            for (ObjectivePublicCard objectivePublicCardx : this.objectivePublicCard) {
-                pointCounter += objectivePublicCardx.calculatePoint(playerX.getPlayerWindowPattern());
-            }
+        TreePodium podium = new TreePodium();
+        String[] description= new String[9];
+
+        for (int i = 0; i < player.length; i++) {
+            Player playerX = player[i];
+            LinkedList<Integer> point = new LinkedList<>();
             //calculate point for the private object
-            pointCounter += playerX.getPrivateObject().calculatePoint(playerX.getPlayerWindowPattern());
+            point.addLast(playerX.getPrivateObject().calculatePoint(playerX.getPlayerWindowPattern()));
+            //calculate point for the public object
+            for (ObjectivePublicCard anObjectivePublicCard : objectivePublicCard) {
+                point.addLast(anObjectivePublicCard.calculatePoint(playerX.getPlayerWindowPattern()));
+            }
             //add the token left
-            pointCounter += playerX.getFavorToken();
-            playerX.setFavorToken(0);
+            point.addLast(playerX.getFavorToken());
             //subtract the void cell
-            pointCounter = pointCounter - (20 - playerX.getPlayerWindowPattern().getNumberOfCellWithDice());
-            playerX.setPoints(pointCounter);
+            point.addLast((-20 + playerX.getPlayerWindowPattern().getNumberOfCellWithDice()));
+            //sum of all the points
+            int totalPoint = 0;
+            for (Integer aPoint : point) totalPoint += aPoint;
+            playerX.setPoints(totalPoint);
+            playerX.setDetailedPoint(point);
+            NodePodium newPlayerNode = new NodePodium(i, totalPoint, point);
+            podium.insertNodePlayer(newPlayerNode);
         }
         //inolra a tutti il punteggio
         for (int i = 0; i < player.length; i++) {
             UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
             broadcast(packet);
         }
+        //costruzione array ordinato
+        NodePodium currentPlayerSorted = podium.max(podium.getRoot());
+        int header =2;
+        int[][] sortedPlayer = new int[player.length][currentPlayerSorted.detailedPoints.size()+header];
         for (int i = 0; i < player.length; i++) {
-            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
-            broadcast(packet);
+            sortedPlayer[i][0] = currentPlayerSorted.indexPlayer;
+            sortedPlayer[i][1] = currentPlayerSorted.totalPoint;
+            for(int j=header; j< (currentPlayerSorted.detailedPoints.size()+header);j++){
+                sortedPlayer[i][j] = (int) currentPlayerSorted.detailedPoints.get(j-header);
+            }
+            currentPlayerSorted = podium.predecessor(currentPlayerSorted);
         }
-
+        //descrizione informazione dell'array
+        description[0] = "Id Player";
+        description[1] = "Punti totali";
+        description[2] = "Obiettivo Privato";
+        description[3] = objectivePublicCard[0].getName();
+        description[4] = objectivePublicCard[1].getName();
+        description[5] = objectivePublicCard[2].getName();
+        description[6] = "Token Rimasti";
+        description[7] = "Celle Vuote";
+        UpdateStatPodium packet = new UpdateStatPodium(sortedPlayer, description);
+        broadcast(packet);
     }
+
 
     /**
      * move for select the window Pattern
@@ -351,7 +457,7 @@ public class GameBoard {
      * @param idPlayer         who want to set the window
      * @param indexOfTheWindow of the window selected
      */
-    public void setWindowOfPlayer(int idPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException,ValueDiceWrongException{
+    public void setWindowOfPlayer(int idPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException, ValueDiceWrongException {
         if (player[idPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
         player[idPlayer].choosePlayerWindowPattern(indexOfTheWindow);
         for (int i = 0; i < player.length; i++) {
@@ -409,7 +515,7 @@ public class GameBoard {
         player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(),cell.getValueRestriction(),cell.getColorRestriction());
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
         broadcast(packetCell);
     }
 
@@ -423,7 +529,7 @@ public class GameBoard {
         toolCard[indexOfToolInGame].incrementUsage();
         UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
         broadcast(packet);
-        UpdateSingleToolCardCost packet2 = new UpdateSingleToolCardCost(indexOfToolInGame,toolCard[indexOfToolInGame].getFavorToken());
+        UpdateSingleToolCardCost packet2 = new UpdateSingleToolCardCost(indexOfToolInGame, toolCard[indexOfToolInGame].getFavorToken());
         broadcast(packet2);
     }
     //*****************************************Tool's method of Gameboard **********************************************
@@ -465,7 +571,7 @@ public class GameBoard {
         player[indexPlayer].removeDiceFromWindowAndAddToHand(line, column);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(),cell.getValueRestriction(),cell.getColorRestriction());
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
         broadcast(packetCell);
     }
 
@@ -516,7 +622,7 @@ public class GameBoard {
     public void rollDicePool(int indexPlayer) throws GameException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
-        if (currentRound < player.length) throw new GameException("Non effettuare questa mossa adesso");
+        if (currentTurn < player.length) throw new GameException("Non effettuare questa mossa adesso");
         dicePool.reRollAllDiceInStack();
         EventView packetCell = new UpdateDicePool(dicePool);
         broadcast(packetCell);
@@ -549,7 +655,7 @@ public class GameBoard {
         if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(),cell.getValueRestriction(),cell.getColorRestriction());
+        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
         broadcast(packetCell);
     }
 

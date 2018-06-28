@@ -23,6 +23,7 @@ public class UpdateInitDimRound extends EventViewFromModel {
         return roundTrack[index];
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

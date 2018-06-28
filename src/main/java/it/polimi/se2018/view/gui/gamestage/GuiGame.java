@@ -8,7 +8,6 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
-import it.polimi.se2018.view.gui.stage.ConfirmBox;
 import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -26,7 +25,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
@@ -106,6 +104,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private HBox boxAllRound;
     private VBox[] boxSingleRound;
     private Text[] textSingleRound;
+    private Text currentRound;
+    private Text currentTurn;
     private ComboBox<Image>[] comboBoxSingleRound;
     private FlowPane flowPaneDicePool;
     private LinkedList<ImageView> dicePool;
@@ -190,6 +190,13 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         boxAllRound = new HBox();
         boxAllRound.setAlignment(Pos.CENTER);
         boxAllRound.setSpacing(5);
+
+        currentRound= new Text("Giro: 1");
+        currentTurn= new Text("Turno: 1");
+        VBox infoGame = new VBox(currentRound,currentTurn);
+        infoGame.setAlignment(Pos.CENTER);
+        infoGame.setSpacing(5);
+        boxAllRound.getChildren().add(infoGame);
         //opposingPlayers
         opposingPlayers = new VBox();
         opposingPlayers.setAlignment(Pos.CENTER_LEFT);
@@ -883,6 +890,17 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     }
 
     /**
+     * Non sono utilizzabili come indici, sono solo info da mostrare
+     *
+     * @param event
+     */
+    @Override
+    public void visit(UpdateInfoCurrentTurn event) {
+        currentRound.setText("Giro: "+event.getCurrentRound());
+        currentTurn.setText("Turno: "+event.getCurrentTurn());
+    }
+
+    /**
      * Method of the Visitor Pattern, event received from the model for update the hand of one player
      *
      * @param event UpdateSingleCell
@@ -950,6 +968,18 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         }
         for (ComboBox<Image> aComboBoxSingleRound : comboBoxSingleRound) {
             aComboBoxSingleRound.getSelectionModel().clearSelection();
+        }
+    }
+
+    @Override
+    public void visit(UpdateStatPodium event) {
+        for(int i=0; i<event.getSortedPlayer().length;i++){
+            System.out.println();
+            System.out.print( (i+1)+"° Posto: "+playersName[event.getOneSortedPlayerInfo(i,0)].getText());
+            for(int j=1; j<event.getOneSortedPlayer(i).length;j++){
+                System.out.print(" | " +event.getDescription(j)+": "+event.getOneSortedPlayerInfo(i,j));
+            }
+            System.out.println();
         }
     }
 }

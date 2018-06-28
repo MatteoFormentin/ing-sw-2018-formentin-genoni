@@ -20,6 +20,7 @@ public class UpdateDicePool extends EventViewFromModel {
         return dicePool;
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

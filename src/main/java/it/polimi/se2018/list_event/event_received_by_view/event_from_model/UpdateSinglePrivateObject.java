@@ -25,6 +25,7 @@ public class UpdateSinglePrivateObject extends EventViewFromModel {
         return privateCard;
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

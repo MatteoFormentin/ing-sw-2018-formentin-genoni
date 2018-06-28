@@ -25,6 +25,7 @@ public class UpdateSingleTurnRoundTrack extends EventViewFromModel {
         return roundDice;
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

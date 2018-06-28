@@ -24,6 +24,7 @@ public class UpdateAllPublicObject extends EventViewFromModel {
         return publicCards[index];
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

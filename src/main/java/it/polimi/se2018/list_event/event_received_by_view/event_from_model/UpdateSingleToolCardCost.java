@@ -24,6 +24,7 @@ public class UpdateSingleToolCardCost extends EventViewFromModel {
         return costToolCard;
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

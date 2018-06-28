@@ -50,6 +50,7 @@ public class UpdateSingleCell extends EventViewFromModel {
         return colorRestriction;
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

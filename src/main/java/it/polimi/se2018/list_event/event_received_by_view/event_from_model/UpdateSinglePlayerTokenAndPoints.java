@@ -29,6 +29,7 @@ public class UpdateSinglePlayerTokenAndPoints extends EventViewFromModel {
         return points;
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }

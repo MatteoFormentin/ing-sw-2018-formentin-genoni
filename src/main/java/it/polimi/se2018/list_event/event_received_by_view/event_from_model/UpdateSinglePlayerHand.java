@@ -25,6 +25,7 @@ public class UpdateSinglePlayerHand extends EventViewFromModel {
         return indexPlayer;
     }
 
+    @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {
         visitor.visit(this);
     }
