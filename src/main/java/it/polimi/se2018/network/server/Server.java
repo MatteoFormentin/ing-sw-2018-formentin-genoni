@@ -81,14 +81,14 @@ public class Server implements ServerController, TimerCallback {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
 
-            String timeConfig = "src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
+            String timeConfig = "src/main/resources/configurations/gameroom_configuration.properties";
             FileInputStream inputTime = new FileInputStream(timeConfig);
 
             configProperties.load(inputTime);
 
             // TIMEOUT LOAD
             timeout = Long.parseLong(configProperties.getProperty("roomTimeout")) * 1000; //*1000 per convertire in millisecondi
-            System.out.println("Timeout set to "+configProperties.getProperty("roomTimeout")+" ms");
+            System.out.println("Timeout set to " + configProperties.getProperty("roomTimeout") + " ms");
 
         } catch (IOException e) {
             // LOAD FAILED
@@ -116,18 +116,18 @@ public class Server implements ServerController, TimerCallback {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
 
-            String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+            String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
 
             configProperties.load(inputConnection);
 
             // RMI PORT LOAD
             RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
-            System.out.println("RMI port set to "+configProperties.getProperty("RMI_PORT"));
+            System.out.println("RMI port set to " + configProperties.getProperty("RMI_PORT"));
 
             // SOCKET PORT LOAD
             SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
-            System.out.println("Socket port set to "+configProperties.getProperty("SOCKET_PORT"));
+            System.out.println("Socket port set to " + configProperties.getProperty("SOCKET_PORT"));
         } catch (IOException e) {
             // LOAD FAILED
             System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
@@ -204,15 +204,15 @@ public class Server implements ServerController, TimerCallback {
     public void joinGame(RemotePlayer remotePlayer) {
         System.out.println("Game joined!");
 
-            try {
-                JoinGame packet = new JoinGame();
-                packet.setPlayerName(remotePlayer.getNickname());
-                packet.setPlayerId(remotePlayer.getPlayerId());
-                remotePlayer.sendEventToView(packet);
-            } catch (RemoteException ex) {
-                ex.printStackTrace();
-                //TODO:Disconnessione
-            }
+        try {
+            JoinGame packet = new JoinGame();
+            packet.setPlayerName(remotePlayer.getNickname());
+            packet.setPlayerId(remotePlayer.getPlayerId());
+            remotePlayer.sendEventToView(packet);
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+            //TODO:Disconnessione
+        }
 
         this.game.joinGame(remotePlayer.getPlayerId());
     }
@@ -231,7 +231,7 @@ public class Server implements ServerController, TimerCallback {
     /**
      * Starter for the pre-game, based on a single thread.
      */
-    public void startPreGameThread(RemotePlayer remotePlayer){
+    public void startPreGameThread(RemotePlayer remotePlayer) {
         System.out.println("Pre-game thread started!");
         // CREO NUOVO PRE GAME THREAD
         preGameThread = new PreGameThread(this, remotePlayer);
@@ -293,21 +293,21 @@ public class Server implements ServerController, TimerCallback {
 
                     // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
                     //TODO
-                }else if (checkPlayerNicknameExists(remotePlayer.getNickname())){
-                        // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
+                } else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
+                    // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
 
-                        // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
-                        int id = remotePlayer.getPlayerId();
-                        String nickname = remotePlayer.getNickname();
-                        System.out.println(nickname+" was in the Room!");
-                        System.out.println("Trying to recreate the connection for "+nickname+"...");
-                        // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
-                        replacePlayer(id,remotePlayer);
-                        // IMPOSTO LA CONNESSIONE
-                        connectPlayer(remotePlayer);
-                        System.out.println("Connection established!");
-                        return true;
-                    }
+                    // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
+                    int id = remotePlayer.getPlayerId();
+                    String nickname = remotePlayer.getNickname();
+                    System.out.println(nickname + " was in the Room!");
+                    System.out.println("Trying to recreate the connection for " + nickname + "...");
+                    // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
+                    replacePlayer(id, remotePlayer);
+                    // IMPOSTO LA CONNESSIONE
+                    connectPlayer(remotePlayer);
+                    System.out.println("Connection established!");
+                    return true;
+                }
             }
 
             // SE LA STANZA NON è ACCESSIBILE (IN-GAME)
@@ -327,15 +327,15 @@ public class Server implements ServerController, TimerCallback {
 
                 // ESISTE IL PLAYER CON QUEL NICKNAME E NON è CONNESSO
                 // RELOGIN
-                else if(checkPlayerNicknameExists(remotePlayer.getNickname()) && !remotePlayer.getPlayerRunning()){
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !remotePlayer.getPlayerRunning()) {
                     // L'ID DEL PLAYER E IL NICKNAME DEL PLAYER DEVONO RIMANERE UGUALI, DEVI SOLO CAMBIARE IL REMOTE PLAYER CON UNO NUOVO
 
                     int id = remotePlayer.getPlayerId();
                     String nickname = remotePlayer.getNickname();
-                    System.out.println(nickname+" was in the actual Game!");
-                    System.out.println("Trying to recreate the connection for "+nickname+"...");
+                    System.out.println(nickname + " was in the actual Game!");
+                    System.out.println("Trying to recreate the connection for " + nickname + "...");
                     // SOSTITUZIONE IN BASE ALL'ID
-                    replacePlayer(id,remotePlayer);
+                    replacePlayer(id, remotePlayer);
                     // RE IMPOSTAZIONE DELLA CONNESSIONE
                     connectPlayer(remotePlayer);
                     System.out.println("Trying to log to the actual game...");
@@ -373,10 +373,10 @@ public class Server implements ServerController, TimerCallback {
      * @param eventView object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView){
+    public void sendEventToView(EventView eventView) {
         try {
             searchPlayerById(eventView.getPlayerId()).sendEventToView(eventView);
-        }catch (RemoteException ex){
+        } catch (RemoteException ex) {
             removeRMIPlayer(searchPlayerById(eventView.getPlayerId()));
             ex.printStackTrace();
         }
@@ -390,7 +390,7 @@ public class Server implements ServerController, TimerCallback {
      */
     // RITORNA IL GIOCATORE REMOTO (FAI CON QUESTO IL CHECK PER VEDERE SE IL CLIENT C'è O MENO)
     @Override
-    public RemotePlayer searchPlayerById(int id){
+    public RemotePlayer searchPlayerById(int id) {
         return players.get(id);
     }
 
@@ -418,13 +418,13 @@ public class Server implements ServerController, TimerCallback {
      * The replacer work on the players ID, in order to not break the array list of RemotePlayer.
      * Login supporter method.
      *
-     * @param id ID of the player associated to the client.
+     * @param id              ID of the player associated to the client.
      * @param newRemotePlayer new player used to replace the old one.
      */
-    private void replacePlayer(int id, RemotePlayer newRemotePlayer){
-        players.set(id,newRemotePlayer);
+    private void replacePlayer(int id, RemotePlayer newRemotePlayer) {
+        players.set(id, newRemotePlayer);
         String nickname = newRemotePlayer.getNickname();
-        System.out.println("Disconnected player "+nickname+" has been replaced from a new client!");
+        System.out.println("Disconnected player " + nickname + " has been replaced from a new client!");
     }
 
     /**
@@ -434,10 +434,10 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to RMI or Socket Player.
      */
-    private void connectPlayer(RemotePlayer remotePlayer){
+    private void connectPlayer(RemotePlayer remotePlayer) {
         remotePlayer.setPlayerRunning(true);
         String nickname = remotePlayer.getNickname();
-        System.out.println("Player "+nickname+" has been connected!");
+        System.out.println("Player " + nickname + " has been connected!");
     }
 
     /**
@@ -447,7 +447,7 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to RMI or Socket Player.
      */
-    private void removeRMIPlayer(RemotePlayer remotePlayer){
+    private void removeRMIPlayer(RemotePlayer remotePlayer) {
         rmiServer.removePlayer(remotePlayer);
         System.out.println("Player disconnected!");
     }

@@ -71,7 +71,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
         try {
             Properties configProperties = new Properties();
 
-            String timeConfig ="src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
+            String timeConfig = "src/main/resources/configurations/gameroom_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(timeConfig);
 
             configProperties.load(inputConnection);

@@ -25,7 +25,7 @@ public class WindowPatternCardLoader {
      * @return cards ArrayList<WindowPatternCard>.
      */
     public ArrayList<WindowPatternCard> initCard() {
-        final String path = "src/main/java/it/polimi/se2018/resources/json_window_pattern_card/";
+        final String path = "src/main/resources/json_window_pattern_card/";
 
         final File folder = new File(path);
         ArrayList<WindowPatternCard> cards = new ArrayList<>();

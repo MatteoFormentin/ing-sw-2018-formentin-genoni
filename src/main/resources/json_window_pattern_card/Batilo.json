@@ -1,0 +1,35 @@
+{
+  "name": "Batilo",
+  "difficult": 4,
+  "board": [
+    [
+      "false",
+      "false",
+      "6",
+      "false",
+      "false"
+    ],
+    [
+      "false",
+      "5",
+      "Blue",
+      "4",
+      "false"
+    ],
+    [
+      "3",
+      "Green",
+      "Yellow",
+      "Purple",
+      "2"
+    ],
+    [
+      "1",
+      "4",
+      "Red",
+      "5",
+      "3"
+    ]
+  ]
+}
+

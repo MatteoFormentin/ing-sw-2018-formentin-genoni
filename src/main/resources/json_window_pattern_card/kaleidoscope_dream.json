@@ -1,0 +1,35 @@
+{
+  "name": "Kaleidoscope Dream",
+  "difficult": 4,
+  "board": [
+    [
+      "Yellow",
+      "Blue",
+      "false",
+      "false",
+      "1"
+    ],
+    [
+      "Green",
+      "false",
+      "5",
+      "false",
+      "4"
+    ],
+    [
+      "3",
+      "false",
+      "Red",
+      "false",
+      "Green"
+    ],
+    [
+      "2",
+      "false",
+      "false",
+      "Blue",
+      "Yellow"
+    ]
+  ]
+}
+

@@ -110,7 +110,6 @@ public class SocketClient extends AbstractClient implements Runnable {
         packet.setStringField(nickname);
         sendObject(packet);
 
-
         try {
             SocketObject socketObject = (SocketObject) inputStream.readObject();
 

@@ -1,0 +1,35 @@
+{
+  "name": "Virtus",
+  "difficult": 5,
+  "board": [
+    [
+      "4",
+      "false",
+      "2",
+      "5",
+      "Green"
+    ],
+    [
+      "false",
+      "false",
+      "6",
+      "Green",
+      "2"
+    ],
+    [
+      "false",
+      "3",
+      "Green",
+      "4",
+      "false"
+    ],
+    [
+      "5",
+      "Green",
+      "1",
+      "false",
+      "false"
+    ]
+  ]
+}
+

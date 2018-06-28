@@ -59,7 +59,7 @@ public class GuiMain extends Application {
             e.consume();
             closeProgram();
         });
-        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:src/main/java/it/polimi/se2018/resources/Immagine.jpg", 779, 261, true, true),
+        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:src/main/resources/Immagine.jpg", 779, 261, true, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         menu.setBackground(new Background(backgroundImage));
         menu.setAlignment(Pos.CENTER);
