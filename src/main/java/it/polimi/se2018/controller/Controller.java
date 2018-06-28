@@ -5,6 +5,7 @@ import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.EndTurn;
 import it.polimi.se2018.controller.effect.InsertDice;
 import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
+import it.polimi.se2018.exception.gameboard_exception.GameIsOverException;
 import it.polimi.se2018.exception.gameboard_exception.WindowPatternAlreadyTakenException;
 import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
@@ -35,7 +36,7 @@ import java.util.LinkedList;
 public class Controller implements ControllerVisitor, TimerCallback {
     private GameBoard gameBoard;
     private int playerNumber;
-    private boolean restoreable;
+    private boolean restoreAble;
     //Server in cui si setterà la partita
     private ServerController server;
 
@@ -63,7 +64,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
         gameBoard = new GameBoard(playerNumber, server);
 
         //set up utils for the game
-        restoreable = false;
+        restoreAble = false;
         playerTimeout = new TimerThread(this, PLAYER_TIMEOUT);
 
         //List for effect
@@ -76,7 +77,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
     // EX UPDATE
     public void sendEventToController(EventController event) {
-        event.accept(this);
+        if(!gameBoard.isStopGame()) event.accept(this);
     }
 
     //the handler respond with this method
@@ -187,12 +188,12 @@ public class Controller implements ControllerVisitor, TimerCallback {
     @Override
     public void visit(ControllerEndTurn event) {
         try {
-            if(restoreable) effectGamesStored.getLast().undo();
+            if (restoreAble) effectGamesStored.getLast().undo();
             EffectGame endTurn = new EndTurn(false);
             endTurn.doEffect(gameBoard, event.getPlayerId(), null);
             effectGamesStored.addLast(endTurn);
             effectToRead = new LinkedList<>();
-            restoreable=false;
+            restoreAble = false;
             //send info
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             StartPlayerTurn turnPacket = new StartPlayerTurn();
@@ -201,6 +202,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
             //Restart timer
             playerTimeout.shutdown();
             playerTimeout.startThread();
+        } catch (GameIsOverException ex){
+            playerTimeout.shutdown();
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(), false);
         }
@@ -249,7 +252,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     public void visit(ControllerSelectToolCard event) {
         try {
             gameBoard.useToolCard(event.getPlayerId(), event.getIndexToolCard());
-            restoreable = gameBoard.getToolCard(event.getIndexToolCard()).isUndoAble();
+            restoreAble = gameBoard.getToolCard(event.getIndexToolCard()).isUndoAble();
             //load the effect of the tool card
             effectToRead = gameBoard.getToolCard(event.getIndexToolCard()).getCopyListEffect();
             effectToRead.addFirst(null);
@@ -297,7 +300,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             EventView packet = new MessageOk("il flusso di mosse si è concluso con successo, mostra il menu\n THE EFFECT FLOW", true);
             packet.setPlayerId(idPlayer);
             sendEventToView(packet);
-            restoreable=false;
+            restoreAble =false;
         }else{ //there is a another effect to read
             EventView packet = effectToRead.getFirst().eventViewToAsk();
             if(packet==null) accessToEffect(idPlayer,null); //effect without the need of the player to act

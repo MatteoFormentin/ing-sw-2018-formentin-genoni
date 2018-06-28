@@ -43,7 +43,7 @@ public class GameBoard {
 
     public GameBoard(int number, ServerController setServer) {
 
-        stopGame = true;
+        stopGame = false;
         currentRound = 0;
         currentTurn = 1;
         roundTrack = new DiceStack[10];// don't need to be initialized, they take the reference of from the dicePool
@@ -438,8 +438,8 @@ public class GameBoard {
             currentPlayerSorted = podium.predecessor(currentPlayerSorted);
         }
         //descrizione informazione dell'array
-        description[0] = "Id Player";
-        description[1] = "Punti totali";
+        description[0] = "Nome Giocatore";
+        description[1] = "Punti totali accumulati";
         description[2] = "Obiettivo Privato";
         description[3] = objectivePublicCard[0].getName();
         description[4] = objectivePublicCard[1].getName();

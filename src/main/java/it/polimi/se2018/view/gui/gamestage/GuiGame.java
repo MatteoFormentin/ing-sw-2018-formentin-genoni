@@ -158,8 +158,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         setBoard();
     }
 
-    private void closeGame(Stage gameStage) {
-        gameStage.setOnCloseRequest(e -> {
+    private void closeGame(Stage stage) {
+        stage.setOnCloseRequest(e -> {
             closeProgram();/*
             Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
             if (result) {
@@ -586,7 +586,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(MessageError event) {
-        if (event.isInitGame()) new AlertMessage(utilStage).displayMessage(event.getMessage());
+        if (utilStage.isShowing()) new AlertMessage(utilStage).displayMessage(event.getMessage());
         else new AlertMessage(gameStage).displayMessage(event.getMessage());
     }
 
@@ -598,7 +598,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(MessageOk event) {
-        if (event.isInitGame()) new AlertMessage(utilStage).displayMessage(event.getMessageConfirm());
+        if (utilStage.isShowing()) new AlertMessage(utilStage).displayMessage(event.getMessageConfirm());
         else new AlertMessage(gameStage).displayMessage(event.getMessageConfirm());
     }
 
@@ -973,13 +973,51 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(UpdateStatPodium event) {
-        for(int i=0; i<event.getSortedPlayer().length;i++){
-            System.out.println();
-            System.out.print( (i+1)+"° Posto: "+playersName[event.getOneSortedPlayerInfo(i,0)].getText());
-            for(int j=1; j<event.getOneSortedPlayer(i).length;j++){
-                System.out.print(" | " +event.getDescription(j)+": "+event.getOneSortedPlayerInfo(i,j));
-            }
-            System.out.println();
+        BorderPane paneShow = new BorderPane();
+        VBox paneWin = new VBox();
+        GridPane pane = new GridPane();
+        paneShow.setTop(new Text("    "));
+        paneShow.setCenter(paneWin);
+        paneShow.setBottom(new Text("    "));
+        paneShow.setRight(new Text("    "));
+        paneShow.setLeft(new Text("    "));
+
+        Text win;
+        if(playerId==event.getOneSortedPlayerInfo(0,0))
+            win = new Text("Hai Vinto!!!!!");
+        else win = new Text("Hai Perso!!!!!");
+        win.setTextAlignment(TextAlignment.CENTER);
+        paneWin.getChildren().addAll(win,pane);
+        paneWin.setAlignment(Pos.CENTER);
+        paneWin.setSpacing(30);
+        pane.setAlignment(Pos.CENTER);
+        pane.setVgap(5);
+        pane.setHgap(15);
+        //prima riga
+        pane.add(new Text("Posizione:"),0,0);
+        for(int i=1;i<(event.getSortedPlayer().length+1);i++){
+            Text description= new Text(Integer.toString(i));
+            pane.add(description,i,0);
         }
+
+        //prima colonna
+        for(int currentDescription=0;currentDescription<event.getOneSortedPlayer(0).length;currentDescription++){
+            Text description= new Text(event.getDescription(currentDescription));
+            pane.add(description,0,currentDescription+1);
+        }
+
+        for(int i=0; i<event.getSortedPlayer().length;i++){
+            Text name = new Text(playersName[event.getOneSortedPlayerInfo(i,0)].getText());
+            pane.add(name,(i+1),1);
+            for(int j=1; j<event.getOneSortedPlayer(i).length;j++){
+                Text point = new Text(""+ event.getOneSortedPlayerInfo(i,j));
+                pane.add(point,(i+1),j+1);
+            }
+        }
+        Scene scenePoint = new Scene(paneShow);
+        gameStage.setOnCloseRequest(e-> gameStage.close());
+        gameStage.close();
+        utilStage.setScene(scenePoint);
+        utilStage.show();
     }
 }
