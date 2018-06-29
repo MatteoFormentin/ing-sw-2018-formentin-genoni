@@ -47,6 +47,10 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private ObjectivePrivateCard[] objectivePrivateCardOfEachPlayers; //almost all null until the end game
     private int playerId;
 
+    //Updated stat
+
+    private int[][] ranking;
+
     private Thread currentTask;
     private AtomicBoolean isInputActive;
 
@@ -187,8 +191,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         //TODO when the player received the update show the point of all the players
         //it's cool too if we can make the point accumulated by each Player a class with 7 different fields:
         // private object, the 3 public object, the remain favor token, the lost points and the total of all
-
-
+        cliMessage.showEndGameScreen(ranking, playersName, playerId);
     }
 
     @Override
@@ -518,13 +521,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateStatPodium event) {
-        for (int i = 0; i < event.getSortedPlayer().length; i++) {
-            System.out.println();
-            System.out.print((i + 1) + "° Posto: " + playersName[event.getOneSortedPlayerInfo(i, 0)]);
-            for (int j = 1; j < event.getOneSortedPlayer(i).length; j++) {
-                System.out.print(" | " + event.getDescription(j) + ": " + event.getOneSortedPlayerInfo(i, j));
-            }
-            System.out.println();
-        }
+        ranking = event.getSortedPlayer();
     }
 }

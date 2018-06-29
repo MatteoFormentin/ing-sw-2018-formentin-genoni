@@ -370,4 +370,34 @@ class CliMessage {
         println();
         AnsiConsole.out.println(ansi().fg(RED).a("Spiacente, hai esaurito il tempo a tua disposizione!"));
     }
+
+    void showEndGameScreen(int[][] ranking, String[] playersName, int myId) {
+
+        //Se hai vinto
+        if (myId == ranking[0][0]) {
+            AnsiConsole.out.println(ansi().fg(GREEN).a("                                                                                           ,---,  \n" +
+                    "        ,--,                                                                            ,`--.' |  \n" +
+                    "      ,--.'|                                                             ___            |   :  :  \n" +
+                    "   ,--,  | :            ,--,                  ,---. ,--,               ,--.'|_          '   '  ;  \n" +
+                    ",---.'|  : '          ,--.'|                 /__./,--.'|        ,---,  |  | :,'   ,---. |   |  |  \n" +
+                    "|   | : _' |          |  |,             ,---.;  ; |  |,     ,-+-. /  | :  : ' :  '   ,'\\'   :  ;  \n" +
+                    ":   : |.'  | ,--.--.  `--'_            /___/ \\  | `--'_    ,--.'|'   .;__,'  /  /   /   |   |  '  \n" +
+                    "|   ' '  ; :/       \\ ,' ,'|           \\   ;  \\ ' ,' ,'|  |   |  ,\"' |  |   |  .   ; ,. '   :  |  \n" +
+                    "'   |  .'. .--.  .-. |'  | |            \\   \\  \\: '  | |  |   | /  | :__,'| :  '   | |: ;   |  ;  \n" +
+                    "|   | :  | '\\__\\/: . .|  | :             ;   \\  ' |  | :  |   | |  | | '  : |__'   | .; `---'. |  \n" +
+                    "'   : |  : ;,\" .--.; |'  : |__            \\   \\   '  : |__|   | |  |/  |  | '.'|   :    |`--..`;  \n" +
+                    "|   | '  ,//  /  ,.  ||  | '.'|            \\   `  |  | '.'|   | |--'   ;  :    ;\\   \\  /.--,_     \n" +
+                    ";   : ;--';  :   .'   ;  :    ;             :   \\ ;  :    |   |/       |  ,   /  `----' |    |`.  \n" +
+                    "|   ,/    |  ,     .-.|  ,   /               '---\"|  ,   /'---'         ---`-'          `-- -`, ; \n" +
+                    "'---'      `--`---'    ---`-'                      ---`-'                                 '---`\"  \n" +
+                    "                                                                                                  "));
+        }
+
+        for (int i = 0; i < ranking.length; i++) {
+            if (myId == i)
+                AnsiConsole.out.println(ansi().fg(BLUE).a((i + 1) + "° Posto: " + playersName[ranking[i][0]]) + " Punti: " + ranking[i][1]);
+            else
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a((i + 1) + "° Posto: " + playersName[ranking[i][0]]) + " Punti: " + ranking[i][1]);
+        }
+    }
 }
