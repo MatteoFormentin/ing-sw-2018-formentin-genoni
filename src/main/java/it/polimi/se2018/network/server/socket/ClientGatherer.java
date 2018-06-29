@@ -35,6 +35,8 @@ public class ClientGatherer implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setName("Client Gatherer Thread");
+
         System.out.println("Waiting for clients.\n");
 
         while (flag) {

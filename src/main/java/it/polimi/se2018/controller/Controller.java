@@ -12,7 +12,7 @@ import it.polimi.se2018.exception.gameboard_exception.player_state_exception.Alr
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.*;
+import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectInitialWindowPatternCard;
@@ -24,7 +24,6 @@ import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -76,9 +75,9 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
             configProperties.load(inputConnection);
             // SERVER ADDRESS LOAD
-            PLAYER_TIMEOUT = Integer.parseInt(configProperties.getProperty("turnTimeout"))*1000;
-        }catch(Exception e){
-            PLAYER_TIMEOUT=90*1000;
+            PLAYER_TIMEOUT = Integer.parseInt(configProperties.getProperty("turnTimeout")) * 1000;
+        } catch (Exception e) {
+            PLAYER_TIMEOUT = 90 * 1000;
             System.out.println("Errore caricamento");
         }
         playerTimeout = new TimerThread(this, PLAYER_TIMEOUT);
@@ -93,7 +92,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
     // EX UPDATE
     public void sendEventToController(EventController event) {
-        if(!gameBoard.isStopGame()) event.accept(this);
+        if (!gameBoard.isStopGame()) event.accept(this);
     }
 
     //the handler respond with this method
@@ -157,16 +156,16 @@ public class Controller implements ControllerVisitor, TimerCallback {
      */
     @Override
     public void visit(ControllerMoveDrawAndPlaceDie event) {
-        EffectGame insertDice = new InsertDice(true,true,true,true);
+        EffectGame insertDice = new InsertDice(true, true, true, true);
         EffectGame drawDice = new DicePoolEffect(true);
         LinkedList<EffectGame> newList = new LinkedList<>();
         if (event.getPlayerId() == gameBoard.getIndexCurrentPlayer()) {
-            if(gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()){
+            if (gameBoard.getPlayer(event.getPlayerId()).isHasPlaceANewDice()) {
                 showErrorMessage(new AlreadyPlaceANewDiceException(), event.getPlayerId(), true);
-            }else{
-                if(gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()){
+            } else {
+                if (gameBoard.getPlayer(event.getPlayerId()).isHasDrawNewDice()) {
                     newList.addLast(insertDice);
-                }else{
+                } else {
                     newList.addLast(drawDice);
                     newList.addLast(insertDice);
                 }
@@ -204,7 +203,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
     @Override
     public void visit(ControllerEndTurn event) {
         try {
-            if (restoreAble && !gameBoard.getPlayer(event.getPlayerId()).getHandDice().isEmpty()) effectGamesStored.getLast().undo();
+            if (restoreAble && !gameBoard.getPlayer(event.getPlayerId()).getHandDice().isEmpty())
+                effectGamesStored.getLast().undo();
             EffectGame endTurn = new EndTurn(false);
             endTurn.doEffect(gameBoard, event.getPlayerId(), null);
             effectGamesStored.addLast(endTurn);
@@ -218,12 +218,13 @@ public class Controller implements ControllerVisitor, TimerCallback {
             //Restart timer
             playerTimeout.shutdown();
             playerTimeout.startThread();
-        } catch (GameIsOverException ex){
+        } catch (GameIsOverException ex) {
             playerTimeout.shutdown();
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(), false);
         }
     }
+
     /**
      * Method of the Visitor Pattern, event received from the view
      * to let the player initiate the mode play a tool card
@@ -260,9 +261,9 @@ public class Controller implements ControllerVisitor, TimerCallback {
     }
 
 
-
     /**
      * method for select the toolcard
+     *
      * @param event
      */
     public void visit(ControllerSelectToolCard event) {
@@ -272,7 +273,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             //load the effect of the tool card
             effectToRead = gameBoard.getToolCard(event.getIndexToolCard()).getCopyListEffect();
             effectToRead.addFirst(null);
-            accessToEffect(event.getPlayerId(),null);
+            accessToEffect(event.getPlayerId(), null);
         } catch (CurrentPlayerException ex) {
             showErrorMessage(ex, event.getPlayerId(), false);
         } catch (Exception ex) {
@@ -289,8 +290,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
     public void visit(ControllerInfoEffect event) {
         if (!effectToRead.isEmpty()) {// se ci sono effetti da leggere
             try {
-                accessToEffect(event.getPlayerId(),event.getInfo() );
-            } catch (CurrentPlayerException ex){
+                accessToEffect(event.getPlayerId(), event.getInfo());
+            } catch (CurrentPlayerException ex) {
                 showErrorMessage(ex, event.getPlayerId(), false);
             } catch (PlayerException ex) {
                 showErrorMessage(ex, event.getPlayerId(), true);
@@ -303,30 +304,29 @@ public class Controller implements ControllerVisitor, TimerCallback {
         }
     }
 
-    private void accessToEffect(int idPlayer,int[] info )throws Exception {
-        if(effectToRead.getFirst()!=null){
+    private void accessToEffect(int idPlayer, int[] info) throws Exception {
+        if (effectToRead.getFirst() != null) {
             effectToRead.getFirst().doEffect(gameBoard, idPlayer, info);
             effectGamesStored.addLast(effectToRead.getFirst());
             effectToRead.removeFirst();
-        }else{
+        } else {
             effectToRead.removeFirst(); //first flow move
         }
         //lettura nuovo effetto
-        if(effectToRead.isEmpty()){
+        if (effectToRead.isEmpty()) {
             EventView packet = new MessageOk("il flusso di mosse si è concluso con successo, mostra il menu\n THE EFFECT FLOW", true);
             packet.setPlayerId(idPlayer);
             sendEventToView(packet);
-            restoreAble =false;
-        }else{ //there is a another effect to read
+            restoreAble = false;
+        } else { //there is a another effect to read
             EventView packet = effectToRead.getFirst().eventViewToAsk();
-            if(packet==null) accessToEffect(idPlayer,null); //effect without the need of the player to act
+            if (packet == null) accessToEffect(idPlayer, null); //effect without the need of the player to act
             else { //effect with the need of the player input
                 packet.setPlayerId(idPlayer);
                 sendEventToView(packet);
             }
         }
     }
-
 
 
     /**

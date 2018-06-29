@@ -113,7 +113,6 @@ public class SocketClient extends AbstractClient implements Runnable {
         try {
             SocketObject socketObject = (SocketObject) inputStream.readObject();
 
-
             if (socketObject.getType().equals("Ack")) {
                 (new Thread(this)).start();
             }
@@ -197,20 +196,19 @@ public class SocketClient extends AbstractClient implements Runnable {
      */
     @Override
     public void run() {
+        Thread.currentThread().setName("Socket Client Thread");
         boolean flag = true;
         while (flag) {
             try {
                 SocketObject received = (SocketObject) inputStream.readObject();
-
                 socketObjectTraducer(received);
-
             } catch (IOException | ClassNotFoundException ex) {
                 flag = false;
+                System.err.println("Sei stato disconnesso dal server. Controlla la connessione.");
                 ex.printStackTrace();
             }
         }
         closeConnection();
     }
-
 
 }
