@@ -14,6 +14,7 @@ public class JoinGame extends EventViewFromController {
     //from EventController private Model model;
 
     String playerNickname;
+    private int indexPlayer;
 
     public String getPlayerName() {
         return playerNickname;
@@ -22,6 +23,7 @@ public class JoinGame extends EventViewFromController {
     public void setPlayerName(String playerNickname) {
         this.playerNickname = playerNickname;
     }
+
 
     @Override
     public void acceptControllerEvent(ViewControllerVisitor visitor) {

@@ -4,6 +4,7 @@ package it.polimi.se2018.network.server.socket;
 import it.polimi.se2018.network.server.ServerController;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -21,8 +22,14 @@ public class ClientGatherer implements Runnable {
         this.serverController = serverController;
         try {
             this.serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        // dal funzionamento imposto il client gatherer può partire senza aver conoscenza del numero di server
+        // quindi è utile creare una bind exception per evitare che si generino errori durante la creazione
+        catch (BindException e){
+            System.err.println("New Client Gatherer Connection refused!");
+        }
+        catch (IOException e) {
+            System.err.println("New Client Gatherer Connection refused!");
         }
     }
 
@@ -47,4 +54,6 @@ public class ClientGatherer implements Runnable {
     public void stop() {
         this.flag = false;
     }
+
+
 }
