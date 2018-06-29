@@ -58,7 +58,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
 
     @Override
     public void run() {
-        Thread.currentThread().setName("Socket Player: " + getNickname() + " Thread");
+        Thread.currentThread().setName("Socket Player Thread");
         boolean flag = true;
         while (flag && tunnel.isConnected()) {
             try {
