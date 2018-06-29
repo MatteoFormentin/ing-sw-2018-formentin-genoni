@@ -143,6 +143,11 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         sendObject(packet);
     }
 
+    @Override
+    public String sayHelloClient() throws RemoteException {
+        return null;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------

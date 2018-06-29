@@ -146,6 +146,11 @@ public class SocketClient extends AbstractClient implements Runnable {
         sendObject(packet);
     }
 
+    @Override
+    public void disconnect() throws RemoteException {
+        //TODO implement disconnection
+    }
+
     /**
      * Connection closer for socket client.
      * This method close the connection of the client.

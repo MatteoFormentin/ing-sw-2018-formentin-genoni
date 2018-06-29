@@ -91,13 +91,27 @@ public class CliParser {
         while (!flag) {
             Scanner in = new Scanner(System.in);
             try {
-                parsed = in.next("(0)|((([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5])))");
+                parsed = in.next("(localhost)|(0)|((([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5]))[.](([1]?[0-9]?[0-9])|([2][0-5][0-5])))");
                 flag = true;
             } catch (InputMismatchException ex) {
                 cliMessage.showInputNotValid();
                 in.next();
             }
         }
+        return parsed;
+    }
+
+    public int parsePort(int lowBound, int upperBound,int alreadyTaken){
+        boolean flag = false;
+        int parsed;
+        do {
+            parsed = parseInt();
+            if (!(parsed < lowBound || parsed > upperBound || parsed==alreadyTaken)) {
+                flag = true;
+            } else {
+                cliMessage.showInputNotValid();
+            }
+        } while (!flag);
         return parsed;
     }
 

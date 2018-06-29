@@ -81,6 +81,11 @@ public class RMIClient extends AbstractClient implements IRMIClient {
         iRMIServer.sendEventToController(eventController);
     }
 
+    @Override
+    public void disconnect() throws RemoteException {
+        //TODO implement disconnection
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------

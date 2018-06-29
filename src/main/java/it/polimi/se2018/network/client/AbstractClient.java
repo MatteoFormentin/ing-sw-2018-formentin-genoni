@@ -2,10 +2,12 @@ package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
+import it.polimi.se2018.network.RemotePlayer;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.LinkedList;
 
 /**
  * Abstract class based on the Abstract Factory Design Pattern
@@ -64,6 +66,7 @@ public abstract class AbstractClient {
      */
     public abstract void sendEventToController(EventController eventController) throws RemoteException;
 
+    public abstract void disconnect() throws RemoteException;
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------

@@ -51,6 +51,8 @@ public abstract class RemotePlayer {
      */
     public abstract void sendEventToView(EventView eventView) throws RemoteException;
 
+    public abstract String sayHelloClient()throws RemoteException;
+
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------

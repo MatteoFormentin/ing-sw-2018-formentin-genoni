@@ -144,6 +144,7 @@ public class Server implements ServerController, TimerCallback {
             Server server = new Server();
             server.startServer(rmiPort, socketPort);
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println("Server già in esecuzione!");
         }
     }

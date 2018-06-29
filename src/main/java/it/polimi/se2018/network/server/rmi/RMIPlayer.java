@@ -46,6 +46,11 @@ public class RMIPlayer extends RemotePlayer {
         iRMIClient.sendEventToView(eventView);
     }
 
+    @Override
+    public String sayHelloClient() throws RemoteException {
+        return null;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
