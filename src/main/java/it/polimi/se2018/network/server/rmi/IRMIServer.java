@@ -3,6 +3,7 @@ package it.polimi.se2018.network.server.rmi;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -36,5 +37,7 @@ public interface IRMIServer extends Remote {
      * @param eventController object that will use the server to set off the event associated.
      */
     void sendEventToController(EventController eventController) throws RemoteException;
+
+    void disconnect(int id) throws IOException;
 }
 

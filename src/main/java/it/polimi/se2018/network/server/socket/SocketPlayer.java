@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 import java.rmi.RemoteException;
 
 /**
@@ -141,6 +140,16 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         packet.setType("Event");
         packet.setObject(eventView);
         sendObject(packet);
+    }
+
+    @Override
+    public void ping() {
+
+    }
+
+    @Override
+    public void disconnect() {
+
     }
 
     @Override

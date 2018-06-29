@@ -4,20 +4,12 @@ import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.InsertDice;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.RestrictionCellColorViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.RestrictionCellValueViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionAdjacentFirstDiceViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionAdjacentViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionColorViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionValueViolatedException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
 import it.polimi.se2018.model.GameBoard;
-import it.polimi.se2018.model.card.objective_private_card.*;
-import it.polimi.se2018.model.card.objective_public_card.*;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
@@ -29,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestEffect {
 
@@ -69,6 +60,11 @@ public class TestEffect {
 
             @Override
             public void startGame() {
+
+            }
+
+            @Override
+            public void ping(){
 
             }
 

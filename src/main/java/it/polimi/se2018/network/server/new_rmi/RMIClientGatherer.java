@@ -1,7 +1,6 @@
 package it.polimi.se2018.network.server.new_rmi;
 
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
@@ -35,9 +34,9 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
         //controlla unicità del nome dei giocatori on
         RMIPlayer player = new RMIPlayer(nickname,client);
         player.setNickname(nickname);
-        if(mainServer.searchPlayerLogged(player)==null){
+        /*if(mainServer.searchPlayerLogged(player)==null){
             mainServer.login(player);
-        }
+        }*/
     }
 
 

@@ -1,7 +1,6 @@
 package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.exception.network_exception.NoPortRightException;
-import it.polimi.se2018.exception.network_exception.NoServerRightException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.ProblemConnectionException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
@@ -242,6 +241,11 @@ public class Client implements ClientController {
     public void sendEventToView(EventView eventView) {
         view.showMessage(eventView);
         //TODO:gestisci update
+    }
+
+    @Override
+    public void ping(){
+
     }
 
     //------------------------------------------------------------------------------------------------------------------

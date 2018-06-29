@@ -145,7 +145,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
      * @param port port on when the registry will be on listen.
      * @return RMI Registry created with the listen on the assigned port.
      */
-    // TODO: GESTIRE REMOTE EXCEPTION
+
 
 
     //------------------------------------------------------------------------------------------------------------------
@@ -180,6 +180,11 @@ public class RMIServer extends AbstractServer implements IRMIServer{
     @Override
     public void sendEventToController(EventController eventController) {
         getServerController().sendEventToController(eventController);
+    }
+
+    @Override
+    public void disconnect(int id) throws IOException{
+        searchPlayerById(id).disconnect();
     }
 
     public void removePlayer(RemotePlayer remotePlayer) {

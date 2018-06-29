@@ -60,6 +60,9 @@ public interface ServerController {
      */
     void sendEventToView(EventView eventView);
 
+    // PING-PONG
+    void ping();
+
 
 }
 

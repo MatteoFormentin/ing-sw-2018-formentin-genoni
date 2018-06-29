@@ -43,7 +43,7 @@ public class Server implements ServerController, TimerCallback {
     // Socket Server
     private SocketServer socketServer;
     // RMI Server
-    private RMIServer rmiServer;
+    private static RMIServer rmiServer;
     // GAME DELLA ROOM
     private Controller game;
 
@@ -256,59 +256,60 @@ public class Server implements ServerController, TimerCallback {
             System.out.println("Trying to log the player...");
 
             // SE LA STANZA è ACCESSIBILE (PRE-GAME)
-            if (roomJoinable) {
+            if (roomJoinable){
 
-                // NON ESISTE PLAYER CON QUEL NICKNAME
-                if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
 
-                    // IMPOSTO L'ID
-                    remotePlayer.setPlayerId(playerCounter);
-                    // IMPOSTO LA CONNESSIONE
-                    connectPlayer(remotePlayer);
-                    players.add(remotePlayer);
-                    playerCounter++;
-                    System.out.println("Player logged!");
+                    // NON ESISTE PLAYER CON QUEL NICKNAME E NON è CONNESSO
+                    if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
 
-                    // APPENA RAGGIUNGO IL NUMERO MINIMO PLAYER FACCIO PARTIRE TIMER
-                    if (this.players.size() == MIN_PLAYERS) {
-                        // FAI PARTIRE IL TEMPO DI ATTESA
-                        startTimerThread();
+                        // IMPOSTO L'ID
+                        remotePlayer.setPlayerId(playerCounter);
+                        // IMPOSTO LA CONNESSIONE
+                        connectPlayer(remotePlayer);
+                        players.add(remotePlayer);
+                        playerCounter++;
+                        System.out.println("Player logged!");
+
+                        // APPENA RAGGIUNGO IL NUMERO MINIMO PLAYER FACCIO PARTIRE TIMER
+                        if (this.players.size() == MIN_PLAYERS) {
+                            // FAI PARTIRE IL TEMPO DI ATTESA
+                            startTimerThread();
+                        }
+
+                        // APPENA RAGGIUNGO IL NUMERO MASSIMO DI PLAYER FACCIO PARTIRE IL GIOCO
+                        else if (this.players.size() == MAX_PLAYERS) {
+                            // TERMINO THREAD SICCOME LA ROOM è PIENA
+                            this.timerThread.shutdown();
+                            // FACCIO PARTIRE IL PREGAME
+                            startPreGameThread(remotePlayer);
+                        }
+                        return true;
                     }
 
-                    // APPENA RAGGIUNGO IL NUMERO MASSIMO DI PLAYER FACCIO PARTIRE IL GIOCO
-                    else if (this.players.size() == MAX_PLAYERS) {
-                        // TERMINO THREAD SICCOME LA ROOM è PIENA
-                        this.timerThread.shutdown();
-                        // FACCIO PARTIRE IL PREGAME
-                        startPreGameThread(remotePlayer);
+                    // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
+                    else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
+                        String nickname = remotePlayer.getNickname();
+                        System.out.println(nickname + " was in the Room!");
+                        return false;
+                        //throw new PlayerAlreadyLoggedException("Player already logged! \n Please, use another nickname...");
+
+                        // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
+                        //TODO
+                    } else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
+                        // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
+
+                        // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
+                        int id = remotePlayer.getPlayerId();
+                        String nickname = remotePlayer.getNickname();
+                        System.out.println(nickname + " was in the Room!");
+                        System.out.println("Trying to recreate the connection for " + nickname + "...");
+                        // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
+                        replacePlayer(id, remotePlayer);
+                        // IMPOSTO LA CONNESSIONE
+                        connectPlayer(remotePlayer);
+                        System.out.println("Connection established!");
+                        return true;
                     }
-                    return true;
-                }
-
-                // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
-                    String nickname = remotePlayer.getNickname();
-                    System.out.println(nickname + " was in the Room!");
-                    return false;
-                    //throw new PlayerAlreadyLoggedException("Player already logged! \n Please, use another nickname...");
-
-                    // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
-                    //TODO
-                } else if (checkPlayerNicknameExists(remotePlayer.getNickname())) {
-                    // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
-
-                    // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
-                    int id = remotePlayer.getPlayerId();
-                    String nickname = remotePlayer.getNickname();
-                    System.out.println(nickname + " was in the Room!");
-                    System.out.println("Trying to recreate the connection for " + nickname + "...");
-                    // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
-                    replacePlayer(id, remotePlayer);
-                    // IMPOSTO LA CONNESSIONE
-                    connectPlayer(remotePlayer);
-                    System.out.println("Connection established!");
-                    return true;
-                }
             }
 
             // SE LA STANZA NON è ACCESSIBILE (IN-GAME)
@@ -395,6 +396,10 @@ public class Server implements ServerController, TimerCallback {
         return players.get(id);
     }
 
+    @Override
+    public void ping() {
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
@@ -406,7 +411,18 @@ public class Server implements ServerController, TimerCallback {
      * @return true if the nickname exists, false otherwise.
      */
     private boolean checkPlayerNicknameExists(String nickname) {
+        String[] playersName = new String[players.size()];
+        int i = 0;
         for (RemotePlayer player : players) {
+            try{
+            playersName[i] = player.getNickname();
+            player.ping();
+            i++;
+            }
+            catch (RemoteException e) {
+                    e.printStackTrace();
+                    removeRMIPlayer(player);
+            }
             if (player.getNickname().equals(nickname)) {
                 return true;
             }
@@ -448,7 +464,7 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to RMI or Socket Player.
      */
-    private void removeRMIPlayer(RemotePlayer remotePlayer) {
+    public static void removeRMIPlayer(RemotePlayer remotePlayer) {
         rmiServer.removePlayer(remotePlayer);
         System.out.println("Player disconnected!");
     }

@@ -4,6 +4,7 @@ package it.polimi.se2018.network.server.rmi;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
+import it.polimi.se2018.network.server.Server;
 
 import java.rmi.RemoteException;
 
@@ -28,8 +29,6 @@ public class RMIPlayer extends RemotePlayer {
      */
     public RMIPlayer(IRMIClient iRMIClient) {
         this.iRMIClient = iRMIClient;
-        // TODO VERIFICARE CHE FUNZIONI REALMENTE
-        playerRunning=true;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -47,8 +46,25 @@ public class RMIPlayer extends RemotePlayer {
     }
 
     @Override
+    public void ping(){
+            try{
+                this.iRMIClient.ping();
+                playerRunning=true;
+            } catch (RemoteException e){
+                System.err.println("IL PLAYER NON è RAGGIUNGIBILE, LO DISCONNETTO");
+                playerRunning=false;
+                Server.removeRMIPlayer(this);
+            }
+    }
+
+    @Override
     public String sayHelloClient() throws RemoteException {
         return null;
+    }
+
+    @Override
+    public void disconnect(){
+        // rimuovi il giocatore dalla partita
     }
 
     //------------------------------------------------------------------------------------------------------------------

@@ -1,12 +1,14 @@
+
 package it.polimi.se2018.network.server.new_rmi;
+
 
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
+import it.polimi.se2018.network.server.rmi.RMIPlayer;
 import it.polimi.se2018.network.server.socket.ClientGatherer;
-import it.polimi.se2018.network.server.socket.SocketServer;
 import it.polimi.se2018.view.cli.CliParser;
 
 import java.io.FileInputStream;
@@ -44,7 +46,9 @@ public class Server implements ServerController {
 
     /**
      * Choice of the port, creation of the Registry, start of the RmiServer and SocketServer
+     *
      */
+
     public void start() {
         input = new CliParser();
         boolean flag = setUPConnection();
@@ -130,6 +134,11 @@ public class Server implements ServerController {
     }
 
     @Override
+    public void ping() {
+
+    }
+
+    @Override
     public RemotePlayer searchPlayerById(int id) {
         return null;
     }
@@ -189,4 +198,5 @@ public class Server implements ServerController {
     public RemotePlayer searchPlayerLogged(RMIPlayer client){
         return null;
     }
+
 }

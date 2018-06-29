@@ -1,21 +1,18 @@
 package it.polimi.se2018.network.client.new_rmi;
 
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.new_rmi.RMIServerInterfaceSeenByClient;
-import org.omg.PortableInterceptor.INACTIVE;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Scanner;
 
 public class RMIClientStartAndInput extends AbstractClient implements IRMIClient {
     private static RMIClientStartAndInput instanceClient;
@@ -96,6 +93,11 @@ public class RMIClientStartAndInput extends AbstractClient implements IRMIClient
     //************************************ METODI PER INTERAGIRE CON LA VIEW ******************************************
     @Override
     public void sendEventToView(EventView eventView) throws RemoteException {
+
+    }
+
+    @Override
+    public void ping() throws RemoteException {
 
     }
 }

@@ -29,4 +29,7 @@ public interface IRMIClient extends Remote {
      * @param eventView object that will use the client to unleash the update associated.
      */
     void sendEventToView(EventView eventView) throws RemoteException;
+
+    void ping() throws RemoteException;
+
 }

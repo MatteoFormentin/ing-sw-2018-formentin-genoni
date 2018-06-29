@@ -26,7 +26,7 @@ public abstract class RemotePlayer {
     // Si ricollega alla logica dei thread (vedi Timer)
     // Setto una variabile booleana grazie la quale posso fornire lo stato del giocatore
     // Ovvero se c'è una connessione ancora valida (Running / true) o meno (Not Running / false)
-    protected boolean playerRunning=false;
+    public boolean playerRunning=false;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -51,7 +51,9 @@ public abstract class RemotePlayer {
      */
     public abstract void sendEventToView(EventView eventView) throws RemoteException;
 
-    public abstract String sayHelloClient()throws RemoteException;
+    public abstract void ping() throws RemoteException;
+
+    public abstract void disconnect();
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
@@ -114,4 +116,6 @@ public abstract class RemotePlayer {
     public boolean getPlayerRunning() {
         return this.playerRunning;
     }
+
+    public abstract String sayHelloClient() throws RemoteException;
 }

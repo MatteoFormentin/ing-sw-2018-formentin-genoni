@@ -6,6 +6,7 @@ import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.network.server.rmi.IRMIServer;
 
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -26,6 +27,8 @@ public class RMIClient extends AbstractClient implements IRMIClient {
 
     // Username del giocatore
     private String nickname;
+
+    private int id;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -81,9 +84,14 @@ public class RMIClient extends AbstractClient implements IRMIClient {
         iRMIServer.sendEventToController(eventController);
     }
 
+    // dice al server che un client si è disconnesso
     @Override
     public void disconnect() throws RemoteException {
-        //TODO implement disconnection
+        try {
+            iRMIServer.disconnect(this.id);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -99,6 +107,11 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     @Override
     public void sendEventToView(EventView eventView) throws RemoteException {
         getClientController().sendEventToView(eventView);
+    }
+
+    @Override
+    public void ping() throws RemoteException {
+        getClientController().ping();
     }
 
 }
