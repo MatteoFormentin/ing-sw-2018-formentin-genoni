@@ -97,6 +97,12 @@ public class Client implements ClientController {
             // SOCKET PORT LOAD
             SERVER_SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
             System.out.println("Socket port set to " + configProperties.getProperty("SOCKET_PORT"));
+
+            // ASSEGNO LE PORTE ALLE VARIABILI
+            String serverIpAddress = SERVER_ADDRESS;
+            int rmiPort = SERVER_RMI_PORT;
+            int socketPort = SERVER_SOCKET_PORT;
+
         } catch (IOException e) {
             // LOAD FAILED
             System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
@@ -107,10 +113,6 @@ public class Client implements ClientController {
             // Default Socket PORT in case of exception.
             SERVER_SOCKET_PORT = 16180;
         }
-
-        String serverIpAddress = SERVER_ADDRESS;
-        int rmiPort = SERVER_RMI_PORT;
-        int socketPort = SERVER_SOCKET_PORT;
 
         try {
             ClientController client = new Client();

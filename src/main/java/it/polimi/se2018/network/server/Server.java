@@ -10,12 +10,16 @@ import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Properties;
+
+import static org.fusesource.jansi.Ansi.Color.*;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -30,6 +34,8 @@ public class Server implements ServerController, TimerCallback {
     public static int SOCKET_PORT;
     //Porta su cui si appoggierà la comunicazione RMI
     public static int RMI_PORT;
+
+    public static String SERVER_ADDRESS;
     // NUM MINIMO DI GIOCATORI PER PARTITA
     public static final int MIN_PLAYERS = 2;
     // NUM MASSIMO DI GIOCATORI PER PARTITA
@@ -76,7 +82,7 @@ public class Server implements ServerController, TimerCallback {
         roomJoinable = true;
         players = new ArrayList<>();
 
-        System.out.println("Configuring timers for the room...");
+        AnsiConsole.out.println(ansi().fg(CYAN).a("Time setting of the room:").reset());
         try {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
@@ -88,11 +94,12 @@ public class Server implements ServerController, TimerCallback {
 
             // TIMEOUT LOAD
             timeout = Long.parseLong(configProperties.getProperty("roomTimeout")) * 1000; //*1000 per convertire in millisecondi
-            System.out.println("Timeout set to " + configProperties.getProperty("roomTimeout") + " ms");
+            AnsiConsole.out.println(ansi().fg(CYAN).a("TIMEOUT : " + configProperties.getProperty("roomTimeout") + " ms").reset());
 
+            AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
         } catch (IOException e) {
             // LOAD FAILED
-            System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
+            System.err.println("Sorry, the configuration can't be setted! The default one will be used...");
             // Default timeout in case of exception.
             timeout = 120 * 1000;
         }
@@ -111,7 +118,9 @@ public class Server implements ServerController, TimerCallback {
     // ORA SOLO RMI, MANCA EXCEPTION
     public static void main(String[] args) {
 
-        System.out.println("Configuring the connections for the room...");
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+        AnsiConsole.out.println(ansi().fg(BLUE).a("Network setting of the room:"));
+
         try {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
@@ -121,16 +130,23 @@ public class Server implements ServerController, TimerCallback {
 
             configProperties.load(inputConnection);
 
+            // SERVER IP LOAD
+            SERVER_ADDRESS = configProperties.getProperty("SERVER_ADDRESS");
+            AnsiConsole.out.println(ansi().fg(BLUE).a("SERVER IP : " + configProperties.getProperty("SERVER_ADDRESS")).reset());
+
             // RMI PORT LOAD
             RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
-            System.out.println("RMI port set to " + configProperties.getProperty("RMI_PORT"));
+            AnsiConsole.out.println(ansi().fg(BLUE).a("RMI PORT : " + configProperties.getProperty("RMI_PORT")).reset());
 
             // SOCKET PORT LOAD
             SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
-            System.out.println("Socket port set to " + configProperties.getProperty("SOCKET_PORT"));
+            AnsiConsole.out.println(ansi().fg(BLUE).a("SOCKET PORT : " + configProperties.getProperty("SOCKET_PORT")).reset());
+
+            AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+
         } catch (IOException e) {
             // LOAD FAILED
-            System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
+            System.err.println("Sorry, the configuration can't be setted! The default one will be used...");
             // Default RMI PORT in case of exception.
             RMI_PORT = 31415;
             // Default Socket PORT in case of exception.
@@ -147,6 +163,9 @@ public class Server implements ServerController, TimerCallback {
             e.printStackTrace();
             System.err.println("Server già in esecuzione!");
         }
+
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Waiting for clients....\n").reset());
+
     }
 
     /**
@@ -155,10 +174,15 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param rmiPort port used on RMI connection.
      */
-    public void startServer(int rmiPort, int socketPort) throws Exception {
-        System.out.println("RMI Server started...");
-        rmiServer.startServer(rmiPort);
-        socketServer.startServer(socketPort);
+    public void startServer(int rmiPort, int socketPort){
+        try {
+            AnsiConsole.out.println(ansi().fg(DEFAULT).a("Creating RMI connection...").reset());
+            rmiServer.startServer(rmiPort);
+            AnsiConsole.out.println(ansi().fg(DEFAULT).a("Creating SOCKET connection...").reset());
+            socketServer.startServer(socketPort);
+        } catch(Exception e) {
+            System.err.println("Server can't be started!\n");
+        }
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -169,7 +193,7 @@ public class Server implements ServerController, TimerCallback {
      * Starter for the game.
      */
     public void startGame() {
-        System.out.println("Game started!");
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("GAME STARTED!").reset());
         game = new Controller(this, players.size());
         System.out.println("Closing Room...");
         roomJoinable = false;

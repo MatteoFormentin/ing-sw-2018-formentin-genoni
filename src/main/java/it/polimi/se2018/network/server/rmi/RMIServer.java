@@ -8,6 +8,7 @@ import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
 import it.polimi.se2018.view.cli.CliParser;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +20,10 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Properties;
+
+import static org.fusesource.jansi.Ansi.Color.DEFAULT;
+import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -66,15 +71,11 @@ public class RMIServer extends AbstractServer implements IRMIServer{
 
             // SERVER ADDRESS LOAD
             SERVER_ADDRESS = configProperties.getProperty("SERVER_ADDRESS");
-            System.out.println("Server address set to " + configProperties.getProperty("SERVER_ADDRESS"));
-
             // RMI PORT LOAD
             SERVER_RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
-            System.out.println("RMI port set to " + configProperties.getProperty("RMI_PORT"));
 
         } catch (IOException e) {
             // LOAD FAILED
-            System.out.println("Sorry, the configuration can't be setted! The default one will be used...");
             // Default timeout in case of exception.
             SERVER_ADDRESS = "localhost";
             // Default RMI PORT in case of exception.
@@ -89,8 +90,11 @@ public class RMIServer extends AbstractServer implements IRMIServer{
 
     /**
      * Starter for RMI Server.
+     * This method start the RMI Server after the RMI registry creation.
+     * RMI registry will be created and putted on listen on the assigned port.
+     * The RMI registry will exhibits services offered from server to client.
      *
-     * @param port number of port that will be used on the connection.
+     * @param port number of port that will be used on the connection (on when the registry will be on listen).
      */
 
     // bind will throw an AlreadyBoundException if there's already an object bound to that name within the rmiregistry.
@@ -99,14 +103,13 @@ public class RMIServer extends AbstractServer implements IRMIServer{
     // rebind will replace any existing binding for the name within rmiregistry.
     // If there was no match, the object will be bound to the name within the registry as usual.
     @Override
-    public void startServer(int port) throws Exception {
-        input = new CliParser();
-
+    public void startServer(int port){
         Registry registry = null;
-        System.out.println("Creating RMI registry...");
+        // Creating RMI registry
         try {
             registry = LocateRegistry.createRegistry(port);
-            System.out.println("RMI registry created!");
+            //RMI registry created!
+            AnsiConsole.out.println(ansi().fg(GREEN).a("RMI connection created!").reset());
         } catch (RemoteException e) {
             // Se questa eccezione è stata catturata, probabilmente è perchè il Registry è già stato
             // avviato da linea di comando o da un'altra esecuzione del Server non terminata
@@ -117,18 +120,19 @@ public class RMIServer extends AbstractServer implements IRMIServer{
             } catch (MalformedURLException e1) {
                 System.err.println("Can't bind the object!");
             } catch (RemoteException e1) {
-                System.err.println("New RMI Server Connection refused!");
+                System.err.println("RMI Server Connection refused on this port!");
             }
 
         }
-
 
         if(registry!=null) {
             try {
                 registry.rebind("IRMIServer", this);
                 UnicastRemoteObject.exportObject(this, port);
 
-                System.out.println("RMI Server running at " + port + " port...");
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a("RMI Server running at " + port + " port").reset());
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+
             } catch (RemoteException e) {
                 System.out.println(e.getMessage());
                 e.printStackTrace();
@@ -136,17 +140,6 @@ public class RMIServer extends AbstractServer implements IRMIServer{
         }
 
     }
-
-    /**
-     * Creator/Loader for RMI registry.
-     * This method start the RMI registry and put it on listen on the assigned port.
-     * The RMI registry will exhibits services offered from server to client.
-     *
-     * @param port port on when the registry will be on listen.
-     * @return RMI Registry created with the listen on the assigned port.
-     */
-
-
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER

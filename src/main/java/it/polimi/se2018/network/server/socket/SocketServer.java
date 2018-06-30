@@ -52,7 +52,6 @@ public class SocketServer extends AbstractServer {
         try{
             if(!running.get()){
                 // Inizializzo il server socket
-                System.out.println("Socket Server running at " + port + " port...");
                 clientGatherer = new ClientGatherer(port, getServerController());
                 running.set(true);
                 new Thread(clientGatherer).start();
@@ -60,7 +59,7 @@ public class SocketServer extends AbstractServer {
                 throw new ServerSideException();
             }
         } catch (ServerSideException e){
-            System.err.println("New Socket Server Connection refused!");
+            System.err.println("Socket Server Connection refused on this port!");
         }
 
     }

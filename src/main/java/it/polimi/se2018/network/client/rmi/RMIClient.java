@@ -53,10 +53,15 @@ public class RMIClient extends AbstractClient implements IRMIClient {
      * Remote method used to establish a connection with the RMI Registry (on the server).
      */
     //TODO: EXCEPTION
-    public void connectToServer() throws RemoteException, NotBoundException {
+    public void connectToServer(){
+        try{
         Registry registry = LocateRegistry.getRegistry(getServerIpAddress(), getServerPort());
         iRMIServer = (IRMIServer) registry.lookup("IRMIServer");
         UnicastRemoteObject.exportObject(this, 0);
+        } catch (RemoteException | NotBoundException e){
+            System.err.println("Can't connect!! ERROR CLIENT SIDE");
+        }
+
     }
 
     //------------------------------------------------------------------------------------------------------------------
