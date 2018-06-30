@@ -1,8 +1,8 @@
 package it.polimi.se2018.view.cli;
 
+import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
-import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
@@ -213,11 +213,12 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(YELLOW).a("Carte vetrate degli avversari:"));
     }
 
-    void showOpponentInsertDice(String name,int line, int column) {
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a(name + " ha inserito un dado in ("+line+","+column+")"));
+    void showOpponentInsertDice(String name, int line, int column) {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a(name + " ha inserito un dado in (" + line + "," + column + ")"));
     }
-    void showOpponentWindow (String name){
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Vetrata di "+name));
+
+    void showOpponentWindow(String name) {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Vetrata di " + name));
     }
 
 
@@ -255,6 +256,19 @@ class CliMessage {
         AnsiConsole.out.print(ansi().fg(color).a(dice.getValue()));
     }
 
+    void showRoundTrack(DiceStack[] roundTrack) {
+        if (roundTrack[0] != null) {
+            for (int m = 0; m < roundTrack.length; m++) {
+                if (roundTrack[m] == null) break;
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a("Round " + (m + 1)));
+                showDiceStack(roundTrack[m]);
+                AnsiConsole.out.println();
+            }
+        } else {
+            AnsiConsole.out.println(ansi().fg(RED).a("Non ci sono ancora dadi nella riserva!"));
+        }
+    }
+
 
     //--------------------------
     //  MENU MESSAGES
@@ -281,16 +295,20 @@ class CliMessage {
     void showChoiceColumn() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale colonna della window vuoi selezionare? "));
     }
-    void showChoiceRound(){
+
+    void showChoiceRound() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale round vuoi selezionare? "));
     }
-    void showChoiceInRound(){
+
+    void showChoiceInRound() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale dado del round vuoi selezionare? "));
     }
-    void showValueDice(){
+
+    void showValueDice() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale valore vuoi impostare per il dado? "));
     }
-    void showIncrementDecrement(){
+
+    void showIncrementDecrement() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Inserisci 0 per decrementare 1 per incrementare il valore "));
     }
 
@@ -333,10 +351,11 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per continuare"));
     }
 
-    void showRoundAndTurn(int round, int turn){
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("      Round: "+round));
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("      Turn: "+turn));
+    void showRoundAndTurn(int round, int turn) {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("      Round: " + round));
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("      Turn: " + turn));
     }
+
     void showMessage(String message) {
         println();
         AnsiConsole.out.println(ansi().fg(RED).a(message));
@@ -350,5 +369,35 @@ class CliMessage {
     void showMoveTimeoutExpired() {
         println();
         AnsiConsole.out.println(ansi().fg(RED).a("Spiacente, hai esaurito il tempo a tua disposizione!"));
+    }
+
+    void showEndGameScreen(int[][] ranking, String[] playersName, int myId) {
+
+        //Se hai vinto
+        if (myId == ranking[0][0]) {
+            AnsiConsole.out.println(ansi().fg(GREEN).a("                                                                                           ,---,  \n" +
+                    "        ,--,                                                                            ,`--.' |  \n" +
+                    "      ,--.'|                                                             ___            |   :  :  \n" +
+                    "   ,--,  | :            ,--,                  ,---. ,--,               ,--.'|_          '   '  ;  \n" +
+                    ",---.'|  : '          ,--.'|                 /__./,--.'|        ,---,  |  | :,'   ,---. |   |  |  \n" +
+                    "|   | : _' |          |  |,             ,---.;  ; |  |,     ,-+-. /  | :  : ' :  '   ,'\\'   :  ;  \n" +
+                    ":   : |.'  | ,--.--.  `--'_            /___/ \\  | `--'_    ,--.'|'   .;__,'  /  /   /   |   |  '  \n" +
+                    "|   ' '  ; :/       \\ ,' ,'|           \\   ;  \\ ' ,' ,'|  |   |  ,\"' |  |   |  .   ; ,. '   :  |  \n" +
+                    "'   |  .'. .--.  .-. |'  | |            \\   \\  \\: '  | |  |   | /  | :__,'| :  '   | |: ;   |  ;  \n" +
+                    "|   | :  | '\\__\\/: . .|  | :             ;   \\  ' |  | :  |   | |  | | '  : |__'   | .; `---'. |  \n" +
+                    "'   : |  : ;,\" .--.; |'  : |__            \\   \\   '  : |__|   | |  |/  |  | '.'|   :    |`--..`;  \n" +
+                    "|   | '  ,//  /  ,.  ||  | '.'|            \\   `  |  | '.'|   | |--'   ;  :    ;\\   \\  /.--,_     \n" +
+                    ";   : ;--';  :   .'   ;  :    ;             :   \\ ;  :    |   |/       |  ,   /  `----' |    |`.  \n" +
+                    "|   ,/    |  ,     .-.|  ,   /               '---\"|  ,   /'---'         ---`-'          `-- -`, ; \n" +
+                    "'---'      `--`---'    ---`-'                      ---`-'                                 '---`\"  \n" +
+                    "                                                                                                  "));
+        }
+
+        for (int i = 0; i < ranking.length; i++) {
+            if (myId == i)
+                AnsiConsole.out.println(ansi().fg(BLUE).a((i + 1) + "° Posto: " + playersName[ranking[i][0]]) + " Punti: " + ranking[i][1]);
+            else
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a((i + 1) + "° Posto: " + playersName[ranking[i][0]]) + " Punti: " + ranking[i][1]);
+        }
     }
 }

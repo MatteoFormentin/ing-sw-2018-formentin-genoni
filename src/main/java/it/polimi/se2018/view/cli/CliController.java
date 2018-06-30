@@ -44,8 +44,12 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private DiceStack[] handOfEachPlayer;
     private int[] favorTokenOfEachPlayer;
     private int[] pointsOfEachPlayer;
-    private ObjectivePrivateCard[] objectivePrivateCardOfEachPlayers;//almost all null until the end game
+    private ObjectivePrivateCard[] objectivePrivateCardOfEachPlayers; //almost all null until the end game
     private int playerId;
+
+    //Updated stat
+
+    private int[][] ranking;
 
     private Thread currentTask;
     private AtomicBoolean isInputActive;
@@ -187,7 +191,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         //TODO when the player received the update show the point of all the players
         //it's cool too if we can make the point accumulated by each Player a class with 7 different fields:
         // private object, the 3 public object, the remain favor token, the lost points and the total of all
-
+        cliMessage.showEndGameScreen(ranking, playersName, playerId);
     }
 
     @Override
@@ -217,18 +221,20 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         int column = cliParser.parseInt();
 
         if (row != -1 && column != -1) {
-            sendInfo(row-1,column-1);
+            sendInfo(row - 1, column - 1);
         }
     }
+
     @Override
     public void visit(SelectDiceFromRoundTrack event) {
+        cliMessage.showRoundTrack(roundTrack);
         cliMessage.showChoiceRound();
-        int round = cliParser.parseInt();
+        int round = cliParser.parseInt(currentRound + 1);
         cliMessage.showChoiceInRound();
-        int index = cliParser.parseInt();
+        int index = cliParser.parseInt(roundTrack[round].size());
 
         if (round != -1 && index != -1) {
-            sendInfo(round-1,index);
+            sendInfo(round - 1, index);
         }
     }
 
@@ -236,7 +242,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     public void visit(SelectValueDice event) {
         cliMessage.showValueDice();
         int value = cliParser.parseInt();
-        if (value != -1 ) {
+        if (value != -1) {
             sendInfo(value);
         }
     }
@@ -246,12 +252,12 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         cliMessage.showIncrementDecrement();
         int value = cliParser.parseInt();
 
-        if (value != -1 ) {
+        if (value != -1) {
             sendInfo(value);
         }
     }
 
-    public void sendInfo(int info){
+    public void sendInfo(int info) {
         ControllerInfoEffect packet = new ControllerInfoEffect();
         packet.setPlayerId(playerId);
         int[] infoPacket = new int[1];
@@ -259,7 +265,8 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         packet.setInfo(infoPacket);
         client.sendEventToController(packet);
     }
-    public void sendInfo(int info1, int info2){
+
+    public void sendInfo(int info1, int info2) {
         ControllerInfoEffect packet = new ControllerInfoEffect();
         packet.setPlayerId(playerId);
         int[] infoPacket = new int[2];
@@ -307,29 +314,35 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateInfoCurrentTurn event) {
-        currentRound=event.getCurrentRound();
-        currentTurn=event.getCurrentTurn();
+        currentRound = event.getCurrentRound();
+        currentTurn = event.getCurrentTurn();
     }
+
     @Override
     public void visit(UpdateInitialWindowPatternCard event) {
         windowPatternCardsToChoose = event.getInitialWindowPatternCard();
     }
+
     @Override
     public void visit(UpdateAllToolCard event) {
         toolCard = event.getToolCard();
     }
+
     @Override
     public void visit(UpdateAllPublicObject event) {
         objectivePublicCards = event.getPublicCards();
     }
+
     @Override
     public void visit(UpdateInitDimRound event) {
         roundTrack = event.getRoundTrack();
     }
+
     @Override
     public void visit(UpdateSingleToolCardCost event) {
         toolCard[event.getIndexToolCard()].setFavorToken(event.getCostToolCard());
     }
+
     @Override
     public void visit(UpdateDicePool event) {
         dicePool = event.getDicePool();
@@ -340,6 +353,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     public void visit(UpdateSinglePlayerHand event) {
         handOfEachPlayer[event.getIndexPlayer()] = event.getHandPlayer();
     }
+
     @Override
     public void visit(UpdateSingleCell event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()].getCell(event.getLine(), event.getColumn()).setDice(event.getDice());
@@ -348,15 +362,18 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[event.getIndexPlayer()]);
         }
     }
+
     @Override
     public void visit(UpdateSinglePlayerTokenAndPoints event) {
         favorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
         pointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
     }
+
     @Override
     public void visit(UpdateSinglePrivateObject event) {
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = event.getPrivateCard();
     }
+
     @Override
     public void visit(UpdateSingleTurnRoundTrack event) {
         roundTrack[event.getIndexRound()] = event.getRoundDice();
@@ -381,7 +398,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             socketRmi = cliParser.parseInt(1);
 
             try {
-
                 client.startClient(ip, socketRmi);
                 flag = true;
                 cliMessage.showConnectionSuccessful();
@@ -411,11 +427,11 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private void turn() {
         cliMessage.eraseScreen();
         cliMessage.showYourTurnScreen();
-        cliMessage.showRoundAndTurn(currentRound,currentTurn);
+        cliMessage.showRoundAndTurn(currentRound, currentTurn);
         cliMessage.showWindowPatternCard(getMyWindowPatternCard());
         cliMessage.showHandPlayer(getMyHand());
         cliMessage.showMainMenu();
-        int option = cliParser.parsePositiveInt(7);
+        int option = cliParser.parsePositiveInt(8);
 
         if (option != -1) {
             switch (option) {
@@ -482,7 +498,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
                 //Show round track
                 case 8:
-                    //TODO tracciato round
+                    cliMessage.eraseScreen();
+                    cliMessage.showRoundTrack(roundTrack);
+                    cliParser.readSplash();
                     turn();
                     break;
             }
@@ -503,13 +521,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateStatPodium event) {
-        for(int i=0; i<event.getSortedPlayer().length;i++){
-            System.out.println();
-            System.out.print( (i+1)+"° Posto: "+playersName[event.getOneSortedPlayerInfo(i,0)]);
-            for(int j=1; j<event.getOneSortedPlayer(i).length;j++){
-                System.out.print(" | " +event.getDescription(j)+": "+event.getOneSortedPlayerInfo(i,j));
-            }
-            System.out.println();
-        }
+        ranking = event.getSortedPlayer();
     }
 }

@@ -58,6 +58,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setName("Socket Player Thread");
         boolean flag = true;
         while (flag && tunnel.isConnected()) {
             try {
@@ -106,16 +107,6 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         }
 
     }
-
-    //------------------------------------------------------------------------------------------------------------------
-    // RUNNER
-    //------------------------------------------------------------------------------------------------------------------
-
-
-    //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
-    //------------------------------------------------------------------------------------------------------------------
-
 
     public void sendAck() {
         SocketObject packet = new SocketObject();

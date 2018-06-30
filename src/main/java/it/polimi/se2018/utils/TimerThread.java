@@ -2,6 +2,7 @@ package it.polimi.se2018.utils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
 /**
  * Simple timeout with callback.
  * <p>
@@ -53,17 +54,12 @@ public class TimerThread implements Runnable {
     public void run() {
         // Inizio conteggio timer
         // Punto di inizio del conteggio per il timer
+        Thread.currentThread().setName("Timer Thread");
         startTimerTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - startTimerTime <= timeout) {
             if (!running.get()) return;
-            try {
-                Thread.sleep(this.timeout);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                System.out.println("Thread interrupted...");
-            }
         }
-        timerCallback.timerCallback();
+        if (running.get()) timerCallback.timerCallback();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -88,6 +84,11 @@ public class TimerThread implements Runnable {
      */
     public void shutdown() {
         running.set(false);
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
