@@ -55,6 +55,7 @@ public class SocketServer extends AbstractServer {
                 clientGatherer = new ClientGatherer(port, getServerController());
                 running.set(true);
                 new Thread(clientGatherer).start();
+
             } else {
                 throw new ServerSideException();
             }

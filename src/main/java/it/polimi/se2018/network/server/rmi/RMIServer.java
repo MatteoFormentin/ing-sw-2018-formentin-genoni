@@ -1,7 +1,6 @@
 package it.polimi.se2018.network.server.rmi;
 
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
@@ -120,7 +119,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
             } catch (MalformedURLException e1) {
                 System.err.println("Can't bind the object!");
             } catch (RemoteException e1) {
-                System.err.println("RMI Server Connection refused on this port!");
+                System.err.println("RMI Server Connection refused on this port!\n");
             }
 
         }
@@ -147,10 +146,8 @@ public class RMIServer extends AbstractServer implements IRMIServer{
 
     /**
      * Remote method used to log the user to the server with his nickname.
-     *
-     * @param nickname   name of the player.
-     * @param iRMIClient client associated to the player.
-     */
+     *  @param nickname   name of the player.
+     * @param iRMIClient client associated to the player.*/
     @Override
     public void login(String nickname, IRMIClient iRMIClient) throws RemoteException {
         RMIPlayer player = new RMIPlayer(iRMIClient);
@@ -160,7 +157,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
             if (!getServerController().login(player)) {
                 throw new RemoteException();
             }
-        } catch (PlayerAlreadyLoggedException | RoomIsFullException e) {
+        } catch (PlayerNetworkException e) {
             e.printStackTrace();
         }
     }

@@ -1,7 +1,6 @@
 package it.polimi.se2018.network.server.socket;
 
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
@@ -93,10 +92,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
                 sendAck();
                 System.out.println("LOGIN OK VIA SOCKET");
 
-            } catch (PlayerAlreadyLoggedException ex) {
-                System.out.println("LOGIN NO VIA SOCKET");
-                sendNack();
-            } catch (RoomIsFullException ex) {
+            } catch (PlayerNetworkException ex) {
                 System.out.println("LOGIN NO VIA SOCKET");
                 sendNack();
             }
@@ -157,10 +153,10 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      *
      * @param nickname name of the player.
      */
-    public void login(String nickname) throws PlayerAlreadyLoggedException, RoomIsFullException {
+    public void login(String nickname) throws PlayerNetworkException {
         setNickname(nickname);
         if (!this.serverController.login(this)) {
-            throw new PlayerAlreadyLoggedException("error");
+            throw new PlayerNetworkException("error");
         }
     }
 
