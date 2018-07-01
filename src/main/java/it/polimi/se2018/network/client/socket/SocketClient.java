@@ -1,6 +1,9 @@
 package it.polimi.se2018.network.client.socket;
 
+import it.polimi.se2018.alternative_network.client.AbstractClient2;
+import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
+import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.SocketObject;
@@ -21,7 +24,7 @@ import java.rmi.RemoteException;
  *
  * @author DavideMammarella
  */
-public class SocketClient extends AbstractClient implements Runnable {
+public class SocketClient extends AbstractClient implements Runnable,AbstractClient2 {
 
     // comunicazione con il socket
     private Socket clientConnection;
@@ -58,7 +61,6 @@ public class SocketClient extends AbstractClient implements Runnable {
     //TODO: EXCEPTION
     public void connectToServer() throws UnknownHostException, IOException {
         clientConnection = new Socket(getServerIpAddress(), getServerPort());
-
         outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
         inputStream = new ObjectInputStream(clientConnection.getInputStream());
         outputStream.flush();
@@ -82,6 +84,7 @@ public class SocketClient extends AbstractClient implements Runnable {
         try {
             outputStream.writeObject(socketObject);
         } catch (IOException ex) {
+            getView().errPrintln(ex.getMessage());
             ex.printStackTrace();
         }
     }
@@ -93,6 +96,7 @@ public class SocketClient extends AbstractClient implements Runnable {
                 sendEventToView((EventView) socketObject.getObject());
             } catch (RemoteException ex) {
                 //TODO socket non lancia RemoteException!!! sistemare le interfaccie
+                getView().errPrintln(ex.getMessage());
                 ex.printStackTrace();
             }
         }
@@ -122,6 +126,7 @@ public class SocketClient extends AbstractClient implements Runnable {
             }
 
         } catch (IOException | ClassNotFoundException ex) {
+            getView().errPrintln(ex.getMessage());
             ex.printStackTrace();
         }
 
@@ -162,9 +167,10 @@ public class SocketClient extends AbstractClient implements Runnable {
             clientConnection.close();
 
             System.out.println("Connection closed!");
-        } catch (IOException e) {
+        } catch (IOException ex) {
+            getView().errPrintln(ex.getMessage());
             // eccezione che dice che c'è stato un errore durante la chiusura di input/output/client
-            e.printStackTrace();
+            ex.printStackTrace();
         }
     }
 
@@ -204,6 +210,7 @@ public class SocketClient extends AbstractClient implements Runnable {
                 socketObjectTraducer(received);
             } catch (IOException | ClassNotFoundException ex) {
                 flag = false;
+                getView().errPrintln(ex.getMessage());
                 System.err.println("Sei stato disconnesso dal server. Controlla la connessione.");
                 ex.printStackTrace();
             }
@@ -211,4 +218,36 @@ public class SocketClient extends AbstractClient implements Runnable {
         closeConnection();
     }
 
+    /*************************************************newInterface**********************************/
+    /*************************************************newInterface**********************************/
+    /*************************************************newInterface**********************************/
+    @Override
+    public void sendEventToUIInterface2(EventView event) {
+        getView().showMessage(event);
+    }
+
+    @Override
+    public void shutDownClient2() {
+        closeConnection();
+    }
+
+    @Override
+    public void sendEventToController2(EventController eventController) throws ConnectionProblemException {
+
+    }
+
+    @Override
+    public void login2(String nickname) throws ConnectionProblemException, PlayerAlreadyLoggedException, RoomIsFullException {
+        login(nickname);
+    }
+
+    @Override
+    public void connectToServer2() throws ConnectionProblemException {
+        try {
+            connectToServer();
+        }catch(Exception ex){
+            getView().errPrintln(ex.getMessage());
+            throw new ConnectionProblemException("Socket Cannot Start");
+        }
+    }
 }

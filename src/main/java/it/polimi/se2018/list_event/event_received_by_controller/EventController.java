@@ -12,7 +12,8 @@ import java.io.Serializable;
  * @author Matteo Formentin
  */
 public abstract class EventController implements Serializable {
-    private int playerId; // add the private int idGameBoard if more game board
+    private int playerId;
+    private int idGame;
 
     public int getPlayerId() {
         return playerId;
@@ -20,6 +21,14 @@ public abstract class EventController implements Serializable {
 
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
+    }
+
+    public int getIdGame() {
+        return idGame;
+    }
+
+    public void setIdGame(int idGame) {
+        this.idGame = idGame;
     }
 
     public abstract void accept(ControllerVisitor visitor);

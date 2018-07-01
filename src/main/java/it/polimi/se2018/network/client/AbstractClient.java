@@ -3,6 +3,7 @@ package it.polimi.se2018.network.client;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.network.RemotePlayer;
+import it.polimi.se2018.view.UIInterface;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -27,6 +28,8 @@ public abstract class AbstractClient {
     //Port used from server to communicate.
     private final int serverPort;
 
+    private final UIInterface view;
+
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -42,7 +45,16 @@ public abstract class AbstractClient {
         this.clientController = clientController;
         this.serverIpAddress = serverIpAddress;
         this.serverPort = serverPort;
+        this.view=null;
     }
+
+    public AbstractClient(ClientController clientController, String serverIpAddress, int serverPort, UIInterface view) {
+        this.clientController = clientController;
+        this.serverIpAddress = serverIpAddress;
+        this.serverPort = serverPort;
+        this.view = view;
+    }
+
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
@@ -96,5 +108,9 @@ public abstract class AbstractClient {
      */
     public ClientController getClientController() {
         return clientController;
+    }
+
+    public UIInterface getView() {
+        return view;
     }
 }

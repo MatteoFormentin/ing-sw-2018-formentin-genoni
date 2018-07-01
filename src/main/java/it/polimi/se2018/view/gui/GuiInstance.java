@@ -2,6 +2,7 @@ package it.polimi.se2018.view.gui;
 
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
@@ -15,10 +16,22 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
  */
 public class GuiInstance implements UIInterface {
     private static GuiInstance instance;
-    private ClientController client;
+    private static ClientController client;
 
     private GuiInstance(ClientController client) {
         this.client = client;
+    }
+
+
+    public static void main(String[] args) {
+        createGuiInstance();
+        client =new Client();
+        instance.startGui();
+
+    }
+
+    public static void createGuiInstance() {
+        if (instance == null) instance = new GuiInstance(client);
     }
 
     /**
@@ -64,6 +77,17 @@ public class GuiInstance implements UIInterface {
     @Override
     public void showMessage(EventView eventView) {
         getGuiGame().showMessage(eventView);
+    }
+
+    @Override
+    public void errPrintln(String error){
+        System.err.println();
+        System.err.println(error);
+        System.err.println();
+    }
+    @Override
+    public void restartConnectionBecauseLost() {
+        getGuiGame().restartConnectionBecauseLost();
     }
 
     /**

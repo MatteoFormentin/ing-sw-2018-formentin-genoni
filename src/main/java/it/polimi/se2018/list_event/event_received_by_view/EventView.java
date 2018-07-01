@@ -11,6 +11,7 @@ import java.io.Serializable;
  */
 public abstract class EventView implements Serializable {
     private int playerId;
+    private int idGame;
 
     public int getPlayerId() {
         return playerId;
@@ -18,6 +19,14 @@ public abstract class EventView implements Serializable {
 
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
+    }
+
+    public int getIdGame() {
+        return idGame;
+    }
+
+    public void setIdGame(int idGame) {
+        this.idGame = idGame;
     }
 
     public abstract void acceptGeneric(ViewVisitor visitor);

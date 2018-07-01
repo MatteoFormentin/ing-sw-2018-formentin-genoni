@@ -191,7 +191,7 @@ public class Server implements ServerController, TimerCallback {
      */
     public void startGame() {
         AnsiConsole.out.println(ansi().fg(GREEN).a("GAME STARTED!").reset());
-        game = new Controller(this, players.size());
+        game = new Controller(this, players.size(),null);
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("From now the room will not be joinable, except from a RElogin").reset());
         roomJoinable = false;
 
