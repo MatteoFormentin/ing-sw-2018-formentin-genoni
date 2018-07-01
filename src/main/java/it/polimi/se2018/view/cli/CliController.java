@@ -1,5 +1,11 @@
 package it.polimi.se2018.view.cli;
 
+import it.polimi.se2018.alternative_network.client.AbstractClient2;
+import it.polimi.se2018.alternative_network.client.ClientFactory;
+import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
+import it.polimi.se2018.exception.network_exception.NoPortRightException;
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
+import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
@@ -8,6 +14,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_server.PlayerDisconnected;
 import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
@@ -25,9 +32,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CliController implements UIInterface, ViewVisitor, ViewControllerVisitor, ViewModelVisitor {
 
+    private static CliController instance;
+
     private CliMessage cliMessage;
     private CliParserNonBlocking cliParser;
     private ClientController client;
+
+
+    //Server alternativo
+    private AbstractClient2 client2;
+    private static ClientFactory factory;
+
 
     private int currentRound;
     private int currentTurn;
@@ -66,14 +81,53 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         login();
     }
 
-    //*****************************************Visitor Pattern************************************************************************
-    //*****************************************Visitor Pattern************************************************************************
-    //*****************************************Visitor Pattern************************************************************************
-    //*****************************************Visitor Pattern************************************************************************
+    public CliController() {
+        cliMessage = new CliMessage();
+        isInputActive = new AtomicBoolean(true);
+        cliParser = new CliParserNonBlocking(isInputActive);
+    }
+
+    public static void main(String[] args) {
+        instance= new CliController();
+        factory= new ClientFactory(instance);
+        instance.start();
+        instance.initConnection();
+        instance.login();
+    }
+
+    public void start(){
+        cliMessage.splashScreen();
+        cliParser.readSplash();
+    }
+
+
 
     public void showMessage(EventView eventView) {
         eventView.acceptGeneric(this);
     }
+
+    public void errPrintln(String error){
+        System.err.println();
+        System.err.println(error);
+        System.err.println();
+    }
+
+    //TODO aggiustare il nuovo metodo
+    @Override
+    public void restartConnectionBecauseLost() {
+        System.out.println("La connessione è caduta.\n0 per riconnetterti, 1 per uscire");
+        client2.shutDownClient2();
+        CliParser input = new CliParser();
+        if(input.parseInt(1)==0){
+            initConnection();
+            login();
+        }
+    }
+
+    //*****************************************Visitor Pattern************************************************************************
+    //*****************************************Visitor Pattern************************************************************************
+    //*****************************************Visitor Pattern************************************************************************
+    //*****************************************Visitor Pattern************************************************************************
 
     @Override
     public void visit(EventViewFromController event) {
@@ -92,6 +146,11 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             event.acceptModelEvent(this);
         };
         new Thread(exec).start();
+    }
+
+    @Override
+    public void visit(PlayerDisconnected event) {
+        System.out.println("Il giocatore "+event.getPlayerId()+", nickname:"+playersName[event.getPlayerId()]);
     }
 
     //*******************************************Visit for Controller event*******************************************************************************
@@ -390,24 +449,36 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         boolean flag = false;
         do {
             int socketRmi;
+            int port=0;
             String ip;
             cliMessage.showIpRequest();
             ip = cliParser.parseIp();
 
             cliMessage.showSocketRmi();
             socketRmi = cliParser.parseInt(1);
-
+            if(flag){
+                cliMessage.showPortRequest();
+                port = cliParser.parseInt(1);
+            }
             try {
-                client.startClient(ip, socketRmi);
+                if(factory==null) client.startClient(ip, socketRmi);
+                else {
+                    client2= factory.createClient(ip,port,socketRmi);
+                    client2.connectToServer2();
+                }
                 flag = true;
                 cliMessage.showConnectionSuccessful();
                 cliMessage.println();
-            } catch (Exception ex) {
+            }catch(ConnectionProblemException ex){
+                cliMessage.showMessage(ex.getMessage());
+            }catch (NoPortRightException ex){
+                cliMessage.showMessage(ex.getMessage());
+            }catch (Exception ex){
                 cliMessage.showMessage(ex.getMessage());
             }
-
         } while (!flag);
     }
+
 
     private void login() {
         boolean flag = false;
@@ -415,11 +486,25 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         while (!flag) {
             cliMessage.showInsertNickname();
             name = cliParser.parseNickname();
-            if (client.login(name)) {
-                flag = true;
-            } else {
-                cliMessage.showNicknameExists();
+            if(factory==null){
+                if (client.login(name)) {
+                    flag = true;
+                } else {
+                    cliMessage.showNicknameExists();
+                }
+            }else{
+                try {
+                    client2.login2(name);
+                    flag=true;
+                }catch(ConnectionProblemException ex){
+                    cliMessage.showMessage(ex.getMessage());
+                }catch (PlayerAlreadyLoggedException ex){
+                    cliMessage.showMessage(ex.getMessage());
+                }catch (RoomIsFullException ex){
+                    cliMessage.showMessage(ex.getMessage());
+                }
             }
+
         }
         cliMessage.showWelcomeNickname(name);
     }

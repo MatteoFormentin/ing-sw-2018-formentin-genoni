@@ -6,6 +6,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_server.PlayerDisconnected;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
 import it.polimi.se2018.view.gui.stage.WaitGame;
@@ -37,6 +38,14 @@ import static it.polimi.se2018.view.gui.GuiMain.closeProgram;
  * @author Luca Genoni
  */
 public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, ViewControllerVisitor {
+
+    @Override
+    public void errPrintln(String error){
+        System.err.println();
+        System.err.println(error);
+        System.err.println();
+    }
+
     private static GuiGame instance;
     private WaitGame waitGame;
     private Stage gameStage, utilStage,toolStage;
@@ -269,6 +278,14 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     }
 
     @Override
+    public void restartConnectionBecauseLost() {
+        System.out.println("Connessione persa");
+        Platform.runLater(() -> {
+            gameStage.close();
+        });
+    }
+
+    @Override
     public void visit(EventViewFromController event) {
         event.acceptControllerEvent(this);
     }
@@ -276,6 +293,11 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     @Override
     public void visit(EventViewFromModel event) {
         event.acceptModelEvent(this);
+    }
+
+    @Override
+    public void visit(PlayerDisconnected event) {
+        System.out.println("giocatore disconnesso "+event.getPlayerId()+playersName[event.getPlayerId()].getText());
     }
 
     //*************************************************From Controller*********************************************************************************

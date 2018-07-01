@@ -46,7 +46,7 @@ public class TestEffect {
             matrix[2][i] = new Cell();
             matrix[2][i].setValueRestriction(i+1);
             matrix[3][i] = new Cell();
-        }
+        }/*
         fakeServer = new ServerController() {
             @Override
             public boolean login(RemotePlayer remotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
@@ -82,10 +82,10 @@ public class TestEffect {
             public RemotePlayer searchPlayerById(int id) {
                 return null;
             }
-        };
+        };*/
         testWindowPatternCard = new WindowPatternCard("test", 5, matrix);
         factoryDice= new TestFactory();
-        game= new GameBoard(1,fakeServer);
+        game= new GameBoard(1,fakeServer,null);
         monoInfo= new int[1];
         doubleInfo= new int[2];
     }

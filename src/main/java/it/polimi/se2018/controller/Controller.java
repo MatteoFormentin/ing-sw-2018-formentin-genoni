@@ -1,5 +1,7 @@
 package it.polimi.se2018.controller;
 
+import it.polimi.se2018.alternative_network.newserver.Server2;
+import it.polimi.se2018.alternative_network.newserver.ServerController2;
 import it.polimi.se2018.controller.effect.DicePoolEffect;
 import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.EndTurn;
@@ -11,6 +13,7 @@ import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteExcep
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
+import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
@@ -41,6 +44,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private boolean restoreAble;
     //Server in cui si setterà la partita
     private ServerController server;
+    private Server2 server2;
 
     //Player
     private ArrayList<RemotePlayer> players;
@@ -59,11 +63,12 @@ public class Controller implements ControllerVisitor, TimerCallback {
      *
      * @param server server on when the game is on.
      */
-    public Controller(ServerController server, int playerNumber) {
+    public Controller(ServerController server, int playerNumber,Server2 server2) {
         //set up actual game
         this.server = server;
+        this.server2 =server2;
         this.playerNumber = playerNumber;
-        gameBoard = new GameBoard(playerNumber, server);
+        gameBoard = new GameBoard(playerNumber, server,server2);
 
         //set up utils for the game
         restoreAble = false;
@@ -96,8 +101,9 @@ public class Controller implements ControllerVisitor, TimerCallback {
     }
 
     //the handler respond with this method
-    public void sendEventToView(EventView event) {
-        server.sendEventToView(event);
+    private void sendEventToView(EventView event) {
+        if(server ==null) server2.sendEventToView(event);
+        else server.sendEventToView(event);
     }
 
     //*****************************************Visitor Pattern************************************************************************
@@ -340,13 +346,13 @@ public class Controller implements ControllerVisitor, TimerCallback {
         for (int j = 0; j < playerNumber; j++) {
             ShowAllCards waitSetUp = new ShowAllCards();
             waitSetUp.setPlayerId(j);
-            server.sendEventToView(waitSetUp);
+            sendEventToView(waitSetUp);
         }
         //after showing the info ask the player to choose the window
         for (int i = 0; i < playerNumber; i++) {
             SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
             packet.setPlayerId(i);
-            server.sendEventToView(packet);
+            sendEventToView(packet);
         }
         //TODO Start the timer per la selezione della window
         System.err.println("Iniziato il gioco, inviati tutti i pacchetti per l'inizio del game");
@@ -359,14 +365,14 @@ public class Controller implements ControllerVisitor, TimerCallback {
         SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
         packet.setPlayerId(id);
         System.err.println("Player " + id + " has made a relogin.");
-        server.sendEventToView(packet);
+        sendEventToView(packet);
     }
 
 
     private void showErrorMessage(Exception ex, int idPlayer, boolean showMenuTurn) {
         MessageError packet = new MessageError(ex.getMessage(), showMenuTurn);
         packet.setPlayerId(idPlayer);
-        server.sendEventToView(packet);
+        sendEventToView(packet);
     }
 
 
@@ -375,7 +381,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             if (j == currentPlayerId) continue;
             EventView waitTurn = new WaitYourTurn(currentPlayerId);
             waitTurn.setPlayerId(j);
-            server.sendEventToView(waitTurn);
+            sendEventToView(waitTurn);
         }
     }
 
@@ -384,14 +390,14 @@ public class Controller implements ControllerVisitor, TimerCallback {
         System.out.println("TEMPO SCADUTO!!!!");
         MoveTimeoutExpired timerPacket = new MoveTimeoutExpired();
         timerPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-        server.sendEventToView(timerPacket);
+        sendEventToView(timerPacket);
         try {
             gameBoard.nextPlayer(gameBoard.getIndexCurrentPlayer());
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             StartPlayerTurn turnPacket = new StartPlayerTurn();
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             System.err.println("cambiato il turno tocca a " + gameBoard.getIndexCurrentPlayer());
-            server.sendEventToView(turnPacket);
+            sendEventToView(turnPacket);
 
             //Restart timer
             playerTimeout.shutdown();
