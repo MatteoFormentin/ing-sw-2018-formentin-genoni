@@ -48,22 +48,6 @@ public class ClientFactory {
         return abstractClient;
     }
 
-    public void loadDefault() {
-        try {
-            Properties configProperties = new Properties();
-            String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
-            FileInputStream inputConnection = new FileInputStream(connectionConfig);
-            configProperties.load(inputConnection);
-            IP_SERVER = configProperties.getProperty("SERVER_ADDRESS");
-            RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
-            SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
-        } catch (IOException ex) {
-            IP_SERVER = "localhost";
-            RMI_PORT = 1099;
-            SOCKET_PORT = 1090;
-        }
-    }
-
     /**
      * instruction for make it work
      * @param args
@@ -74,7 +58,7 @@ public class ClientFactory {
         int RMI_PORT = 31415;
        try {
             Properties configProperties = new Properties();
-            String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
+           String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
             configProperties.load(inputConnection);
             RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
@@ -105,5 +89,21 @@ public class ClientFactory {
         }
         System.out.println("quando vuoi digita 0 per scollegarti dal");
         if (input.parseInt(1) == 0) abstractClient.shutDownClient2();
+    }
+
+    public void loadDefault() {
+        try {
+            Properties configProperties = new Properties();
+            String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+            FileInputStream inputConnection = new FileInputStream(connectionConfig);
+            configProperties.load(inputConnection);
+            IP_SERVER = configProperties.getProperty("SERVER_ADDRESS");
+            RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
+            SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+        } catch (IOException ex) {
+            IP_SERVER = "localhost";
+            RMI_PORT = 1099;
+            SOCKET_PORT = 1090;
+        }
     }
 }

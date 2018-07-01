@@ -76,7 +76,7 @@ public class Server2 {
         try {
             Properties configProperties = new Properties();
 
-            String timeConfig = "src/main/resources/configurations/gameroom_configuration.properties";
+            String timeConfig = "src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(timeConfig);
 
             configProperties.load(inputConnection);
@@ -111,7 +111,7 @@ public class Server2 {
         if (input.parseInt(1) == 0) {
             try {
                 Properties configProperties = new Properties();
-                String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
+                String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
                 FileInputStream inputConnection = new FileInputStream(connectionConfig);
                 configProperties.load(inputConnection);
                 RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));

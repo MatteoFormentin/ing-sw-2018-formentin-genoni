@@ -51,10 +51,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private Stage gameStage, utilStage,toolStage;
     private Scene sceneGame, sceneInit;
 
-    private static String diceSource = "file:src/main/resources/dadijpg/";
-    private static String toolCardSource = "file:src/main/resources/carte_jpg/carte_strumento_";
-    private static String privateObjectSource = "file:src/main/resources/carte_jpg/carte_private_";
-    private static String publicObjectSource = "file:src/main/resources/carte_jpg/carte_pubbliche_";
+    private static String diceSource = "file:src/main/java/it/polimi/se2018/resources/dadijpg/";
+    private static String toolCardSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_";
+    private static String privateObjectSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_";
+    private static String publicObjectSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_";
     //variables for show card
     private ShowCardBox cardShow;
     private ShowValue value;

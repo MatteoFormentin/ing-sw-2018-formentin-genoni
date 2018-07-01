@@ -367,7 +367,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(MessageError event) {
         cliMessage.showMessage(event.getMessage());
-        cliParser.readSplash();
+        // cliParser.readSplash();
         if (event.isShowMenuTurn()) turn();
     }
 
