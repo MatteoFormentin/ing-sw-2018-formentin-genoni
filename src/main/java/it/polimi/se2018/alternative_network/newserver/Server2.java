@@ -1,14 +1,11 @@
 package it.polimi.se2018.alternative_network.newserver;
 
-import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.network_exception.*;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.alternative_network.newserver.rmi.RMIServer;
-import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 import it.polimi.se2018.view.cli.CliParser;
 
@@ -58,7 +55,7 @@ public class Server2 {
     public static void main(String[] args) {
         instance = new Server2();
         instance.loadAddress();
-        instance.loadTimer();
+        instance.loadConfigGame();
         instance.start();
         instance.shutDown();
     }
@@ -75,7 +72,7 @@ public class Server2 {
         return SOCKET_PORT;
     }
 
-    public void loadTimer() {
+    public void loadConfigGame() {
         try {
             Properties configProperties = new Properties();
 
@@ -93,8 +90,8 @@ public class Server2 {
 
     private void loadAddress(){
         input = new CliParser();
-        boolean flag = setUPConnection();
-        if (!flag) {
+        boolean defaultSet = setUPConnection();
+        if (!defaultSet) {
             System.out.println("inserisci l'ip: ");
             IP_SERVER = input.parseIp();
             if (IP_SERVER.equals("0")) IP_SERVER = "localhost";
@@ -104,7 +101,7 @@ public class Server2 {
             SOCKET_PORT = input.parsePort(1024, 65535, RMI_PORT);
         }
         //creazione standard sei server
-        RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);
+     //   RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);
         //    AbstractServer2 SocketServer= new
 
     }
@@ -141,22 +138,28 @@ public class Server2 {
         newGameRoom = new GameRoom(maxPlayer,timerGame,0);
         boolean rmiStarted=false;
         boolean socketStarted=false;
-        while (!rmiStarted){
+        boolean startThisServer=true;
+        while (!rmiStarted && startThisServer){
             try {
+                RMIServer = new RMIServer(this,getIP_SERVER(),getRMI_PORT());
                 RMIServer.startServer();
                 rmiStarted=true;
             } catch (ServerStartException ex) {
                 System.out.println("Errore nell'avvio del server RMI. 0 per riprovare, 1 per annullare");
-                if(input.parseInt(1)==1) break;
+                if(input.parseInt(1)==1) startThisServer=false;
+                else loadAddress();
+                //TODO caricare l'address solo per rmi
             }
-        }/*
-        while (!socketStarted){
+        }
+        /*
+        startThisServer=true;
+        while (!socketStarted && startThisServer){
             try {
                 socketServer.startServer();
                 started=true;
             } catch (ServerStartException ex) {
-                System.out.println("Errore nell'avvio del server Socket.");
-                //TODO chiedere se vuole uscire o inserire una nuova porta
+                System.out.println("Errore nell'avvio del server RMI. 0 per riprovare, 1 per annullare");
+                if(input.parseInt(1)==1) startThisServer=false;
             }
         }     */
     }
@@ -167,7 +170,7 @@ public class Server2 {
     //****************************** Event from the listener *******************************************************
     //****************************** Event from the listener *******************************************************
 
-    public void login(RemotePlayer2 remotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
+    public boolean login(RemotePlayer2 remotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
         System.out.println("è stato rilevato un tentativo di login al server");
         gameOpen.set(true);
         if (gameOpen.get()) {//sta startando una partita aspetta un attimo
@@ -181,9 +184,10 @@ public class Server2 {
             }
             //controlla tutte le gameRoom
             int idGame = 0;
+            RemotePlayer2 playerConnected=null;
             //TODO creare una nuova stanza qui
             if(newGameRoom==null) System.out.println("Server2 -> login: la newGameRoom è null");
-            RemotePlayer2 playerConnected = newGameRoom.searchIfMatchName(remotePlayer.getNickname());
+            else playerConnected = newGameRoom.searchIfMatchName(remotePlayer.getNickname());
             if (playerConnected == null) {
                 while (idGame < gameRoomRunning.size() && playerConnected == null) {
                     playerConnected = gameRoomRunning.get(idGame).searchIfMatchName(remotePlayer.getNickname());
@@ -208,7 +212,7 @@ public class Server2 {
                     //TODO sta creando la room o è in corso
                     throw ex;
                 } catch (GameStartedException ex){
-                    //TODO la room è stata avviata
+                    //TODO la room è stata avviata, Avviarlo in un thread? mmmmm
                     gameRoomRunning.add(newGameRoom);
                     newGameRoom.startGameRoom(this);
                     newGameRoom = null;
@@ -231,6 +235,7 @@ public class Server2 {
             System.out.println("aspetta un attimo");
             throw new RoomIsFullException("Aspetta un attimo è in creazione una gameboard");
         }
+        return true;
     }
 
     private void checkOnline(boolean checkAllRunning) {

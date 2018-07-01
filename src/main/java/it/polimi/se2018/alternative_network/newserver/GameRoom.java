@@ -9,6 +9,7 @@ import it.polimi.se2018.exception.network_exception.server.SinglePlayerException
 import it.polimi.se2018.list_event.event_received_by_controller.ControllerEndTurn;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
 import it.polimi.se2018.utils.TimerCallback;
 
 import java.util.LinkedList;
@@ -23,7 +24,7 @@ public class GameRoom implements TimerCallback,ServerController2 {
     private int indexRoom;
 
     private Controller controller;
-    private AtomicBoolean blocked;
+    private AtomicBoolean running;
 
 
     public GameRoom(int maxPlayer, int timeRoom, int indexRoom) {
@@ -31,7 +32,7 @@ public class GameRoom implements TimerCallback,ServerController2 {
         this.timeRoom = timeRoom;
         this.indexRoom = indexRoom;
         players = new LinkedList<>();
-        blocked= new AtomicBoolean(false);
+        running= new AtomicBoolean(false);
         currentConnected = 0;
     }
 
@@ -44,8 +45,11 @@ public class GameRoom implements TimerCallback,ServerController2 {
     }
 
 
-    public void startGameRoom(Server2 server) {
-        controller = new Controller(null, players.size(), this);
+    public synchronized void startGameRoom(Server2 server) {
+        if(controller==null) {
+            controller=new Controller(null,players.size(),this);
+            controller.startGame();
+        }
     }
 
     public RemotePlayer2 searchIfMatchName(String name) {
@@ -65,9 +69,17 @@ public class GameRoom implements TimerCallback,ServerController2 {
             }
             checkOnLine();
             System.err.println("Gameroom -> addRemotePlayer: ci sono "+currentConnected+" connessi e "
-                    +players.size() == maxPlayer+" registrati");
+                    +players.size()+" registrati");
+            //TODO invia il paccketto per informare il giocatore
             if (players.size() == maxPlayer){
                 //TODO start the game room
+                String[] playersName = new String[players.size()];
+                for(int i=0; i<players.size();i++){
+                    playersName[i] = players.get(i).getNickname();
+                }
+                StartGame packet = new StartGame();
+                packet.setPlayersName(playersName);
+                broadCast(packet);
                 throw new GameStartedException();
             }
         } else{
@@ -83,10 +95,13 @@ public class GameRoom implements TimerCallback,ServerController2 {
      */
     public void removeRemotePlayer(int idPlayer) {
         currentConnected--;
+        //TODO cercare di metterlo in un thread a parte per non intasare la comunicazione
         System.out.println(" ");
         if (controller != null) {
             //light remove game started
             System.out.println("light Remove. Disconnected during game");
+            System.out.println("Gameroom -> removeRemotePlayer: ci sono "+currentConnected+" connessi e "
+                    +players.size()+" registrati");
             players.get(idPlayer).kickPlayerOut(true);
             players.get(idPlayer).setPlayerRunning(false);
             //TODO notificare tutti i giocatori dalla disconnessione
@@ -134,18 +149,24 @@ public class GameRoom implements TimerCallback,ServerController2 {
 
     @Override
     public void timerCallback() {
-        //TODO mettere a posto lo start del game   startGameRoom();
+        if(running.get()){
+            //se è stata avviata chiudila
+        }else{
+            //non è ancora stata avviata quindi prova a farla startare
+        }
     }
 
-    private synchronized void startGameRoom(){
-        controller=new Controller(null,players.size(),this);
-    }
 
     public synchronized void endGame(){
         //TODO implementare invio di evento end game ai vari player
     }
 
-
+    public void broadCast(EventView eventView){
+        for(int i=0; i<players.size();i++){
+            eventView.setPlayerId(i);
+            sendEventToView(eventView);
+        }
+    }
     @Override
     public void sendEventToGameRoom(EventController eventController) {
         controller.sendEventToController(eventController);

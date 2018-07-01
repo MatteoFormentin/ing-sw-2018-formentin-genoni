@@ -18,11 +18,13 @@ public class RMIServer extends AbstractServer2  {
     private RMIClientGatherer clientGatherer;
 
     public RMIServer(Server2 serverController, String host, int port) {
+
         super(serverController,host,port);
     }
 
     @Override
     public void startServer() throws ServerStartException {
+        setStarted(true);
         try {
             /*todo Se ci sono problemi di connessione prova ad utilizzare le Factory di socket per creare il registro
             LocateRegistry.createRegistry(getPort(), new RMIClientSocketFactory() {
@@ -39,13 +41,16 @@ public class RMIServer extends AbstractServer2  {
             LocateRegistry.createRegistry(getPort());
         } catch (RemoteException ex) {
             System.out.println("In questo PC è già attivo un Registry su questa porta");
+            setStarted(false);
             throw new ServerStartException();
         }
+        System.out.println("Registry ok");
         try {
             // Creo una istanza di RMIClientGatherer, che rappresenta il "servizio" che voglio offrire ai client
             clientGatherer = RMIClientGatherer.getSingletonClientGatherer(getServerController());
         } catch (RemoteException ex) {
             System.out.println("failed to export object, check the Skeletron, The CLientGatherer");
+            setStarted(false);
             throw new ServerStartException();
         }
         try {
@@ -56,12 +61,15 @@ public class RMIServer extends AbstractServer2  {
             Naming.bind("//" + getHost() + ":" + getPort() + "/MyServer", clientGatherer);
         } catch(AlreadyBoundException ex){
             System.err.println("Port Alreasy bound");
+            setStarted(false);
             throw new ServerStartException();
         }catch (MalformedURLException ex) {
             System.err.println(" the name is not an appropriately formatted URL");
+            setStarted(false);
             throw new ServerStartException();
         } catch (RemoteException ex) {
             System.err.println("registry could not be contacted");
+            setStarted(false);
             throw new ServerStartException();
         }
     }

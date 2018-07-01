@@ -9,7 +9,7 @@ public abstract class AbstractServer2  {
     private final int port;
     private boolean started;
 
-    public AbstractServer2(Server2 serverController, String host, int port) {
+    protected AbstractServer2(Server2 serverController, String host, int port) {
         this.serverController = serverController;
         this.host = host;
         this.port = port;
@@ -36,7 +36,7 @@ public abstract class AbstractServer2  {
         return started;
     }
 
-    void setStarted(boolean started) {
+    public void setStarted(boolean started) {
         this.started = started;
     }
 }

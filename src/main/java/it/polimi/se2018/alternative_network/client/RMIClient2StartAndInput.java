@@ -22,7 +22,7 @@ import java.rmi.server.UnicastRemoteObject;
  * 2 connettere l'abstract client al server, se rifiutato ricreare un nuovo abstract client
  * 3 effettuare il login
  * (4 utilizzare sendEventToController per inviare informazioni all'UIINTERFACE)
- * 5 chiamare disconnect per disconnettersi legalmente
+ * 5 chiamare disconnect per disconnettersi legalmente(richiedendo il kick all'interface)
  * 6 utilizzare shutDownClient2 per disconnettersi brutalmente
  *
  */
@@ -141,21 +141,21 @@ public class RMIClient2StartAndInput extends AbstractClient implements AbstractC
 
     @Override
     public void connectToServer() throws Exception {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void login(String nickname) throws RemoteException, PlayerAlreadyLoggedException {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void sendEventToController(EventController eventController) throws RemoteException {
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void disconnect() throws RemoteException {
-
+        throw new UnsupportedOperationException();
     }
 }

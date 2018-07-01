@@ -20,8 +20,9 @@ public class RMIPlayer extends RemotePlayer2 {
 
     //for send event to the client
     private RMIClientInterface clientRMIInterface;
+    private RMIClientGatherer clientGatherer;
 
-    public RMIPlayer(String nickname, RMIClientInterface clientRMIInterface) {
+    public RMIPlayer(String nickname, RMIClientInterface clientRMIInterface,RMIClientGatherer clientGatherer) {
         super(nickname);
         this.clientRMIInterface = clientRMIInterface;
     }

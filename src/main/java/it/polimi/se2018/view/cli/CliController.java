@@ -112,6 +112,17 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         System.err.println();
     }
 
+    public void sendEventToController(EventController packet){
+        if(factory==null) client.sendEventToController(packet);
+        else {
+            try {
+                client2.sendEventToController2(packet);
+            }catch(ConnectionProblemException ex){
+                System.out.println("Non puoi ricollegarti al server perchè è caduta la linea");
+                //TODO chiedere se si vuole uscire o provare a ricollegarsi
+            }
+        }
+    }
     //TODO aggiustare il nuovo metodo
     @Override
     public void restartConnectionBecauseLost() {
@@ -215,7 +226,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                 EventController packet = new ControllerSelectInitialWindowPatternCard();
                 packet.setPlayerId(playerId);
                 ((ControllerSelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
-                client.sendEventToController(packet);
+                sendEventToController(packet);
             }
         }
     }
@@ -322,7 +333,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         int[] infoPacket = new int[1];
         infoPacket[0] = info;
         packet.setInfo(infoPacket);
-        client.sendEventToController(packet);
+        sendEventToController(packet);
     }
 
     public void sendInfo(int info1, int info2) {
@@ -332,7 +343,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         infoPacket[0] = info1;
         infoPacket[1] = info2;
         packet.setInfo(infoPacket);
-        client.sendEventToController(packet);
+        sendEventToController(packet);
     }
 
     @Override
@@ -349,7 +360,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             ControllerSelectToolCard packet = new ControllerSelectToolCard();
             packet.setPlayerId(playerId);
             packet.setIndexToolCard(indexTooLCard);
-            client.sendEventToController(packet);
+            sendEventToController(packet);
         }
     }
 
@@ -524,20 +535,21 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                 case 1:
                     EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
                     packetInsertDice.setPlayerId(playerId);
-                    client.sendEventToController(packetInsertDice);
+                    if(factory==null) sendEventToController(packetInsertDice);
+                    else sendEventToController(packetInsertDice);
                     break;
                 //Use tool card
                 case 2:
                     EventController packetUseTool = new ControllerMoveUseToolCard();
                     packetUseTool.setPlayerId(playerId);
-                    client.sendEventToController(packetUseTool);
+                    sendEventToController(packetUseTool);
                     break;
 
                 //End turn
                 case 3:
                     EventController packetEnd = new ControllerEndTurn();
                     packetEnd.setPlayerId(playerId);
-                    client.sendEventToController(packetEnd);
+                    sendEventToController(packetEnd);
                     break;
 
                 //Show private object

@@ -47,12 +47,12 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
     @Override
     public void addClient(String nickname, RMIClientInterface client) throws RemoteException,PlayerAlreadyLoggedException, RoomIsFullException {
         //il collegamento viene assegnato al RMIPLayer
-        RMIPlayer player = new RMIPlayer(nickname, client);
+        RMIPlayer player = new RMIPlayer(nickname, client,this);
         mainServer.login(player);
     }
 
     @Override
-    public void disconnect(int idPlayer,int idGame, RMIClientInterface client) throws RemoteException {
+    public void disconnect(RMIClientInterface client) throws RemoteException {
         //TODO implement a legal disconnection Call main server? mmmm nah
         try {
             UnicastRemoteObject.unexportObject(client, true);

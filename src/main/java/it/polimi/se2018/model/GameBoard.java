@@ -238,6 +238,13 @@ public class GameBoard {
         broadcast(packet);
     }
 
+    private void firstTurn(int indexPlayerEnded){
+        //se arrivi dal primo turno il tuo prossimo è un secondo turno
+        //se non arrivi dal primo turno il tuo prossimo è un primo turno
+        if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
+        else player[indexPlayerEnded].endTurn(true);
+        freeHandPlayer(indexPlayerEnded);
+    }
     /**
      * change the current player to the next and end the game.
      * check the state of the player for the first/second turn
@@ -254,25 +261,15 @@ public class GameBoard {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayerEnded != indexCurrentPlayer) throw new CurrentPlayerException();
         if (currentTurn < player.length) {
-            //se arrivi dal primo turno il tuo prossimo è un secondo turno
-            //se non arrivi dal primo turno il tuo prossimo è un primo turno
-            if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
-            else player[indexPlayerEnded].endTurn(true);
-            //   System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
+            firstTurn(indexPlayerEnded);
             indexCurrentPlayer = (indexPlayerEnded + 1) % player.length;
-            freeHandPlayer(indexPlayerEnded);
             currentTurn++;
             EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
             broadcast(infoTurn);
             //se il prossimo giocatore non è nel primo allora passo al prossimo giocatore
             if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn == player.length) {
-            //se arrivi dal primo turno il tuo prossimo è un secondo turno
-            //se non arrivi dal primo turno il tuo prossimo è un primo turno
-            if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
-            else player[indexPlayerEnded].endTurn(true);
-            //   System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
-            freeHandPlayer(indexPlayerEnded);
+            firstTurn(indexPlayerEnded);
             currentTurn++;
             EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
             broadcast(infoTurn);
@@ -283,7 +280,6 @@ public class GameBoard {
             //se non arrivi dal secondo turno il tuo prossimo turno è un primo
             if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
             else player[indexPlayerEnded].endTurn(true);
-            //    System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
             indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
             if (indexCurrentPlayer < 0) indexCurrentPlayer = player.length + indexCurrentPlayer;
             currentTurn++;
@@ -297,7 +293,6 @@ public class GameBoard {
             //se non arrivi dal secondo turno il tuo prossimo turno è un primo
             if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
             else player[indexPlayerEnded].endTurn(true);
-            //  System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
             freeHandPlayer(indexPlayerEnded);
             roundTrack[currentRound] = dicePool;
             UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
