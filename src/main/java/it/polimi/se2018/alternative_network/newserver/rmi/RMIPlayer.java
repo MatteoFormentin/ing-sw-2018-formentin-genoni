@@ -42,7 +42,6 @@ public class RMIPlayer extends RemotePlayer2 {
         try {
             System.out.print("RMIPlayer -> sayHelloClient :" + getNickname() + "  ");
             System.out.println(clientRMIInterface.pong("ping"));
-            ;
         } catch (RemoteException ex) {
             System.out.println("Non connesso.");
             throw new ConnectionPlayerExeption();

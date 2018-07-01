@@ -45,7 +45,7 @@ public class GameBoard {
     private GameRoom server2;
 
 
-    public GameBoard(int number, ServerController setServer,GameRoom setserver2) {
+    public GameBoard(int number, ServerController setServer,GameRoom setServer2) {
 
         stopGame = false;
         currentRound = 0;
@@ -57,7 +57,7 @@ public class GameBoard {
         Deck deck = Deck.getDeck();
         player = new Player[number];
         server = setServer;
-        server2 = setserver2;
+        server2 = setServer2;
         //setUp player
         for (int i = 0; i < number; i++) {
             player[i] = new Player(i);
@@ -92,14 +92,9 @@ public class GameBoard {
         sendEventToView(packetRound);
     }
 
-    private void broadcast(EventView event) {
-        for (int i = 0; i < player.length; i++) {
-            event.setPlayerId(i);
-            sendEventToView(event);
-        }
-    }
 
     private void sendEventToView(EventView event){
+        System.out.println("Inviato "+event);
         if(server==null) server2.sendEventToView(event);
         else server.sendEventToView(event);
     };
@@ -224,18 +219,28 @@ public class GameBoard {
     }
 
     private void updateHand(int indexPlayer) {
-        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-        broadcast(packet);
+        for(int i=0; i<player.length;i++){
+            UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
+            packet.setPlayerId(i);
+            sendEventToView(packet);
+        }
     }
 
     private void updateDicePool() {
-        UpdateDicePool packet = new UpdateDicePool(dicePool);
-        broadcast(packet);
+        for(int i=0; i<player.length;i++){
+            UpdateDicePool packet = new UpdateDicePool(dicePool);
+            packet.setPlayerId(i);
+            sendEventToView(packet);
+        }
     }
 
     private void updateTokenPoints(int indexPlayer) {
-        UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
-        broadcast(packet);
+        for(int i=0; i<player.length;i++){
+            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
+            packet.setPlayerId(i);
+            sendEventToView(packet);
+        }
+
     }
 
     private void firstTurn(int indexPlayerEnded){
@@ -264,15 +269,21 @@ public class GameBoard {
             firstTurn(indexPlayerEnded);
             indexCurrentPlayer = (indexPlayerEnded + 1) % player.length;
             currentTurn++;
-            EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-            broadcast(infoTurn);
+            for(int i=0; i<player.length;i++){
+                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                packet.setPlayerId(i);
+                sendEventToView(packet);
+            }
             //se il prossimo giocatore non è nel primo allora passo al prossimo giocatore
             if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn == player.length) {
             firstTurn(indexPlayerEnded);
             currentTurn++;
-            EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-            broadcast(infoTurn);
+            for(int i=0; i<player.length;i++){
+                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                packet.setPlayerId(i);
+                sendEventToView(packet);
+            }
             //inizio del secondo giro se il giocatore deve fare il primo turno passa avanti
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn < (2 * player.length)) {
@@ -285,7 +296,11 @@ public class GameBoard {
             currentTurn++;
             freeHandPlayer(indexPlayerEnded);
             EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-            broadcast(infoTurn);
+            for(int i=0; i<player.length;i++){
+                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                packet.setPlayerId(i);
+                sendEventToView(packet);
+            }
             //se il giocatore deve fare il primo turno passa avanti
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn == (2 * player.length)) { //fine round
@@ -295,14 +310,21 @@ public class GameBoard {
             else player[indexPlayerEnded].endTurn(true);
             freeHandPlayer(indexPlayerEnded);
             roundTrack[currentRound] = dicePool;
-            UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
-            broadcast(packetRound);
+            for(int i=0; i<player.length;i++){
+                UpdateSingleTurnRoundTrack packet = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
+                packet.setPlayerId(i);
+                sendEventToView(packet);
+            }
             currentRound++;
             if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
                 currentTurn = 1;
                 EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-                broadcast(infoTurn);
+                for(int i=0; i<player.length;i++){
+                    UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                    packet.setPlayerId(i);
+                    sendEventToView(packet);
+                }
                 dicePool = new DiceStack();
                 for (int i = 0; i < (2 * player.length + 1); i++) {
                     Dice dice = factoryDiceForThisGame.createDice();
@@ -419,8 +441,11 @@ public class GameBoard {
         }
         //inolra a tutti il punteggio
         for (int i = 0; i < player.length; i++) {
-            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
-            broadcast(packet);
+            for(int j=0; j<player.length;j++){
+                UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
+                packet.setPlayerId(j);
+                sendEventToView(packet);
+            }
         }
         //costruzione array ordinato
         NodePodium currentPlayerSorted = podium.max(podium.getRoot());
@@ -443,8 +468,11 @@ public class GameBoard {
         description[5] = objectivePublicCard[2].getName();
         description[6] = "Token Rimasti";
         description[7] = "Celle Vuote";
-        UpdateStatPodium packet = new UpdateStatPodium(sortedPlayer, description);
-        broadcast(packet);
+        for(int j=0; j<player.length;j++){
+            UpdateStatPodium packet = new UpdateStatPodium(sortedPlayer, description);
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
 
@@ -512,8 +540,11 @@ public class GameBoard {
         player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
 
@@ -524,10 +555,16 @@ public class GameBoard {
         toolCard[indexOfToolInGame].checkUsabilityToolCard(currentRound, player[indexPlayer]);
         player[indexPlayer].useToolCard(toolCard[indexOfToolInGame].getFavorToken());
         toolCard[indexOfToolInGame].incrementUsage();
-        UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
-        broadcast(packet);
-        UpdateSingleToolCardCost packet2 = new UpdateSingleToolCardCost(indexOfToolInGame, toolCard[indexOfToolInGame].getFavorToken());
-        broadcast(packet2);
+        for(int j=0; j<player.length;j++){
+            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
+        for(int j=0; j<player.length;j++){
+            UpdateSingleToolCardCost packet = new UpdateSingleToolCardCost(indexOfToolInGame, toolCard[indexOfToolInGame].getFavorToken());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
     //*****************************************Tool's method of Gameboard **********************************************
     //*****************************************Tool's method of Gameboard **********************************************
@@ -568,8 +605,11 @@ public class GameBoard {
         player[indexPlayer].removeDiceFromWindowAndAddToHand(line, column);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
 
@@ -607,8 +647,11 @@ public class GameBoard {
         player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack), false);
         roundTrack[round].add(indexStack, dicePlayer);
         updateHand(indexPlayer);
-        EventView packetCell = new UpdateSingleTurnRoundTrack(round, roundTrack[round]);
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            EventView packet = new UpdateSingleTurnRoundTrack(round, roundTrack[round]);
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
 
@@ -621,8 +664,11 @@ public class GameBoard {
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
         if (currentTurn < player.length) throw new GameException("Non effettuare questa mossa adesso");
         dicePool.reRollAllDiceInStack();
-        EventView packetCell = new UpdateDicePool(dicePool);
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            EventView packet = new UpdateDicePool(dicePool);
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
@@ -652,8 +698,11 @@ public class GameBoard {
         if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
     /**
