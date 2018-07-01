@@ -26,12 +26,16 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class Server2 implements ServerController2, TimerCallback {
     //info for the operation of the server
     public static Server2 instance;
+    private CliParser input;
     private AbstractServer2 RMIServer;
     // private AbstractServer2 socketServer;
+
+    //info loaded from file
     private String IP_SERVER;
     private int RMI_PORT;
     private int SOCKET_PORT;
-    private static CliParser input;
+    private int timerGame;
+    private int maxPlayer;
 
     //info for the player connected to a gameBoard
     private GameRoom newGameRoom;
@@ -40,7 +44,6 @@ public class Server2 implements ServerController2, TimerCallback {
 
     private TimerThread playerTimeout;
     private final AtomicBoolean gameOpen;
-    private int timerGame;
 
     private Server2() {
         gameOpen = new AtomicBoolean();
@@ -50,9 +53,11 @@ public class Server2 implements ServerController2, TimerCallback {
 
     public static void main(String[] args) {
         instance = new Server2();
+        instance.loadAddress();
+        instance.loadTimer();
         instance.start();
-        System.out.println("Quando vuoi digita 0 per spegnare il server");
-        if (input.parseInt(0) == 0) instance.shutDown();
+        instance.init();
+        instance.shutDown();
     }
 
     public String getIP_SERVER() {
@@ -65,34 +70,6 @@ public class Server2 implements ServerController2, TimerCallback {
 
     public int getSOCKET_PORT() {
         return SOCKET_PORT;
-    }
-
-    /**
-     * Choice of the port, creation of the Registry, start of the RmiServer and SocketServer
-     */
-    public void start() {
-        input = new CliParser();
-        boolean flag = setUPConnection();
-        if (!flag) {
-            System.out.println("inserisci l'ip: ");
-            IP_SERVER = input.parseIp();
-            if (IP_SERVER.equals("0")) IP_SERVER = "localhost";
-            System.out.println("inserisci la porta per RMI: ");
-            RMI_PORT = input.parsePort(1024, 65535, 0);
-            System.out.println("inserisci la porta per SOCKET: ");
-            SOCKET_PORT = input.parsePort(1024, 65535, RMI_PORT);
-        }
-        //creazione standard sei server
-        RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);
-        //    AbstractServer2 SocketServer= new
-
-        try {
-            RMIServer.startServer();
-
-        } catch (ServerStartException ex) {
-            System.out.println("Errore nell'avvio del server RMI");
-        }
-        instance.loadTimer();
     }
 
     public void loadTimer() {
@@ -111,112 +88,23 @@ public class Server2 implements ServerController2, TimerCallback {
         }
     }
 
-    //****************************** Event from the listener *******************************************************
-    //****************************** Event from the listener *******************************************************
-    //****************************** Event from the listener *******************************************************
-
-    public void login(RemotePlayer2 remotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
-        System.out.println("è stato rilevato un tentativo di login al server");
-
-        if (gameOpen.get()) {//sta startando una partita aspetta un attimo
-            checkOnline(true);
-            checkOnline(false);
-            //se è un anonimo lo aggiungo come Anon
-            if (remotePlayer.getNickname() == null) {
-                remotePlayer.setNickname("Anon" + new Random().nextInt((new Random().nextInt(1)) % 2)
-                        + counterAnon + new Random().nextInt((new Random().nextInt(1)) % 2));
-                counterAnon++;
-            }
-            //controlla tutte le gameRoom
-            int idGame = 0;
-            RemotePlayer2 playerConnected = newGameRoom.searchIfMatchName(remotePlayer.getNickname());
-            if(playerConnected==null){
-                while (idGame < gameRoomRunning.size() && playerConnected == null) {
-                    playerConnected = gameRoomRunning.get(idGame).searchIfMatchName(remotePlayer.getNickname());
-                    idGame++;
-                }
-                idGame--;//decremento per colpa del while
-            };
-            if (playerConnected == null) {
-                //TODO add to the new gameroom
-                System.out.println("Effettuo il Login");
-                //non ci sono player con questo nome nella partita corrente, aggiungi il giocatore
-                if (newGameRoom == null) {//crea una nuova stanza
-                    System.out.println("Creo una nuova stanza");
-                    newGameRoom = new GameRoom(4,timerGame);
-                }
-                remotePlayer.setPlayerRunning(true);
-                try {
-                    System.out.println("Effettuo il Login");
-                    newGameRoom.addRemotePlayer(remotePlayer);
-                } catch (RoomIsFullException ex) {//nel caso in cui è stato raggiunto il tetto massimo
-                    throw ex;
-                } catch(GameException ex){
-                    startGame();
-                }
-            } else if (playerConnected.isPlayerRunning()) {
-                System.out.println("controllo se relogin");
-                //il giocatore memorizzato sta già giocando
-                try {
-                    playerConnected.sayHelloClient();
-                    throw new PlayerAlreadyLoggedException("Il giocatore Esiste già");
-                } catch (ConnectionPlayerExeption ex) {
-                    //non è più on, è un relogin
-                    gameRoomRunning.get(idGame).reLogin(playerConnected.getIdPlayerInGame(), remotePlayer);
-                }
-            } else {//è sicuramente un relogin
-                System.out.println("controllo se relogin");
-                gameRoomRunning.get(idGame).reLogin(playerConnected.getIdPlayerInGame(), remotePlayer);
-            }
+    private void loadAddress(){
+        input = new CliParser();
+        boolean flag = setUPConnection();
+        if (!flag) {
+            System.out.println("inserisci l'ip: ");
+            IP_SERVER = input.parseIp();
+            if (IP_SERVER.equals("0")) IP_SERVER = "localhost";
+            System.out.println("inserisci la porta per RMI: ");
+            RMI_PORT = input.parsePort(1024, 65535, 0);
+            System.out.println("inserisci la porta per SOCKET: ");
+            SOCKET_PORT = input.parsePort(1024, 65535, RMI_PORT);
         }
-    }
-
-/*
-    private void checkOnlineWithKick() {
-        System.out.println("checkOnline");
-        int idOnline = 0;
-        try {
-            while (idOnline < newGameRoom.size()) {
-                if (newGameRoom.get(idOnline).isPlayerRunning()) {
-                    System.out.println("Controllo se è in linea" + newGameRoom.get(idOnline).getNickname());
-                    newGameRoom.get(idOnline).sayHelloClient();
-                } else {
-                    System.out.println(newGameRoom.get(idOnline).getNickname() + " è segnato come offline");
-                }
-                idOnline++;
-            }
-        } catch (ConnectionPlayerExeption ex) {
-            System.err.println(newGameRoom.get(idOnline).getNickname() + " non è raggiungibile settalo come offline");
-            newGameRoom.get(idOnline).lightDisconnect(true);
-            checkOnline();
-        }
-    }*/
-
-    private synchronized void checkOnline(boolean checkAllRunning) {
-        System.out.println("checkOnline");
-        if(checkAllRunning){
-            int idOnline = 0;
-            while (idOnline < gameRoomRunning.size()) {
-                gameRoomRunning.get(idOnline).checkOnLine();
-                idOnline++;
-            }
-        }else{
-            if(newGameRoom!=null) newGameRoom.checkOnLine();
-        }
+        //creazione standard sei server
+        RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);
+        //    AbstractServer2 SocketServer= new
 
     }
-
-
-    @Override
-    public void sendEventToGameRoom(EventController eventController) {
-        gameRoomRunning.get(eventController.getIdGame()).sendEventToController(eventController);
-    }
-
-    @Override
-    public void sendEventToView(EventView eventView) {
-        gameRoomRunning.get(eventView.getIdGame()).sendEventToClient(eventView);
-    }
-
 
     private boolean setUPConnection() {
         System.out.print("Digita 0 per settare l'ip e porta da config o default, 1 per settare manualmente");
@@ -243,13 +131,147 @@ public class Server2 implements ServerController2, TimerCallback {
         }
         return false;
     }
+    /**
+     * Choice of the port, creation of the Registry, start of the RmiServer and SocketServer
+     */
+    public void start() {
+
+        try {
+            RMIServer.startServer();
+
+        } catch (ServerStartException ex) {
+            System.out.println("Errore nell'avvio del server RMI");
+        }
+    }
+    public void init(){
+        //TODO mettere il numero dei giocatori da file
+        newGameRoom = new GameRoom(4,timerGame);
+    }
+
+
+    //****************************** Event from the listener *******************************************************
+    //****************************** Event from the listener *******************************************************
+    //****************************** Event from the listener *******************************************************
+
+    public void login(RemotePlayer2 remotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
+        System.out.println("è stato rilevato un tentativo di login al server");
+        gameOpen.set(true);
+        if (gameOpen.get()) {//sta startando una partita aspetta un attimo
+            checkOnline(true);
+            checkOnline(false);
+            //se è un anonimo lo aggiungo come Anon
+            if (remotePlayer.getNickname() == null) {
+                remotePlayer.setNickname("Anon" + new Random().nextInt((new Random().nextInt(1)) % 2)
+                        + counterAnon + new Random().nextInt((new Random().nextInt(1)) % 2));
+                counterAnon++;
+            }
+            //controlla tutte le gameRoom
+            int idGame = 0;
+            System.out.println("necessario");
+            RemotePlayer2 playerConnected = newGameRoom.searchIfMatchName(remotePlayer.getNickname());
+            if (playerConnected == null) {
+                while (idGame < gameRoomRunning.size() && playerConnected == null) {
+                    playerConnected = gameRoomRunning.get(idGame).searchIfMatchName(remotePlayer.getNickname());
+                    idGame++;
+                }
+                idGame--;//decremento per colpa del while
+            }
+            System.out.println("necessario");
+            if (playerConnected == null) {
+                //TODO add to the new gameroom
+                System.out.println("Effettuo il Login");
+                //non ci sono player con questo nome nella partita corrente, aggiungi il giocatore
+                if (newGameRoom == null) {//crea una nuova stanza
+                    System.out.println("Creo una nuova stanza");
+                    newGameRoom = new GameRoom(4, timerGame);
+                }
+                remotePlayer.setPlayerRunning(true);
+                try {
+                    System.out.println("Effettuo il Login");
+                    newGameRoom.addRemotePlayer(remotePlayer);
+                } catch (RoomIsFullException ex) {//nel caso in cui è stato raggiunto il tetto massimo
+                    throw ex;
+                } catch (GameException ex) {
+                    startGame();
+                }
+            } else if (playerConnected.isPlayerRunning()) {
+                System.out.println("controllo se relogin");
+                //il giocatore memorizzato sta già giocando
+                try {
+                    playerConnected.sayHelloClient();
+                    throw new PlayerAlreadyLoggedException("Il giocatore Esiste già");
+                } catch (ConnectionPlayerExeption ex) {
+                    //non è più on, è un relogin
+                    gameRoomRunning.get(idGame).reLogin(playerConnected.getIdPlayerInGame(), remotePlayer);
+                }
+            } else {//è sicuramente un relogin
+                System.out.println("controllo se relogin");
+                gameRoomRunning.get(idGame).reLogin(playerConnected.getIdPlayerInGame(), remotePlayer);
+            }
+        }else{
+            System.out.println("aspetta un attimo");
+            throw new RoomIsFullException("Aspetta un attimo è in creazione una gameboard");
+        }
+    }
+
+/*
+    private void checkOnlineWithKick() {
+        System.out.println("checkOnline");
+        int idOnline = 0;
+        try {
+            while (idOnline < newGameRoom.size()) {
+                if (newGameRoom.get(idOnline).isPlayerRunning()) {
+                    System.out.println("Controllo se è in linea" + newGameRoom.get(idOnline).getNickname());
+                    newGameRoom.get(idOnline).sayHelloClient();
+                } else {
+                    System.out.println(newGameRoom.get(idOnline).getNickname() + " è segnato come offline");
+                }
+                idOnline++;
+            }
+        } catch (ConnectionPlayerExeption ex) {
+            System.err.println(newGameRoom.get(idOnline).getNickname() + " non è raggiungibile settalo come offline");
+            newGameRoom.get(idOnline).lightDisconnect(true);
+            checkOnline();
+        }
+    }*/
+
+    private synchronized void checkOnline(boolean checkAllRunning) {
+        System.out.println("checkOnline");
+        if (checkAllRunning) {
+            int idOnline = 0;
+            while (idOnline < gameRoomRunning.size()) {
+                gameRoomRunning.get(idOnline).checkOnLine();
+                idOnline++;
+            }
+        } else {
+            if (newGameRoom != null) newGameRoom.checkOnLine();
+        }
+
+    }
+
+
+    @Override
+    public void sendEventToGameRoom(EventController eventController) {
+        gameRoomRunning.get(eventController.getIdGame()).sendEventToController(eventController);
+    }
+
+    @Override
+    public void sendEventToView(EventView eventView) {
+        gameRoomRunning.get(eventView.getIdGame()).sendEventToClient(eventView);
+    }
+
+
+
+
 
     /**
      * for shotDown all the server open
      */
     public void shutDown() {
-        RMIServer.stopServer();
-        //TODO add the shut down of socket
+        System.out.println("Digita 0 per spegnare il server");
+        if (input.parseInt(0) == 0) {
+            RMIServer.stopServer();
+        }
     }
 
     public void startGame() {

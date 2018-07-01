@@ -37,35 +37,49 @@ public class RMIPlayer extends RemotePlayer2 {
     }
 
     @Override
-    public String sayHelloClient() throws ConnectionPlayerExeption {
+    public void sayHelloClient() throws ConnectionPlayerExeption {
         try {
-            System.out.println("Trying to contact the client");
-            return clientRMIInterface.pong("ping");
+            System.out.print("RMIPlayer -> sayHelloClient :" + getNickname() + "  ");
+            System.out.println(clientRMIInterface.pong("ping"));
+            ;
         } catch (RemoteException ex) {
-            System.out.println("RMIPlayer, sayHelloClient-> Richiede disconnessione del client");
-            kickPlayerOut(true);
+            System.out.println("Non connesso.");
             throw new ConnectionPlayerExeption();
         }
     }
 
     @Override
     public void kickPlayerOut(boolean force) {
-        if (force) {
-            System.out.println("Richiesta epulsione Hard dal server. quindi rimosso il riferimento del client");
-            setPlayerRunning(false);
-            try {
-                UnicastRemoteObject.unexportObject(clientRMIInterface, true);
-                clientRMIInterface.pong("ping");//return pong
-                System.out.println("Il player non è stato disconnesso");
-                setPlayerRunning(true);
-            } catch(NoSuchObjectException ex){
-                System.out.println(getNickname()+" è già stato disconnesso");
-            } catch(RemoteException ex){
-                System.out.println(getNickname()+" è stato disconnesso con successo");
-            }
-        } else {
-            System.out.println("Richiesta espulsione light dal server. quindi settato come false ma ancora raggiungibile!");
+        //TODO rimuovere il force=true
+        force=true;
+        System.out.println();
+        System.out.print("RMIPlayer -> kickPlayerOut : ");
+        try {
+            clientRMIInterface.pong("ping");//return pong
+            System.out.print("-> Il giocatore è ancora connesso");
+            setPlayerRunning(true);
+        } catch (RemoteException ex) {
+            System.out.print("-> non connesso");
             setPlayerRunning(false);
         }
+        if(force){
+            if(isPlayerRunning()){//ancora connesso
+                try {
+                    UnicastRemoteObject.unexportObject(clientRMIInterface, true);
+                    System.out.println("-> è stato disconnesso");
+                } catch (NoSuchObjectException ex) {
+                    System.out.println("-> già disconnesso");
+                }
+                setPlayerRunning(false);
+            }else{ //non più connesso
+                System.out.println("-> già disconnesso");
+                setPlayerRunning(false);
+            }
+        }else{
+            System.out.println("-> Espulsione light, settato come false ma potrebbe ancora inviare messaggi al server");
+            setPlayerRunning(false);
+        }
+        System.out.println();
     }
+
 }

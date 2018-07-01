@@ -21,6 +21,7 @@ public class GameRoom {
 
     public GameRoom(int maxPlayer, int timeRoom) {
         this.maxPlayer = maxPlayer;
+        this.timeRoom = 0;
         players = new LinkedList<>();
         currentConnected = 0;
     }
@@ -54,17 +55,21 @@ public class GameRoom {
     }
 
 
-    public synchronized void addRemotePlayer(RemotePlayer2 remotePlayer) throws RoomIsFullException,GameException {
+    public void addRemotePlayer(RemotePlayer2 remotePlayer) throws RoomIsFullException,GameException {
         if (players.size() < maxPlayer) {
+            System.err.println("viene aggiunto il player");
             if (players.add(remotePlayer)) {
                 currentConnected++;
                 remotePlayer.setPlayerRunning(true);
             }
             checkOnLine();
-            System.out.println("Gameroom -> addRemotePlayer: ci sono "+currentConnected+" connessi e "
+            System.err.println("Gameroom -> addRemotePlayer: ci sono "+currentConnected+" connessi e "
                     +players.size() == maxPlayer+" registrati");
             if (players.size() == maxPlayer) throw new GameException("la stanza è pronta");
-        } else throw new RoomIsFullException("room is full");
+        } else{
+            System.out.println("Gameroom -> addRemotePlayer: ci sono "+currentConnected+" connessi e ");
+            throw new RoomIsFullException("room is full");
+        }
     }
 
     public void removeRemotePlayer(int idPlayer) {
