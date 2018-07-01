@@ -1,5 +1,6 @@
 package it.polimi.se2018.controller;
 
+import it.polimi.se2018.alternative_network.newserver.GameRoom;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.alternative_network.newserver.ServerController2;
 import it.polimi.se2018.controller.effect.DicePoolEffect;
@@ -44,7 +45,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private boolean restoreAble;
     //Server in cui si setterà la partita
     private ServerController server;
-    private Server2 server2;
+    private GameRoom server2;
 
     //Player
     private ArrayList<RemotePlayer> players;
@@ -63,7 +64,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
      *
      * @param server server on when the game is on.
      */
-    public Controller(ServerController server, int playerNumber,Server2 server2) {
+    public Controller(ServerController server, int playerNumber,GameRoom server2) {
         //set up actual game
         this.server = server;
         this.server2 =server2;

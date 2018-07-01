@@ -4,25 +4,34 @@ import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.exception.network_exception.server.SinglePlayerException;
+import it.polimi.se2018.list_event.event_received_by_controller.ControllerEndTurn;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.utils.TimerCallback;
 
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class GameRoom {
+public class GameRoom implements TimerCallback,ServerController2 {
 
     private LinkedList<RemotePlayer2> players;
     private int maxPlayer;
     private int currentConnected;
     private int timeRoom;
+    private int indexRoom;
 
     private Controller controller;
+    private AtomicBoolean blocked;
 
-    public GameRoom(int maxPlayer, int timeRoom) {
+
+    public GameRoom(int maxPlayer, int timeRoom, int indexRoom) {
         this.maxPlayer = maxPlayer;
-        this.timeRoom = 0;
+        this.timeRoom = timeRoom;
+        this.indexRoom = indexRoom;
         players = new LinkedList<>();
+        blocked= new AtomicBoolean(false);
         currentConnected = 0;
     }
 
@@ -34,17 +43,9 @@ public class GameRoom {
         return players.size();
     }
 
-    public int sizeOnline() {
-        return currentConnected;
-    }
-
-    private void decreaseConnected() throws SinglePlayerException {
-
-    }
 
     public void startGameRoom(Server2 server) {
-
-        controller = new Controller(null, players.size(), server);
+        controller = new Controller(null, players.size(), this);
     }
 
     public RemotePlayer2 searchIfMatchName(String name) {
@@ -55,7 +56,7 @@ public class GameRoom {
     }
 
 
-    public void addRemotePlayer(RemotePlayer2 remotePlayer) throws RoomIsFullException,GameException {
+    public void addRemotePlayer(RemotePlayer2 remotePlayer) throws RoomIsFullException,GameStartedException {
         if (players.size() < maxPlayer) {
             System.err.println("viene aggiunto il player");
             if (players.add(remotePlayer)) {
@@ -65,27 +66,43 @@ public class GameRoom {
             checkOnLine();
             System.err.println("Gameroom -> addRemotePlayer: ci sono "+currentConnected+" connessi e "
                     +players.size() == maxPlayer+" registrati");
-            if (players.size() == maxPlayer) throw new GameException("la stanza è pronta");
+            if (players.size() == maxPlayer){
+                //TODO start the game room
+                throw new GameStartedException();
+            }
         } else{
             System.out.println("Gameroom -> addRemotePlayer: ci sono "+currentConnected+" connessi e ");
-            throw new RoomIsFullException("room is full");
+            throw new RoomIsFullException("The current room is starting retry login.");
         }
     }
 
+    /**
+     * fimuovere la connessione del giocatore
+     *
+     * @param idPlayer id del player da rimuovere
+     */
     public void removeRemotePlayer(int idPlayer) {
         currentConnected--;
+        System.out.println(" ");
         if (controller != null) {
             //light remove game started
-            System.out.println("light Remove");
+            System.out.println("light Remove. Disconnected during game");
             players.get(idPlayer).kickPlayerOut(true);
             players.get(idPlayer).setPlayerRunning(false);
+            //TODO notificare tutti i giocatori dalla disconnessione
+            if(currentConnected==1){
+                //TODO ENDGAME per disconnessione
+                //TODO return to server and reset
+            }
         } else {
             //hard remove game not started
             System.out.println("Hard Remove");
             players.get(idPlayer).kickPlayerOut(true);
             players.get(idPlayer).setPlayerRunning(false);
             players.remove(idPlayer);
+            //TODO notificare tutti i giocatori nella room che si sta costruendo
         }
+        System.out.println(" ");
     }
 
     /**
@@ -99,7 +116,6 @@ public class GameRoom {
             }
         } catch (ConnectionPlayerExeption ex) {
             removeRemotePlayer(i);
-            checkOnLine();
         }
     }
 
@@ -111,20 +127,40 @@ public class GameRoom {
         } catch (ConnectionPlayerExeption ex) {
             System.out.println("il Client è stato sostituito");
             players.set(idPlayer, player);
+            //TODO send join game e avviso che il giocatore si è ricollegato
         }
         checkOnLine();
     }
 
-
-    public void sendEventToController(EventController event) {
-        controller.sendEventToController(event);
+    @Override
+    public void timerCallback() {
+        //TODO mettere a posto lo start del game   startGameRoom();
     }
 
-    public void sendEventToClient(EventView eventView) {
+    private synchronized void startGameRoom(){
+        controller=new Controller(null,players.size(),this);
+    }
+
+    public synchronized void endGame(){
+        //TODO implementare invio di evento end game ai vari player
+    }
+
+
+    @Override
+    public void sendEventToGameRoom(EventController eventController) {
+        controller.sendEventToController(eventController);
+    }
+
+    @Override
+    public void sendEventToView(EventView eventView) {
         try {
-            players.get(eventView.getPlayerId()).sendEventToView(eventView);
+            if(players.get(eventView.getPlayerId()).isPlayerRunning())
+                players.get(eventView.getPlayerId()).sendEventToView(eventView);
         } catch (ConnectionPlayerExeption ex) {
             removeRemotePlayer(eventView.getPlayerId());
+            EventController packet = new ControllerEndTurn();
+            packet.setPlayerId(eventView.getPlayerId());
+            controller.sendEventToController(packet);
         }
     }
 }

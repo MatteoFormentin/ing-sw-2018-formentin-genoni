@@ -74,21 +74,23 @@ public class RMIServer extends AbstractServer2  {
      * Questo metodo ferma il chiude correttamente il server mantenendo solo il segistry attivo
      */
     public void stopServer(){
-        try {
-            //Tolgo il servizio dalla porta, non viene eliminato il registry
-            Naming.unbind("//" + getHost() + ":" + getPort() + "/MyServer");
-            //rimuovo l'oggetto client gatherer
-            UnicastRemoteObject.unexportObject(clientGatherer,true);
-            //ora posso chiudere il registry
-            //TODO creare un nuova classe registry da poter resettare, forse troppo dispendioso per tempo
-        }catch(NoSuchObjectException ex){
-            System.err.println("non è possibile rimuovere l'oggetto");
-        } catch (MalformedURLException ex) {
-            System.err.println(" the name is not an appropriately formatted URL");
-        } catch (RemoteException ex) {
-            System.err.println("registry could not be contacted");
-        } catch (NotBoundException ex){
-            System.err.println("Il servizio su questa porta è stato già disattivato");
+        if(isStarted()){
+            try {
+                //Tolgo il servizio dalla porta, non viene eliminato il registry
+                Naming.unbind("//" + getHost() + ":" + getPort() + "/MyServer");
+                //rimuovo l'oggetto client gatherer
+                UnicastRemoteObject.unexportObject(clientGatherer,true);
+                //ora posso chiudere il registry
+                //TODO creare un nuova classe registry da poter resettare, forse troppo dispendioso per tempo
+            }catch(NoSuchObjectException ex){
+                System.err.println("non è possibile rimuovere l'oggetto");
+            } catch (MalformedURLException ex) {
+                System.err.println(" the name is not an appropriately formatted URL");
+            } catch (RemoteException ex) {
+                System.err.println("registry could not be contacted");
+            } catch (NotBoundException ex){
+                System.err.println("Il servizio su questa porta è stato già disattivato");
+            }
         }
     }
 }

@@ -91,11 +91,11 @@ public class RMIClient2StartAndInput extends AbstractClient implements AbstractC
         }catch (PlayerAlreadyLoggedException ex){
             System.err.println("connectToServer RMI dice: " + ex.getMessage());
             ex.printStackTrace();
-            throw new PlayerAlreadyLoggedException("room full");
+            throw ex;
         }catch (RoomIsFullException ex){
             System.err.println("connectToServer RMI dice: " + ex.getMessage());
             ex.printStackTrace();
-            throw new RoomIsFullException("room full");
+            throw ex;
         }catch (RemoteException ex){
             System.err.println("connectToServer RMI dice: " + "registry could not be contacted");
             ex.printStackTrace();

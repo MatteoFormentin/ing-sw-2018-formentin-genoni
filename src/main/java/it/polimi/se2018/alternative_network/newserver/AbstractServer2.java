@@ -7,11 +7,13 @@ public abstract class AbstractServer2  {
     private final Server2 serverController;
     private final String host;
     private final int port;
+    private boolean started;
 
     public AbstractServer2(Server2 serverController, String host, int port) {
         this.serverController = serverController;
         this.host = host;
         this.port = port;
+        this.started=false;
     }
 
     public abstract void startServer()throws ServerStartException;
@@ -28,5 +30,13 @@ public abstract class AbstractServer2  {
 
     public int getPort() {
         return port;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    void setStarted(boolean started) {
+        this.started = started;
     }
 }

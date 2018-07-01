@@ -1,6 +1,7 @@
 package it.polimi.se2018.model;
 
 
+import it.polimi.se2018.alternative_network.newserver.GameRoom;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.alternative_network.newserver.ServerController2;
 import it.polimi.se2018.exception.GameException;
@@ -41,10 +42,10 @@ public class GameBoard {
     private FactoryDice factoryDiceForThisGame; //nobody can see it
     private DiceColor colorRestriction;
     private ServerController server;
-    private Server2 server2;
+    private GameRoom server2;
 
 
-    public GameBoard(int number, ServerController setServer,Server2 setserver2) {
+    public GameBoard(int number, ServerController setServer,GameRoom setserver2) {
 
         stopGame = false;
         currentRound = 0;
