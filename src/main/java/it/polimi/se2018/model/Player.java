@@ -40,7 +40,7 @@ public class Player {
      *
      * @param indexInGame of the player if needed
      */
-    Player(int indexInGame) {
+    public Player(int indexInGame) {
         this.indexInGame = indexInGame;
         favorToken = 0;
         points = 0;
