@@ -23,7 +23,6 @@ public class DiceStack extends LinkedList<Dice> implements Serializable{
         return this.get(index);
     }
 
-
     /**
      * method for select the dice in hand
      *
@@ -33,9 +32,9 @@ public class DiceStack extends LinkedList<Dice> implements Serializable{
         if(index==0 || index>=this.size()) return;
         this.addFirst(this.remove(index));
     }
+
     public void reRollAllDiceInStack(){
         for (Dice dice : this) {
-
             dice.rollDice();
         }
     }

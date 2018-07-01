@@ -4,8 +4,7 @@ import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.InsertDice;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
@@ -46,10 +45,11 @@ public class TestEffect {
             matrix[2][i] = new Cell();
             matrix[2][i].setValueRestriction(i+1);
             matrix[3][i] = new Cell();
-        }/*
+        }
+
         fakeServer = new ServerController() {
             @Override
-            public boolean login(RemotePlayer remotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
+            public boolean login(RemotePlayer remotePlayer) throws PlayerNetworkException {
                 return false;
             }
 
@@ -82,10 +82,10 @@ public class TestEffect {
             public RemotePlayer searchPlayerById(int id) {
                 return null;
             }
-        };*/
+        };
         testWindowPatternCard = new WindowPatternCard("test", 5, matrix);
         factoryDice= new TestFactory();
-        game= new GameBoard(1,fakeServer,null);
+        //game= new GameBoard(1,fakeServer);
         monoInfo= new int[1];
         doubleInfo= new int[2];
     }

@@ -13,8 +13,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 /**
  * class for test of cell's method
  *
@@ -30,7 +28,6 @@ public class TestToolCard {
     private ToolCard toolCard;
     private Player player;
 
-
     @Before
     public void initTestWindowPatternCard(){
         toolCard= new ToolCard();
@@ -40,7 +37,6 @@ public class TestToolCard {
     public void testValidateInsertCell() throws GameException {
 
     }
-
 
     @After
     public void reset() throws Exception{

@@ -216,5 +216,4 @@ public class WindowPatternCard implements Serializable {
         numberOfCellWithDice--;
         return dice;
     }
-
 }
