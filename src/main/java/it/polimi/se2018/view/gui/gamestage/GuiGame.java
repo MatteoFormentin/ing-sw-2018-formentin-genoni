@@ -1,8 +1,10 @@
 package it.polimi.se2018.view.gui.gamestage;
 
 import it.polimi.se2018.list_event.event_received_by_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.*;
+import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
@@ -15,7 +17,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -51,10 +56,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private Stage gameStage, utilStage,toolStage;
     private Scene sceneGame, sceneInit;
 
-    private static String diceSource = "file:src/main/java/it/polimi/se2018/resources/dadijpg/";
-    private static String toolCardSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_strumento_";
-    private static String privateObjectSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_private_";
-    private static String publicObjectSource = "file:src/main/java/it/polimi/se2018/resources/carte_jpg/carte_pubbliche_";
+    private static String diceSource = "file:src/resources/dadijpg/";
+    private static String toolCardSource = "file:src/resources/carte_jpg/carte_strumento_";
+    private static String privateObjectSource = "file:src/resources/carte_jpg/carte_private_";
+    private static String publicObjectSource = "file:src/resources/carte_jpg/carte_pubbliche_";
     //variables for show card
     private ShowCardBox cardShow;
     private ShowValue value;

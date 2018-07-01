@@ -1,11 +1,12 @@
 package it.polimi.se2018.alternative_network.newserver;
 
-import it.polimi.se2018.exception.network_exception.*;
+import it.polimi.se2018.alternative_network.newserver.rmi.RMIServer;
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
+import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.alternative_network.newserver.rmi.RMIServer;
 import it.polimi.se2018.utils.TimerThread;
 import it.polimi.se2018.view.cli.CliParser;
 
@@ -15,8 +16,6 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * @Davide Mammarella
@@ -76,7 +75,7 @@ public class Server2 {
         try {
             Properties configProperties = new Properties();
 
-            String timeConfig = "src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
+            String timeConfig = "src/resources/configurations/gameroom_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(timeConfig);
 
             configProperties.load(inputConnection);
@@ -111,7 +110,7 @@ public class Server2 {
         if (input.parseInt(1) == 0) {
             try {
                 Properties configProperties = new Properties();
-                String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+                String connectionConfig = "src/resources/configurations/connection_configuration.properties";
                 FileInputStream inputConnection = new FileInputStream(connectionConfig);
                 configProperties.load(inputConnection);
                 RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));

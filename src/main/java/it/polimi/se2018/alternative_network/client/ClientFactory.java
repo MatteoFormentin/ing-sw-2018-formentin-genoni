@@ -1,8 +1,8 @@
 package it.polimi.se2018.alternative_network.client;
 
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.network.client.socket.SocketClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
@@ -58,7 +58,7 @@ public class ClientFactory {
         int RMI_PORT = 31415;
        try {
             Properties configProperties = new Properties();
-           String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+           String connectionConfig = "src/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
             configProperties.load(inputConnection);
             RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
@@ -94,7 +94,7 @@ public class ClientFactory {
     public void loadDefault() {
         try {
             Properties configProperties = new Properties();
-            String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+            String connectionConfig = "src/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
             configProperties.load(inputConnection);
             IP_SERVER = configProperties.getProperty("SERVER_ADDRESS");

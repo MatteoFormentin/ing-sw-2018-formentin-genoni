@@ -87,7 +87,7 @@ public class Server implements ServerController, TimerCallback {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
 
-            String timeConfig = "src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
+            String timeConfig = "src/resources/configurations/gameroom_configuration.properties";
             FileInputStream inputTime = new FileInputStream(timeConfig);
 
             configProperties.load(inputTime);
@@ -125,7 +125,7 @@ public class Server implements ServerController, TimerCallback {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
 
-            String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+            String connectionConfig = "src/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
 
             configProperties.load(inputConnection);

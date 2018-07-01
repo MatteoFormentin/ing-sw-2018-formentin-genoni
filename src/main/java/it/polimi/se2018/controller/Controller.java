@@ -1,8 +1,6 @@
 package it.polimi.se2018.controller;
 
 import it.polimi.se2018.alternative_network.newserver.GameRoom;
-import it.polimi.se2018.alternative_network.newserver.Server2;
-import it.polimi.se2018.alternative_network.newserver.ServerController2;
 import it.polimi.se2018.controller.effect.DicePoolEffect;
 import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.EndTurn;
@@ -14,7 +12,6 @@ import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteExcep
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
@@ -76,7 +73,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
         try {
             Properties configProperties = new Properties();
 
-            String timeConfig = "src/main/java/it/polimi/se2018/resources/configurations/gameroom_configuration.properties";
+            String timeConfig = "src/resources/configurations/gameroom_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(timeConfig);
 
             configProperties.load(inputConnection);

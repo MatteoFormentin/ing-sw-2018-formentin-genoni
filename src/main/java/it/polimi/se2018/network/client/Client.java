@@ -81,7 +81,7 @@ public class Client implements ClientController {
             // LOAD FROM PROPERTIES
             Properties configProperties = new Properties();
 
-            String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+            String connectionConfig = "src/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
 
             configProperties.load(inputConnection);
@@ -136,7 +136,7 @@ public class Client implements ClientController {
 
     public void startClient(String serverIpAddress, int socketRmi) throws Exception {
         Properties configProperties = new Properties();
-        String connectionConfig = "src/main/java/it/polimi/se2018/resources/configurations/connection_configuration.properties";
+        String connectionConfig = "src/resources/configurations/connection_configuration.properties";
         FileInputStream inputConnection = new FileInputStream(connectionConfig);
         configProperties.load(inputConnection);
 
