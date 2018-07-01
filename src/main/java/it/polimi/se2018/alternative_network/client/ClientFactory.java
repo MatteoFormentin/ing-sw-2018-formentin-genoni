@@ -72,7 +72,7 @@ public class ClientFactory {
         instance = new ClientFactory( new CliController());
         String IP_SERVER = "localhost";
         int RMI_PORT = 31415;
-        try {
+       try {
             Properties configProperties = new Properties();
             String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
@@ -100,7 +100,7 @@ public class ClientFactory {
                     System.out.println("Caduta la linea");
                 }
             } catch (ConnectionProblemException ex) {
-
+                ex.printStackTrace();
             }
         }
         System.out.println("quando vuoi digita 0 per scollegarti dal");

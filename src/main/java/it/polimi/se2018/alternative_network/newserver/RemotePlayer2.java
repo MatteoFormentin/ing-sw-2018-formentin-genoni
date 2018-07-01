@@ -50,7 +50,7 @@ public abstract class RemotePlayer2 {
 
     public abstract void sendEventToView(EventView eventView) throws ConnectionPlayerExeption;
 
-    public abstract String sayHelloClient() throws ConnectionPlayerExeption;
+    public abstract void sayHelloClient() throws ConnectionPlayerExeption;
 
 
     //------------------------------------------------------------------------------------------------------------------

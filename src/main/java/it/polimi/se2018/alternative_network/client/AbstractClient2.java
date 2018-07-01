@@ -17,5 +17,4 @@ public interface AbstractClient2 {
     void login2(String nickname) throws ConnectionProblemException, PlayerAlreadyLoggedException, RoomIsFullException;
     void connectToServer2()throws ConnectionProblemException;
 
-
 }
