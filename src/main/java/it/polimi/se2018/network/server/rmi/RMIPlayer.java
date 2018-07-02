@@ -32,6 +32,9 @@ public class RMIPlayer extends RemotePlayer {
      * @param iRMIClient client associated to the player.
      */
     public RMIPlayer(IRMIClient iRMIClient) {
+        // TODO FORSE RIMUOVI PLAYERRUNNING
+        playerRunning = true;
+        playerConnection="rmi";
         this.iRMIClient = iRMIClient;
     }
 
@@ -63,6 +66,13 @@ public class RMIPlayer extends RemotePlayer {
                 disconnect();
             }
     }
+
+    /**
+     * Method used to to send an ACK (Acknowledge) packet from server to client in order to signal
+     * the correct reception of a data packet. (SOCKET)
+     */
+    @Override
+    public void sendAck() { }
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS

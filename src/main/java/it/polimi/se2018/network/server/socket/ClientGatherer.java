@@ -30,6 +30,8 @@ public class ClientGatherer implements Runnable {
     private ServerSocket serverSocket;
     private ServerController serverController;
 
+    boolean flag=true;
+
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -77,20 +79,22 @@ public class ClientGatherer implements Runnable {
         // In loop attendo la connessione di nuovi client
         // Per ogni client che si collega viene fatto partire un SocketPlayer
 
-        while (running.get()) {
+        while (flag) {
             Socket newClientConnection;
             try {
                 newClientConnection = serverSocket.accept();
                 System.out.println("A new client connected!");
-                new Thread(new SocketPlayer(serverController, newClientConnection)).start();
-
+                SocketPlayer socketPlayer = new SocketPlayer(serverController, newClientConnection);
+                new Thread(socketPlayer).start();
+                // aggiungi socketplayer alla lista dei socketplayer nel server
+                SocketServer.socketPlayers.add(socketPlayer);
             } catch (SocketException e){
                 // eccezione che classifica problemi di connessione
                 System.err.println("Connection issue during client connection.\nError: "+e.getMessage());
             } catch (IOException e) {
                 // eccezione che classifica problemi IO generali
                 System.err.println("Client connection refused.\nError: "+e.getMessage());
-                running.set(false);
+                flag=false;
             } catch (NullPointerException e1){
                 // CATCH DEL NULLPOINTER PERCHè SE IL CLIENT GATHERER NON C'è SIGNIFICA CHE NON è STATO CREATO IL THREAD
                 System.err.println("Socket Server Connection refused on this port!");

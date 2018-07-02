@@ -47,7 +47,7 @@ public class Server implements ServerController, TimerCallback {
     ServerController serverController;
     boolean flag = true;
     // Socket Server
-    private SocketServer socketServer;
+    private static SocketServer socketServer;
     // RMI Server
     private static RMIServer rmiServer;
     // GAME DELLA ROOM
@@ -469,14 +469,25 @@ public class Server implements ServerController, TimerCallback {
      */
     private boolean checkPlayerRunning(String nickname) {
         for (RemotePlayer player : players) {
-            try{
-                player.ping();
+            if(player.getPlayerConnection() == "rmi") {
+                try {
+                    player.ping();
+                } catch (RemoteException e) {
+                    player.disconnect();
+                }
+                if (player.getNickname().equals(nickname)) {
+                    return player.getPlayerRunning();
+                }
             }
-            catch (RemoteException e) {
-                player.disconnect();
-            }
-            if (player.getNickname().equals(nickname)) {
-                return player.getPlayerRunning();
+            if(player.getPlayerConnection() == "socket") {
+                try {
+                    player.sendAck();
+                } catch (Exception e) {
+                    player.disconnect();
+                }
+                if (player.getNickname().equals(nickname)) {
+                    return player.getPlayerRunning();
+                }
             }
         }
         return false;
@@ -516,7 +527,7 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to RMI Player.
      */
-    public static void removeRMIPlayer(RemotePlayer remotePlayer) {
+    public static void removeRMIPlayer(RemotePlayer remotePlayer){
         rmiServer.removePlayer(remotePlayer);
         AnsiConsole.out.println(ansi().fg(GREEN).a("Player disconnected!\n").reset());
     }
@@ -528,8 +539,8 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to Socket Player.
      */
-    public static void removeSOCKETPlayer(RemotePlayer remotePlayer) {
-        //TODO
+    public static void removeSOCKETPlayer(RemotePlayer remotePlayer){
+        socketServer.removePlayer(remotePlayer);
         AnsiConsole.out.println(ansi().fg(GREEN).a("Player disconnected!\n").reset());
     }
 }

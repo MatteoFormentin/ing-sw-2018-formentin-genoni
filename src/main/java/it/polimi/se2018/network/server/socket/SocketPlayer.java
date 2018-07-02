@@ -46,6 +46,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     public SocketPlayer(ServerController serverController, Socket connection) {
         this.serverController = serverController;
         playerRunning = true;
+        playerConnection="socket";
 
         this.tunnel = connection;
 
@@ -100,6 +101,8 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
             } catch (PlayerNetworkException ex) {
                 System.out.println("LOGIN NO VIA SOCKET");
                 sendNack();
+                playerRunning=false;
+                disconnect();
             }
         }
 
@@ -120,6 +123,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      */
     public void login(String nickname) throws PlayerNetworkException {
         setNickname(nickname);
+
         if (!this.serverController.login(this)) {
             throw new PlayerNetworkException("error");
         }
@@ -212,7 +216,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * This method will also set the playerRunning boolean to false in order to remove correctly the user.
      */
     @Override
-    public void disconnect() {
+    public void disconnect(){
         playerRunning=false;
         Server.removeSOCKETPlayer(this);
         AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname()+" has been removed!").reset());

@@ -28,6 +28,9 @@ public abstract class RemotePlayer {
     // Ovvero se c'è una connessione ancora valida (Running / true) o meno (Not Running / false)
     public boolean playerRunning=false;
 
+    // identificatore connessione player
+    public String playerConnection;
+
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -56,6 +59,8 @@ public abstract class RemotePlayer {
      * If the remote player that will call the ping will not found the disconnection of the player will be called.
      */
     public abstract void ping() throws RemoteException;
+
+    public abstract void sendAck();
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
@@ -117,6 +122,28 @@ public abstract class RemotePlayer {
      */
     public boolean getPlayerRunning() {
         return this.playerRunning;
+    }
+
+    /**
+     * Getter for player connection:
+     * 0 for RMI
+     * 1 for SOCKET
+     *
+     * @return name associated to the player.
+     */
+    public String getPlayerConnection() {
+        return this.playerConnection;
+    }
+
+    /**
+     * Setter for player connection:
+     * 0 for RMI
+     * 1 for SOCKET
+     *
+     * @param playerConnection flag used to identify the connection of the player.
+     */
+    public void setPlayerConnection(String playerConnection) {
+        this.playerConnection = playerConnection;
     }
 
     /**

@@ -169,7 +169,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
      * @param id id associated to the player.
      */
     @Override
-    public void disconnect(int id) throws IOException{
+    public void disconnect(int id) throws IOException {
         searchPlayerById(id).disconnect();
     }
 
@@ -182,7 +182,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
      *
      * @param remotePlayer player that must be removed.
      */
-    public void removePlayer(RemotePlayer remotePlayer) {
+    public void removePlayer(RemotePlayer remotePlayer){
         remotePlayer.setPlayerRunning(false);
         int id = rmiPlayers.indexOf(remotePlayer);
         if(id != -1)
