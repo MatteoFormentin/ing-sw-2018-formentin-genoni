@@ -82,6 +82,7 @@ public class Server implements ServerController, TimerCallback {
         roomJoinable = true;
         players = new ArrayList<>();
 
+
         AnsiConsole.out.println(ansi().fg(YELLOW).a("Time setting of the room:").reset());
         try {
             // LOAD FROM PROPERTIES
@@ -103,6 +104,9 @@ public class Server implements ServerController, TimerCallback {
             // Default timeout in case of exception.
             timeout = 120 * 1000;
         }
+
+        timerThread = new TimerThread(this, this.timeout);
+
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -166,20 +170,15 @@ public class Server implements ServerController, TimerCallback {
     }
 
     /**
-     * Put the server on listen.
-     * The server will connect only with the technology selected from client (RMI or Socket).
+     * Disonnecter for player.
+     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
+     * Login supporter method.
      *
-     * @param rmiPort port used on RMI connection.
+     * @param remotePlayer reference to RMI Player.
      */
-    public void startServer(int rmiPort, int socketPort){
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Creating network connection:\n").reset());
-
-        try {
-            rmiServer.startServer(rmiPort);
-            socketServer.startServer(socketPort);
-        } catch(Exception e) {
-            System.err.println("Server can't be started!\n");
-        }
+    public static void removeRMIPlayer(RemotePlayer remotePlayer) {
+        rmiServer.removePlayer(remotePlayer);
+        AnsiConsole.out.println(ansi().fg(GREEN).a("RMI Player disconnected!").reset());
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -187,32 +186,15 @@ public class Server implements ServerController, TimerCallback {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Starter for the game.
+     * Disonnecter for player.
+     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
+     * Login supporter method.
+     *
+     * @param remotePlayer reference to Socket Player.
      */
-    public void startGame() {
-        AnsiConsole.out.println(ansi().fg(GREEN).a("GAME STARTED!").reset());
-        game = new Controller(this, players.size(),null);
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("From now the room will not be joinable, except from a RElogin").reset());
-        roomJoinable = false;
-
-        String[] playersName = new String[players.size()];
-        int i = 0;
-        for (RemotePlayer player : players) {
-            playersName[i] = player.getNickname();
-            i++;
-        }
-        for (RemotePlayer player : players) {
-            try {
-                StartGame packet = new StartGame();
-                packet.setPlayersName(playersName);
-                packet.setPlayerId(player.getPlayerId());
-                player.sendEventToView(packet);
-            } catch (RemoteException ex) {
-                // DISCONNESSIONE
-                player.disconnect();
-            }
-        }
-        game.startGame();
+    public static void removeSOCKETPlayer(RemotePlayer remotePlayer) {
+        socketServer.removePlayer(remotePlayer);
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Socket Player disconnected!").reset());
     }
 
     @Override
@@ -239,15 +221,6 @@ public class Server implements ServerController, TimerCallback {
         this.game.joinGame(remotePlayer.getPlayerId());
     }
 
-    /**
-     * Initializer for the timeout, based on a single thread.
-     */
-    public void initializeTimerThread() {
-        // CREO NUOVO TIMER
-        timerThread = new TimerThread(this, this.timeout);
-        // FACCIO PARTIRE IL THREAD
-        timerThread.initializeThread();
-    }
 
     /**
      * Starter for the timeout, based on a single thread.
@@ -274,120 +247,19 @@ public class Server implements ServerController, TimerCallback {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Remote method used to log the user to the server with his nickname.
+     * Put the server on listen.
+     * The server will connect only with the technology selected from client (RMI or Socket).
      *
-     * @param remotePlayer reference to RMI or Socket Player.
-     * @return true if the user is logged, false otherwise.
+     * @param rmiPort port used on RMI connection.
      */
-    @Override
-    public boolean login(RemotePlayer remotePlayer) {
-        synchronized (PLAYERS_MUTEX) {
+    public void startServer(int rmiPort, int socketPort) {
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Creating network connection:\n").reset());
 
-            // SE LA STANZA è ACCESSIBILE (PRE-GAME)
-            if (roomJoinable){
-
-                initializeTimerThread();
-
-                if(this.players.size()== 1 && !timerThread.isRunning()){
-                    timerThread.interruptThread();
-                    timerThread.resetTimer();
-                }
-
-                AnsiConsole.out.println(ansi().fg(DEFAULT).a("Trying to log the player in the waiting room...").reset());
-
-                // NON ESISTE PLAYER CON QUEL NICKNAME E NON è CONNESSO
-                if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
-
-                    // IMPOSTO L'ID
-                    remotePlayer.setPlayerId(playerCounter);
-
-                    // IMPOSTO LA CONNESSIONE
-                    connectPlayer(remotePlayer);
-                    players.add(remotePlayer);
-                    playerCounter++;
-
-                    // APPENA RAGGIUNGO IL NUMERO MINIMO PLAYER FACCIO PARTIRE TIMER
-                    if (this.players.size() == MIN_PLAYERS) {
-                        // FAI PARTIRE IL TEMPO DI ATTESA
-                        startTimerThread();
-                    }
-
-                    // APPENA RAGGIUNGO IL NUMERO MASSIMO DI PLAYER FACCIO PARTIRE IL GIOCO
-                    else if (this.players.size() == MAX_PLAYERS) {
-                        // TERMINO THREAD SICCOME LA ROOM è PIENA
-                        this.timerThread.shutdown();
-                        // FACCIO PARTIRE IL PREGAME
-                        startPreGameThread(remotePlayer);
-                    }
-                    return true;
-                }
-
-                // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && checkPlayerRunning(remotePlayer.getNickname())) {
-                    System.err.println("Player: "+remotePlayer.getNickname()+" already logged, use another nickname...");
-                    return false;
-                }
-
-                // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !checkPlayerRunning(remotePlayer.getNickname())) {
-                    // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
-
-                    // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
-                    int id = remotePlayer.getPlayerId();
-                    String nickname = remotePlayer.getNickname();
-                    AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, "+nickname+" I noticed your disconnection.\nI'm trying to relog you in the game...").reset());
-
-                    // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
-                    replacePlayer(id, remotePlayer);
-
-                    // IMPOSTO LA CONNESSIONE
-                    connectPlayer(remotePlayer);
-                    AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
-
-                    return true;
-                }
-            }
-
-            // SE LA STANZA NON è ACCESSIBILE (IN-GAME)
-            else if (!roomJoinable) {
-
-                // NON ESISTE PLAYER CON QUEL NICKNAME
-                if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
-                    System.err.println("Room is closed, "+remotePlayer.getNickname()+" can't access!");
-                    return false;
-                }
-
-                // ESISTE IL PLAYER CON QUEL NICKNAME ED è CONNESSO
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && checkPlayerRunning(remotePlayer.getNickname())) {
-                    System.err.println("Sorry "+remotePlayer.getNickname()+" but the room is closed and your nickname is already a player in the game!");
-                    return false;
-                }
-
-                // ESISTE IL PLAYER CON QUEL NICKNAME E NON è CONNESSO
-                // RELOGIN
-                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !checkPlayerRunning(remotePlayer.getNickname())) {
-
-                    // L'ID DEL PLAYER E IL NICKNAME DEL PLAYER DEVONO RIMANERE UGUALI, DEVI SOLO CAMBIARE IL REMOTE PLAYER CON UNO NUOVO
-                    int id = remotePlayer.getPlayerId();
-                    String nickname = remotePlayer.getNickname();
-
-                    AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, "+nickname+" I noticed your disconnection.\nI'm trying to relog you in the game...").reset());
-
-                    // SOSTITUZIONE IN BASE ALL'ID
-                    replacePlayer(id, remotePlayer);
-
-                    // RE IMPOSTAZIONE DELLA CONNESSIONE (RUNNING)
-                    connectPlayer(remotePlayer);
-
-                    // FACCIO PARTIRE IL PREGAME
-                    startPreGameThread(remotePlayer);
-
-                    // RE INTEGRAZIONE NEL GIOCO
-                    this.game.joinGame(id);
-                }
-                return true;
-            }
-            return true;
+        try {
+            rmiServer.startServer(rmiPort);
+            socketServer.startServer(socketPort);
+        } catch (Exception e) {
+            System.err.println("Server can't be started!\n");
         }
     }
 
@@ -433,10 +305,33 @@ public class Server implements ServerController, TimerCallback {
     }
 
     /**
-     * Remote method used to ping the client.
+     * Starter for the game.
      */
-    @Override
-    public void ping() { }
+    public void startGame() {
+        AnsiConsole.out.println(ansi().fg(GREEN).a("GAME STARTED!").reset());
+        game = new Controller(this, players.size(), null);
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("From now the room will not be joinable, except from a RElogin").reset());
+        roomJoinable = false;
+
+        String[] playersName = new String[players.size()];
+        int i = 0;
+        for (RemotePlayer player : players) {
+            playersName[i] = player.getNickname();
+            i++;
+        }
+        for (RemotePlayer player : players) {
+            try {
+                StartGame packet = new StartGame();
+                packet.setPlayersName(playersName);
+                packet.setPlayerId(player.getPlayerId());
+                player.sendEventToView(packet);
+            } catch (RemoteException ex) {
+                // DISCONNESSIONE
+                player.disconnect();
+            }
+        }
+        game.startGame();
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
@@ -463,35 +358,119 @@ public class Server implements ServerController, TimerCallback {
     }
 
     /**
-     * Checker of the player associated to the client, with nickname.
+     * Remote method used to log the user to the server with his nickname.
      *
-     * @param nickname name of the player associated to the client.
-     * @return true if the nickname is associated to a client, false otherwise.
+     * @param remotePlayer reference to RMI or Socket Player.
+     * @return true if the user is logged, false otherwise.
      */
-    private boolean checkPlayerRunning(String nickname) {
-        for (RemotePlayer player : players) {
-            if(player.getPlayerConnection() == "rmi") {
-                try {
-                    player.ping();
-                } catch (RemoteException e) {
-                    player.disconnect();
+    @Override
+    public boolean login(RemotePlayer remotePlayer) {
+        synchronized (PLAYERS_MUTEX) {
+
+            // SE LA STANZA è ACCESSIBILE (PRE-GAME)
+            if (roomJoinable) {
+
+                if (this.players.size() == 1 && timerThread.isAlive()) {
+                    timerThread.shutdown();
+                    timerThread.startThread();
                 }
-                if (player.getNickname().equals(nickname)) {
-                    return player.getPlayerRunning();
+
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a("Trying to log the player in the waiting room...").reset());
+
+                // NON ESISTE PLAYER CON QUEL NICKNAME E NON è CONNESSO
+                if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
+
+                    // IMPOSTO L'ID
+                    remotePlayer.setPlayerId(playerCounter);
+
+                    // IMPOSTO LA CONNESSIONE
+                    connectPlayer(remotePlayer);
+                    players.add(remotePlayer);
+                    playerCounter++;
+
+                    // APPENA RAGGIUNGO IL NUMERO MINIMO PLAYER FACCIO PARTIRE TIMER
+                    if (this.players.size() == MIN_PLAYERS) {
+                        // FAI PARTIRE IL TEMPO DI ATTESA
+                        startTimerThread();
+                    }
+
+                    // APPENA RAGGIUNGO IL NUMERO MASSIMO DI PLAYER FACCIO PARTIRE IL GIOCO
+                    else if (this.players.size() == MAX_PLAYERS) {
+                        // TERMINO THREAD SICCOME LA ROOM è PIENA
+                        this.timerThread.shutdown();
+                        // FACCIO PARTIRE IL PREGAME
+                        startPreGameThread(remotePlayer);
+                    }
+                    return true;
+                }
+
+                // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && checkPlayerRunning(remotePlayer.getNickname())) {
+                    System.err.println("Player: " + remotePlayer.getNickname() + " already logged, use another nickname...");
+                    return false;
+                }
+
+                // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !checkPlayerRunning(remotePlayer.getNickname())) {
+                    // GESTIONE EVENTO DI DISCONNESSIONE PLAYER NEL PRE-GAME
+
+                    // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
+                    int id = remotePlayer.getPlayerId();
+                    String nickname = remotePlayer.getNickname();
+                    AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, " + nickname + " I noticed your disconnection.\nI'm trying to relog you in the game...").reset());
+
+                    // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
+                    replacePlayer(id, remotePlayer);
+
+                    // IMPOSTO LA CONNESSIONE
+                    connectPlayer(remotePlayer);
+                    AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
+
+                    return true;
                 }
             }
-            if(player.getPlayerConnection() == "socket") {
-                try {
-                    player.sendAck();
-                } catch (Exception e) {
-                    player.disconnect();
+
+            // SE LA STANZA NON è ACCESSIBILE (IN-GAME)
+            else if (!roomJoinable) {
+
+                // NON ESISTE PLAYER CON QUEL NICKNAME
+                if (!checkPlayerNicknameExists(remotePlayer.getNickname())) {
+                    System.err.println("Room is closed, " + remotePlayer.getNickname() + " can't access!");
+                    return false;
                 }
-                if (player.getNickname().equals(nickname)) {
-                    return player.getPlayerRunning();
+
+                // ESISTE IL PLAYER CON QUEL NICKNAME ED è CONNESSO
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && checkPlayerRunning(remotePlayer.getNickname())) {
+                    System.err.println("Sorry " + remotePlayer.getNickname() + " but the room is closed and your nickname is already a player in the game!");
+                    return false;
                 }
+
+                // ESISTE IL PLAYER CON QUEL NICKNAME E NON è CONNESSO
+                // RELOGIN
+                else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && !checkPlayerRunning(remotePlayer.getNickname())) {
+
+                    // L'ID DEL PLAYER E IL NICKNAME DEL PLAYER DEVONO RIMANERE UGUALI, DEVI SOLO CAMBIARE IL REMOTE PLAYER CON UNO NUOVO
+                    int id = remotePlayer.getPlayerId();
+                    String nickname = remotePlayer.getNickname();
+
+                    AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, " + nickname + " I noticed your disconnection.\nI'm trying to relog you in the game...").reset());
+
+                    // SOSTITUZIONE IN BASE ALL'ID
+                    replacePlayer(id, remotePlayer);
+
+                    // RE IMPOSTAZIONE DELLA CONNESSIONE (RUNNING)
+                    connectPlayer(remotePlayer);
+
+                    // FACCIO PARTIRE IL PREGAME
+                    startPreGameThread(remotePlayer);
+
+                    // RE INTEGRAZIONE NEL GIOCO
+                    this.game.joinGame(id);
+                }
+                return true;
             }
+            return true;
         }
-        return false;
     }
 
     /**
@@ -524,26 +503,41 @@ public class Server implements ServerController, TimerCallback {
     }
 
     /**
-     * Disonnecter for player.
-     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
-     * Login supporter method.
-     *
-     * @param remotePlayer reference to RMI Player.
+     * Remote method used to ping the client.
      */
-    public static void removeRMIPlayer(RemotePlayer remotePlayer){
-        rmiServer.removePlayer(remotePlayer);
-        AnsiConsole.out.println(ansi().fg(GREEN).a("RMI Player disconnected!").reset());
+    @Override
+    public void ping() {
     }
 
     /**
-     * Disonnecter for player.
-     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
-     * Login supporter method.
+     * Checker of the player associated to the client, with nickname.
      *
-     * @param remotePlayer reference to Socket Player.
+     * @param nickname name of the player associated to the client.
+     * @return true if the nickname is associated to a client, false otherwise.
      */
-    public static void removeSOCKETPlayer(RemotePlayer remotePlayer){
-        socketServer.removePlayer(remotePlayer);
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Socket Player disconnected!").reset());
+    private boolean checkPlayerRunning(String nickname) {
+        for (RemotePlayer player : players) {
+            if (player.getPlayerConnection() == "rmi") {
+                try {
+                    player.ping();
+                } catch (RemoteException e) {
+                    player.disconnect();
+                }
+                if (player.getNickname().equals(nickname)) {
+                    return player.getPlayerRunning();
+                }
+            }
+            if (player.getPlayerConnection() == "socket") {
+                try {
+                    player.sendAck();
+                } catch (Exception e) {
+                    player.disconnect();
+                }
+                if (player.getNickname().equals(nickname)) {
+                    return player.getPlayerRunning();
+                }
+            }
+        }
+        return false;
     }
 }

@@ -24,6 +24,7 @@ public class TimerThread implements Runnable {
     //Timeout passato da server (caricato da file)
     private long timeout;
     private long startTimerTime;
+    private boolean isAlive;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -38,6 +39,7 @@ public class TimerThread implements Runnable {
     public TimerThread(TimerCallback timerCallback, long timeout) {
         this.timeout = timeout;
         this.timerCallback = timerCallback;
+        this.isAlive = false;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -54,12 +56,20 @@ public class TimerThread implements Runnable {
     public void run() {
         // Inizio conteggio timer
         // Punto di inizio del conteggio per il timer
+        isAlive = true;
         Thread.currentThread().setName("Timer Thread");
         startTimerTime = System.currentTimeMillis();
         while (System.currentTimeMillis() - startTimerTime <= timeout) {
-            if (!running.get()) return;
+            if (!running.get()) {
+                System.out.println("!!!!STOPPED!!!!");
+                isAlive = false;
+                return;
+            }
         }
         if (running.get()) timerCallback.timerCallback();
+        System.out.println("!!!!EXPIRED!!!!");
+
+        isAlive = false;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -70,12 +80,9 @@ public class TimerThread implements Runnable {
      * Starter for the Timer Thread.
      */
     public void startThread() {
+        timerThread = new Thread(this);
         running.set(true);
         timerThread.start();
-    }
-
-    public void initializeThread() {
-        timerThread = new Thread(this);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -101,15 +108,7 @@ public class TimerThread implements Runnable {
         startTimerTime = System.currentTimeMillis();
     }
 
-    public void interruptThread(){
-        this.timerThread.interrupt();
-    }
-
-    public boolean isExpired() {
-        return timerThread.isAlive();
-    }
-
-    public boolean isRunning(){
-        return this.running.get();
+    public boolean isAlive() {
+        return isAlive;
     }
 }
