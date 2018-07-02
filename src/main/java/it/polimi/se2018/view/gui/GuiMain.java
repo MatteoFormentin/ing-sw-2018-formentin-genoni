@@ -1,8 +1,9 @@
 package it.polimi.se2018.view.gui;
 
 import it.polimi.se2018.view.gui.gamestage.GuiGame;
-import it.polimi.se2018.view.gui.gamestage.ShowValue;
-import it.polimi.se2018.view.gui.stage.*;
+import it.polimi.se2018.view.gui.stage.ConfirmBox;
+import it.polimi.se2018.view.gui.stage.Login;
+import it.polimi.se2018.view.gui.stage.SetUpConnection;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -10,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -59,7 +59,7 @@ public class GuiMain extends Application {
             e.consume();
             closeProgram();
         });
-        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:src/main/resources/Immagine.jpg", 779, 261, true, true),
+        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:src/resources/Immagine.jpg", 779, 261, true, true),
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         menu.setBackground(new Background(backgroundImage));
         menu.setAlignment(Pos.CENTER);

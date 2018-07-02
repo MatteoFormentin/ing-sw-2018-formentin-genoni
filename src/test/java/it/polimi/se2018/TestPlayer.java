@@ -5,7 +5,7 @@ import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.NoDiceInHandException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionAdjacentFirstDiceViolatedException;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.RestrictionAdjacentFirstDiceViolatedException;
 import it.polimi.se2018.model.Player;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;

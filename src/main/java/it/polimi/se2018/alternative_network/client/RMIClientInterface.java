@@ -14,5 +14,4 @@ public interface RMIClientInterface  extends Remote {
 
     String pong(String message) throws RemoteException;
 
-
 }

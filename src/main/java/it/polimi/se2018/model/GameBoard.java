@@ -1,6 +1,7 @@
 package it.polimi.se2018.model;
 
 
+import it.polimi.se2018.alternative_network.newserver.GameRoom;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.alternative_network.newserver.ServerController2;
 import it.polimi.se2018.exception.GameException;
@@ -9,6 +10,7 @@ import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ColorNotRightException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.RoundTrackIndexException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
+import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
@@ -24,6 +26,7 @@ import java.util.LinkedList;
 
 /**
  * the game board for one game with all the method that can be used in a game
+ * FACADE pattern
  *
  * @author Luca Genoni
  */
@@ -41,10 +44,10 @@ public class GameBoard {
     private FactoryDice factoryDiceForThisGame; //nobody can see it
     private DiceColor colorRestriction;
     private ServerController server;
-    private Server2 server2;
+    private GameRoom server2;
 
 
-    public GameBoard(int number, ServerController setServer,Server2 setserver2) {
+    public GameBoard(int number, ServerController setServer,GameRoom setServer2) {
 
         stopGame = false;
         currentRound = 0;
@@ -56,7 +59,7 @@ public class GameBoard {
         Deck deck = Deck.getDeck();
         player = new Player[number];
         server = setServer;
-        server2 = setserver2;
+        server2 = setServer2;
         //setUp player
         for (int i = 0; i < number; i++) {
             player[i] = new Player(i);
@@ -91,12 +94,6 @@ public class GameBoard {
         sendEventToView(packetRound);
     }
 
-    private void broadcast(EventView event) {
-        for (int i = 0; i < player.length; i++) {
-            event.setPlayerId(i);
-            sendEventToView(event);
-        }
-    }
 
     private void sendEventToView(EventView event){
         if(server==null) server2.sendEventToView(event);
@@ -223,20 +220,37 @@ public class GameBoard {
     }
 
     private void updateHand(int indexPlayer) {
-        UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-        broadcast(packet);
+        for(int i=0; i<player.length;i++){
+            UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
+            packet.setPlayerId(i);
+            sendEventToView(packet);
+        }
     }
 
     private void updateDicePool() {
-        UpdateDicePool packet = new UpdateDicePool(dicePool);
-        broadcast(packet);
+        for(int i=0; i<player.length;i++){
+            UpdateDicePool packet = new UpdateDicePool(dicePool);
+            packet.setPlayerId(i);
+            sendEventToView(packet);
+        }
     }
 
     private void updateTokenPoints(int indexPlayer) {
-        UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
-        broadcast(packet);
+        for(int i=0; i<player.length;i++){
+            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
+            packet.setPlayerId(i);
+            sendEventToView(packet);
+        }
+
     }
 
+    private void firstTurn(int indexPlayerEnded){
+        //se arrivi dal primo turno il tuo prossimo è un secondo turno
+        //se non arrivi dal primo turno il tuo prossimo è un primo turno
+        if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
+        else player[indexPlayerEnded].endTurn(true);
+        freeHandPlayer(indexPlayerEnded);
+    }
     /**
      * change the current player to the next and end the game.
      * check the state of the player for the first/second turn
@@ -253,28 +267,24 @@ public class GameBoard {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayerEnded != indexCurrentPlayer) throw new CurrentPlayerException();
         if (currentTurn < player.length) {
-            //se arrivi dal primo turno il tuo prossimo è un secondo turno
-            //se non arrivi dal primo turno il tuo prossimo è un primo turno
-            if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
-            else player[indexPlayerEnded].endTurn(true);
-            //   System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
+            firstTurn(indexPlayerEnded);
             indexCurrentPlayer = (indexPlayerEnded + 1) % player.length;
-            freeHandPlayer(indexPlayerEnded);
             currentTurn++;
-            EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-            broadcast(infoTurn);
+            for(int i=0; i<player.length;i++){
+                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                packet.setPlayerId(i);
+                sendEventToView(packet);
+            }
             //se il prossimo giocatore non è nel primo allora passo al prossimo giocatore
             if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn == player.length) {
-            //se arrivi dal primo turno il tuo prossimo è un secondo turno
-            //se non arrivi dal primo turno il tuo prossimo è un primo turno
-            if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
-            else player[indexPlayerEnded].endTurn(true);
-            //   System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
-            freeHandPlayer(indexPlayerEnded);
+            firstTurn(indexPlayerEnded);
             currentTurn++;
-            EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-            broadcast(infoTurn);
+            for(int i=0; i<player.length;i++){
+                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                packet.setPlayerId(i);
+                sendEventToView(packet);
+            }
             //inizio del secondo giro se il giocatore deve fare il primo turno passa avanti
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn < (2 * player.length)) {
@@ -282,13 +292,16 @@ public class GameBoard {
             //se non arrivi dal secondo turno il tuo prossimo turno è un primo
             if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
             else player[indexPlayerEnded].endTurn(true);
-            //    System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
             indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
             if (indexCurrentPlayer < 0) indexCurrentPlayer = player.length + indexCurrentPlayer;
             currentTurn++;
             freeHandPlayer(indexPlayerEnded);
             EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-            broadcast(infoTurn);
+            for(int i=0; i<player.length;i++){
+                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                packet.setPlayerId(i);
+                sendEventToView(packet);
+            }
             //se il giocatore deve fare il primo turno passa avanti
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn == (2 * player.length)) { //fine round
@@ -296,17 +309,23 @@ public class GameBoard {
             //se non arrivi dal secondo turno il tuo prossimo turno è un primo
             if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
             else player[indexPlayerEnded].endTurn(true);
-            //  System.err.println("Round: "+currentRound+" ------- Turno :"+currentTurn+" ------- ha terminato il turno :"+indexCurrentPlayer);
             freeHandPlayer(indexPlayerEnded);
             roundTrack[currentRound] = dicePool;
-            UpdateSingleTurnRoundTrack packetRound = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
-            broadcast(packetRound);
+            for(int i=0; i<player.length;i++){
+                UpdateSingleTurnRoundTrack packet = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
+                packet.setPlayerId(i);
+                sendEventToView(packet);
+            }
             currentRound++;
             if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
                 currentTurn = 1;
                 EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-                broadcast(infoTurn);
+                for(int i=0; i<player.length;i++){
+                    UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
+                    packet.setPlayerId(i);
+                    sendEventToView(packet);
+                }
                 dicePool = new DiceStack();
                 for (int i = 0; i < (2 * player.length + 1); i++) {
                     Dice dice = factoryDiceForThisGame.createDice();
@@ -423,8 +442,11 @@ public class GameBoard {
         }
         //inolra a tutti il punteggio
         for (int i = 0; i < player.length; i++) {
-            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
-            broadcast(packet);
+            for(int j=0; j<player.length;j++){
+                UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
+                packet.setPlayerId(j);
+                sendEventToView(packet);
+            }
         }
         //costruzione array ordinato
         NodePodium currentPlayerSorted = podium.max(podium.getRoot());
@@ -447,27 +469,24 @@ public class GameBoard {
         description[5] = objectivePublicCard[2].getName();
         description[6] = "Token Rimasti";
         description[7] = "Celle Vuote";
-        UpdateStatPodium packet = new UpdateStatPodium(sortedPlayer, description);
-        broadcast(packet);
+        for(int j=0; j<player.length;j++){
+            UpdateStatPodium packet = new UpdateStatPodium(sortedPlayer, description);
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
 
-    /**
-     * move for select the window Pattern
-     *
-     * @param idPlayer         who want to set the window
-     * @param indexOfTheWindow of the window selected
-     */
-    public void setWindowOfPlayer(int idPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException, ValueDiceWrongException {
-        if (player[idPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
-        player[idPlayer].choosePlayerWindowPattern(indexOfTheWindow);
+    public void setWindowOfPlayer(int indexPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException, ValueDiceWrongException {
+        if (player[indexPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
+        player[indexPlayer].choosePlayerWindowPattern(indexOfTheWindow);
         for (int i = 0; i < player.length; i++) {
-            UpdateSingleWindow packet = new UpdateSingleWindow(idPlayer, player[idPlayer].getPlayerWindowPattern());
+            UpdateSingleWindow packet = new UpdateSingleWindow(indexPlayer, player[indexPlayer].getPlayerWindowPattern());
             packet.setPlayerId(i);
             sendEventToView(packet);
 
         }
-        updateTokenPoints(idPlayer);
+        updateTokenPoints(indexPlayer);
         countSetWindow++;
         if (countSetWindow == player.length) {
             setUpFirstRound();
@@ -488,8 +507,7 @@ public class GameBoard {
      */
     public void addNewDiceToHandFromDicePool(int indexPlayer, int indexDicePool) throws NoDiceException, GameIsBlockedException,
             CurrentPlayerException, AlreadyDrawANewDiceException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (player[indexPlayer].isHasDrawNewDice()) throw new AlreadyDrawANewDiceException();
         Dice dice = dicePool.getDice(indexDicePool);
         if (dice == null) throw new NoDiceException();
@@ -509,29 +527,36 @@ public class GameBoard {
      * @throws GameException
      */
     public void insertDice(int indexPlayer, int line, int column, boolean firstTurnDie) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column, true, true, true, firstTurnDie);
         player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
 
     public void useToolCard(int indexPlayer, int indexOfToolInGame) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (player[indexPlayer].isHasUsedToolCard()) throw new AlreadyUseToolCardException();
         toolCard[indexOfToolInGame].checkUsabilityToolCard(currentRound, player[indexPlayer]);
         player[indexPlayer].useToolCard(toolCard[indexOfToolInGame].getFavorToken());
         toolCard[indexOfToolInGame].incrementUsage();
-        UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
-        broadcast(packet);
-        UpdateSingleToolCardCost packet2 = new UpdateSingleToolCardCost(indexOfToolInGame, toolCard[indexOfToolInGame].getFavorToken());
-        broadcast(packet2);
+        for(int j=0; j<player.length;j++){
+            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
+        for(int j=0; j<player.length;j++){
+            UpdateSingleToolCardCost packet = new UpdateSingleToolCardCost(indexOfToolInGame, toolCard[indexOfToolInGame].getFavorToken());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
     //*****************************************Tool's method of Gameboard **********************************************
     //*****************************************Tool's method of Gameboard **********************************************
@@ -548,8 +573,7 @@ public class GameBoard {
      * @throws GameException
      */
     public void imposeColorRestriction(int indexPlayer, int round, int index) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (round >= currentRound || round < 0) throw new RoundTrackIndexException();
         if (index < 0 || index >= roundTrack[round].size()) throw new NoDiceException();
         colorRestriction = roundTrack[round].getDice(index).getColor();
@@ -565,15 +589,17 @@ public class GameBoard {
      * @throws GameException
      */
     public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column, boolean checkRestriction) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (checkRestriction && !colorRestriction.equals(player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice().getColor()))
             throw new ColorNotRightException();
         player[indexPlayer].removeDiceFromWindowAndAddToHand(line, column);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
 
@@ -584,8 +610,7 @@ public class GameBoard {
      * @return true if is gone all ok, false otherwise
      */
     public void changeDiceBetweenHandAndFactory(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         Dice dice = player[indexPlayer].removeDiceFromHand();
         factoryDiceForThisGame.removeDice(dice);
         dice = factoryDiceForThisGame.createDice();
@@ -602,8 +627,7 @@ public class GameBoard {
      * @return
      */
     public void changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (round >= currentRound || round < 0)
             throw new RoundTrackIndexException();//can't select a round that didn't exist
         if (indexStack >= roundTrack[round].size() || indexStack < 0) throw new NoDiceException();
@@ -611,8 +635,11 @@ public class GameBoard {
         player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack), false);
         roundTrack[round].add(indexStack, dicePlayer);
         updateHand(indexPlayer);
-        EventView packetCell = new UpdateSingleTurnRoundTrack(round, roundTrack[round]);
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            EventView packet = new UpdateSingleTurnRoundTrack(round, roundTrack[round]);
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
 
@@ -621,12 +648,14 @@ public class GameBoard {
      * @return
      */
     public void rollDicePool(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (currentTurn < player.length) throw new GameException("Non effettuare questa mossa adesso");
         dicePool.reRollAllDiceInStack();
-        EventView packetCell = new UpdateDicePool(dicePool);
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            EventView packet = new UpdateDicePool(dicePool);
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
@@ -649,15 +678,17 @@ public class GameBoard {
      */
     public void insertDice(int indexPlayer, int line, int column, boolean adjacentRestriction,
                            boolean colorRestriction, boolean valueRestriction, boolean singleNewDice) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (singleNewDice && player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction, singleNewDice);
         if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
         updateHand(indexPlayer);
         Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        UpdateSingleCell packetCell = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-        broadcast(packetCell);
+        for(int j=0; j<player.length;j++){
+            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
+            packet.setPlayerId(j);
+            sendEventToView(packet);
+        }
     }
 
     /**
@@ -665,8 +696,7 @@ public class GameBoard {
      * @throws GameException
      */
     public void rollDiceInHand(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         player[indexPlayer].rollDiceInHand();
         updateHand(indexPlayer);
     }
@@ -676,8 +706,7 @@ public class GameBoard {
      * @throws GameException
      */
     public void oppositeFaceDice(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         player[indexPlayer].oppositeFaceDice();
         updateHand(indexPlayer);
     }
@@ -687,45 +716,43 @@ public class GameBoard {
      * @return
      */
     public void endSpecialFirstTurn(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         player[indexCurrentPlayer].endSpecialFirstTurn();
         freeHandPlayer(indexPlayer);
     }
 
     public void setValueDiceHand(int indexPlayer, int value) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         player[indexPlayer].setValueDiceHand(value);
         updateHand(indexPlayer);
     }
 
-    public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+    /**
+     *
+     * @param indexPlayer integer that indicate which player send the request of
+     * @param increase true of increase the value false for decrease
+     * @throws GameIsBlockedException if the game can't be access
+     * @throws CurrentPlayerException if it isn't the player's turn
+     * @throws ValueDiceWrongException if the request doesn't respect the dice domain
+     * @throws NoDiceInHandException if the player have no dice in hand
+     * @throws NoDiceException
+     */
+    public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameIsBlockedException,
+            CurrentPlayerException, ValueDiceWrongException, NoDiceInHandException, NoDiceException {
+        checkState(indexPlayer);
         player[indexPlayer].increaseOrDecrease(increase);
         updateHand(indexPlayer);
     }
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
 
     /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param index       of the die in hand
-     * @return
+     * check the state of the game board and if it's the player turn
+     *
+     * @param indexPlayer integer that indicate which player send the request of
+     * @throws GameIsBlockedException if the game can't be access
+     * @throws CurrentPlayerException if it isn't the player's turn
      */
-    public void selectDiceInHand(int indexPlayer, int index) throws GameException {
-     /*   try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            return player[indexCurrentPlayer].selectDiceInHand(indexPlayer);
-        } catch (Exception e) {
-            return false;
-        }*/
+    private void checkState(int indexPlayer)throws GameIsBlockedException,CurrentPlayerException {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
     }
-
-
 }

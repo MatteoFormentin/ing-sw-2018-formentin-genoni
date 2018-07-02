@@ -1,12 +1,12 @@
 package it.polimi.se2018;
 
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.RestrictionCellColorViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.RestrictionCellValueViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionAdjacentFirstDiceViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionAdjacentViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionColorViolatedException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.RestrictionValueViolatedException;
+import it.polimi.se2018.exception.gameboard_exception.cell_exception.RestrictionCellColorViolatedException;
+import it.polimi.se2018.exception.gameboard_exception.cell_exception.RestrictionCellValueViolatedException;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.RestrictionAdjacentFirstDiceViolatedException;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.RestrictionAdjacentViolatedException;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.RestrictionColorViolatedException;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.RestrictionValueViolatedException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
 import it.polimi.se2018.model.card.objective_private_card.*;
 import it.polimi.se2018.model.card.objective_public_card.*;

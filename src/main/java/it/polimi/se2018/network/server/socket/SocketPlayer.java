@@ -74,9 +74,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         while (flag && tunnel.isConnected()) {
             try {
                 SocketObject received = (SocketObject) inputStream.readObject();
-
                 socketObjectTraducer(received);
-
             } catch (IOException | ClassNotFoundException ex) {
                 ex.printStackTrace();
                 flag = false;

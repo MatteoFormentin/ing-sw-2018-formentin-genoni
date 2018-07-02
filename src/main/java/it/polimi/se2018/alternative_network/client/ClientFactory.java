@@ -1,8 +1,8 @@
 package it.polimi.se2018.alternative_network.client;
 
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.network.client.socket.SocketClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
@@ -26,42 +26,41 @@ public class ClientFactory {
 
     private static ClientFactory instance;
     private UIInterface view;
-    private String IP_SERVER;
-    private int RMI_PORT;
-    private int SOCKET_PORT;
-    private static AbstractClient2 abstractClient;
+    private String ipServer;
+    private int rmiPort;
+    private int socketPort;
+    private AbstractClient2 abstractClient;
 
     public ClientFactory(UIInterface view) {
         this.view = view;
         loadDefault();
     }
 
+    private void loadDefault() {
+        try {
+            Properties configProperties = new Properties();
+            String connectionConfig = "src/resources/configurations/connection_configuration.properties";
+            FileInputStream inputConnection = new FileInputStream(connectionConfig);
+            configProperties.load(inputConnection);
+            ipServer = configProperties.getProperty("SERVER_ADDRESS");
+            rmiPort = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
+            socketPort = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+        } catch (IOException ex) {
+            ipServer = "localhost";
+            rmiPort = 31415;
+            socketPort = 16180;
+        }
+    }
     public AbstractClient2 createClient(String serverIpAddress, int port, int rmi0socket1) {
-        if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = IP_SERVER;
+        if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = ipServer;
         if (rmi0socket1 == 0) {
-            if (port == 0) abstractClient = new RMIClient2StartAndInput(serverIpAddress, RMI_PORT, view);
+            if (port == 0) abstractClient = new RMIClient2StartAndInput(serverIpAddress, rmiPort, view);
             else abstractClient = new RMIClient2StartAndInput(serverIpAddress, port, view);
         } else if (rmi0socket1 == 1) {
-            if (port == 0) abstractClient = new SocketClient(null, serverIpAddress, SOCKET_PORT);
+            if (port == 0) abstractClient = new SocketClient(null, serverIpAddress, socketPort);
             else abstractClient = new SocketClient(null, serverIpAddress, port);
         }
         return abstractClient;
-    }
-
-    public void loadDefault() {
-        try {
-            Properties configProperties = new Properties();
-            String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
-            FileInputStream inputConnection = new FileInputStream(connectionConfig);
-            configProperties.load(inputConnection);
-            IP_SERVER = configProperties.getProperty("SERVER_ADDRESS");
-            RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
-            SOCKET_PORT = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
-        } catch (IOException ex) {
-            IP_SERVER = "localhost";
-            RMI_PORT = 1099;
-            SOCKET_PORT = 1090;
-        }
     }
 
     /**
@@ -74,7 +73,7 @@ public class ClientFactory {
         int RMI_PORT = 31415;
        try {
             Properties configProperties = new Properties();
-            String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
+           String connectionConfig = "src/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
             configProperties.load(inputConnection);
             RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
@@ -82,7 +81,7 @@ public class ClientFactory {
         } catch (IOException e) {
             System.out.println("La configurazione non può essere impostata da file, verrà caricata quella di default");
         }
-        abstractClient =instance.createClient(IP_SERVER, RMI_PORT, 0);
+        AbstractClient2 abstractClient =instance.createClient(IP_SERVER, RMI_PORT, 0);
 
         CliParser input = new CliParser();
         System.out.println("Digita 0 per collegarti al server, 1 per uscire: ");
@@ -106,4 +105,5 @@ public class ClientFactory {
         System.out.println("quando vuoi digita 0 per scollegarti dal");
         if (input.parseInt(1) == 0) abstractClient.shutDownClient2();
     }
+
 }

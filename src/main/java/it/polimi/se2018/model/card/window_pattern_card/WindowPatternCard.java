@@ -1,8 +1,7 @@
 package it.polimi.se2018.model.card.window_pattern_card;
 
 import it.polimi.se2018.exception.gameboard_exception.window_exception.*;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.NoDiceInThisCell;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.insert_dice.*;
+import it.polimi.se2018.exception.gameboard_exception.cell_exception.CellException;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
@@ -163,7 +162,7 @@ public class WindowPatternCard implements Serializable {
      * @param dice   to insert in the WindowsPattern
      * @return true if the insertDice is ok, false if can't insert the dice
      */
-    public void insertDice(int line, int column, Dice dice) throws WindowRestriction {
+    public void insertDice(int line, int column, Dice dice) throws WindowRestriction,CellException {
         insertDice(line,column,dice,true,true,true);
     }
 
@@ -186,8 +185,8 @@ public class WindowPatternCard implements Serializable {
      */
 
     public void insertDice(int line, int column, Dice dice, boolean adjacentRestriction,
-                              boolean colorRestriction, boolean valueRestriction) throws WindowRestriction{
-        if (!(line >= 0 && line < matrix.length )) throw new IndexLineOutOfWindowException();
+                              boolean colorRestriction, boolean valueRestriction) throws WindowRestriction,CellException{
+        if (!(line >= 0 && line < matrix.length )) throw new IndexRowOutOfWindowException();
         if (!(column >= 0 && column < matrix[0].length )) throw new IndexColumnOutOfWindowException();
         if (adjacentRestriction) {
             if (!checkMatrixAdjacentRestriction(line, column)) throw new RestrictionAdjacentViolatedException();
@@ -209,8 +208,8 @@ public class WindowPatternCard implements Serializable {
      * @param column of the cell
      * @return the dice removed from the dell
      */
-    public Dice removeDice(int line, int column) throws IndexLineOutOfWindowException,IndexColumnOutOfWindowException,NoDiceInThisCell {
-        if (!(line >= 0 && line < matrix.length )) throw new IndexLineOutOfWindowException();
+    public Dice removeDice(int line, int column) throws WindowRestriction,CellException {
+        if (!(line >= 0 && line < matrix.length )) throw new IndexRowOutOfWindowException();
         if (!(column >= 0 && column < matrix[0].length )) throw new IndexColumnOutOfWindowException();
         Dice dice = matrix[line][column].removeDice();
         numberOfCellWithDice--;

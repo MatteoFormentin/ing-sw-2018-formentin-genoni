@@ -1,7 +1,6 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.alternative_network.newserver.Server2;
-import it.polimi.se2018.alternative_network.newserver.ServerController2;
+import it.polimi.se2018.alternative_network.newserver.GameRoom;
 import it.polimi.se2018.controller.effect.DicePoolEffect;
 import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.EndTurn;
@@ -13,7 +12,6 @@ import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteExcep
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
@@ -44,7 +42,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private boolean restoreAble;
     //Server in cui si setterà la partita
     private ServerController server;
-    private Server2 server2;
+    private GameRoom server2;
 
     //Player
     private ArrayList<RemotePlayer> players;
@@ -63,7 +61,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
      *
      * @param server server on when the game is on.
      */
-    public Controller(ServerController server, int playerNumber,Server2 server2) {
+    public Controller(ServerController server, int playerNumber,GameRoom server2) {
         //set up actual game
         this.server = server;
         this.server2 =server2;
@@ -75,7 +73,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
         try {
             Properties configProperties = new Properties();
 
-            String timeConfig = "src/main/resources/configurations/gameroom_configuration.properties";
+            String timeConfig = "src/resources/configurations/gameroom_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(timeConfig);
 
             configProperties.load(inputConnection);

@@ -5,7 +5,6 @@ import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.alternative_network.newserver.rmi.RMIServerInterfaceSeenByClient;
 import it.polimi.se2018.view.UIInterface;
 
@@ -21,43 +20,34 @@ import java.rmi.server.UnicastRemoteObject;
  *
  * 2 connettere l'abstract client al server, se rifiutato ricreare un nuovo abstract client
  * 3 effettuare il login
- * (4 utilizzare sendEventToController per inviare informazioni all'UIINTERFACE)
- * 5 chiamare disconnect per disconnettersi legalmente
+ * (4 utilizzare sendEventToController per inviare informazioni dall'UI interface al server)
+ * 5 chiamare disconnect per disconnettersi legalmente(richiedendo il kick all'interface)
  * 6 utilizzare shutDownClient2 per disconnettersi brutalmente
  *
- */
-public class RMIClient2StartAndInput extends AbstractClient implements AbstractClient2 {
-    private RMIClient2StartAndInput instanceClient;
-    private RMIServerInterfaceSeenByClient RMIServer;
-    private String IP_SERVER;
-    private int RMI_PORT;
-    private int SOCKET_PORT;
+ *///TODO da eliminare l'extend AbstractClient
+public class RMIClient2StartAndInput implements AbstractClient2 {
 
-    //the Remote class that build the connection with the server
-    private RMIClientInterface client; //instance of the stud expoted
+    private UIInterface view;
+    private String serverIpAddress;
+    private int serverPort;
+    private RMIServerInterfaceSeenByClient serverRMI;
+    private RMIClientInterface client; //instance of the stud
     private RMIClientInterface remoteRef; //remoteRef of the stud in the server used for login
-    private String nickname;
-
-    //TODO da spostare nel nell'abstract client
-
 
     public RMIClient2StartAndInput(String serverIpAddress, int serverPort, UIInterface view) {
-        super(null,serverIpAddress,serverPort,view);
+        this.serverIpAddress = serverIpAddress;
+        this.serverPort = serverPort;
+        this.view=view;
     }
-
-
-    //************************************ METODI PER INTERAGIRE CON IL RMIGATHERER ***************************************
-    //************************************ METODI PER INTERAGIRE CON IL RMIGATHERER ***************************************
-    //************************************ METODI PER INTERAGIRE CON IL RMIGATHERER ***************************************
 
     @Override
     public void connectToServer2() throws ConnectionProblemException{
         try {
             // Chiedo al Registry ( in esecuzione su localhost alla porta di default ) di localizzare 'Server' e restituirmi il suo Stub
             // Naming.lookup(//host:port/name) host è l'ip, port è la porta  name è il nome del servizio offerto dall'host
-            RMIServer = (RMIServerInterfaceSeenByClient) Naming.lookup("//"+getServerIpAddress()+":"+getServerPort()+"/MyServer");
+            serverRMI = (RMIServerInterfaceSeenByClient) Naming.lookup("//"+serverIpAddress+":"+serverPort+"/MyServer");
             //ping
-            RMIServer.sayHelloToGatherer();
+            serverRMI.sayHelloToGatherer();
             //create the stud
             client = new RemoteClientReceiver(this);
             //Network handler non estende UnicastRemoteObject, quindi devo creare lo Skeleton sfruttando UnicastRemoteObject.exportObject
@@ -67,39 +57,20 @@ public class RMIClient2StartAndInput extends AbstractClient implements AbstractC
             remoteRef = (RMIClientInterface) UnicastRemoteObject.exportObject(client, 0);
             //creo l'oggetto client
         } catch (NotBoundException ex) {
-            System.err.println("connectToServer RMI dice: " + "non è possibile raggiungere il registry");
-            ex.printStackTrace();
-            getView().errPrintln(ex.getMessage());
-            throw new ConnectionProblemException(ex.getMessage());
+            throw new ConnectionProblemException("Il server è stato raggiunto, ma non ci sono Servizi disponibili su questo server");
         } catch (RemoteException ex) {
-            System.err.println("connectToServer RMI dice: " + "registry could not be contacted"+"\nImpossibile connettersi al server");
-            ex.printStackTrace();
-            getView().errPrintln(ex.getMessage());
-            throw new ConnectionProblemException(ex.getMessage());
+            throw new ConnectionProblemException("Non è stato possibile contattare il server, controllare i firewall");
         } catch(MalformedURLException ex){
-            System.err.println("connectToServer RMI dice: " + "if the name of the URL is not an appropriately");
-            ex.printStackTrace();
-            getView().errPrintln(ex.getMessage());
-            throw new ConnectionProblemException(ex.getMessage());
+            throw new ConnectionProblemException("URL non corretto.");
         }
     }
 
     @Override
     public void login2(String nickname) throws ConnectionProblemException, PlayerAlreadyLoggedException, RoomIsFullException {
         try{
-            RMIServer.addClient(nickname,remoteRef);
-        }catch (PlayerAlreadyLoggedException ex){
-            System.err.println("connectToServer RMI dice: " + ex.getMessage());
-            ex.printStackTrace();
-            throw new PlayerAlreadyLoggedException("room full");
-        }catch (RoomIsFullException ex){
-            System.err.println("connectToServer RMI dice: " + ex.getMessage());
-            ex.printStackTrace();
-            throw new RoomIsFullException("room full");
-        }catch (RemoteException ex){
-            System.err.println("connectToServer RMI dice: " + "registry could not be contacted");
-            ex.printStackTrace();
-            throw new ConnectionProblemException(ex.getMessage());
+            serverRMI.addClient(nickname,remoteRef);
+        } catch (RemoteException ex){
+            throw new ConnectionProblemException("La connessione è caduta.");
         }
     }
 
@@ -107,55 +78,26 @@ public class RMIClient2StartAndInput extends AbstractClient implements AbstractC
     @Override
     public void sendEventToController2(EventController eventController)throws ConnectionProblemException{
         try{
-            RMIServer.sendEventToController(eventController);
+            serverRMI.sendEventToController(eventController);
         }catch(RemoteException ex){
-            getView().errPrintln("\n\n\nsendEventToController2\nYou can't contact the RMI server: "+ ex.getMessage()+"\n\n");
-            throw new ConnectionProblemException(ex.getMessage());
+            throw new ConnectionProblemException("La connessione è caduta.");
         }
     }
 
     @Override
     public void shutDownClient2() {
         try {
-            RMIServer.sayHelloToGatherer();
+            serverRMI.sayHelloToGatherer();
             UnicastRemoteObject.unexportObject(client, true);
         }catch(NoSuchObjectException ex){
-            getView().errPrintln("\n\n\nshutDownClient2\nthe Object Remote doesn't exist "+ ex.getMessage()+"\n\n");
+            view.errPrintln("shutDownClient: ->the Object Remote doesn't exist");
         }catch(RemoteException ex){
-            getView().errPrintln("\n\n\nshutDownClient2\nYou can't contact the RMI server: "+ ex.getMessage()+"\n\n");
-            System.err.println("Sei già stato disconnesso");
-            try{
-                UnicastRemoteObject.unexportObject(client, true);
-            }catch(NoSuchObjectException ex2){
-                getView().errPrintln("\n\n\nshutDownClient2\nthe Object Remote doesn't exist  "+ ex.getMessage()+"\n\n");
-            }
+            view.errPrintln("shutDownClient -> Sei già disconnesso");
         }
     }
 
     @Override
     public void sendEventToUIInterface2(EventView event) {
-        getView().showMessage(event);
-    }
-
-//*************************** OLD DA RIMUOVERE ********************************************
-
-    @Override
-    public void connectToServer() throws Exception {
-
-    }
-
-    @Override
-    public void login(String nickname) throws RemoteException, PlayerAlreadyLoggedException {
-
-    }
-
-    @Override
-    public void sendEventToController(EventController eventController) throws RemoteException {
-
-    }
-
-    @Override
-    public void disconnect() throws RemoteException {
-
+        view.showMessage(event);
     }
 }

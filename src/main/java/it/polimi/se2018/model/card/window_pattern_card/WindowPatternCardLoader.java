@@ -1,8 +1,8 @@
 package it.polimi.se2018.model.card.window_pattern_card;
 
-import org.json.simple.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +25,7 @@ public class WindowPatternCardLoader {
      * @return cards ArrayList<WindowPatternCard>.
      */
     public ArrayList<WindowPatternCard> initCard() {
-        final String path = "src/main/resources/json_window_pattern_card/";
+        final String path = "src/resources/json_window_pattern_card/";
 
         final File folder = new File(path);
         ArrayList<WindowPatternCard> cards = new ArrayList<>();

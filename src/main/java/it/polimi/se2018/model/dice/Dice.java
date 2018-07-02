@@ -31,7 +31,7 @@ public class Dice implements Serializable {
      *
      * @param value to set on the dice
      */
-    public void setValue(int value) throws ValueDiceWrongException{
+    public void setValue(int value) throws ValueDiceWrongException {
         if (value > 0 && value < 7) this.value = value;
         else throw new ValueDiceWrongException();
     }
@@ -54,10 +54,9 @@ public class Dice implements Serializable {
         return color;
     }
 
+
     /**
      * generates a random number belonging to the right domain [1,6], this method don't set the value on the Dice.
-     *
-     * @return integer randomly generated
      */
     public void rollDice() {
         Random r = new Random();

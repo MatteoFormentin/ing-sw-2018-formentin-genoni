@@ -1,13 +1,12 @@
 package it.polimi.se2018.alternative_network.newserver;
 
-import it.polimi.se2018.exception.GameException;
-import it.polimi.se2018.exception.network_exception.*;
+import it.polimi.se2018.alternative_network.newserver.rmi.RMIServer;
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
+import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
+import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.alternative_network.newserver.rmi.RMIServer;
-import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 import it.polimi.se2018.view.cli.CliParser;
 
@@ -18,16 +17,15 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.fusesource.jansi.Ansi.ansi;
-
 /**
  * @Davide Mammarella
  */
-public class Server2 implements ServerController2, TimerCallback {
+public class Server2 {
     //info for the operation of the server
     public static Server2 instance;
     private CliParser input;
     private AbstractServer2 RMIServer;
+
     // private AbstractServer2 socketServer;
 
     //info loaded from file
@@ -49,14 +47,15 @@ public class Server2 implements ServerController2, TimerCallback {
         gameOpen = new AtomicBoolean();
         gameRoomRunning = new LinkedList<>();
         counterAnon = 0;
+        //TODO cambiare e inserire da file o input
+        maxPlayer=2;
     }
 
     public static void main(String[] args) {
         instance = new Server2();
         instance.loadAddress();
-        instance.loadTimer();
+        instance.loadConfigGame();
         instance.start();
-        instance.init();
         instance.shutDown();
     }
 
@@ -72,11 +71,11 @@ public class Server2 implements ServerController2, TimerCallback {
         return SOCKET_PORT;
     }
 
-    public void loadTimer() {
+    public void loadConfigGame() {
         try {
             Properties configProperties = new Properties();
 
-            String timeConfig = "src/main/resources/configurations/gameroom_configuration.properties";
+            String timeConfig = "src/resources/configurations/gameroom_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(timeConfig);
 
             configProperties.load(inputConnection);
@@ -90,8 +89,8 @@ public class Server2 implements ServerController2, TimerCallback {
 
     private void loadAddress(){
         input = new CliParser();
-        boolean flag = setUPConnection();
-        if (!flag) {
+        boolean defaultSet = setUPConnection();
+        if (!defaultSet) {
             System.out.println("inserisci l'ip: ");
             IP_SERVER = input.parseIp();
             if (IP_SERVER.equals("0")) IP_SERVER = "localhost";
@@ -101,7 +100,7 @@ public class Server2 implements ServerController2, TimerCallback {
             SOCKET_PORT = input.parsePort(1024, 65535, RMI_PORT);
         }
         //creazione standard sei server
-        RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);
+     //   RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);
         //    AbstractServer2 SocketServer= new
 
     }
@@ -111,7 +110,7 @@ public class Server2 implements ServerController2, TimerCallback {
         if (input.parseInt(1) == 0) {
             try {
                 Properties configProperties = new Properties();
-                String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
+                String connectionConfig = "src/resources/configurations/connection_configuration.properties";
                 FileInputStream inputConnection = new FileInputStream(connectionConfig);
                 configProperties.load(inputConnection);
                 RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
@@ -135,25 +134,42 @@ public class Server2 implements ServerController2, TimerCallback {
      * Choice of the port, creation of the Registry, start of the RmiServer and SocketServer
      */
     public void start() {
-
-        try {
-            RMIServer.startServer();
-
-        } catch (ServerStartException ex) {
-            System.out.println("Errore nell'avvio del server RMI");
+        newGameRoom = new GameRoom(maxPlayer,timerGame,0);
+        boolean rmiStarted=false;
+        boolean socketStarted=false;
+        boolean startThisServer=true;
+        while (!rmiStarted && startThisServer){
+            try {
+                RMIServer = new RMIServer(this,getIP_SERVER(),getRMI_PORT());
+                RMIServer.startServer();
+                rmiStarted=true;
+            } catch (ServerStartException ex) {
+                System.out.println("Errore nell'avvio del server RMI. 0 per riprovare, 1 per annullare");
+                if(input.parseInt(1)==1) startThisServer=false;
+                else loadAddress();
+                //TODO caricare l'address solo per rmi
+            }
         }
+        /*
+        startThisServer=true;
+        while (!socketStarted && startThisServer){
+            try {
+                socketServer.startServer();
+                started=true;
+            } catch (ServerStartException ex) {
+                System.out.println("Errore nell'avvio del server RMI. 0 per riprovare, 1 per annullare");
+                if(input.parseInt(1)==1) startThisServer=false;
+            }
+        }     */
     }
-    public void init(){
-        //TODO mettere il numero dei giocatori da file
-        newGameRoom = new GameRoom(4,timerGame);
-    }
+
 
 
     //****************************** Event from the listener *******************************************************
     //****************************** Event from the listener *******************************************************
     //****************************** Event from the listener *******************************************************
 
-    public void login(RemotePlayer2 remotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
+    public boolean login(RemotePlayer2 remotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
         System.out.println("è stato rilevato un tentativo di login al server");
         gameOpen.set(true);
         if (gameOpen.get()) {//sta startando una partita aspetta un attimo
@@ -167,8 +183,10 @@ public class Server2 implements ServerController2, TimerCallback {
             }
             //controlla tutte le gameRoom
             int idGame = 0;
-            System.out.println("necessario");
-            RemotePlayer2 playerConnected = newGameRoom.searchIfMatchName(remotePlayer.getNickname());
+            RemotePlayer2 playerConnected=null;
+            //TODO creare una nuova stanza qui
+            if(newGameRoom==null) System.out.println("Server2 -> login: la newGameRoom è null");
+            else playerConnected = newGameRoom.searchIfMatchName(remotePlayer.getNickname());
             if (playerConnected == null) {
                 while (idGame < gameRoomRunning.size() && playerConnected == null) {
                     playerConnected = gameRoomRunning.get(idGame).searchIfMatchName(remotePlayer.getNickname());
@@ -176,23 +194,27 @@ public class Server2 implements ServerController2, TimerCallback {
                 }
                 idGame--;//decremento per colpa del while
             }
-            System.out.println("necessario");
             if (playerConnected == null) {
                 //TODO add to the new gameroom
                 System.out.println("Effettuo il Login");
                 //non ci sono player con questo nome nella partita corrente, aggiungi il giocatore
                 if (newGameRoom == null) {//crea una nuova stanza
                     System.out.println("Creo una nuova stanza");
-                    newGameRoom = new GameRoom(4, timerGame);
+                    //TODO controllare se qualche partita è finita e mettarla nella lista Conclusa
+                    newGameRoom = new GameRoom(maxPlayer, timerGame, gameRoomRunning.size());
                 }
                 remotePlayer.setPlayerRunning(true);
                 try {
                     System.out.println("Effettuo il Login");
                     newGameRoom.addRemotePlayer(remotePlayer);
                 } catch (RoomIsFullException ex) {//nel caso in cui è stato raggiunto il tetto massimo
+                    //TODO sta creando la room o è in corso
                     throw ex;
-                } catch (GameException ex) {
-                    startGame();
+                } catch (GameStartedException ex){
+                    //TODO la room è stata avviata, Avviarlo in un thread? mmmmm
+                    gameRoomRunning.add(newGameRoom);
+                    newGameRoom.startGameRoom(this);
+                    newGameRoom = null;
                 }
             } else if (playerConnected.isPlayerRunning()) {
                 System.out.println("controllo se relogin");
@@ -212,30 +234,10 @@ public class Server2 implements ServerController2, TimerCallback {
             System.out.println("aspetta un attimo");
             throw new RoomIsFullException("Aspetta un attimo è in creazione una gameboard");
         }
+        return true;
     }
 
-/*
-    private void checkOnlineWithKick() {
-        System.out.println("checkOnline");
-        int idOnline = 0;
-        try {
-            while (idOnline < newGameRoom.size()) {
-                if (newGameRoom.get(idOnline).isPlayerRunning()) {
-                    System.out.println("Controllo se è in linea" + newGameRoom.get(idOnline).getNickname());
-                    newGameRoom.get(idOnline).sayHelloClient();
-                } else {
-                    System.out.println(newGameRoom.get(idOnline).getNickname() + " è segnato come offline");
-                }
-                idOnline++;
-            }
-        } catch (ConnectionPlayerExeption ex) {
-            System.err.println(newGameRoom.get(idOnline).getNickname() + " non è raggiungibile settalo come offline");
-            newGameRoom.get(idOnline).lightDisconnect(true);
-            checkOnline();
-        }
-    }*/
-
-    private synchronized void checkOnline(boolean checkAllRunning) {
+    private void checkOnline(boolean checkAllRunning) {
         System.out.println("checkOnline");
         if (checkAllRunning) {
             int idOnline = 0;
@@ -249,20 +251,9 @@ public class Server2 implements ServerController2, TimerCallback {
 
     }
 
-
-    @Override
     public void sendEventToGameRoom(EventController eventController) {
-        gameRoomRunning.get(eventController.getIdGame()).sendEventToController(eventController);
+        gameRoomRunning.get(eventController.getIdGame()).sendEventToGameRoom(eventController);
     }
-
-    @Override
-    public void sendEventToView(EventView eventView) {
-        gameRoomRunning.get(eventView.getIdGame()).sendEventToClient(eventView);
-    }
-
-
-
-
 
     /**
      * for shotDown all the server open
@@ -270,28 +261,22 @@ public class Server2 implements ServerController2, TimerCallback {
     public void shutDown() {
         System.out.println("Digita 0 per spegnare il server");
         if (input.parseInt(0) == 0) {
-            RMIServer.stopServer();
+            if(RMIServer.isStarted())RMIServer.stopServer();
+          //  if(socketServer.isStarted()) socketServer.stopServer();
         }
     }
 
-    public void startGame() {
+    public synchronized void startGame() {
         //TODO avviare la gameRoom in attesa
         if (newGameRoom != null) {
             newGameRoom.checkOnLine();
             if (newGameRoom.size() < 2) {
                 playerTimeout.shutdown();
             } else {
-                gameRoomRunning.add(newGameRoom);
-                newGameRoom.startGameRoom(this);
-                newGameRoom = null;
+
             }
         }
         gameOpen.set(true);
     }
 
-    @Override
-    public void timerCallback() {
-        //TODO mettere a posto lo start del game
-        startGame();
-    }
 }

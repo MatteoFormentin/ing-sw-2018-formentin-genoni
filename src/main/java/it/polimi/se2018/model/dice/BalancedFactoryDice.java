@@ -54,10 +54,6 @@ public class BalancedFactoryDice implements FactoryDice {
         return currentNumberOfDice;
     }
 
-    public int[] getCurrentNumberOfEachDice() {
-        return currentNumberOfEachDice;
-    }
-
     public int getNumberAvailableColours() {
         return availableColours.size();
     }

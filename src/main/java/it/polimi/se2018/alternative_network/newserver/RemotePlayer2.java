@@ -44,7 +44,9 @@ public abstract class RemotePlayer2 {
     public void setIdPlayerInGame(int idPlayerInGame) {
         this.idPlayerInGame = idPlayerInGame;
     }
-//------------------------------------------------------------------------------------------------------------------
+
+
+    //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
 
@@ -57,7 +59,7 @@ public abstract class RemotePlayer2 {
     // METHOD CALLED FROM SERVER - INTERNAL REQUEST
     //------------------------------------------------------------------------------------------------------------------
 
-    public abstract void kickPlayerOut(boolean force);
+    public abstract void kickPlayerOut();
 
 
 
