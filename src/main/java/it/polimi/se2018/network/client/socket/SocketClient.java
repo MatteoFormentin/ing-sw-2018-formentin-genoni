@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 
@@ -64,7 +65,6 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      */
     //TODO: EXCEPTION
     public void connectToServer() throws UnknownHostException, IOException {
-
         clientConnection = new Socket(getServerIpAddress(), getServerPort());
         outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
         inputStream = new ObjectInputStream(clientConnection.getInputStream());
@@ -141,7 +141,7 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      *
      * @param eventView object that will use the client to unleash the update associated.
      */
-    void sendEventToView(EventView eventView) throws RemoteException {
+    void sendEventToView(EventView eventView){
         getClientController().sendEventToView(eventView);
     }
 
@@ -154,16 +154,16 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      *
      * @param socketObject object that will use the client to unleash the event associated.
      */
-    private void socketObjectTraducer(SocketObject socketObject) {
+    private void socketObjectTraducer(SocketObject socketObject) throws  SocketException{
         String type = socketObject.getType();
         if (type.equals("Event")) {
-            try {
+            //try {
                 sendEventToView((EventView) socketObject.getObject());
-            } catch (RemoteException ex) {
+            /*} catch (SocketException ex) {
                 //TODO socket non lancia RemoteException!!! sistemare le interfaccie
                 getView().errPrintln(ex.getMessage());
                 ex.printStackTrace();
-            }
+            }*/
         }
     }
 
@@ -204,8 +204,8 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      * Method used to disconnect a client from the server.
      */
     @Override
-    public void disconnect() throws RemoteException {
-        //TODO implement disconnection
+    public void disconnect(){
+
     }
 
     /**

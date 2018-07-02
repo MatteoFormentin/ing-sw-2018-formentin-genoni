@@ -95,7 +95,8 @@ public class Server implements ServerController, TimerCallback {
             // TIMEOUT LOAD
             timeout = Long.parseLong(configProperties.getProperty("roomTimeout")) * 1000; //*1000 per convertire in millisecondi
             AnsiConsole.out.println(ansi().fg(YELLOW).a("TIMEOUT : " + configProperties.getProperty("roomTimeout") + " ms").reset());
-            AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+            AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
+            AnsiConsole.out.println(ansi().fg(DEFAULT).a("<<>><<>><<>><<>><<>><<>><<>><<>><<>><<>>>").reset());
         } catch (IOException e) {
             // LOAD FAILED
             System.err.println("Sorry, the configuration can't be setted! The default one will be used...");
@@ -117,7 +118,7 @@ public class Server implements ServerController, TimerCallback {
     // ORA SOLO RMI, MANCA EXCEPTION
     public static void main(String[] args) {
 
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("\n-----------------------------------------").reset());
         AnsiConsole.out.println(ansi().fg(BLUE).a("Network setting of the room:"));
 
         try {
@@ -171,7 +172,7 @@ public class Server implements ServerController, TimerCallback {
      * @param rmiPort port used on RMI connection.
      */
     public void startServer(int rmiPort, int socketPort){
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Creating network connection...\n").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("Creating network connection:\n").reset());
 
         try {
             rmiServer.startServer(rmiPort);
@@ -334,7 +335,7 @@ public class Server implements ServerController, TimerCallback {
                     // PRENDO IL VECCHIO ID (SICCOME RIMANE SALVATO NELL'ARRAY)
                     int id = remotePlayer.getPlayerId();
                     String nickname = remotePlayer.getNickname();
-                    AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, "+nickname+" I noticed your disconnection. \nI'm trying to relog you in the game...").reset());
+                    AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, "+nickname+" I noticed your disconnection.\nI'm trying to relog you in the game...").reset());
 
                     // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
                     replacePlayer(id, remotePlayer);
@@ -370,7 +371,7 @@ public class Server implements ServerController, TimerCallback {
                     int id = remotePlayer.getPlayerId();
                     String nickname = remotePlayer.getNickname();
 
-                    AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, "+nickname+" I noticed your disconnection. \nI'm trying to relog you in the game...").reset());
+                    AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, "+nickname+" I noticed your disconnection.\nI'm trying to relog you in the game...").reset());
 
                     // SOSTITUZIONE IN BASE ALL'ID
                     replacePlayer(id, remotePlayer);
@@ -504,7 +505,8 @@ public class Server implements ServerController, TimerCallback {
     private void replacePlayer(int id, RemotePlayer newRemotePlayer) {
         players.set(id, newRemotePlayer);
         String nickname = newRemotePlayer.getNickname();
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Disconnected player " + nickname + " has been replaced from a new client!\n").reset());
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Disconnected player " + nickname + " has been replaced from a new client!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }
 
     /**
@@ -517,7 +519,8 @@ public class Server implements ServerController, TimerCallback {
     private void connectPlayer(RemotePlayer remotePlayer) {
         remotePlayer.setPlayerRunning(true);
         String nickname = remotePlayer.getNickname();
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Player " + nickname + " has been connected!\n").reset());
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Player " + nickname + " has been connected!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
     }
 
     /**
@@ -529,7 +532,7 @@ public class Server implements ServerController, TimerCallback {
      */
     public static void removeRMIPlayer(RemotePlayer remotePlayer){
         rmiServer.removePlayer(remotePlayer);
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Player disconnected!\n").reset());
+        AnsiConsole.out.println(ansi().fg(GREEN).a("RMI Player disconnected!").reset());
     }
 
     /**
@@ -541,6 +544,6 @@ public class Server implements ServerController, TimerCallback {
      */
     public static void removeSOCKETPlayer(RemotePlayer remotePlayer){
         socketServer.removePlayer(remotePlayer);
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Player disconnected!\n").reset());
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Socket Player disconnected!").reset());
     }
 }

@@ -113,7 +113,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
             } catch (MalformedURLException e1) {
                 System.err.println("Error on syntax of the remote object URL!");
             } catch (RemoteException e1) {
-                System.err.println("RMI Server Connection refused on this port!\n");
+                System.err.println("RMI Server Connection refused on this port!");
             }
         }
 
@@ -122,8 +122,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
                 registry.rebind("IRMIServer", this);
                 UnicastRemoteObject.exportObject(this, port);
 
-                AnsiConsole.out.println(ansi().fg(DEFAULT).a("RMI Server running at " + port + " port").reset());
-                AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a("RMI Server running at " + port + " port\n").reset());
 
             } catch (RemoteException e) {
                 throw new ServerSideException("Unable to create Server Interface.");

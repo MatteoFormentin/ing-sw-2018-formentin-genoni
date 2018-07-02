@@ -50,7 +50,7 @@ public class ClientGatherer implements Runnable {
             this.serverSocket = new ServerSocket(port);
             AnsiConsole.out.println(ansi().fg(GREEN).a("SOCKET connection created!").reset());
             AnsiConsole.out.println(ansi().fg(DEFAULT).a("Socket Server running at " + port + " port").reset());
-            AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+            AnsiConsole.out.println(ansi().fg(DEFAULT).a("<<>><<>><<>><<>><<>><<>><<>><<>><<>><<>>>\n").reset());
         }
         // dal funzionamento imposto il client gatherer può partire senza aver conoscenza del numero di server
         // quindi è utile creare una bind exception per evitare che si generino errori durante la creazione
@@ -81,9 +81,11 @@ public class ClientGatherer implements Runnable {
 
         while (flag) {
             Socket newClientConnection;
+
             try {
                 newClientConnection = serverSocket.accept();
-                System.out.println("A new client connected!");
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a("A new client connected!").reset());
                 SocketPlayer socketPlayer = new SocketPlayer(serverController, newClientConnection);
                 new Thread(socketPlayer).start();
                 // aggiungi socketplayer alla lista dei socketplayer nel server
@@ -98,6 +100,7 @@ public class ClientGatherer implements Runnable {
             } catch (NullPointerException e1){
                 // CATCH DEL NULLPOINTER PERCHè SE IL CLIENT GATHERER NON C'è SIGNIFICA CHE NON è STATO CREATO IL THREAD
                 System.err.println("Socket Server Connection refused on this port!");
+                AnsiConsole.out.println(ansi().fg(DEFAULT).a("<<>><<>><<>><<>><<>><<>><<>><<>><<>><<>>>\n").reset());
                 System.exit(0);
             }
         }

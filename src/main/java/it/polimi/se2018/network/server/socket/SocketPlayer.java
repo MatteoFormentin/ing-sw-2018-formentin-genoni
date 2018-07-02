@@ -9,11 +9,14 @@ import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerController;
 import org.fusesource.jansi.AnsiConsole;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
+import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.Color.GREEN;
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -76,7 +79,12 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
             try {
                 SocketObject received = (SocketObject) inputStream.readObject();
                 socketObjectTraducer(received);
-            } catch (IOException | ClassNotFoundException ex) {
+            }catch (EOFException e){
+                System.err.println("Player: "+getNickname()+" has made a disconnection!");
+                disconnect();
+                flag=false;
+            }
+            catch (IOException | ClassNotFoundException ex) {
                 ex.printStackTrace();
                 flag = false;
             }
@@ -96,10 +104,10 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
             try {
                 login(socketObject.getStringField());
                 sendAck();
-                System.out.println("LOGIN OK VIA SOCKET");
+                //LOGIN OK VIA SOCKET
 
             } catch (PlayerNetworkException ex) {
-                System.out.println("LOGIN NO VIA SOCKET");
+                System.err.println("Can't Login using Socket Connection.");
                 sendNack();
                 playerRunning=false;
                 disconnect();
@@ -150,7 +158,10 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     public void sendObject(SocketObject socketObject) {
         try {
             outputStream.writeObject(socketObject);
-        } catch (IOException ex) {
+        } catch(SocketException e){
+            System.err.println("Connection issue during client connection.\nError: "+e.getMessage());
+        }
+        catch (IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -220,5 +231,6 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         playerRunning=false;
         Server.removeSOCKETPlayer(this);
         AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname()+" has been removed!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }
 }

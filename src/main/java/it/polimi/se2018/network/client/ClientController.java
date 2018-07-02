@@ -50,7 +50,7 @@ public interface ClientController {
      *
      * @param eventView object that will use the client to unleash the update associated.
      */
-    void sendEventToView(EventView eventView) throws RemoteException;
+    void sendEventToView(EventView eventView);
 
     /**
      * Remote method used to ping the client.

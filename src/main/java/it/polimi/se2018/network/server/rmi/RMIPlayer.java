@@ -9,6 +9,7 @@ import org.fusesource.jansi.AnsiConsole;
 
 import java.rmi.RemoteException;
 
+import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.Color.GREEN;
 import static org.fusesource.jansi.Ansi.ansi;
 
@@ -96,6 +97,7 @@ public class RMIPlayer extends RemotePlayer {
         playerRunning=false;
         Server.removeRMIPlayer(this);
         AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname()+" has been removed!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }
 
 }
