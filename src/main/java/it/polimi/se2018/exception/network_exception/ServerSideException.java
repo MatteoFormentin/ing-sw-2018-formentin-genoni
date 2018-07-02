@@ -8,5 +8,5 @@ public class ServerSideException extends Exception{
 
     public ServerSideException (String exceptionText) {super(exceptionText);}
 
-    public ServerSideException (Throwable e) {super(e);}
+    public ServerSideException (String exceptionText, Throwable e) {super(exceptionText, e);}
 }

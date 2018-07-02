@@ -1,6 +1,7 @@
 package it.polimi.se2018.network.server.rmi;
 
 import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
+import it.polimi.se2018.exception.network_exception.ServerSideException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
@@ -20,8 +21,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import static org.fusesource.jansi.Ansi.Color.DEFAULT;
-import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
 /**
@@ -45,8 +45,6 @@ public class RMIServer extends AbstractServer implements IRMIServer{
     private CliParser input;
 
     private int RMI_PORT;
-
-
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -95,33 +93,28 @@ public class RMIServer extends AbstractServer implements IRMIServer{
      *
      * @param port number of port that will be used on the connection (on when the registry will be on listen).
      */
-
-    // bind will throw an AlreadyBoundException if there's already an object bound to that name within the rmiregistry.
-    // If there was no match, the object will be bound to the name within the registry.
-
-    // rebind will replace any existing binding for the name within rmiregistry.
-    // If there was no match, the object will be bound to the name within the registry as usual.
     @Override
-    public void startServer(int port){
+    public void startServer(int port) throws ServerSideException {
         Registry registry = null;
         // Creating RMI registry
         try {
             registry = LocateRegistry.createRegistry(port);
             //RMI registry created!
             AnsiConsole.out.println(ansi().fg(GREEN).a("RMI connection created!").reset());
+            AnsiConsole.out.println(ansi().fg(YELLOW).a("SERVER IP in client:"+getServerController()).reset());
         } catch (RemoteException e) {
             // Se questa eccezione è stata catturata, probabilmente è perchè il Registry è già stato
             // avviato da linea di comando o da un'altra esecuzione del Server non terminata
             // ( da un altro processo in generale )
             System.err.println("RMI Registry already initialized!");
             try {
-                Naming.rebind("//" + SERVER_ADDRESS + ":" + RMI_PORT + "/MyServer", this);
+                Naming.rebind("//" + SERVER_ADDRESS + ":" + RMI_PORT + "/IRMIServer", this);
+                AnsiConsole.out.println(ansi().fg(GREEN).a("RMI Registry rebinded").reset());
             } catch (MalformedURLException e1) {
-                System.err.println("Can't bind the object!");
+                System.err.println("Error on syntax of the remote object URL!");
             } catch (RemoteException e1) {
                 System.err.println("RMI Server Connection refused on this port!\n");
             }
-
         }
 
         if(registry!=null) {
@@ -133,11 +126,9 @@ public class RMIServer extends AbstractServer implements IRMIServer{
                 AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
 
             } catch (RemoteException e) {
-                System.out.println(e.getMessage());
-                e.printStackTrace();
+                throw new ServerSideException("Unable to create Server Interface.");
             }
         }
-
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -146,7 +137,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
 
     /**
      * Remote method used to log the user to the server with his nickname.
-     *  @param nickname   name of the player.
+     * @param nickname name of the player.
      * @param iRMIClient client associated to the player.*/
     @Override
     public void login(String nickname, IRMIClient iRMIClient) throws RemoteException {
@@ -172,11 +163,25 @@ public class RMIServer extends AbstractServer implements IRMIServer{
         getServerController().sendEventToController(eventController);
     }
 
+    /**
+     * Remote method used to disconnect a client from the server.
+     *
+     * @param id id associated to the player.
+     */
     @Override
     public void disconnect(int id) throws IOException{
         searchPlayerById(id).disconnect();
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHODS
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Method used to remove a player from the RMI server.
+     *
+     * @param remotePlayer player that must be removed.
+     */
     public void removePlayer(RemotePlayer remotePlayer) {
         remotePlayer.setPlayerRunning(false);
         int id = rmiPlayers.indexOf(remotePlayer);
@@ -184,6 +189,12 @@ public class RMIServer extends AbstractServer implements IRMIServer{
             rmiPlayers.remove(id);
     }
 
+    /**
+     * Method used to search a player on the RMI server.
+     *
+     * @param id id associated to the player.
+     * @return Remote Player associated to the id.
+     */
     public RemotePlayer searchPlayerById(int id) {
         return getServerController().searchPlayerById(id);
     }

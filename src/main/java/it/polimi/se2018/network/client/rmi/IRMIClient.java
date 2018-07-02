@@ -30,6 +30,9 @@ public interface IRMIClient extends Remote {
      */
     void sendEventToView(EventView eventView) throws RemoteException;
 
+    /**
+     * Remote method used to ping the client.
+     */
     void ping() throws RemoteException;
 
 }

@@ -18,20 +18,24 @@ public interface ClientController {
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    void startClient(String serverIpAddress, int rmiPort) throws Exception;
+    /**
+     * Visual starter of the client.
+     *
+     * @param serverIpAddress address on where the server side communication are open.
+     * @param socketRmi number used to manage the decision of the user about the connection. RMI (=0) SOCKET (=1).
+     */
+    void startClient(String serverIpAddress, int socketRmi) throws Exception;
 
     /**
-     * Remote method used to log the user to the server with his nickname.
+     * Method used to log the user to the server with his nickname.
      *
      * @param nickname name of the player associated to the client.
      * @return true if the user is logged, false otherwise.
      */
     boolean login(String nickname);
 
-    //magari flag per vedere se il login è avvenuto con successo (entra anche in rmiclient e socketclient)
-
     /**
-     * Remote method used to send to the server a request to unleash an event.
+     * Method used to send to the server a request to unleash an event.
      *
      * @param eventController object that will use the server to unleash the event associated.
      */
@@ -42,11 +46,14 @@ public interface ClientController {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Remote method used to send to the client an update of the game.
+     * Method used to send to the client an update of the game.
      *
      * @param eventView object that will use the client to unleash the update associated.
      */
     void sendEventToView(EventView eventView) throws RemoteException;
 
+    /**
+     * Remote method used to ping the client.
+     */
     void ping() throws RemoteException;
 }

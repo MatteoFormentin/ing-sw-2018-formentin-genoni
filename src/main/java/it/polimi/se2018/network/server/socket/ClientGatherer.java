@@ -8,20 +8,37 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.Color.GREEN;
 import static org.fusesource.jansi.Ansi.ansi;
 
+/**
+ * Gatherer for client.
+ * This class will implement a thread that manage new socket client connections.
+ *
+ * @author DavideMammarella
+ */
 public class ClientGatherer implements Runnable {
 
-
     private final int port;
-    boolean flag = true;
+    // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
+    // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
+    private final AtomicBoolean running = new AtomicBoolean();
     private ServerSocket serverSocket;
     private ServerController serverController;
 
+    //------------------------------------------------------------------------------------------------------------------
+    // CONSTRUCTOR
+    //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Client Gatherer constructor.
+     *
+     * @param port port that will be used on the connection.
+     */
     public ClientGatherer(int port, ServerController serverController) {
         this.port = port;
         this.serverController = serverController;
@@ -43,31 +60,53 @@ public class ClientGatherer implements Runnable {
         }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // THREAD STARTER
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Runner for client gatherer thread.
+     * While loop use AtomicBoolean in order to permit a clean managing of the thread.
+     *
+     * @see Thread#run()
+     */
     @Override
     public void run() {
         Thread.currentThread().setName("Client Gatherer Thread");
 
-        while (flag) {
+        // In loop attendo la connessione di nuovi client
+        // Per ogni client che si collega viene fatto partire un SocketPlayer
+
+        while (running.get()) {
             Socket newClientConnection;
             try {
-                // Waiting for clients...
                 newClientConnection = serverSocket.accept();
                 System.out.println("A new client connected!");
                 new Thread(new SocketPlayer(serverController, newClientConnection)).start();
 
+            } catch (SocketException e){
+                // eccezione che classifica problemi di connessione
+                System.err.println("Connection issue during client connection.\nError: "+e.getMessage());
             } catch (IOException e) {
-                e.printStackTrace();
-                flag = false;
+                // eccezione che classifica problemi IO generali
+                System.err.println("Client connection refused.\nError: "+e.getMessage());
+                running.set(false);
             } catch (NullPointerException e1){
+                // CATCH DEL NULLPOINTER PERCHè SE IL CLIENT GATHERER NON C'è SIGNIFICA CHE NON è STATO CREATO IL THREAD
                 System.err.println("Socket Server Connection refused on this port!");
                 System.exit(0);
             }
         }
     }
 
-    public void stop() {
-        this.flag = false;
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHODS
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Stopper for the client gatherer thread.
+     */
+    public void stop(){
+        this.running.set(false);
     }
-
-
 }

@@ -95,7 +95,6 @@ public class Server implements ServerController, TimerCallback {
             // TIMEOUT LOAD
             timeout = Long.parseLong(configProperties.getProperty("roomTimeout")) * 1000; //*1000 per convertire in millisecondi
             AnsiConsole.out.println(ansi().fg(YELLOW).a("TIMEOUT : " + configProperties.getProperty("roomTimeout") + " ms").reset());
-
             AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
         } catch (IOException e) {
             // LOAD FAILED
@@ -156,11 +155,11 @@ public class Server implements ServerController, TimerCallback {
         int rmiPort = RMI_PORT;
         int socketPort = SOCKET_PORT;
 
+        // TODO
         try {
             Server server = new Server();
             server.startServer(rmiPort, socketPort);
         } catch (Exception e) {
-            e.printStackTrace();
             System.err.println("Server già in esecuzione!");
         }
     }
@@ -208,8 +207,8 @@ public class Server implements ServerController, TimerCallback {
                 packet.setPlayerId(player.getPlayerId());
                 player.sendEventToView(packet);
             } catch (RemoteException ex) {
-                removeRMIPlayer(searchPlayerById(player.getPlayerId()));
-                ex.printStackTrace();
+                // DISCONNESSIONE
+                player.disconnect();
             }
         }
         game.startGame();
@@ -232,12 +231,21 @@ public class Server implements ServerController, TimerCallback {
             packet.setPlayerId(remotePlayer.getPlayerId());
             remotePlayer.sendEventToView(packet);
         } catch (RemoteException ex) {
-            //Disconnessione
-            removeRMIPlayer(searchPlayerById(remotePlayer.getPlayerId()));
-            ex.printStackTrace();
+            // DISCONNESSIONE
+            remotePlayer.disconnect();
         }
 
         this.game.joinGame(remotePlayer.getPlayerId());
+    }
+
+    /**
+     * Initializer for the timeout, based on a single thread.
+     */
+    public void initializeTimerThread() {
+        // CREO NUOVO TIMER
+        timerThread = new TimerThread(this, this.timeout);
+        // FACCIO PARTIRE IL THREAD
+        timerThread.initializeThread();
     }
 
     /**
@@ -245,8 +253,6 @@ public class Server implements ServerController, TimerCallback {
      */
     public void startTimerThread() {
         AnsiConsole.out.println(ansi().fg(GREEN).a("TIMEOUT started!").reset());
-        // CREO NUOVO TIMER
-        timerThread = new TimerThread(this, this.timeout);
         // FACCIO PARTIRE IL THREAD
         timerThread.startThread();
     }
@@ -275,10 +281,17 @@ public class Server implements ServerController, TimerCallback {
     @Override
     public boolean login(RemotePlayer remotePlayer) {
         synchronized (PLAYERS_MUTEX) {
-            System.out.println("");
 
             // SE LA STANZA è ACCESSIBILE (PRE-GAME)
             if (roomJoinable){
+
+                initializeTimerThread();
+
+                if(this.players.size()== 1 && !timerThread.isRunning()){
+                    timerThread.interruptThread();
+                    timerThread.resetTimer();
+                }
+
                 AnsiConsole.out.println(ansi().fg(DEFAULT).a("Trying to log the player in the waiting room...").reset());
 
                 // NON ESISTE PLAYER CON QUEL NICKNAME E NON è CONNESSO
@@ -401,8 +414,8 @@ public class Server implements ServerController, TimerCallback {
         try {
             searchPlayerById(eventView.getPlayerId()).sendEventToView(eventView);
         } catch (RemoteException ex) {
-            removeRMIPlayer(searchPlayerById(eventView.getPlayerId()));
-            ex.printStackTrace();
+            RemotePlayer remotePlayer = searchPlayerById(eventView.getPlayerId());
+            remotePlayer.disconnect();
         }
     }
 
@@ -418,16 +431,18 @@ public class Server implements ServerController, TimerCallback {
         return players.get(id);
     }
 
+    /**
+     * Remote method used to ping the client.
+     */
     @Override
-    public void ping() {
-    }
+    public void ping() { }
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Checker for player nickname in the game.
+     * Checker for player nickname in the server.
      *
      * @param nickname name of the player associated to the client.
      * @return true if the nickname exists, false otherwise.
@@ -435,16 +450,10 @@ public class Server implements ServerController, TimerCallback {
     private boolean checkPlayerNicknameExists(String nickname) {
         String[] playersName = new String[players.size()];
         int i = 0;
+
         for (RemotePlayer player : players) {
-            try{
-                playersName[i] = player.getNickname();
-                player.ping();
-                i++;
-            }
-            catch (RemoteException e) {
-                e.printStackTrace();
-                removeRMIPlayer(player);
-            }
+            playersName[i] = player.getNickname();
+            i++;
             if (player.getNickname().equals(nickname)) {
                 return true;
             }
@@ -452,27 +461,24 @@ public class Server implements ServerController, TimerCallback {
         return false;
     }
 
+    /**
+     * Checker of the player associated to the client, with nickname.
+     *
+     * @param nickname name of the player associated to the client.
+     * @return true if the nickname is associated to a client, false otherwise.
+     */
     private boolean checkPlayerRunning(String nickname) {
-        String[] playersName = new String[players.size()];
-        int i = 0;
-
         for (RemotePlayer player : players) {
-
             try{
-                playersName[i] = player.getNickname();
                 player.ping();
-                i++;
             }
             catch (RemoteException e) {
-                e.printStackTrace();
-                removeRMIPlayer(player);
+                player.disconnect();
             }
-
             if (player.getNickname().equals(nickname)) {
                 return player.getPlayerRunning();
             }
         }
-
         return false;
     }
 
@@ -508,10 +514,22 @@ public class Server implements ServerController, TimerCallback {
      * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
      * Login supporter method.
      *
-     * @param remotePlayer reference to RMI or Socket Player.
+     * @param remotePlayer reference to RMI Player.
      */
     public static void removeRMIPlayer(RemotePlayer remotePlayer) {
         rmiServer.removePlayer(remotePlayer);
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Player disconnected!\n").reset());
+    }
+
+    /**
+     * Disonnecter for player.
+     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
+     * Login supporter method.
+     *
+     * @param remotePlayer reference to Socket Player.
+     */
+    public static void removeSOCKETPlayer(RemotePlayer remotePlayer) {
+        //TODO
         AnsiConsole.out.println(ansi().fg(GREEN).a("Player disconnected!\n").reset());
     }
 }

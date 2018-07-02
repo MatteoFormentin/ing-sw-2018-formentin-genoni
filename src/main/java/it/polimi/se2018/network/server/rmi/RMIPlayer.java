@@ -5,8 +5,12 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.Server;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.rmi.RemoteException;
+
+import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * Class that extends the RemotePlayer in order to define an RMI Player.
@@ -45,26 +49,19 @@ public class RMIPlayer extends RemotePlayer {
         iRMIClient.sendEventToView(eventView);
     }
 
+    /**
+     * Remote method used to ping the client.
+     * If the remote player that will call the ping will not found the disconnection of the player will be called.
+     */
     @Override
     public void ping(){
             try{
                 this.iRMIClient.ping();
                 playerRunning=true;
             } catch (RemoteException e){
-                System.err.println("IL PLAYER NON è RAGGIUNGIBILE, LO DISCONNETTO");
-                playerRunning=false;
-                Server.removeRMIPlayer(this);
+                System.err.println("Player: "+getNickname()+" has a broken connection.\nTrying to delete the connection from the server...");
+                disconnect();
             }
-    }
-
-    @Override
-    public String sayHelloClient() throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public void disconnect(){
-        // rimuovi il giocatore dalla partita
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -78,6 +75,17 @@ public class RMIPlayer extends RemotePlayer {
      */
     public IRMIClient getiRMIClient() {
         return iRMIClient;
+    }
+
+    /**
+     * Method used to remove a player from the RMI server.
+     * This method will also set the playerRunning boolean to false in order to remove correctly the user.
+     */
+    @Override
+    public void disconnect(){
+        playerRunning=false;
+        Server.removeRMIPlayer(this);
+        AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname()+" has been removed!").reset());
     }
 
 }

@@ -51,9 +51,11 @@ public abstract class RemotePlayer {
      */
     public abstract void sendEventToView(EventView eventView) throws RemoteException;
 
+    /**
+     * Remote method used to ping the client.
+     * If the remote player that will call the ping will not found the disconnection of the player will be called.
+     */
     public abstract void ping() throws RemoteException;
-
-    public abstract void disconnect();
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
@@ -117,5 +119,9 @@ public abstract class RemotePlayer {
         return this.playerRunning;
     }
 
-    public abstract String sayHelloClient() throws RemoteException;
+    /**
+     * Method used to remove a player from the RMI server.
+     * This method will also set the playerRunning boolean to false in order to remove correctly the user.
+     */
+    public abstract void disconnect();
 }

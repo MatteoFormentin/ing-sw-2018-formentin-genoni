@@ -72,7 +72,6 @@ public class Client implements ClientController {
      *
      * @param args parameters used for the connection.
      */
-    //TODO:aggiungere porta socket se aggiungi socket
     public static void main(String[] args) {
 
         // CONFIGURATIONS LOADER
@@ -134,6 +133,12 @@ public class Client implements ClientController {
         }
     }
 
+    /**
+     * Visual starter of the client.
+     *
+     * @param serverIpAddress address on where the server side communication are open.
+     * @param socketRmi number used to manage the decision of the user about the connection. RMI (=0) SOCKET (=1).
+     */
     public void startClient(String serverIpAddress, int socketRmi) throws Exception {
         Properties configProperties = new Properties();
         String connectionConfig = "src/main/resources/configurations/connection_configuration.properties";
@@ -245,10 +250,11 @@ public class Client implements ClientController {
         //TODO:gestisci update
     }
 
+    /**
+     * Remote method used to ping the client.
+     */
     @Override
-    public void ping(){
-
-    }
+    public void ping(){ }
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS

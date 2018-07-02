@@ -5,13 +5,17 @@ import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.SocketObject;
+import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerController;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.rmi.RemoteException;
+
+import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * Class that extends the RemotePlayer in order to define a Socket Player.
@@ -37,9 +41,9 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * Socket Player Constructor.
      *
      * @param serverController server interface, used as controller to communicate with the server.
-     * @throws IOException
+     * @param connection tunnel used to manage the socket connection.
      */
-    public SocketPlayer(ServerController serverController, Socket connection) throws IOException {
+    public SocketPlayer(ServerController serverController, Socket connection) {
         this.serverController = serverController;
         playerRunning = true;
 
@@ -54,7 +58,15 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // THREAD STARTER
+    //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Runner for socket player thread.
+     *
+     * @see Thread#run()
+     */
     @Override
     public void run() {
         Thread.currentThread().setName("Socket Player Thread");
@@ -73,16 +85,11 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         closeConnection();
     }
 
-    public void sendObject(SocketObject socketObject) {
-        try {
-            outputStream.writeObject(socketObject);
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-
+    /**
+     * Method used to traduce the object received from the client.
+     *
+     * @param socketObject object that will use the server to unleash the event associated.
+     */
     private void socketObjectTraducer(SocketObject socketObject) {
         String type = socketObject.getType();
 
@@ -102,46 +109,6 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
             sendEventToController((EventController) socketObject.getObject());
         }
 
-    }
-
-    public void sendAck() {
-        SocketObject packet = new SocketObject();
-        packet.setType("Ack");
-        sendObject(packet);
-    }
-
-    public void sendNack() {
-        SocketObject packet = new SocketObject();
-        packet.setType("Nack");
-        sendObject(packet);
-    }
-
-    /**
-     * Remote method used to send to the client an update of the game.
-     *
-     * @param eventView object that will use the client to unleash the update associated.
-     */
-    @Override
-    public void sendEventToView(EventView eventView) throws RemoteException {
-        SocketObject packet = new SocketObject();
-        packet.setType("Event");
-        packet.setObject(eventView);
-        sendObject(packet);
-    }
-
-    @Override
-    public void ping() {
-
-    }
-
-    @Override
-    public void disconnect() {
-
-    }
-
-    @Override
-    public String sayHelloClient() throws RemoteException {
-        return null;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -170,6 +137,62 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     }
 
     //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Method used to write on the output stream the object that will be sent to the client.
+     *
+     * @param socketObject object that will be traduced on the client (it contain an event).
+     */
+    public void sendObject(SocketObject socketObject) {
+        try {
+            outputStream.writeObject(socketObject);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Method used to to send an ACK (Acknowledge) packet from server to client in order to signal
+     * the correct reception of a data packet.
+     */
+    public void sendAck() {
+        SocketObject packet = new SocketObject();
+        packet.setType("Ack");
+        sendObject(packet);
+    }
+
+    /**
+     * Method used to to send a NACK (Not Acknowledge) packet from server to client in order to signal
+     * a missing reception of a data packet.
+     */
+    public void sendNack() {
+        SocketObject packet = new SocketObject();
+        packet.setType("Nack");
+        sendObject(packet);
+    }
+
+    /**
+     * Method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
+     */
+    @Override
+    public void sendEventToView(EventView eventView){
+        SocketObject packet = new SocketObject();
+        packet.setType("Event");
+        packet.setObject(eventView);
+        sendObject(packet);
+    }
+
+    /**
+     * Remote method used to ping the client. (RMI)
+     */
+    @Override
+    public void ping() { }
+
+    //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
 
@@ -184,5 +207,16 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * Method used to remove a player from the server.
+     * This method will also set the playerRunning boolean to false in order to remove correctly the user.
+     */
+    @Override
+    public void disconnect() {
+        playerRunning=false;
+        Server.removeSOCKETPlayer(this);
+        AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname()+" has been removed!").reset());
     }
 }

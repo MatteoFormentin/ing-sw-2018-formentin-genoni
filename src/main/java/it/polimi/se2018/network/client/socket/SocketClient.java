@@ -1,14 +1,15 @@
 package it.polimi.se2018.network.client.socket;
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.SocketObject;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -16,6 +17,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
+
+import static org.fusesource.jansi.Ansi.Color.YELLOW;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -34,8 +38,6 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
     // stream di output
     private ObjectOutputStream outputStream;
 
-    // protocollo che verrà usato per gestire le risposte da server
-
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -49,6 +51,8 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      */
     public SocketClient(ClientController clientController, String serverIpAddress, int serverPort) {
         super(clientController, serverIpAddress, serverPort);
+        AnsiConsole.out.println(ansi().fg(YELLOW).a("SERVER IP in client:"+getServerIpAddress()).reset());
+        AnsiConsole.out.println(ansi().fg(YELLOW).a("SERVER PORT in client :"+getServerPort()).reset());
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -60,6 +64,7 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      */
     //TODO: EXCEPTION
     public void connectToServer() throws UnknownHostException, IOException {
+
         clientConnection = new Socket(getServerIpAddress(), getServerPort());
         outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
         inputStream = new ObjectInputStream(clientConnection.getInputStream());
@@ -67,19 +72,14 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // RESPONSE LISTENER
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Starter for the server response listener thread.
+     * Method used to write on the output stream the object that will be sent to the server.
+     *
+     * @param socketObject object that will be traduced on the server (it contain an event).
      */
-
-
-    /**
-     * Class that define the listener for the server response.
-     * This class will start a thread that will be on hold for a message from server, and will manage it with the protocol.
-     */
-
     public void sendObject(SocketObject socketObject) {
         try {
             outputStream.writeObject(socketObject);
@@ -89,21 +89,8 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
         }
     }
 
-    private void socketObjectTraducer(SocketObject socketObject) {
-        String type = socketObject.getType();
-        if (type.equals("Event")) {
-            try {
-                sendEventToView((EventView) socketObject.getObject());
-            } catch (RemoteException ex) {
-                //TODO socket non lancia RemoteException!!! sistemare le interfaccie
-                getView().errPrintln(ex.getMessage());
-                ex.printStackTrace();
-            }
-        }
-    }
-
     /**
-     * Method used to call the login event on the protocol.
+     * Method used to call the login event.
      *
      * @param nickname name of the player associated to the client.
      */
@@ -132,11 +119,6 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
 
     }
 
-
-    //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER (PROTOCOL CALL ONLY)
-    //------------------------------------------------------------------------------------------------------------------
-
     /**
      * Method used to call the send event to controller on the protocol.
      *
@@ -149,34 +131,6 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
         packet.setObject(eventController);
         sendObject(packet);
     }
-
-    @Override
-    public void disconnect() throws RemoteException {
-        //TODO implement disconnection
-    }
-
-    /**
-     * Connection closer for socket client.
-     * This method close the connection of the client.
-     */
-    public void closeConnection() {
-        try {
-
-            inputStream.close();
-            outputStream.close();
-            clientConnection.close();
-
-            System.out.println("Connection closed!");
-        } catch (IOException ex) {
-            getView().errPrintln(ex.getMessage());
-            // eccezione che dice che c'è stato un errore durante la chiusura di input/output/client
-            ex.printStackTrace();
-        }
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-    // EVENT HANDLING
-    //------------------------------------------------------------------------------------------------------------------
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
@@ -192,11 +146,35 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
     }
 
     //------------------------------------------------------------------------------------------------------------------
-    // SUPPORTER METHODS
+    // SOCKET OBJECT HANDLER
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Method used to traduce the object received from the server.
+     *
+     * @param socketObject object that will use the client to unleash the event associated.
+     */
+    private void socketObjectTraducer(SocketObject socketObject) {
+        String type = socketObject.getType();
+        if (type.equals("Event")) {
+            try {
+                sendEventToView((EventView) socketObject.getObject());
+            } catch (RemoteException ex) {
+                //TODO socket non lancia RemoteException!!! sistemare le interfaccie
+                getView().errPrintln(ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // RESPONSE LISTENER
     //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Runner for Response Listener thread.
+     * Method that define the listener for the server response.
+     * This method will start a thread that will be on hold for a message from server, and will manage it with the protocol.
      *
      * @see Thread#run()
      */
@@ -216,6 +194,35 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
             }
         }
         closeConnection();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHODS
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Method used to disconnect a client from the server.
+     */
+    @Override
+    public void disconnect() throws RemoteException {
+        //TODO implement disconnection
+    }
+
+    /**
+     * Connection closer for socket client.
+     * This method close the connection of the client.
+     */
+    public void closeConnection() {
+        try {
+            inputStream.close();
+            outputStream.close();
+            clientConnection.close();
+            System.out.println("Connection closed!");
+        } catch (IOException ex) {
+            getView().errPrintln(ex.getMessage());
+            // eccezione che dice che c'è stato un errore durante la chiusura di input/output/client
+            ex.printStackTrace();
+        }
     }
 
     /*************************************************newInterface**********************************/

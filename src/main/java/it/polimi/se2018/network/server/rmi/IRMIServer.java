@@ -27,8 +27,9 @@ public interface IRMIServer extends Remote {
 
     /**
      * Remote method used to log the user to the server with his nickname.
-     *  @param nickname   name of the player.
-     * @param iRMIClient client associated to the player.*/
+     * @param nickname name of the player.
+     * @param iRMIClient client associated to the player.
+     * */
     void login(String nickname, IRMIClient iRMIClient) throws RemoteException;
 
     /**
@@ -38,6 +39,11 @@ public interface IRMIServer extends Remote {
      */
     void sendEventToController(EventController eventController) throws RemoteException;
 
+    /**
+     * Remote method used to disconnect a client from the server.
+     *
+     * @param id id of the player
+     */
     void disconnect(int id) throws IOException;
 }
 

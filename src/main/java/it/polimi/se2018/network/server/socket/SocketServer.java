@@ -62,8 +62,11 @@ public class SocketServer extends AbstractServer {
         } catch (ServerSideException e){
             System.err.println("Socket Server Connection refused on this port!");
         }
-
     }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHODS
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Getter for the pre-game thread status.
@@ -74,6 +77,9 @@ public class SocketServer extends AbstractServer {
         return this.running.get();
     }
 
+    /**
+     * Stopper for the client gatherer thread.
+     */
     public void stopServer() {
         clientGatherer.stop();
     }

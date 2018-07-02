@@ -479,7 +479,9 @@ public class TestPlayer {
 
     @After
     public void cleanUp() throws Exception{
-        System.out.println("Single player test ended!\n Cleaning the system...");
+        System.out.println("Method test passed!");
+        System.out.println("Cleaning the system...");
+        System.out.println("-----------------------------------------");
         player = null;
         factoryDice = null;
         handDice = null;
