@@ -19,6 +19,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectInitialWindowPatternCard;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectToolCard;
 import it.polimi.se2018.model.GameBoard;
+import it.polimi.se2018.model.UpdaterView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.ServerController;
 import it.polimi.se2018.utils.TimerCallback;
@@ -55,19 +56,20 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
     long PLAYER_TIMEOUT; //ms!!
     private TimerThread playerTimeout;
-
+    private UpdaterView updaterView;
     /**
      * Controller constructor.
      *
      * @param server server on when the game is on.
      */
-    public Controller(ServerController server, int playerNumber,GameRoom server2) {
+    public Controller(ServerController server, int playerNumber,GameRoom room) {
         //set up actual game
         this.server = server;
-        this.server2 =server2;
+        this.server2 =room;
         this.playerNumber = playerNumber;
-        gameBoard = new GameBoard(playerNumber, server,server2);
-
+        gameBoard = new GameBoard(playerNumber);
+        updaterView =new UpdaterView(gameBoard,server,room);
+        gameBoard.startGame(updaterView);
         //set up utils for the game
         restoreAble = false;
         try {

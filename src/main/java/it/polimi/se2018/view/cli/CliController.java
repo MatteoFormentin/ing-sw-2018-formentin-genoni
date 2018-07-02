@@ -14,6 +14,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_server.PlayerDisconnected;
 import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
@@ -89,7 +90,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     public static void main(String[] args) {
         instance= new CliController();
-        factory= new ClientFactory(instance);
+        factory= ClientFactory.getClientFactory();
         instance.start();
         instance.initConnection();
         instance.login();
@@ -474,7 +475,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             try {
                 if(factory==null) client.startClient(ip, socketRmi);
                 else {
-                    client2= factory.createClient(ip,port,socketRmi);
+                    client2= factory.createClient(this,ip,port,socketRmi);
                     client2.connectToServer2();
                 }
                 flag = true;

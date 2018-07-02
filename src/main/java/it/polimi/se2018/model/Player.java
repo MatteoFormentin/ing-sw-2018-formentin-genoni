@@ -26,7 +26,6 @@ public class Player {
     private int indexInGame;
     private int favorToken;
     private int points;
-    private LinkedList detailedPoint;
     private ObjectivePrivateCard privateObject;
     private WindowPatternCard playerWindowPattern;
     private WindowPatternCard[] the4WindowPattern;
@@ -127,9 +126,6 @@ public class Player {
         this.points = points;
     }
 
-    public void setDetailedPoint(List detailedPoint) {
-        this.detailedPoint = (LinkedList) detailedPoint;
-    }
 
     public void setPrivateObject(ObjectivePrivateCard privateObject) {
         this.privateObject = privateObject;

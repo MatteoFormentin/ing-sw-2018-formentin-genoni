@@ -8,6 +8,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_server.PlayerDisconnected;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
