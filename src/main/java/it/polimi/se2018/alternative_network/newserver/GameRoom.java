@@ -102,7 +102,7 @@ public class GameRoom implements TimerCallback,ServerController2 {
             System.out.println("light Remove. Disconnected during game");
             System.out.println("Gameroom -> removeRemotePlayer: ci sono "+currentConnected+" connessi e "
                     +players.size()+" registrati");
-            players.get(idPlayer).kickPlayerOut(true);
+            players.get(idPlayer).kickPlayerOut();
             players.get(idPlayer).setPlayerRunning(false);
             //TODO notificare tutti i giocatori dalla disconnessione
             if(currentConnected==1){
@@ -112,7 +112,7 @@ public class GameRoom implements TimerCallback,ServerController2 {
         } else {
             //hard remove game not started
             System.out.println("Hard Remove");
-            players.get(idPlayer).kickPlayerOut(true);
+            players.get(idPlayer).kickPlayerOut();
             players.get(idPlayer).setPlayerRunning(false);
             players.remove(idPlayer);
             //TODO notificare tutti i giocatori nella room che si sta costruendo

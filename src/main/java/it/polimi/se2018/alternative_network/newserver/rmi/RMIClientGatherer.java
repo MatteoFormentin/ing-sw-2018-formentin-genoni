@@ -5,22 +5,23 @@ import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.alternative_network.client.RMIClientInterface;
 import it.polimi.se2018.alternative_network.newserver.Server2;
+import org.fusesource.jansi.AnsiConsole;
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NoSuchObjectException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+
+import static org.fusesource.jansi.Ansi.Color.BLUE;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * Cass that build and destroy the connection with the Rmi player
  * this is the class that can receive the messages from the player
  */
-public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient {
+public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient{
     private static RMIClientGatherer instance;
-    private Server2 mainServer;
+    private transient Server2 mainServer;
+
 
     private RMIClientGatherer(Server2 mainServer) throws RemoteException {
         super(mainServer.getRMI_PORT());
@@ -30,14 +31,9 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
     //********************************* FROM THE SERVER **********************************************
     //********************************* FROM THE SERVER **********************************************
 
-    public static RMIClientGatherer getSingletonClientGatherer(Server2 mainServer)throws RemoteException{
-        try {
-            if (instance == null) instance = new RMIClientGatherer(mainServer);
-            return instance;
-        }catch(RemoteException ex){
-            System.out.println("non puoi creare l'istanza di RMIClientGatherer");
-            throw ex;
-        }
+    static RMIClientGatherer getSingletonClientGatherer(Server2 mainServer) throws RemoteException {
+        if (instance == null) instance = new RMIClientGatherer(mainServer);
+        return instance;
     }
     //__________________________________________________________
     //                                                          |
@@ -45,32 +41,28 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
     //__________________________________________________________|
 
     @Override
-    public void addClient(String nickname, RMIClientInterface client) throws RemoteException,PlayerAlreadyLoggedException, RoomIsFullException {
+    public void addClient(String nickname, RMIClientInterface client) throws PlayerAlreadyLoggedException, RoomIsFullException {
         //il collegamento viene assegnato al RMIPLayer
-        RMIPlayer player = new RMIPlayer(nickname, client,this);
+        RMIPlayer player = new RMIPlayer(nickname, client);
         mainServer.login(player);
     }
 
     @Override
-    public void disconnect(RMIClientInterface client) throws RemoteException {
-        //TODO implement a legal disconnection Call main server? mmmm nah
+    public void disconnect(RMIClientInterface client) {
         try {
             UnicastRemoteObject.unexportObject(client, true);
-            //TODO notify the server for the disconnection
-        }catch(NoSuchObjectException ex){
-            ex.printStackTrace();
-            System.out.println("RMIClientGatherer, kickPlayer : è stato già eliminato l'RMI Player"+ex.getMessage());
+        } catch (NoSuchObjectException ex) {
+            AnsiConsole.out.println(ansi().fg(BLUE).a("RMIClientGatherer, kickPlayer : è stato già eliminato l'RMI Player").reset());
         }
     }
 
     @Override
-    public void sendEventToController(EventController event) throws RemoteException{
+    public void sendEventToController(EventController event) {
         mainServer.sendEventToGameRoom(event);
     }
 
-    @Override
-    public String sayHelloToGatherer() throws RemoteException {
-        return "Ok, connesso";
+    public String sayHelloToGatherer() {
+        return "ping";
     }
 
 }

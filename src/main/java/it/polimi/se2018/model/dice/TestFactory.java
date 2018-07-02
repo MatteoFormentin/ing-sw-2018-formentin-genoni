@@ -14,7 +14,6 @@ public class TestFactory implements FactoryDice {
     @Override
     public Dice createDice() throws ValueDiceWrongException{
         if(color==null ||value==0){
-            System.err.println("Non hai settato il colore o il valore");
             return null;
         }
         Dice dice= new Dice(color);
@@ -28,7 +27,9 @@ public class TestFactory implements FactoryDice {
      * @param dice to delete
      */
     @Override
-    public void removeDice(Dice dice){}
+    public void removeDice(Dice dice){
+        throw new UnsupportedOperationException();
+    }
 
     public void setDiceValueColor(int value, DiceColor color) {
         this.value = value;

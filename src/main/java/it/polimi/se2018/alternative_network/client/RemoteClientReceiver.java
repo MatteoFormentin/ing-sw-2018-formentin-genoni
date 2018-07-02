@@ -19,14 +19,11 @@ public class RemoteClientReceiver implements RMIClientInterface {
 
     @Override
     public void notifyTheClient(EventView message){
-        System.out.println("notify the client RemoteClientReceiver");
         instanceClient.sendEventToUIInterface2(message);
     }
 
     @Override
     public String pong(String ping){
-        System.out.println("Arrivato al RemoteClientReceiver:"+ping);
         return "pong";
     }
-
 }

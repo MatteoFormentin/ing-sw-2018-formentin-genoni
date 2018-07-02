@@ -3,30 +3,32 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 import it.polimi.se2018.alternative_network.newserver.AbstractServer2;
 import it.polimi.se2018.alternative_network.newserver.Server2;
+import org.fusesource.jansi.AnsiConsole;
 
 import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 
+import static org.fusesource.jansi.Ansi.Color.BLUE;
+import static org.fusesource.jansi.Ansi.ansi;
+
 /**
- * COMPLETO SENZA ERRORI
- *
+ * Probabilemte no errori
  */
-public class RMIServer extends AbstractServer2  {
+public class RMIServer extends AbstractServer2 {
 
     private RMIClientGatherer clientGatherer;
 
     public RMIServer(Server2 serverController, String host, int port) {
-
-        super(serverController,host,port);
+        super(serverController, host, port);
     }
 
     @Override
     public void startServer() throws ServerStartException {
         setStarted(true);
         try {
-            /*todo Se ci sono problemi di connessione prova ad utilizzare le Factory di socket per creare il registro
+            /* Se ci sono problemi di connessione prova ad utilizzare le Factory di socket per creare il registro
             LocateRegistry.createRegistry(getPort(), new RMIClientSocketFactory() {
                 @Override
                 public Socket createSocket(String host, int port) throws IOException {
@@ -40,35 +42,28 @@ public class RMIServer extends AbstractServer2  {
             });*/
             LocateRegistry.createRegistry(getPort());
         } catch (RemoteException ex) {
-            System.out.println("In questo PC è già attivo un Registry su questa porta");
+            AnsiConsole.out.println(ansi().fg(BLUE).a("In questo PC è già attivo un Registry su questa porta").reset());
             setStarted(false);
             throw new ServerStartException();
         }
-        System.out.println("Registry ok");
-        try {
-            // Creo una istanza di RMIClientGatherer, che rappresenta il "servizio" che voglio offrire ai client
-            clientGatherer = RMIClientGatherer.getSingletonClientGatherer(getServerController());
+        try {clientGatherer = RMIClientGatherer.getSingletonClientGatherer(getServerController());
         } catch (RemoteException ex) {
-            System.out.println("failed to export object, check the Skeletron, The CLientGatherer");
+            AnsiConsole.out.println(ansi().fg(BLUE).a("RMIClientGatherer non può essere istanziato").reset());
             setStarted(false);
             throw new ServerStartException();
         }
         try {
-            // A questo punto comunico al Registry che ho un nuovo servizio da offrire ai client passando a  Naming.rebind(..) :
-            //  - una stringa di tipo "//host:port/name" host:port identifica l'indirizzo del Registry, se port è omesso viene utilizzata la porta di default: 1099
-            //    >  name, a nostra  scelta, identifica il servizio ed è univoco all'interno del Registry avviato su host:port
-            //  - l'oggetto RMIImplementation
             Naming.bind("//" + getHost() + ":" + getPort() + "/MyServer", clientGatherer);
-        } catch(AlreadyBoundException ex){
-            System.err.println("Port Alreasy bound");
+        } catch (AlreadyBoundException ex) {
+            AnsiConsole.out.println(ansi().fg(BLUE).a("La porta è stata già assegnata").reset());
             setStarted(false);
             throw new ServerStartException();
-        }catch (MalformedURLException ex) {
-            System.err.println(" the name is not an appropriately formatted URL");
+        } catch (MalformedURLException ex) {
+            AnsiConsole.out.println(ansi().fg(BLUE).a("l'URL non è stato inserito correttamente").reset());
             setStarted(false);
             throw new ServerStartException();
         } catch (RemoteException ex) {
-            System.err.println("registry could not be contacted");
+            AnsiConsole.out.println(ansi().fg(BLUE).a("Anomalia nel Registry").reset());
             setStarted(false);
             throw new ServerStartException();
         }
@@ -81,23 +76,21 @@ public class RMIServer extends AbstractServer2  {
     /**
      * Questo metodo ferma il chiude correttamente il server mantenendo solo il segistry attivo
      */
-    public void stopServer(){
-        if(isStarted()){
+    public void stopServer() {
+        if (isStarted()) {
             try {
-                //Tolgo il servizio dalla porta, non viene eliminato il registry
                 Naming.unbind("//" + getHost() + ":" + getPort() + "/MyServer");
-                //rimuovo l'oggetto client gatherer
-                UnicastRemoteObject.unexportObject(clientGatherer,true);
+                UnicastRemoteObject.unexportObject(clientGatherer, true);
                 //ora posso chiudere il registry
-                //TODO creare un nuova classe registry da poter resettare, forse troppo dispendioso per tempo
-            }catch(NoSuchObjectException ex){
-                System.err.println("non è possibile rimuovere l'oggetto");
+                //TODO creare un nuova classe registry da poter resettare/chiudere, forse troppo dispendioso per tempo
+            } catch (NoSuchObjectException ex) {
+                AnsiConsole.out.println(ansi().fg(BLUE).a("Client gatherer è stato già chiuso").reset());
             } catch (MalformedURLException ex) {
-                System.err.println(" the name is not an appropriately formatted URL");
+                AnsiConsole.out.println(ansi().fg(BLUE).a("l'URL non è stato inserito correttamente").reset());
             } catch (RemoteException ex) {
-                System.err.println("registry could not be contacted");
-            } catch (NotBoundException ex){
-                System.err.println("Il servizio su questa porta è stato già disattivato");
+                AnsiConsole.out.println(ansi().fg(BLUE).a("Anomalia nel Registry").reset());
+            } catch (NotBoundException ex) {
+                AnsiConsole.out.println(ansi().fg(BLUE).a("Il servizio su questa porta è stato già disattivato").reset());
             }
         }
     }

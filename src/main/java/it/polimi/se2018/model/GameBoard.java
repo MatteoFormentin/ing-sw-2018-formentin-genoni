@@ -10,6 +10,7 @@ import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ColorNotRightException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.RoundTrackIndexException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
+import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.list_event.event_received_by_view.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
@@ -25,6 +26,7 @@ import java.util.LinkedList;
 
 /**
  * the game board for one game with all the method that can be used in a game
+ * FACADE pattern
  *
  * @author Luca Genoni
  */
@@ -94,7 +96,6 @@ public class GameBoard {
 
 
     private void sendEventToView(EventView event){
-        System.out.println("Inviato "+event);
         if(server==null) server2.sendEventToView(event);
         else server.sendEventToView(event);
     };
@@ -476,22 +477,16 @@ public class GameBoard {
     }
 
 
-    /**
-     * move for select the window Pattern
-     *
-     * @param idPlayer         who want to set the window
-     * @param indexOfTheWindow of the window selected
-     */
-    public void setWindowOfPlayer(int idPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException, ValueDiceWrongException {
-        if (player[idPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
-        player[idPlayer].choosePlayerWindowPattern(indexOfTheWindow);
+    public void setWindowOfPlayer(int indexPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException, ValueDiceWrongException {
+        if (player[indexPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
+        player[indexPlayer].choosePlayerWindowPattern(indexOfTheWindow);
         for (int i = 0; i < player.length; i++) {
-            UpdateSingleWindow packet = new UpdateSingleWindow(idPlayer, player[idPlayer].getPlayerWindowPattern());
+            UpdateSingleWindow packet = new UpdateSingleWindow(indexPlayer, player[indexPlayer].getPlayerWindowPattern());
             packet.setPlayerId(i);
             sendEventToView(packet);
 
         }
-        updateTokenPoints(idPlayer);
+        updateTokenPoints(indexPlayer);
         countSetWindow++;
         if (countSetWindow == player.length) {
             setUpFirstRound();
@@ -512,8 +507,7 @@ public class GameBoard {
      */
     public void addNewDiceToHandFromDicePool(int indexPlayer, int indexDicePool) throws NoDiceException, GameIsBlockedException,
             CurrentPlayerException, AlreadyDrawANewDiceException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (player[indexPlayer].isHasDrawNewDice()) throw new AlreadyDrawANewDiceException();
         Dice dice = dicePool.getDice(indexDicePool);
         if (dice == null) throw new NoDiceException();
@@ -533,8 +527,7 @@ public class GameBoard {
      * @throws GameException
      */
     public void insertDice(int indexPlayer, int line, int column, boolean firstTurnDie) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column, true, true, true, firstTurnDie);
         player[indexPlayer].setHasPlaceANewDice(true);
@@ -549,8 +542,7 @@ public class GameBoard {
 
 
     public void useToolCard(int indexPlayer, int indexOfToolInGame) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (player[indexPlayer].isHasUsedToolCard()) throw new AlreadyUseToolCardException();
         toolCard[indexOfToolInGame].checkUsabilityToolCard(currentRound, player[indexPlayer]);
         player[indexPlayer].useToolCard(toolCard[indexOfToolInGame].getFavorToken());
@@ -581,8 +573,7 @@ public class GameBoard {
      * @throws GameException
      */
     public void imposeColorRestriction(int indexPlayer, int round, int index) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (round >= currentRound || round < 0) throw new RoundTrackIndexException();
         if (index < 0 || index >= roundTrack[round].size()) throw new NoDiceException();
         colorRestriction = roundTrack[round].getDice(index).getColor();
@@ -598,8 +589,7 @@ public class GameBoard {
      * @throws GameException
      */
     public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column, boolean checkRestriction) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (checkRestriction && !colorRestriction.equals(player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice().getColor()))
             throw new ColorNotRightException();
         player[indexPlayer].removeDiceFromWindowAndAddToHand(line, column);
@@ -620,8 +610,7 @@ public class GameBoard {
      * @return true if is gone all ok, false otherwise
      */
     public void changeDiceBetweenHandAndFactory(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         Dice dice = player[indexPlayer].removeDiceFromHand();
         factoryDiceForThisGame.removeDice(dice);
         dice = factoryDiceForThisGame.createDice();
@@ -638,8 +627,7 @@ public class GameBoard {
      * @return
      */
     public void changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (round >= currentRound || round < 0)
             throw new RoundTrackIndexException();//can't select a round that didn't exist
         if (indexStack >= roundTrack[round].size() || indexStack < 0) throw new NoDiceException();
@@ -660,8 +648,7 @@ public class GameBoard {
      * @return
      */
     public void rollDicePool(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (currentTurn < player.length) throw new GameException("Non effettuare questa mossa adesso");
         dicePool.reRollAllDiceInStack();
         for(int j=0; j<player.length;j++){
@@ -691,8 +678,7 @@ public class GameBoard {
      */
     public void insertDice(int indexPlayer, int line, int column, boolean adjacentRestriction,
                            boolean colorRestriction, boolean valueRestriction, boolean singleNewDice) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         if (singleNewDice && player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
         player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction, singleNewDice);
         if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
@@ -710,8 +696,7 @@ public class GameBoard {
      * @throws GameException
      */
     public void rollDiceInHand(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         player[indexPlayer].rollDiceInHand();
         updateHand(indexPlayer);
     }
@@ -721,8 +706,7 @@ public class GameBoard {
      * @throws GameException
      */
     public void oppositeFaceDice(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         player[indexPlayer].oppositeFaceDice();
         updateHand(indexPlayer);
     }
@@ -732,45 +716,43 @@ public class GameBoard {
      * @return
      */
     public void endSpecialFirstTurn(int indexPlayer) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         player[indexCurrentPlayer].endSpecialFirstTurn();
         freeHandPlayer(indexPlayer);
     }
 
     public void setValueDiceHand(int indexPlayer, int value) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+        checkState(indexPlayer);
         player[indexPlayer].setValueDiceHand(value);
         updateHand(indexPlayer);
     }
 
-    public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameException {
-        if (stopGame) throw new GameIsBlockedException();
-        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
+    /**
+     *
+     * @param indexPlayer integer that indicate which player send the request of
+     * @param increase true of increase the value false for decrease
+     * @throws GameIsBlockedException if the game can't be access
+     * @throws CurrentPlayerException if it isn't the player's turn
+     * @throws ValueDiceWrongException if the request doesn't respect the dice domain
+     * @throws NoDiceInHandException if the player have no dice in hand
+     * @throws NoDiceException
+     */
+    public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameIsBlockedException,
+            CurrentPlayerException, ValueDiceWrongException, NoDiceInHandException, NoDiceException {
+        checkState(indexPlayer);
         player[indexPlayer].increaseOrDecrease(increase);
         updateHand(indexPlayer);
     }
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
 
     /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param index       of the die in hand
-     * @return
+     * check the state of the game board and if it's the player turn
+     *
+     * @param indexPlayer integer that indicate which player send the request of
+     * @throws GameIsBlockedException if the game can't be access
+     * @throws CurrentPlayerException if it isn't the player's turn
      */
-    public void selectDiceInHand(int indexPlayer, int index) throws GameException {
-     /*   try {
-            if (stopGame) return false;// game stopped
-            if (indexPlayer != indexCurrentPlayer) return false; //not your turn
-            return player[indexCurrentPlayer].selectDiceInHand(indexPlayer);
-        } catch (Exception e) {
-            return false;
-        }*/
+    private void checkState(int indexPlayer)throws GameIsBlockedException,CurrentPlayerException {
+        if (stopGame) throw new GameIsBlockedException();
+        if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
     }
-
-
 }

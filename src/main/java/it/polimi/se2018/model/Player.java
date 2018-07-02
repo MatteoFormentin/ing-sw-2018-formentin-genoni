@@ -3,6 +3,7 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
+import it.polimi.se2018.exception.gameboard_exception.cell_exception.CellException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.NoEnoughTokenException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
@@ -198,7 +199,7 @@ public class Player {
      * @throws PlayerException the exception regarding the state of the player
      */
     public void insertDice(int line, int column, boolean adjacentR, boolean colorR, boolean valueR,boolean firstInsert)
-            throws WindowRestriction,PlayerException {
+            throws WindowRestriction,PlayerException,CellException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         if (firstInsert && hasPlaceANewDice) throw new AlreadyPlaceANewDiceException();
         playerWindowPattern.insertDice(line, column, handDice.get(0), adjacentR, colorR, valueR);
@@ -244,7 +245,7 @@ public class Player {
      * @param column index of the window's column
      * @throws WindowRestriction if something isn't right
      */
-    public void removeDiceFromWindowAndAddToHand(int line, int column) throws WindowRestriction{
+    public void removeDiceFromWindowAndAddToHand(int line, int column) throws WindowRestriction,CellException {
         Dice dice = playerWindowPattern.removeDice(line, column);
         handDice.addFirst(dice);
     }
@@ -258,7 +259,7 @@ public class Player {
      * the player roll the active dice (index=0) in hand. Available when using a tool card
      *
      */
-    public void rollDiceInHand() throws NoDiceInHandException,NoDiceException {
+    public void rollDiceInHand() throws NoDiceInHandException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.reRollAllDiceInStack();
     }
@@ -278,13 +279,13 @@ public class Player {
      * @param increase true if the player want to increase the value, false for decrease
      * @return true if it's all ok, false otherwise
      */
-    public void increaseOrDecrease(boolean increase) throws NoDiceInHandException,NoDiceException,ValueDiceWrongException {
+    public void increaseOrDecrease(boolean increase) throws NoDiceException,ValueDiceWrongException,NoDiceInHandException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).increaseOrDecrease(increase);
     }
 
 
-    public void setValueDiceHand(int value) throws NoDiceInHandException,NoDiceException, ValueDiceWrongException{
+    public void setValueDiceHand(int value) throws NoDiceException, ValueDiceWrongException,NoDiceInHandException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).setValue(value);
     }
@@ -293,7 +294,6 @@ public class Player {
     /**
      * the player can now place a new dice but the second turn will be skipped. Available when using a tool card
      *
-     * @return true if it's all ok, false otherwise
      */
     public void endSpecialFirstTurn() throws GameException{
         if (!firstTurn) throw new GameException("non puoi usare questo effetto adesso");
@@ -301,24 +301,5 @@ public class Player {
         hasDrawNewDice = false;
         hasPlaceANewDice = false;
         firstTurn = false;
-    }
-
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-    //*********************************************Utils*************************************************
-
-    /**
-     * change the order of the dice in hand, move the die with the index given in position 0. Available when using a tool card
-     *
-     * @param index of the selected dice
-     * @return true if it's all ok, false otherwise
-     */
-    public boolean selectDiceInHand(int index) {
-        if (!hasUsedToolCard) return false;
-        if (index >= handDice.size() || index < 0) return false;
-        handDice.moveDiceToTheTop(index);
-        return true;
     }
 }

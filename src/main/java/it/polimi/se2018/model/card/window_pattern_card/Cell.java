@@ -1,7 +1,6 @@
 package it.polimi.se2018.model.card.window_pattern_card;
 
-import it.polimi.se2018.exception.gameboard_exception.window_exception.*;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.cell_exception.*;
+import it.polimi.se2018.exception.gameboard_exception.cell_exception.*;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
@@ -121,7 +120,7 @@ public class Cell implements Serializable {
      * @param checkValueRestriction true if i need to check the restriction
      */
     public void insertDice(Dice newDice, boolean checkColorRestriction, boolean checkValueRestriction)
-            throws WindowRestriction {
+            throws CellException {
         if (newDice==null) throw new NullDiceToAddException();
         if (dice != null) throw new RestrictionCellOccupiedException();
         if (checkColorRestriction && colorRestrictionViolated(newDice.getColor())) throw new RestrictionCellColorViolatedException();
