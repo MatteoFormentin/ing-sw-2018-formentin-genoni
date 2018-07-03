@@ -11,9 +11,11 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
  * @author Matteo Formentin
  */
 public class UpdateInitialWindowPatternCard extends EventViewFromModel {
+    private int indexPlayer;
     private WindowPatternCard[] initialWindowPatternCard;
 
-    public UpdateInitialWindowPatternCard(WindowPatternCard[] initialWindowPatternCard) {
+    public UpdateInitialWindowPatternCard(int indexPlayer,WindowPatternCard[] initialWindowPatternCard) {
+        this.indexPlayer=indexPlayer;
         this.initialWindowPatternCard = initialWindowPatternCard;
     }
 
@@ -22,6 +24,10 @@ public class UpdateInitialWindowPatternCard extends EventViewFromModel {
     }
     public WindowPatternCard getInitialWindowPatternCard(int i) {
         return initialWindowPatternCard[i];
+    }
+
+    public int getIndexPlayer() {
+        return indexPlayer;
     }
 
     @Override

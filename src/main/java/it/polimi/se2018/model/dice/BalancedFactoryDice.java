@@ -5,26 +5,35 @@ import java.util.Random;
 
 
 /**
- * factory that generate a balanced set of Dice during one game
+ * Factory Pattern that generate a balanced set of Dice during one game
  *
  * @author Luca Genoni
  */
 public class BalancedFactoryDice implements FactoryDice {
     private int currentNumberOfDice;
-    //currentNumberOfEachDice stores the number of dice for each color. It is indexed with the ordinal number relative to each color
     private int[] currentNumberOfEachDice;
-    private static final int MAX_NUMBER_OF_DICE = 90;
-    //availableColours stores the ordinal number linked to the color
+    private int numberOfDice;
     private LinkedList<DiceColor> availableColours;
 
     /**
-     * Create a Balance Factory with only 90 Dice
+     * Create a Balance Factory with variable number of dice that depend by the number of the round
+     * the number of the player in a game and the number that each player need for the game
+     * this factory dice also increment the available dice by the 10% needed
+     * and adjust the number of the total dice based on the number of the color available
+     *
+     * @param numberPlayer the number of players in game
+     * @param diceWindow the number of dice that each players needs
+     * @param numberRound the total number of round
      */
-    public BalancedFactoryDice() {
-        currentNumberOfDice = MAX_NUMBER_OF_DICE;
+    public BalancedFactoryDice(int numberPlayer,int diceWindow, int numberRound) {
+        double range =((diceWindow*numberPlayer)/10);
+        numberOfDice = (numberPlayer*diceWindow)+numberRound+ (int)range;
+        int fix = DiceColor.getNumberOfDiceColors()-(numberOfDice%DiceColor.getNumberOfDiceColors());
+        if(fix!=0) numberOfDice +=fix;
+        currentNumberOfDice = numberOfDice;
         currentNumberOfEachDice = new int[DiceColor.getNumberOfDiceColors()];
         availableColours = new LinkedList<>();
-        int maxNumberOfEachDice = MAX_NUMBER_OF_DICE / DiceColor.getNumberOfDiceColors();
+        int maxNumberOfEachDice = numberOfDice / DiceColor.getNumberOfDiceColors();
         for (int i = 0; i < DiceColor.getNumberOfDiceColors(); i++) {
             currentNumberOfEachDice[i] = maxNumberOfEachDice;
             availableColours.add(DiceColor.getDiceColor(i));
@@ -35,23 +44,18 @@ public class BalancedFactoryDice implements FactoryDice {
      * reset the balanced factory as if it was a new one
      */
     public void reset() {
-        currentNumberOfDice = MAX_NUMBER_OF_DICE;
+        currentNumberOfDice = numberOfDice;
         currentNumberOfEachDice = new int[DiceColor.getNumberOfDiceColors()];
         availableColours = new LinkedList<>();
-        int maxNumberOfEachDice = MAX_NUMBER_OF_DICE / DiceColor.getNumberOfDiceColors();
+        int maxNumberOfEachDice = numberOfDice / DiceColor.getNumberOfDiceColors();
         for (int i = 0; i < currentNumberOfEachDice.length; i++) {
             currentNumberOfEachDice[i] = maxNumberOfEachDice;
             availableColours.add(DiceColor.getDiceColor(i));
         }
     }
 
-
     public int getMaxNumberOfDice() {
-        return MAX_NUMBER_OF_DICE;
-    }
-
-    public int getCurrentNumberOfDice() {
-        return currentNumberOfDice;
+        return numberOfDice;
     }
 
     public int getNumberAvailableColours() {
@@ -59,9 +63,9 @@ public class BalancedFactoryDice implements FactoryDice {
     }
 
     /**
-     * constructor for dices.
+     * Constructor balanced for the dice
      *
-     * @return the new dice or null
+     * @return the new dice
      */
     @Override
     public Dice createDice() {

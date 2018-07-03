@@ -15,7 +15,7 @@ public class TestBalancedFactoryDice {
 
     @Before
     public void initDeck() {
-        factoryBalancedDice = new BalancedFactoryDice();
+        factoryBalancedDice = new BalancedFactoryDice(4,20,10);
         currentNumberOfEachColor = new int[factoryBalancedDice.getNumberAvailableColours()];
     }
 
@@ -51,7 +51,7 @@ public class TestBalancedFactoryDice {
 
         for (int i :
                 currentNumberOfEachColor) {
-            assertEquals(18, i);
+            assertEquals(currentNumberOfEachColor[0], i);
         }
     }
 
@@ -65,7 +65,5 @@ public class TestBalancedFactoryDice {
         for (Dice dice : diceArrayList) {
             factoryBalancedDice.removeDice(dice);
         }
-
-        assertEquals(90, factoryBalancedDice.getCurrentNumberOfDice());
     }
 }

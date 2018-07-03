@@ -6,6 +6,7 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.JoinGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
 import it.polimi.se2018.network.RemotePlayer;
+import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
 import it.polimi.se2018.utils.TimerCallback;
@@ -321,8 +322,7 @@ public class Server implements ServerController, TimerCallback {
         }
         for (RemotePlayer player : players) {
             try {
-                StartGame packet = new StartGame();
-                packet.setPlayersName(playersName);
+                StartGame packet = new StartGame(playersName);
                 packet.setPlayerId(player.getPlayerId());
                 player.sendEventToView(packet);
             } catch (RemoteException ex) {
@@ -330,7 +330,14 @@ public class Server implements ServerController, TimerCallback {
                 player.disconnect();
             }
         }
-        game.startGame();
+        //TODO se vuoi ho aggiunto questa interfaccia se chiami un metodo ritorna a te però almeno non devi aver lo sbatti di inviare pacchetti
+        UpdateRequestedByServer updater = game.getUpdater();
+        game.startController();
+        //TODO updatePlayerConnected(int index,String name,boolean duringGame)
+        // per comunicare che è stato effettuato il relogin del giocatore
+        // TODO   public void updateDisconnected(int index,String name,boolean duringGame);
+        // per comunicare che la disconnessione di un giocatore
+
     }
 
     //------------------------------------------------------------------------------------------------------------------

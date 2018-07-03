@@ -1,19 +1,17 @@
 package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
-import it.polimi.se2018.exception.network_exception.server.SinglePlayerException;
 import it.polimi.se2018.list_event.event_received_by_controller.ControllerEndTurn;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
+import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.utils.TimerCallback;
 
 import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameRoom implements TimerCallback,ServerController2 {
 
@@ -24,7 +22,7 @@ public class GameRoom implements TimerCallback,ServerController2 {
     private int indexRoom;
 
     private Controller controller;
-    private AtomicBoolean running;
+    private UpdateRequestedByServer updater;
 
 
     public GameRoom(int maxPlayer, int timeRoom, int indexRoom) {
@@ -32,7 +30,6 @@ public class GameRoom implements TimerCallback,ServerController2 {
         this.timeRoom = timeRoom;
         this.indexRoom = indexRoom;
         players = new LinkedList<>();
-        running= new AtomicBoolean(false);
         currentConnected = 0;
     }
 
@@ -45,10 +42,12 @@ public class GameRoom implements TimerCallback,ServerController2 {
     }
 
 
-    public synchronized void startGameRoom(Server2 server) {
+    public void startGameRoom(Server2 server) {
         if(controller==null) {
             controller=new Controller(null,players.size(),this);
-            controller.startGame();
+            updater = controller.getUpdater();
+
+            controller.startController();
         }
     }
 
@@ -77,9 +76,8 @@ public class GameRoom implements TimerCallback,ServerController2 {
                 for(int i=0; i<players.size();i++){
                     playersName[i] = players.get(i).getNickname();
                 }
-                StartGame packet = new StartGame();
-                packet.setPlayersName(playersName);
-                broadCast(packet);
+                updater.nameConfirmedInInTheGame(playersName);
+
                 throw new GameStartedException();
             }
         } else{
@@ -95,10 +93,8 @@ public class GameRoom implements TimerCallback,ServerController2 {
      */
     public void removeRemotePlayer(int idPlayer) {
         currentConnected--;
-        //TODO cercare di metterlo in un thread a parte per non intasare la comunicazione
         System.out.println(" ");
         if (controller != null) {
-            //light remove game started
             System.out.println("light Remove. Disconnected during game");
             System.out.println("Gameroom -> removeRemotePlayer: ci sono "+currentConnected+" connessi e "
                     +players.size()+" registrati");
@@ -106,8 +102,7 @@ public class GameRoom implements TimerCallback,ServerController2 {
             players.get(idPlayer).setPlayerRunning(false);
             //TODO notificare tutti i giocatori dalla disconnessione
             if(currentConnected==1){
-                //TODO ENDGAME per disconnessione
-                //TODO return to server and reset
+                controller.endGame();
             }
         } else {
             //hard remove game not started
@@ -149,11 +144,7 @@ public class GameRoom implements TimerCallback,ServerController2 {
 
     @Override
     public void timerCallback() {
-        if(running.get()){
-            //se è stata avviata chiudila
-        }else{
-            //non è ancora stata avviata quindi prova a farla startare
-        }
+        //TODO implementare
     }
 
 
@@ -184,4 +175,5 @@ public class GameRoom implements TimerCallback,ServerController2 {
             controller.sendEventToController(packet);
         }
     }
+
 }

@@ -6,15 +6,13 @@ package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateSinglePlayerTokenAndPoints extends EventViewFromModel {
+public class UpdateSinglePlayerToken extends EventViewFromModel {
     private int indexInGame;
     private int favorToken;
-    private int points;
 
-    public UpdateSinglePlayerTokenAndPoints(int indexInGame, int favorToken, int points) {
+    public UpdateSinglePlayerToken(int indexInGame, int favorToken) {
         this.indexInGame = indexInGame;
         this.favorToken = favorToken;
-        this.points = points;
     }
 
     public int getIndexInGame() {
@@ -25,9 +23,6 @@ public class UpdateSinglePlayerTokenAndPoints extends EventViewFromModel {
         return favorToken;
     }
 
-    public int getPoints() {
-        return points;
-    }
 
     @Override
     public void acceptModelEvent(ViewModelVisitor visitor) {

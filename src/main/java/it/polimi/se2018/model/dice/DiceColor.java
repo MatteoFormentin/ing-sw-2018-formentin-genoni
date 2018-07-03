@@ -15,10 +15,6 @@ public enum DiceColor implements Serializable {
     BLUE,
     PURPLE;
 
-    private static class NumberDiceColor {
-        private static final int NUMBER_COLOR = (int) Arrays.stream(DiceColor.values()).count();
-    }
-
     /**
      * return the DiceColor given the associated number
      *
@@ -34,11 +30,11 @@ public enum DiceColor implements Serializable {
 
     /**
      * return the number of color types available
-     *
+     * DiceColor.values().length
      * @return int number of color types
      */
     public static int getNumberOfDiceColors() {
-        return NumberDiceColor.NUMBER_COLOR;
+        return DiceColor.values().length;
     }
 }
 

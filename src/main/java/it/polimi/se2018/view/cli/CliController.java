@@ -15,7 +15,6 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_server.PlayerDisconnected;
 import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
@@ -159,12 +158,12 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         };
         new Thread(exec).start();
     }
-
+/*
     @Override
     public void visit(PlayerDisconnected event) {
         System.out.println("Il giocatore "+event.getPlayerId()+", nickname:"+playersName[event.getPlayerId()]);
-    }
-
+    }TODORImuovere
+*/
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
@@ -435,9 +434,10 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
-    public void visit(UpdateSinglePlayerTokenAndPoints event) {
+    public void visit(UpdateSinglePlayerToken event) {
         favorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
-        pointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
+        //TODO remove the points
+       // pointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
     }
 
     @Override
@@ -449,6 +449,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     public void visit(UpdateSingleTurnRoundTrack event) {
         roundTrack[event.getIndexRound()] = event.getRoundDice();
     }
+
 
     @Override
     public void visit(UpdateSingleWindow event) {
@@ -620,5 +621,23 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(UpdateStatPodium event) {
         ranking = event.getSortedPlayer();
+    }
+
+    @Override
+    public void visit(UpdateDisconnection event) {
+        //TODO implementare Aggiornare la lista dei giocatori attivi, il client sceglie di mostrarla da Cli/menu
+        //TODO quando non può inserire comandi allora volendo potrebbe stamparlo di ignoranza
+    }
+
+    @Override
+    public void visit(UpdatePlayerConnection event) {
+        //TODO implementare Aggiornare la lista dei giocatori attivi, il client sceglie di mostrarla da Cli/menu
+        //TODO quando non può inserire comandi allora volendo potrebbe stamparlo di ignoranza
+    }
+
+    @Override
+    public void visit(UpdateCurrentPoint event) {
+        //TODO add the info of the current points (event during the game only for this player)
+        //TODO evento che arriva ogni alla fine di ogni turno.
     }
 }

@@ -1,5 +1,7 @@
 package it.polimi.se2018.model;
 
+import it.polimi.se2018.model.dice.DiceColor;
+
 class TreePodium {
     private NodePodium root;
     private int[] orderWinTies;
@@ -119,6 +121,4 @@ class TreePodium {
         }
         return new int[0][0];
     }
-
-
 }

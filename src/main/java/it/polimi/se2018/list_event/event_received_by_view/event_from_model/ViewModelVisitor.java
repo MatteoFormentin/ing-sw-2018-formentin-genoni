@@ -35,13 +35,21 @@ public interface ViewModelVisitor {
 
     void visit(UpdateInfoCurrentTurn event);
 
-    void visit(UpdateSinglePlayerTokenAndPoints event);
+    void visit(UpdateSinglePlayerToken event);
 
     void visit(UpdateSingleToolCardCost event);
 
     void visit(UpdateSingleTurnRoundTrack event);
 
+    void visit(UpdateCurrentPoint event);
+
     //endgame
     void visit(UpdateStatPodium event);
+
+    //info other player
+    void visit(UpdateDisconnection event);
+
+    void visit(UpdatePlayerConnection event);
+
 
 }
