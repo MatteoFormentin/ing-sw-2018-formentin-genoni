@@ -13,9 +13,6 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceStack;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * Player state and data. his active dice in hand is in position 0, convention
  *
@@ -23,6 +20,7 @@ import java.util.List;
  * @author Luca Genoni
  */
 public class Player {
+    private String nickname;
     private int indexInGame;
     private int favorToken;
     private int points;
@@ -40,8 +38,9 @@ public class Player {
      *
      * @param indexInGame of the player if needed
      */
-    public Player(int indexInGame) {
+    public Player(int indexInGame, String nickname) {
         this.indexInGame = indexInGame;
+        this.nickname = nickname;
         favorToken = 0;
         points = 0;
         privateObject = null;
@@ -60,6 +59,10 @@ public class Player {
         return indexInGame;
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
     public int getFavorToken() {
         return favorToken;
     }
@@ -72,7 +75,7 @@ public class Player {
         return privateObject;
     }
 
-    public WindowPatternCard[] getThe4WindowPattern() {
+    WindowPatternCard[] getThe4WindowPattern() {
         return the4WindowPattern;
     }
 
@@ -118,30 +121,25 @@ public class Player {
         this.playerWindowPattern = playerWindowPattern;
     }
 
-    public void setHandDice(DiceStack handDice) {
-        this.handDice = handDice;
-    }
-
     public void setPoints(int points) {
         this.points = points;
     }
 
-
-    public void setPrivateObject(ObjectivePrivateCard privateObject) {
+    void setPrivateObject(ObjectivePrivateCard privateObject) {
         this.privateObject = privateObject;
     }
 
     /**
      * special setter for the windowPattern
      *
-     * @param index
+     * @param index of the chosen window
      */
-    public void choosePlayerWindowPattern(int index) {
+    void choosePlayerWindowPattern(int index) {
         playerWindowPattern = the4WindowPattern[index];
         favorToken = the4WindowPattern[index].getDifficulty();
     }
 
-    public void setThe4WindowPattern(WindowPatternCard[] the4WindowPattern) {
+    void setThe4WindowPattern(WindowPatternCard[] the4WindowPattern) {
         this.the4WindowPattern = the4WindowPattern;
     }
 
@@ -173,9 +171,8 @@ public class Player {
      * add a die to hand, without check.
      *
      * @param dice the dice to add
-     * @return true if it's all ok, false otherwise
      */
-    public void addDiceToHand(Dice dice,boolean fromDicePool) throws NoDiceException,AlreadyDrawANewDiceException {
+    void addDiceToHand(Dice dice,boolean fromDicePool) throws NoDiceException,AlreadyDrawANewDiceException {
         if (dice == null) throw new NoDiceException();
         if(fromDicePool && hasDrawNewDice) throw new AlreadyDrawANewDiceException();
         handDice.addFirst(dice);
@@ -195,7 +192,7 @@ public class Player {
      * @throws PlayerException the exception regarding the state of the player
      */
     public void insertDice(int line, int column, boolean adjacentR, boolean colorR, boolean valueR,boolean firstInsert)
-            throws WindowRestriction,PlayerException,CellException {
+            throws WindowRestriction,PlayerException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         if (firstInsert && hasPlaceANewDice) throw new AlreadyPlaceANewDiceException();
         playerWindowPattern.insertDice(line, column, handDice.get(0), adjacentR, colorR, valueR);
@@ -208,15 +205,14 @@ public class Player {
      * Check the state of the player and his money.
      *
      * @param cost of the tool card
-     * @return true id it's all ok, false if player can't use toolcard
      */
-    public void useToolCard(int cost) throws AlreadyUseToolCardException,NoEnoughTokenException {
+    void useToolCard(int cost) throws AlreadyUseToolCardException,NoEnoughTokenException {
         if (cost > favorToken) throw new NoEnoughTokenException();
         hasUsedToolCard = true;
         favorToken -= cost;
     }
 
-    public void endTurn(boolean nextTurnIsATypeFirstTurn) {
+    void endTurn(boolean nextTurnIsATypeFirstTurn) {
         hasUsedToolCard = false;
         hasDrawNewDice = false;
         hasPlaceANewDice = false;
@@ -241,7 +237,7 @@ public class Player {
      * @param column index of the window's column
      * @throws WindowRestriction if something isn't right
      */
-    public void removeDiceFromWindowAndAddToHand(int line, int column) throws WindowRestriction,CellException {
+    void removeDiceFromWindowAndAddToHand(int line, int column) throws WindowRestriction {
         Dice dice = playerWindowPattern.removeDice(line, column);
         handDice.addFirst(dice);
     }
@@ -255,7 +251,7 @@ public class Player {
      * the player roll the active dice (index=0) in hand. Available when using a tool card
      *
      */
-    public void rollDiceInHand() throws NoDiceInHandException{
+    void rollDiceInHand() throws NoDiceInHandException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.reRollAllDiceInStack();
     }
@@ -264,7 +260,7 @@ public class Player {
      * the player change the face of the dice. Available when using a tool card
      *
      */
-    public void oppositeFaceDice() throws NoDiceInHandException,NoDiceException{
+    void oppositeFaceDice() throws NoDiceInHandException,NoDiceException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).oppositeValue();
     }
@@ -273,15 +269,14 @@ public class Player {
      * the player roll the active dice (index=0) in hand. Available when using a tool card
      *
      * @param increase true if the player want to increase the value, false for decrease
-     * @return true if it's all ok, false otherwise
      */
-    public void increaseOrDecrease(boolean increase) throws NoDiceException,ValueDiceWrongException,NoDiceInHandException {
+    void increaseOrDecrease(boolean increase) throws NoDiceException,ValueDiceWrongException,NoDiceInHandException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).increaseOrDecrease(increase);
     }
 
 
-    public void setValueDiceHand(int value) throws NoDiceException, ValueDiceWrongException,NoDiceInHandException{
+    void setValueDiceHand(int value) throws NoDiceException, ValueDiceWrongException,NoDiceInHandException{
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).setValue(value);
     }

@@ -7,13 +7,16 @@ import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.list_event.event_received_by_controller.ControllerEndTurn;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnection;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdatePlayerConnection;
 import it.polimi.se2018.model.UpdateRequestedByServer;
+import it.polimi.se2018.model.UpdaterView;
 import it.polimi.se2018.utils.TimerCallback;
+import it.polimi.se2018.utils.TimerThread;
 
 import java.util.LinkedList;
 
-public class GameRoom implements TimerCallback,ServerController2 {
+public class GameRoom implements TimerCallback, ServerController2 {
 
     private LinkedList<RemotePlayer2> players;
     private int maxPlayer;
@@ -23,12 +26,44 @@ public class GameRoom implements TimerCallback,ServerController2 {
 
     private Controller controller;
     private UpdateRequestedByServer updater;
+    private TimerThread timerThread;
 
 
     public GameRoom(int maxPlayer, int timeRoom, int indexRoom) {
         this.maxPlayer = maxPlayer;
         this.timeRoom = timeRoom;
         this.indexRoom = indexRoom;
+        updater =new UpdateRequestedByServer() {
+            @Override
+            public void updatePlayerConnected(int index, String name) {
+                for(int i=0;i<players.size();i++) updatePlayerConnected(i,index,name);
+            }
+            private void updatePlayerConnected(int indexToNotify, int index,String name){
+                UpdatePlayerConnection packet = new UpdatePlayerConnection(index,name);
+                packet.setPlayerId(indexToNotify);
+                sendEventToView(packet);
+            }
+            @Override
+            public void updateDisconnected(int index, String name) {
+                for(int i=0;i<players.size();i++) updateDisconnected(i,index,name);
+            }
+
+            private void updateDisconnected(int indexToNotify, int index,String name){
+                UpdateDisconnection packet = new UpdateDisconnection(index,name);
+                packet.setPlayerId(indexToNotify);
+                sendEventToView(packet);
+            }
+            @Override
+            public void updateInfoReLogin(int indexPlayer) {
+
+            }
+
+            @Override
+            public void updateInfoStart() {
+
+            }
+        };
+        timerThread = new TimerThread(this, 10 * 100);
         players = new LinkedList<>();
         currentConnected = 0;
     }
@@ -43,10 +78,11 @@ public class GameRoom implements TimerCallback,ServerController2 {
 
 
     public void startGameRoom(Server2 server) {
-        if(controller==null) {
-            controller=new Controller(null,players.size(),this);
+        if (controller == null) {
+            String[] playersName = new String[players.size()];
+            for (int i = 0; i < players.size(); i++) playersName[i] = players.get(i).getNickname();
+            controller = new Controller(null, playersName, this);
             updater = controller.getUpdater();
-
             controller.startController();
         }
     }
@@ -59,29 +95,25 @@ public class GameRoom implements TimerCallback,ServerController2 {
     }
 
 
-    public void addRemotePlayer(RemotePlayer2 remotePlayer) throws RoomIsFullException,GameStartedException {
+    public void addRemotePlayer(RemotePlayer2 remotePlayer) throws RoomIsFullException, GameStartedException {
         if (players.size() < maxPlayer) {
             System.err.println("viene aggiunto il player");
             if (players.add(remotePlayer)) {
                 currentConnected++;
                 remotePlayer.setPlayerRunning(true);
+                remotePlayer.setIdPlayerInGame(players.size() - 1);
+                updater.updatePlayerConnected(remotePlayer.getIdPlayerInGame(), remotePlayer.getNickname());
             }
+            if (currentConnected == 2) timerThread.startThread();
             checkOnLine();
-            System.err.println("Gameroom -> addRemotePlayer: ci sono "+currentConnected+" connessi e "
-                    +players.size()+" registrati");
-            //TODO invia il paccketto per informare il giocatore
-            if (players.size() == maxPlayer){
-                //TODO start the game room
-                String[] playersName = new String[players.size()];
-                for(int i=0; i<players.size();i++){
-                    playersName[i] = players.get(i).getNickname();
-                }
-                updater.nameConfirmedInInTheGame(playersName);
-
+            System.err.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi, " + players.size() + " registrati");
+            if (currentConnected == maxPlayer) {
+                //TODO set something
+                //shutdown the thread
                 throw new GameStartedException();
             }
-        } else{
-            System.out.println("Gameroom -> addRemotePlayer: ci sono "+currentConnected+" connessi e ");
+        } else {
+            System.out.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi e ");
             throw new RoomIsFullException("The current room is starting retry login.");
         }
     }
@@ -96,21 +128,21 @@ public class GameRoom implements TimerCallback,ServerController2 {
         System.out.println(" ");
         if (controller != null) {
             System.out.println("light Remove. Disconnected during game");
-            System.out.println("Gameroom -> removeRemotePlayer: ci sono "+currentConnected+" connessi e "
-                    +players.size()+" registrati");
+            System.out.println("Gameroom -> removeRemotePlayer: ci sono " + currentConnected + " connessi e " + players.size() + " registrati");
             players.get(idPlayer).kickPlayerOut();
             players.get(idPlayer).setPlayerRunning(false);
-            //TODO notificare tutti i giocatori dalla disconnessione
-            if(currentConnected==1){
-                controller.endGame();
+            if (currentConnected == 1) controller.endGame();
+            else {
+                updater.updateDisconnected(players.get(idPlayer).getIdPlayerInGame(), players.get(idPlayer).getNickname());
+                controller.playerDown(idPlayer);
             }
         } else {
             //hard remove game not started
             System.out.println("Hard Remove");
             players.get(idPlayer).kickPlayerOut();
             players.get(idPlayer).setPlayerRunning(false);
+            updater.updateDisconnected(players.get(idPlayer).getIdPlayerInGame(), players.get(idPlayer).getNickname());
             players.remove(idPlayer);
-            //TODO notificare tutti i giocatori nella room che si sta costruendo
         }
         System.out.println(" ");
     }
@@ -148,16 +180,17 @@ public class GameRoom implements TimerCallback,ServerController2 {
     }
 
 
-    public synchronized void endGame(){
+    public synchronized void endGame() {
         //TODO implementare invio di evento end game ai vari player
     }
 
-    public void broadCast(EventView eventView){
-        for(int i=0; i<players.size();i++){
+    public void broadCast(EventView eventView) {
+        for (int i = 0; i < players.size(); i++) {
             eventView.setPlayerId(i);
             sendEventToView(eventView);
         }
     }
+
     @Override
     public void sendEventToGameRoom(EventController eventController) {
         controller.sendEventToController(eventController);
@@ -166,13 +199,10 @@ public class GameRoom implements TimerCallback,ServerController2 {
     @Override
     public void sendEventToView(EventView eventView) {
         try {
-            if(players.get(eventView.getPlayerId()).isPlayerRunning())
+            if (players.get(eventView.getPlayerId()).isPlayerRunning())
                 players.get(eventView.getPlayerId()).sendEventToView(eventView);
         } catch (ConnectionPlayerExeption ex) {
             removeRemotePlayer(eventView.getPlayerId());
-            EventController packet = new ControllerEndTurn();
-            packet.setPlayerId(eventView.getPlayerId());
-            controller.sendEventToController(packet);
         }
     }
 

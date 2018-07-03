@@ -198,7 +198,6 @@ public class Server implements ServerController, TimerCallback {
      */
     public void startGame() {
         AnsiConsole.out.println(ansi().fg(GREEN).a("GAME STARTED!").reset());
-        game = new Controller(this, players.size(), null);
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("From now the room will not be joinable, except from a RElogin").reset());
         roomJoinable = false;
 
@@ -208,6 +207,7 @@ public class Server implements ServerController, TimerCallback {
             playersName[i] = player.getNickname();
             i++;
         }
+        game = new Controller(this, playersName, null);
         for (RemotePlayer player : players) {
             try {
                 StartGame packet = new StartGame(playersName);
@@ -366,7 +366,7 @@ public class Server implements ServerController, TimerCallback {
                     startPreGameThread(remotePlayer);
 
                     // RE INTEGRAZIONE NEL GIOCO
-                    this.game.joinGame(id);
+                 //   this.game.joinGame(id);
                 }
                 return true;
             }
@@ -392,7 +392,7 @@ public class Server implements ServerController, TimerCallback {
             remotePlayer.disconnect();
         }
 
-        this.game.joinGame(remotePlayer.getPlayerId());
+       // this.game.joinGame(remotePlayer.getPlayerId());
     }
 
     /**

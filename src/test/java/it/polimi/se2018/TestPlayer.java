@@ -41,7 +41,7 @@ public class TestPlayer {
     @Before
     public void setUp() throws Exception{
         System.out.println("Single player test started!");
-        player = new Player(1);
+        player = new Player(1,"");
         factoryDice = new TestFactory();
         handDice = new DiceStack();
 

@@ -3,8 +3,8 @@
         <style>.cls-1{fill:#ecb630;}.cls-2{fill:none;stroke:#000;stroke-miterlimit:10;stroke-width:5px;}</style>
     </defs>
     <title>Risorsa 6color</title>
-    <g id="Livello_2" data-name="Livello 2">
-        <g id="Livello_1-2" data-name="Livello 1">
+    <g id="Livello_2" data-nickname="Livello 2">
+        <g id="Livello_1-2" data-nickname="Livello 1">
             <polygon class="cls-1"
                      points="2.5 81.1 2.5 2.13 81.25 2.13 160.07 2.13 160.07 81.1 160.07 160.07 81.25 160.07 2.5 160.07 2.5 81.1"/>
             <rect class="cls-2" x="2.5" y="2.5" width="157.57" height="157.57"/>

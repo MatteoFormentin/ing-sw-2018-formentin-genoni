@@ -453,6 +453,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateSingleWindow event) {
+
         windowPatternCardOfEachPlayer[event.getIndexPlayer()] = event.getWindowPatternCard();
     }
 
@@ -637,6 +638,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateCurrentPoint event) {
+        System.out.println("arrivato current Point");
         //TODO add the info of the current points (event during the game only for this player)
         //TODO evento che arriva ogni alla fine di ogni turno.
     }

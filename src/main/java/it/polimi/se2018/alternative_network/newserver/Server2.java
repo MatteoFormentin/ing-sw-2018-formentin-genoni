@@ -48,7 +48,7 @@ public class Server2 {
         gameRoomRunning = new LinkedList<>();
         counterAnon = 0;
         //TODO cambiare e inserire da file o input
-        maxPlayer=2;
+        maxPlayer=3;
     }
 
     public static void main(String[] args) {

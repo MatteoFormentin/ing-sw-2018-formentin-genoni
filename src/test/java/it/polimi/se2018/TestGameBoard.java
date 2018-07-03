@@ -21,12 +21,14 @@ public class TestGameBoard {
     private static final CurrentPlayerException noRightPlayer = new CurrentPlayerException();
     private static final GameIsOverException gameOver = new GameIsOverException();
     private static final GameIsBlockedException gameBlock = new GameIsBlockedException();
+    String[] names;
 
     private ServerController2 gameRoom;
     private int j;
 
     @Before
     public void initGameBoard() {
+        names= new String[3];
         gameRoom = new ServerController2() {
             @Override
             public void sendEventToGameRoom(EventController eventController){}
@@ -37,7 +39,7 @@ public class TestGameBoard {
 
     @Test
     public void testNextPlayer() throws GameException {
-        GameBoard gameBoard = new GameBoard(4);
+        GameBoard gameBoard = new GameBoard(names);
         UpdaterView updaterView = new UpdaterView(gameBoard, null, gameRoom);
         gameBoard.startGame(updaterView);
         //testa fino al 9° round
@@ -71,7 +73,7 @@ public class TestGameBoard {
     }
     @Test
     public void tryWalkGameBoard2() throws GameException {
-        GameBoard gameBoard = new GameBoard(4);
+        GameBoard gameBoard = new GameBoard(names);
         UpdaterView updaterView = new UpdaterView(gameBoard, null, gameRoom);
         assertThrows(NullPointerException.class,()->gameBoard.calculateAllPoint());
     }

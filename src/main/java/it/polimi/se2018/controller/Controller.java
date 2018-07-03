@@ -62,12 +62,12 @@ public class Controller implements ControllerVisitor, TimerCallback {
      *
      * @param server server on when the game is on.
      */
-    public Controller(ServerController server, int playerNumber,GameRoom room) {
+    public Controller(ServerController server, String[] playerName,GameRoom room) {
         //set up actual game
         this.server = server;
         this.server2 =room;
-        this.playerNumber = playerNumber;
-        gameBoard = new GameBoard(playerNumber);
+        this.playerNumber = playerName.length;
+        gameBoard = new GameBoard(playerName);
         updaterView =new UpdaterView(gameBoard,server,room);
         //set up utils for the game
         restoreAble = false;
@@ -98,9 +98,15 @@ public class Controller implements ControllerVisitor, TimerCallback {
     }
     public void startController(){
         gameBoard.startGame(updaterView);
-        this.sendInitCommand();
+        sendInitCommand();
     }
-
+     public void playerDown(int index){
+           //TODO metodi da eseguire in caso di caduta del giocator
+         ControllerSelectInitialWindowPatternCard packet = new ControllerSelectInitialWindowPatternCard();
+     /*    EventController packet = new ControllerEndTurn();
+         packet.setPlayerId(eventView.getPlayerId());
+         controller.sendEventToController(packet);*/
+     }
     /**
      * method for se
      */
@@ -108,7 +114,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
         updaterView.updateInfoStart();
         for (int i = 0; i < playerNumber; i++) {
             //gameBoard.notifyAllCards(i);
-
         }
         //after the notify to all player show the info
         for (int j = 0; j < playerNumber; j++) {
@@ -130,15 +135,14 @@ public class Controller implements ControllerVisitor, TimerCallback {
         //TODO manda il pacchetto a tutti
     }
 
-
-    // TODO: MODIFICARE IL METODO
+/*
     public void joinGame(int id) {
         updaterView.updateInfoReLogin(id,true);
         SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
         packet.setPlayerId(id);
         System.err.println("Player " + id + " has made a relogin.");
         sendEventToView(packet);
-    }
+    }*/
 
     // EX UPDATE
     public void sendEventToController(EventController event) {
@@ -254,8 +258,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     @Override
     public void visit(ControllerEndTurn event) {
         try {
-            if (restoreAble && !gameBoard.getPlayer(event.getPlayerId()).getHandDice().isEmpty())
-                effectGamesStored.getLast().undo();
+            if (restoreAble && !gameBoard.getPlayer(event.getPlayerId()).getHandDice().isEmpty()) effectGamesStored.getLast().undo();
             EffectGame endTurn = new EndTurn(false);
             endTurn.doEffect(gameBoard, event.getPlayerId(), null);
             effectGamesStored.addLast(endTurn);
@@ -271,8 +274,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
             playerTimeout.startThread();
         } catch (GameIsOverException ex) {
             //TODO mettere l'invio del'endtrun
-            ex.printStackTrace();
             playerTimeout.shutdown();
+            ex.printStackTrace();
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(), false);
         }
@@ -367,7 +370,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
         }
         //lettura nuovo effetto
         if (effectToRead.isEmpty()) {
-            EventView packet = new MessageOk("il flusso di mosse si è concluso con successo, mostra il menu\n THE EFFECT FLOW", true);
+            EventView packet = new MessageOk("il flusso di mosse si è concluso con successo, mostra il menu", true);
             packet.setPlayerId(idPlayer);
             sendEventToView(packet);
             restoreAble = false;
