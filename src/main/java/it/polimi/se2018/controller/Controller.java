@@ -56,7 +56,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private UpdaterView updaterView;
 
     private boolean started;
-    private int currentPlayerIndex;
 
     /**
      * Controller constructor.
