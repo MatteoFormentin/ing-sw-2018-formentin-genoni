@@ -5,7 +5,6 @@ import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.SocketObject;
-import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.network.server.ServerController;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -15,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.HashMap;
 
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.Color.GREEN;
@@ -31,6 +31,9 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     // comunicazione con il server
     private final ServerController serverController;
     private Socket tunnel;
+
+    // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
+    static HashMap<String, SocketPlayer> socketPlayers;
 
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
@@ -81,7 +84,9 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
                 socketObjectTraducer(received);
             } catch (EOFException e) {
                 System.err.println("Player: " + getNickname() + " has made a disconnection!");
-                disconnect();
+                // se si disconnette metto il running a false e tengo in memoria il player
+                playerRunning=false;
+                closeConnection();
                 flag = false;
             } catch (IOException | ClassNotFoundException ex) {
                 ex.printStackTrace();
@@ -109,7 +114,6 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
                 System.err.println("Can't Login using Socket Connection.");
                 sendNack();
                 playerRunning = false;
-                disconnect();
             }
         }
 
@@ -130,7 +134,8 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      */
     public void login(String nickname) throws PlayerNetworkException {
         setNickname(nickname);
-        SocketServer.socketPlayers.add(this);
+        // inserisco il socket player nella lista
+        //socketPlayers.put(nickname,this);
         if (!this.serverController.login(this)) {
             throw new PlayerNetworkException("error");
         }
@@ -159,7 +164,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
             outputStream.writeObject(socketObject);
             outputStream.reset();
         } catch (SocketException e) {
-            System.err.println("Connection issue during client connection.\nError: " + e.getMessage());
+            //System.err.println("Connection issue during client connection.\nError: " + e.getMessage());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -223,14 +228,31 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     }
 
     /**
+     * Reset player connection on relogin.
+     *
+     */
+    public void resetConnection(Socket connection, ObjectOutputStream output, ObjectInputStream input){
+        this.tunnel = connection;
+        this.outputStream = output;
+        this.inputStream = input;
+    }
+
+    /**
      * Method used to remove a player from the server.
      * This method will also set the playerRunning boolean to false in order to remove correctly the user.
      */
     @Override
     public void disconnect() {
         playerRunning = false;
-        Server.removeSOCKETPlayer(this);
+        // chiudo connessione ma lascio socket player nella lista
+        closeConnection();
         AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname() + " has been removed!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+    }
+
+    public static void removePlayer(RemotePlayer remotePlayer){
+        remotePlayer.setPlayerRunning(false);
+        String nickname = remotePlayer.getNickname();
+        socketPlayers.remove(nickname, remotePlayer);
     }
 }

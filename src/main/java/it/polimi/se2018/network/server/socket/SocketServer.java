@@ -1,12 +1,10 @@
 package it.polimi.se2018.network.server.socket;
 
 import it.polimi.se2018.exception.network_exception.ServerSideException;
-import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.AbstractServer;
 import it.polimi.se2018.network.server.ServerController;
 
 import java.net.ServerSocket;
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -23,7 +21,7 @@ public class SocketServer extends AbstractServer {
     private ClientGatherer clientGatherer;
 
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
-    static ArrayList<SocketPlayer> socketPlayers= new ArrayList<>();;
+    //static ArrayList<SocketPlayer> socketPlayers= new ArrayList<>();
 
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
@@ -86,17 +84,5 @@ public class SocketServer extends AbstractServer {
      */
     public void stopServer() {
         clientGatherer.stop();
-    }
-
-    /**
-     * Method used to remove a player from the Socket server.
-     *
-     * @param remotePlayer player that must be removed.
-     */
-    public void removePlayer(RemotePlayer remotePlayer){
-            remotePlayer.setPlayerRunning(false);
-            int id = socketPlayers.indexOf(remotePlayer);
-            if (id != -1)
-                socketPlayers.remove(id);
     }
 }

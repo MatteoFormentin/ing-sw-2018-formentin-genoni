@@ -88,8 +88,6 @@ public class ClientGatherer implements Runnable {
                 AnsiConsole.out.println(ansi().fg(DEFAULT).a("A new client connected!").reset());
                 SocketPlayer socketPlayer = new SocketPlayer(serverController, newClientConnection);
                 new Thread(socketPlayer).start();
-                // aggiungi socketplayer alla lista dei socketplayer nel server
-                SocketServer.socketPlayers.add(socketPlayer);
             } catch (SocketException e){
                 // eccezione che classifica problemi di connessione
                 System.err.println("Connection issue during client connection.\nError: "+e.getMessage());

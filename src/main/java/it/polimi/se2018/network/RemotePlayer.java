@@ -151,4 +151,6 @@ public abstract class RemotePlayer {
      * This method will also set the playerRunning boolean to false in order to remove correctly the user.
      */
     public abstract void disconnect();
+
+    //public abstract void removePlayer(RemotePlayer remotePlayer);
 }

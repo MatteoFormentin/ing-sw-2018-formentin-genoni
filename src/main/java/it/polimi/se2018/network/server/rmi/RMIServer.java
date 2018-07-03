@@ -159,6 +159,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
      */
     @Override
     public void disconnect(int id) throws IOException {
+
         searchPlayerById(id).disconnect();
     }
 

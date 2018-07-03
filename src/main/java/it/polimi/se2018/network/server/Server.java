@@ -5,8 +5,8 @@ import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.JoinGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
-import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.model.UpdateRequestedByServer;
+import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
 import it.polimi.se2018.utils.TimerCallback;
@@ -548,9 +548,10 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to Socket Player.
      */
-    public static void removeSOCKETPlayer(RemotePlayer remotePlayer) {
-        socketServer.removePlayer(remotePlayer);
+    /*
+    public void removeSOCKETPlayer(RemotePlayer remotePlayer) {
+        SocketPlayer.removePlayer(remotePlayer);
         AnsiConsole.out.println(ansi().fg(GREEN).a("Socket Player disconnected!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
-    }
+    }*/
 }
