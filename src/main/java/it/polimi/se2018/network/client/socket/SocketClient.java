@@ -29,7 +29,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  *
  * @author DavideMammarella
  */
-public class SocketClient extends AbstractClient implements Runnable,AbstractClient2 {
+public class SocketClient extends AbstractClient implements Runnable, AbstractClient2 {
 
     // comunicazione con il socket
     private Socket clientConnection;
@@ -52,8 +52,8 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      */
     public SocketClient(ClientController clientController, String serverIpAddress, int serverPort) {
         super(clientController, serverIpAddress, serverPort);
-        AnsiConsole.out.println(ansi().fg(YELLOW).a("SERVER IP in client:"+getServerIpAddress()).reset());
-        AnsiConsole.out.println(ansi().fg(YELLOW).a("SERVER PORT in client :"+getServerPort()).reset());
+        AnsiConsole.out.println(ansi().fg(YELLOW).a("SERVER IP in client:" + getServerIpAddress()).reset());
+        AnsiConsole.out.println(ansi().fg(YELLOW).a("SERVER PORT in client :" + getServerPort()).reset());
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -83,6 +83,7 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
     public void sendObject(SocketObject socketObject) {
         try {
             outputStream.writeObject(socketObject);
+            outputStream.reset();
         } catch (IOException ex) {
             getView().errPrintln(ex.getMessage());
             ex.printStackTrace();
@@ -141,7 +142,7 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      *
      * @param eventView object that will use the client to unleash the update associated.
      */
-    void sendEventToView(EventView eventView){
+    void sendEventToView(EventView eventView) {
         getClientController().sendEventToView(eventView);
     }
 
@@ -154,11 +155,11 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      *
      * @param socketObject object that will use the client to unleash the event associated.
      */
-    private void socketObjectTraducer(SocketObject socketObject) throws  SocketException{
+    private void socketObjectTraducer(SocketObject socketObject) throws SocketException {
         String type = socketObject.getType();
         if (type.equals("Event")) {
             //try {
-                sendEventToView((EventView) socketObject.getObject());
+            sendEventToView((EventView) socketObject.getObject());
             /*} catch (SocketException ex) {
                 //TODO socket non lancia RemoteException!!! sistemare le interfaccie
                 getView().errPrintln(ex.getMessage());
@@ -204,7 +205,7 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
      * Method used to disconnect a client from the server.
      */
     @Override
-    public void disconnect(){
+    public void disconnect() {
 
     }
 
@@ -252,7 +253,7 @@ public class SocketClient extends AbstractClient implements Runnable,AbstractCli
     public void connectToServer2() throws ConnectionProblemException {
         try {
             connectToServer();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             getView().errPrintln(ex.getMessage());
             throw new ConnectionProblemException("Socket Cannot Start");
         }

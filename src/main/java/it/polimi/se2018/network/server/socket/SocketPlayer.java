@@ -44,12 +44,12 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * Socket Player Constructor.
      *
      * @param serverController server interface, used as controller to communicate with the server.
-     * @param connection tunnel used to manage the socket connection.
+     * @param connection       tunnel used to manage the socket connection.
      */
     public SocketPlayer(ServerController serverController, Socket connection) {
         this.serverController = serverController;
         playerRunning = true;
-        playerConnection="socket";
+        playerConnection = "socket";
 
         this.tunnel = connection;
 
@@ -79,12 +79,11 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
             try {
                 SocketObject received = (SocketObject) inputStream.readObject();
                 socketObjectTraducer(received);
-            }catch (EOFException e){
-                System.err.println("Player: "+getNickname()+" has made a disconnection!");
+            } catch (EOFException e) {
+                System.err.println("Player: " + getNickname() + " has made a disconnection!");
                 disconnect();
-                flag=false;
-            }
-            catch (IOException | ClassNotFoundException ex) {
+                flag = false;
+            } catch (IOException | ClassNotFoundException ex) {
                 ex.printStackTrace();
                 flag = false;
             }
@@ -109,7 +108,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
             } catch (PlayerNetworkException ex) {
                 System.err.println("Can't Login using Socket Connection.");
                 sendNack();
-                playerRunning=false;
+                playerRunning = false;
                 disconnect();
             }
         }
@@ -158,10 +157,10 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     public void sendObject(SocketObject socketObject) {
         try {
             outputStream.writeObject(socketObject);
-        } catch(SocketException e){
-            System.err.println("Connection issue during client connection.\nError: "+e.getMessage());
-        }
-        catch (IOException ex) {
+            outputStream.reset();
+        } catch (SocketException e) {
+            System.err.println("Connection issue during client connection.\nError: " + e.getMessage());
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
@@ -192,7 +191,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * @param eventView object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView){
+    public void sendEventToView(EventView eventView) {
         SocketObject packet = new SocketObject();
         packet.setType("Event");
         packet.setObject(eventView);
@@ -203,7 +202,8 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * Remote method used to ping the client. (RMI)
      */
     @Override
-    public void ping() { }
+    public void ping() {
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
@@ -227,10 +227,10 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      * This method will also set the playerRunning boolean to false in order to remove correctly the user.
      */
     @Override
-    public void disconnect(){
-        playerRunning=false;
+    public void disconnect() {
+        playerRunning = false;
         Server.removeSOCKETPlayer(this);
-        AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname()+" has been removed!").reset());
+        AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname() + " has been removed!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }
 }
