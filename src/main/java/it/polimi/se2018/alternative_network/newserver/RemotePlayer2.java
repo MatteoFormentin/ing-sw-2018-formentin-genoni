@@ -11,22 +11,29 @@ public abstract class RemotePlayer2 {
     private boolean playerRunning;
     private int idPlayerInGame;
 
+
+    public RemotePlayer2() {
+        playerRunning = true;
+    }
+
+
     /**
      * trim the name and set the connection as true when created
+     *
      * @param nickname
      */
     public RemotePlayer2(String nickname) {
         setNickname(nickname);
-        playerRunning=true;
-    }
-
-    public void setNickname(String nickname) {
-        nickname=nickname.trim();
-        this.nickname = nickname;
+        playerRunning = true;
     }
 
     public String getNickname() {
         return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        nickname = nickname.trim();
+        this.nickname = nickname;
     }
 
     public boolean isPlayerRunning() {
@@ -60,8 +67,6 @@ public abstract class RemotePlayer2 {
     //------------------------------------------------------------------------------------------------------------------
 
     public abstract void kickPlayerOut();
-
-
 
 
 }

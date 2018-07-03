@@ -1,10 +1,10 @@
 package it.polimi.se2018.alternative_network.newserver.rmi;
 
+import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
+import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
-import it.polimi.se2018.alternative_network.newserver.Server2;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.rmi.NoSuchObjectException;
@@ -18,7 +18,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * Cass that build and destroy the connection with the Rmi player
  * this is the class that can receive the messages from the player
  */
-public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient{
+public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient {
     private static RMIClientGatherer instance;
     private transient Server2 mainServer;
 

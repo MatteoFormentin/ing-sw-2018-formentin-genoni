@@ -2,7 +2,7 @@ package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 
-public abstract class AbstractServer2  {
+public abstract class AbstractServer2 {
 
     private final Server2 serverController;
     private final String host;
@@ -13,10 +13,10 @@ public abstract class AbstractServer2  {
         this.serverController = serverController;
         this.host = host;
         this.port = port;
-        this.started=false;
+        this.started = false;
     }
 
-    public abstract void startServer()throws ServerStartException;
+    public abstract void startServer() throws ServerStartException;
 
     public abstract void stopServer();
 

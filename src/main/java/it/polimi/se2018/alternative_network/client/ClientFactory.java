@@ -1,10 +1,10 @@
 package it.polimi.se2018.alternative_network.client;
 
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClient2StartAndInput;
+import it.polimi.se2018.alternative_network.client.socket.SocketClient2;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
-import it.polimi.se2018.network.client.socket.SocketClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
 import it.polimi.se2018.view.cli.CliParser;
@@ -39,41 +39,13 @@ public class ClientFactory {
         return instance;
     }
 
-    private void loadDefault() {
-        try {
-            Properties configProperties = new Properties();
-            String connectionConfig = "src/resources/configurations/connection_configuration.properties";
-            FileInputStream inputConnection = new FileInputStream(connectionConfig);
-            configProperties.load(inputConnection);
-            ipServer = configProperties.getProperty("SERVER_ADDRESS");
-            rmiPort = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
-            socketPort = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
-        } catch (IOException ex) {
-            ipServer = "localhost";
-            rmiPort = 31415;
-            socketPort = 16180;
-        }
-    }
-
-    public AbstractClient2 createClient(UIInterface view, String serverIpAddress, int port, int rmi0socket1) {
-        if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = ipServer;
-        if (rmi0socket1 == 0) {
-            if (port == 0) abstractClient = new RMIClient2StartAndInput(serverIpAddress, rmiPort, view);
-            else abstractClient = new RMIClient2StartAndInput(serverIpAddress, port, view);
-        } else if (rmi0socket1 == 1) {
-            if (port == 0) abstractClient = new SocketClient(null, serverIpAddress, socketPort);
-            else abstractClient = new SocketClient(null, serverIpAddress, port);
-        }
-        return abstractClient;
-    }
-
     /**
      * instruction for make it work
      *
      * @param args
      */
     public static void main(String[] args) {
-        instance =getClientFactory();
+        instance = getClientFactory();
         String IP_SERVER = "localhost";
         int RMI_PORT = 31415;
         try {
@@ -109,6 +81,34 @@ public class ClientFactory {
         }
         System.out.println("quando vuoi digita 0 per scollegarti dal");
         if (input.parseInt(1) == 0) abstractClient.shutDownClient2();
+    }
+
+    private void loadDefault() {
+        try {
+            Properties configProperties = new Properties();
+            String connectionConfig = "src/resources/configurations/connection_configuration.properties";
+            FileInputStream inputConnection = new FileInputStream(connectionConfig);
+            configProperties.load(inputConnection);
+            ipServer = configProperties.getProperty("SERVER_ADDRESS");
+            rmiPort = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
+            socketPort = Integer.parseInt(configProperties.getProperty("SOCKET_PORT"));
+        } catch (IOException ex) {
+            ipServer = "localhost";
+            rmiPort = 31415;
+            socketPort = 16180;
+        }
+    }
+
+    public AbstractClient2 createClient(UIInterface view, String serverIpAddress, int port, int rmi0socket1) {
+        if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = ipServer;
+        if (rmi0socket1 == 0) {
+            if (port == 0) abstractClient = new RMIClient2StartAndInput(serverIpAddress, rmiPort, view);
+            else abstractClient = new RMIClient2StartAndInput(serverIpAddress, port, view);
+        } else if (rmi0socket1 == 1) {
+            if (port == 0) abstractClient = new SocketClient2(serverIpAddress, socketPort, view);
+            else abstractClient = new SocketClient2(serverIpAddress, port, view);
+        }
+        return abstractClient;
     }
 
 }

@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 /**
  * interface of the receiver
  */
-public interface RMIClientInterface  extends Remote {
+public interface RMIClientInterface extends Remote {
 
     void notifyTheClient(EventView message) throws RemoteException;
 

@@ -1,6 +1,7 @@
 package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.alternative_network.newserver.rmi.RMIServer;
+import it.polimi.se2018.alternative_network.newserver.socket.SocketServer;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
@@ -23,10 +24,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Server2 {
     //info for the operation of the server
     public static Server2 instance;
+    private final AtomicBoolean gameOpen;
     private CliParser input;
-    private AbstractServer2 RMIServer;
 
-    // private AbstractServer2 socketServer;
+    private AbstractServer2 socketServer;
+    private AbstractServer2 RMIServer;
 
     //info loaded from file
     private String IP_SERVER;
@@ -34,21 +36,18 @@ public class Server2 {
     private int SOCKET_PORT;
     private int timerGame;
     private int maxPlayer;
-
     //info for the player connected to a gameBoard
     private GameRoom newGameRoom;
     private LinkedList<GameRoom> gameRoomRunning;
     private int counterAnon;
-
     private TimerThread playerTimeout;
-    private final AtomicBoolean gameOpen;
 
     private Server2() {
         gameOpen = new AtomicBoolean();
         gameRoomRunning = new LinkedList<>();
         counterAnon = 0;
         //TODO cambiare e inserire da file o input
-        maxPlayer=3;
+        maxPlayer = 3;
     }
 
     public static void main(String[] args) {
@@ -87,7 +86,7 @@ public class Server2 {
         }
     }
 
-    private void loadAddress(){
+    private void loadAddress() {
         input = new CliParser();
         boolean defaultSet = setUPConnection();
         if (!defaultSet) {
@@ -100,7 +99,7 @@ public class Server2 {
             SOCKET_PORT = input.parsePort(1024, 65535, RMI_PORT);
         }
         //creazione standard sei server
-     //   RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);
+        //   RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);
         //    AbstractServer2 SocketServer= new
 
     }
@@ -130,39 +129,41 @@ public class Server2 {
         }
         return false;
     }
+
     /**
      * Choice of the port, creation of the Registry, start of the RmiServer and SocketServer
      */
     public void start() {
-        newGameRoom = new GameRoom(maxPlayer,timerGame,0);
-        boolean rmiStarted=false;
-        boolean socketStarted=false;
-        boolean startThisServer=true;
-        while (!rmiStarted && startThisServer){
+        newGameRoom = new GameRoom(maxPlayer, timerGame, 0);
+        boolean rmiStarted = false;
+        boolean socketStarted = false;
+        boolean startThisServer = true;
+        while (!rmiStarted && startThisServer) {
             try {
-                RMIServer = new RMIServer(this,getIP_SERVER(),getRMI_PORT());
+                RMIServer = new RMIServer(this, getIP_SERVER(), getRMI_PORT());
                 RMIServer.startServer();
-                rmiStarted=true;
+                rmiStarted = true;
+
             } catch (ServerStartException ex) {
                 System.out.println("Errore nell'avvio del server RMI. 0 per riprovare, 1 per annullare");
-                if(input.parseInt(1)==1) startThisServer=false;
+                if (input.parseInt(1) == 1) startThisServer = false;
                 else loadAddress();
                 //TODO caricare l'address solo per rmi
             }
         }
-        /*//TODO startare socket
-        startThisServer=true;
-        while (!socketStarted && startThisServer){
+
+        startThisServer = true;
+        while (!socketStarted && startThisServer) {
             try {
+                socketServer = new SocketServer(this, getIP_SERVER(), getSOCKET_PORT());
                 socketServer.startServer();
-                started=true;
+                socketStarted = true;
             } catch (ServerStartException ex) {
                 System.out.println("Errore nell'avvio del server RMI. 0 per riprovare, 1 per annullare");
-                if(input.parseInt(1)==1) startThisServer=false;
+                if (input.parseInt(1) == 1) startThisServer = false;
             }
-        }     */
+        }
     }
-
 
 
     //****************************** Event from the listener *******************************************************
@@ -183,9 +184,9 @@ public class Server2 {
             }
             //controlla tutte le gameRoom
             int idGame = 0;
-            RemotePlayer2 playerConnected=null;
+            RemotePlayer2 playerConnected = null;
             //TODO creare una nuova stanza qui
-            if(newGameRoom==null) System.out.println("Server2 -> login: la newGameRoom è null");
+            if (newGameRoom == null) System.out.println("Server2 -> login: la newGameRoom è null");
             else playerConnected = newGameRoom.searchIfMatchName(remotePlayer.getNickname());
             if (playerConnected == null) {
                 while (idGame < gameRoomRunning.size() && playerConnected == null) {
@@ -210,7 +211,7 @@ public class Server2 {
                 } catch (RoomIsFullException ex) {//nel caso in cui è stato raggiunto il tetto massimo
                     //TODO sta creando la room o è in corso
                     throw ex;
-                } catch (GameStartedException ex){
+                } catch (GameStartedException ex) {
                     //TODO la room è stata avviata, Avviarlo in un thread? mmmmm
                     gameRoomRunning.add(newGameRoom);
                     newGameRoom.startGameRoom(this);
@@ -230,7 +231,7 @@ public class Server2 {
                 System.out.println("controllo se relogin");
                 gameRoomRunning.get(idGame).reLogin(playerConnected.getIdPlayerInGame(), remotePlayer);
             }
-        }else{
+        } else {
             System.out.println("aspetta un attimo");
             throw new RoomIsFullException("Aspetta un attimo è in creazione una gameboard");
         }
@@ -261,8 +262,8 @@ public class Server2 {
     public void shutDown() {
         System.out.println("Digita 0 per spegnare il server");
         if (input.parseInt(0) == 0) {
-            if(RMIServer.isStarted())RMIServer.stopServer();
-          //  if(socketServer.isStarted()) socketServer.stopServer();
+            if (RMIServer.isStarted()) RMIServer.stopServer();
+            //  if(socketServer.isStarted()) socketServer.stopServer();
         }
     }
 

@@ -513,9 +513,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                 } catch (ConnectionProblemException ex) {
                     cliMessage.showMessage(ex.getMessage());
                 } catch (PlayerAlreadyLoggedException ex) {
-                    cliMessage.showMessage(ex.getMessage());
+                    cliMessage.showNicknameExists();
                 } catch (RoomIsFullException ex) {
-                    cliMessage.showMessage(ex.getMessage());
+                    cliMessage.showNicknameExists();
                 }
             }
 

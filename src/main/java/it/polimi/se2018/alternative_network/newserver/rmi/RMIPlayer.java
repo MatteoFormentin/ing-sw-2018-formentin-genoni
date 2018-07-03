@@ -1,9 +1,9 @@
 package it.polimi.se2018.alternative_network.newserver.rmi;
 
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
+import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
+import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.rmi.NoSuchObjectException;
@@ -17,7 +17,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * Classe utilizzata per inviare messaggi al client
  * NON RICEVE MESSAGGI DAL CLIENT (se non per il return)
  */
-public class RMIPlayer extends RemotePlayer2{
+public class RMIPlayer extends RemotePlayer2 {
     //for send event to the client
     private RMIClientInterface clientRMIInterface;
 
@@ -55,13 +55,13 @@ public class RMIPlayer extends RemotePlayer2{
         try {
             AnsiConsole.out.println(clientRMIInterface.pong("ping"));
             UnicastRemoteObject.unexportObject(clientRMIInterface, true);
-        }catch(NoSuchObjectException ex){
+        } catch (NoSuchObjectException ex) {
             AnsiConsole.out.print(ansi().fg(BLUE).a(" ").reset());
-        }catch(RemoteException ex){
+        } catch (RemoteException ex) {
             AnsiConsole.out.print(ansi().fg(BLUE).a("Non raggiungibile").reset());
-            try{
+            try {
                 UnicastRemoteObject.unexportObject(clientRMIInterface, true);
-            }catch(NoSuchObjectException ex2){
+            } catch (NoSuchObjectException ex2) {
                 AnsiConsole.out.print(ansi().fg(BLUE).a(" perchè già disconnesso").reset());
             }
         }

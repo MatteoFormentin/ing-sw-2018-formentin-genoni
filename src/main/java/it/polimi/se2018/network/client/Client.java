@@ -137,7 +137,7 @@ public class Client implements ClientController {
      * Visual starter of the client.
      *
      * @param serverIpAddress address on where the server side communication are open.
-     * @param socketRmi number used to manage the decision of the user about the connection. RMI (=0) SOCKET (=1).
+     * @param socketRmi       number used to manage the decision of the user about the connection. RMI (=0) SOCKET (=1).
      */
     public void startClient(String serverIpAddress, int socketRmi) throws Exception {
         Properties configProperties = new Properties();
@@ -246,7 +246,13 @@ public class Client implements ClientController {
      */
     @Override
     public void sendEventToView(EventView eventView) {
-        view.showMessage(eventView);
+        try {
+            view.errPrintln("!!!!!!!!!!!!!!!!!!!!!!OK!!!!!!!!!!!!!!!!!!!!!!");
+
+            view.showMessage(eventView);
+        } catch (Exception ex) {
+            System.out.println("!!!PLAYER?");
+        }
         //TODO:gestisci update
     }
 
@@ -254,7 +260,8 @@ public class Client implements ClientController {
      * Remote method used to ping the client.
      */
     @Override
-    public void ping(){ }
+    public void ping() {
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS

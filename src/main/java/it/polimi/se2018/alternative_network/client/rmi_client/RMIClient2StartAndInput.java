@@ -1,12 +1,12 @@
 package it.polimi.se2018.alternative_network.client.rmi_client;
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
+import it.polimi.se2018.alternative_network.newserver.rmi.RMIServerInterfaceSeenByClient;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.alternative_network.newserver.rmi.RMIServerInterfaceSeenByClient;
 import it.polimi.se2018.view.UIInterface;
 
 import java.net.MalformedURLException;
@@ -18,13 +18,12 @@ import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Operazioni da esportare nel client
- *
+ * <p>
  * 2 connettere l'abstract client al server, se rifiutato ricreare un nuovo abstract client
  * 3 effettuare il login
  * (4 utilizzare sendEventToController per inviare informazioni dall'UI interface al server)
  * 5 chiamare disconnect per disconnettersi legalmente(richiedendo il kick all'interface)
  * 6 utilizzare shutDownClient2 per disconnettersi brutalmente
- *
  */
 public class RMIClient2StartAndInput implements AbstractClient2 {
 
@@ -38,15 +37,15 @@ public class RMIClient2StartAndInput implements AbstractClient2 {
     public RMIClient2StartAndInput(String serverIpAddress, int serverPort, UIInterface view) {
         this.serverIpAddress = serverIpAddress;
         this.serverPort = serverPort;
-        this.view=view;
+        this.view = view;
     }
 
     @Override
-    public void connectToServer2() throws ConnectionProblemException{
+    public void connectToServer2() throws ConnectionProblemException {
         try {
             // Chiedo al Registry ( in esecuzione su localhost alla porta di default ) di localizzare 'Server' e restituirmi il suo Stub
             // Naming.lookup(//host:port/name) host è l'ip, port è la porta  name è il nome del servizio offerto dall'host
-            serverRMI = (RMIServerInterfaceSeenByClient) Naming.lookup("//"+serverIpAddress+":"+serverPort+"/MyServer");
+            serverRMI = (RMIServerInterfaceSeenByClient) Naming.lookup("//" + serverIpAddress + ":" + serverPort + "/MyServer");
             //ping
             serverRMI.sayHelloToGatherer();
             //create the stud
@@ -61,26 +60,26 @@ public class RMIClient2StartAndInput implements AbstractClient2 {
             throw new ConnectionProblemException("Il server è stato raggiunto, ma non c'è il servizio richiesto");
         } catch (RemoteException ex) {
             throw new ConnectionProblemException("Non è stato possibile contattare il server, controllare i firewall");
-        } catch(MalformedURLException ex){
+        } catch (MalformedURLException ex) {
             throw new ConnectionProblemException("URL non corretto.");
         }
     }
 
     @Override
     public void login2(String nickname) throws ConnectionProblemException, PlayerAlreadyLoggedException, RoomIsFullException {
-        try{
-            serverRMI.addClient(nickname,remoteRef);
-        } catch (RemoteException ex){
+        try {
+            serverRMI.addClient(nickname, remoteRef);
+        } catch (RemoteException ex) {
             throw new ConnectionProblemException("La connessione è caduta.");
         }
     }
 
 
     @Override
-    public void sendEventToController2(EventController eventController)throws ConnectionProblemException{
-        try{
+    public void sendEventToController2(EventController eventController) throws ConnectionProblemException {
+        try {
             serverRMI.sendEventToController(eventController);
-        }catch(RemoteException ex){
+        } catch (RemoteException ex) {
             throw new ConnectionProblemException("La connessione è caduta.");
         }
     }
@@ -91,9 +90,9 @@ public class RMIClient2StartAndInput implements AbstractClient2 {
             serverRMI.sayHelloToGatherer();
             UnicastRemoteObject.unexportObject(client, true);
             view.errPrintln("Non sei stato disconnesso dal server");
-        }catch(NoSuchObjectException ex){
+        } catch (NoSuchObjectException ex) {
             view.errPrintln("shutDownClient: ->the Object Remote doesn't exist");
-        }catch(RemoteException ex){
+        } catch (RemoteException ex) {
             view.errPrintln("shutDownClient -> Sei già disconnesso");
         }
     }

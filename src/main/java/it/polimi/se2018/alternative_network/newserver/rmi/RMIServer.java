@@ -1,8 +1,8 @@
 package it.polimi.se2018.alternative_network.newserver.rmi;
 
-import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 import it.polimi.se2018.alternative_network.newserver.AbstractServer2;
 import it.polimi.se2018.alternative_network.newserver.Server2;
+import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.net.MalformedURLException;
@@ -46,7 +46,8 @@ public class RMIServer extends AbstractServer2 {
             setStarted(false);
             throw new ServerStartException();
         }
-        try {clientGatherer = RMIClientGatherer.getSingletonClientGatherer(getServerController());
+        try {
+            clientGatherer = RMIClientGatherer.getSingletonClientGatherer(getServerController());
         } catch (RemoteException ex) {
             AnsiConsole.out.println(ansi().fg(BLUE).a("RMIClientGatherer non può essere istanziato").reset());
             setStarted(false);

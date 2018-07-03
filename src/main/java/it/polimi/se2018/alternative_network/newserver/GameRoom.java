@@ -1,8 +1,8 @@
 package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
@@ -31,26 +31,29 @@ public class GameRoom implements TimerCallback, ServerController2 {
         this.maxPlayer = maxPlayer;
         this.timeRoom = timeRoom;
         this.indexRoom = indexRoom;
-        updater =new UpdateRequestedByServer() {
+        updater = new UpdateRequestedByServer() {
             @Override
             public void updatePlayerConnected(int index, String name) {
-                for(int i=0;i<players.size();i++) updatePlayerConnected(i,index,name);
-            }
-            private void updatePlayerConnected(int indexToNotify, int index,String name){
-                UpdatePlayerConnection packet = new UpdatePlayerConnection(index,name);
-                packet.setPlayerId(indexToNotify);
-                sendEventToView(packet);
-            }
-            @Override
-            public void updateDisconnected(int index, String name) {
-                for(int i=0;i<players.size();i++) updateDisconnected(i,index,name);
+                for (int i = 0; i < players.size(); i++) updatePlayerConnected(i, index, name);
             }
 
-            private void updateDisconnected(int indexToNotify, int index,String name){
-                UpdateDisconnection packet = new UpdateDisconnection(index,name);
+            private void updatePlayerConnected(int indexToNotify, int index, String name) {
+                UpdatePlayerConnection packet = new UpdatePlayerConnection(index, name);
                 packet.setPlayerId(indexToNotify);
                 sendEventToView(packet);
             }
+
+            @Override
+            public void updateDisconnected(int index, String name) {
+                for (int i = 0; i < players.size(); i++) updateDisconnected(i, index, name);
+            }
+
+            private void updateDisconnected(int indexToNotify, int index, String name) {
+                UpdateDisconnection packet = new UpdateDisconnection(index, name);
+                packet.setPlayerId(indexToNotify);
+                sendEventToView(packet);
+            }
+
             @Override
             public void updateInfoReLogin(int indexPlayer) {
 

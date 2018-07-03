@@ -14,12 +14,12 @@ public class RemoteClientReceiver implements RMIClientInterface {
     }
 
     @Override
-    public void notifyTheClient(EventView message){
+    public void notifyTheClient(EventView message) {
         instanceClient.sendEventToUIInterface2(message);
     }
 
     @Override
-    public String pong(String ping){
+    public String pong(String ping) {
         return "pong";
     }
 }
