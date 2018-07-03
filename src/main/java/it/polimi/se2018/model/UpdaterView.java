@@ -8,17 +8,17 @@ import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.network.server.ServerController;
 
-public class UpdaterView implements UpdateRequestedByServer,SenderEventController {
+public class UpdaterView implements UpdateRequestedByServer {
     private GameBoard gameBoard;
     private ServerController server;
     private ServerController2 server2;
+
 
     public UpdaterView(GameBoard gameBoard, ServerController server, ServerController2 server2) {
         this.gameBoard = gameBoard;
         this.server = server;
         this.server2 = server2;
     }
-
     /************************************ CAN SEND TO ALL ************************************************/
     private  void updateAllPublicObject() {
         for (int i = 0; i < gameBoard.getPlayer().length; i++)  updateAllPublicObject(i);
@@ -209,13 +209,6 @@ public class UpdaterView implements UpdateRequestedByServer,SenderEventControlle
         if (server == null) server2.sendEventToView(packet);
         else server.sendEventToView(packet);
     }
-    /**
-     * send all the windows update to all players
-     */
-    public void updateWindow(){
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateWindow(i);
-    }
-
 
     /**
      * send the window update to all players
@@ -266,28 +259,6 @@ public class UpdaterView implements UpdateRequestedByServer,SenderEventControlle
         else server.sendEventToView(packet);
     }
 
-    @Override
-    public void updateInfoReLogin(int indexPlayerToNotify,boolean duringSetUp) {
-        if(duringSetUp) updateInitialWindowPatternCard(indexPlayerToNotify);
-        updateSinglePrivateObject(indexPlayerToNotify);
-        updateAllToolCard(indexPlayerToNotify);
-        updateAllPublicObject(indexPlayerToNotify);
-        updateInitDimRound(indexPlayerToNotify);
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateWindow(indexPlayerToNotify,i);
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerHand(indexPlayerToNotify,i);
-        updateDicePool(indexPlayerToNotify);
-        updateInfoCurrentTurn(indexPlayerToNotify);
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerTokenAndPoints();
-    }
-
-    @Override
-    public void updateInfoStart() {
-        updateSinglePrivateObject();
-        updateInitialWindowPatternCard();
-        updateAllToolCard();
-        updateAllPublicObject();
-        updateInitDimRound();
-    }
 
     private void updatePlayerConnected(int indexPlayerToNotify, int index, String name) {
         UpdatePlayerConnection packet =new UpdatePlayerConnection(index,name);
@@ -303,17 +274,8 @@ public class UpdaterView implements UpdateRequestedByServer,SenderEventControlle
         else server.sendEventToView(packet);
     }
 
-    @Override
-    public void updatePlayerConnected(int index, String name) {
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerConnected(i,index,name);
-    }
 
-    @Override
-    public void updateDisconnected(int index, String name) {
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateDisconnected(i,index,name);
-    }
-
-    void currentPoints(int indexPlayer) {
+    private void currentPoints(int indexPlayer) {
         NodePodium currentPoints = gameBoard.calculatePoint(indexPlayer);
         UpdateCurrentPoint packet = new UpdateCurrentPoint(currentPoints.getArrayIntInfo(),currentPoints.getDescription());
         packet.setPlayerId(indexPlayer);
@@ -324,15 +286,56 @@ public class UpdaterView implements UpdateRequestedByServer,SenderEventControlle
         for (int i = 0; i < gameBoard.getPlayer().length; i++) currentPoints(i);
     }
 
-    @Override
-    public void nameConfirmedInInTheGame(String[] playersName){
-        for (int i = 0; i < gameBoard.getPlayer().length; i++)  nameConfirmedInInTheGame(i,playersName);
-    }
-
-    void nameConfirmedInInTheGame(int indexPlayerToNotify,String[] playersName){
+    private void nameConfirmedInInTheGame(int indexPlayerToNotify,String[] playersName){
         StartGame packet = new StartGame(playersName);
         packet.setPlayerId(indexPlayerToNotify);
         if (server == null) server2.sendEventToView(packet);
         else server.sendEventToView(packet);
     }
+
+    private void updateName(int indexPlayerToNotify,String[] playersName){
+        StartGame packet = new StartGame(playersName);
+        packet.setPlayerId(indexPlayerToNotify);
+        if (server == null) server2.sendEventToView(packet);
+        else server.sendEventToView(packet);
+    }
+
+    public void nameConfirmedInInTheGame(String[] playersName){
+        for (int i = 0; i < gameBoard.getPlayer().length; i++)  nameConfirmedInInTheGame(i,playersName);
+    }
+
+    @Override
+    public void updatePlayerConnected(int index, String name) {
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerConnected(i,index,name);
+    }
+
+    @Override
+    public void updateDisconnected(int index, String name) {
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateDisconnected(i,index,name);
+    }
+
+    @Override
+    public void updateInfoReLogin(int indexPlayerToNotify) {
+        updateInfoStart();//TODO togliere la updateinitial window patternCard
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateWindow(indexPlayerToNotify,i);
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerHand(indexPlayerToNotify,i);
+        updateDicePool(indexPlayerToNotify);
+        updateInfoCurrentTurn(indexPlayerToNotify);
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerTokenAndPoints();
+    }
+
+    @Override
+    public void updateInfoStart() {
+        String[] names= new String[gameBoard.getPlayer().length];
+        for(int i=0;i<names.length;i++)  names[i]= gameBoard.getPlayer(i).getNickname();
+        for(int i=0;i<names.length;i++)  updateName(i,names);
+        updateSinglePrivateObject();
+        updateInitialWindowPatternCard();
+        updateAllToolCard();
+        updateAllPublicObject();
+        updateInitDimRound();
+    }
+
+
+
 }

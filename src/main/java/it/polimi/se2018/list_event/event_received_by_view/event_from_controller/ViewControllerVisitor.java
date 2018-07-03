@@ -7,7 +7,6 @@ public interface ViewControllerVisitor {
     //**********************************************from Controller**************************************
     //for the setup
     void visit(StartGame event);
-    void visit(JoinGame event);
 
     //for the initial prt of the game
     void visit(ShowAllCards event);

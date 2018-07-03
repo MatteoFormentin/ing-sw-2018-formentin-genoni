@@ -402,12 +402,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         centerBox.getChildren().add(flowPaneDicePool);
     }
 
-    @Override
+   /* @Override
     public void visit(JoinGame event) {
         //TODO aggiungere cose speciale del join game
         System.err.println("è arrivato il pacchetto join, non l'ho mai visto prima d'ora viene accettato :" + event.toString());
         gameStage.show();
-    }
+    }*/
 
     /**
      * Method of the Visitor Pattern, event received from the controller

@@ -3,13 +3,16 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.*;
-import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyDrawANewDiceException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.NoDiceInHandException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ColorNotRightException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.RoundTrackIndexException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
 import it.polimi.se2018.model.card.Deck;
-import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.ToolCard;
+import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
 
@@ -35,14 +38,16 @@ public class GameBoard {
     private UpdaterView updaterView;
 
 
-    public GameBoard(int number) {
+
+    public GameBoard(String[] names) {
         stopGame = false;
         currentRound = 0;
         currentTurn = 1;
         roundTrack = new DiceStack[10];// don't need to be initialized, they take the reference of from the dicePool
         toolCard = new ToolCard[3];
         objectivePublicCard = new ObjectivePublicCard[3];
-        player = new Player[number];
+        player = new Player[names.length];
+        for (int i = 0; i < player.length; i++) player[i] = new Player(i,names[i]);
         indexCurrentPlayer = 0;
     }
 
@@ -52,7 +57,6 @@ public class GameBoard {
         //setUp player
         int diceWindow = 0;
         for (int i = 0; i < player.length; i++) {
-            player[i] = new Player(i);
             player[i].setPrivateObject(deck.drawObjectivePrivateCard());
             WindowPatternCard[] window = new WindowPatternCard[4];
             for (int n = 0; n < 4; n++) window[n] = deck.drawWindowPatternCard();
@@ -240,6 +244,12 @@ public class GameBoard {
             secondTurn(indexPlayerEnded);
             roundTrack[currentRound] = dicePool;
             updaterView.updateSingleTurnRoundTrack(currentRound);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    updaterView.currentPoints();
+                }
+            });
             currentRound++;
             if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
@@ -319,6 +329,10 @@ public class GameBoard {
         dicePool.remove(indexDicePool);
         updaterView.updatePlayerHand(indexPlayer);
         updaterView.updateDicePool();
+    }
+
+    public void setStopGame(boolean stopGame) {
+        this.stopGame = stopGame;
     }
 
     /**
