@@ -4,13 +4,13 @@ package it.polimi.se2018.network.server.rmi;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
-import it.polimi.se2018.network.server.Server;
 import org.fusesource.jansi.AnsiConsole;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
-import static org.fusesource.jansi.Ansi.Color.DEFAULT;
-import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
 /**
@@ -94,8 +94,13 @@ public class RMIPlayer extends RemotePlayer {
      */
     @Override
     public void disconnect(){
+        //Server.removeRMIPlayer(this);
         playerRunning=false;
-        Server.removeRMIPlayer(this);
+        try {
+            UnicastRemoteObject.unexportObject(iRMIClient, true);
+        }catch(NoSuchObjectException ex){
+            System.err.println("No reference to the remote object.");
+        }
         AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname()+" has been removed!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }

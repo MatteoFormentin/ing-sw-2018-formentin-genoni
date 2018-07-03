@@ -250,9 +250,10 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }
 
+    /*
     public static void removePlayer(RemotePlayer remotePlayer){
         remotePlayer.setPlayerRunning(false);
         String nickname = remotePlayer.getNickname();
         socketPlayers.remove(nickname, remotePlayer);
-    }
+    }*/
 }

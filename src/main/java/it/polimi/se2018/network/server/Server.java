@@ -274,6 +274,7 @@ public class Server implements ServerController, TimerCallback {
                 if (players.size()== 1 && timerThread.isAlive()) {
                     timerThread.shutdown();
                     timerThread.startThread();
+                    AnsiConsole.out.println(ansi().fg(GREEN).a("TIMER STOPPED CAUSE THERE IS ONLY 1 PLAYER IN THE ROOM").reset());
                 }
 
                 AnsiConsole.out.println(ansi().fg(DEFAULT).a("Trying to log the player in the waiting room...").reset());
@@ -428,8 +429,7 @@ public class Server implements ServerController, TimerCallback {
      * Remote method used to ping the client.
      */
     @Override
-    public void ping() {
-    }
+    public void ping() { }
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
@@ -480,6 +480,7 @@ public class Server implements ServerController, TimerCallback {
                     player.ping();
                 } catch (RemoteException e) {
                     player.disconnect();
+                    playerCounter--;
                 }
                 if (player.getNickname().equals(nickname)) {
                     return player.getPlayerRunning();
@@ -490,6 +491,7 @@ public class Server implements ServerController, TimerCallback {
                     player.sendAck();
                 } catch (Exception e) {
                     player.disconnect();
+                    playerCounter--;
                 }
                 if (player.getNickname().equals(nickname)) {
                     return player.getPlayerRunning();
@@ -535,11 +537,12 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to RMI Player.
      */
+    /*
     public static void removeRMIPlayer(RemotePlayer remotePlayer) {
         rmiServer.removePlayer(remotePlayer);
         AnsiConsole.out.println(ansi().fg(GREEN).a("RMI Player disconnected!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
-    }
+    }*/
 
     /**
      * Disconnecter for player.
