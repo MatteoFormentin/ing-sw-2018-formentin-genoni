@@ -216,6 +216,7 @@ public class Server implements ServerController, TimerCallback {
             } catch (RemoteException ex) {
                 // DISCONNESSIONE
                 player.disconnect();
+                this.playerCounter--;
             }
         }
 
@@ -391,6 +392,7 @@ public class Server implements ServerController, TimerCallback {
         } catch (RemoteException ex) {
             // DISCONNESSIONE
             remotePlayer.disconnect();
+            this.playerCounter--;
         }
 
         this.game.joinGame(remotePlayer.getPlayerId());
@@ -422,6 +424,7 @@ public class Server implements ServerController, TimerCallback {
         } catch (RemoteException ex) {
             RemotePlayer remotePlayer = searchPlayerById(eventView.getPlayerId());
             remotePlayer.disconnect();
+            this.playerCounter--;
         }
     }
 
@@ -479,8 +482,11 @@ public class Server implements ServerController, TimerCallback {
                 try {
                     player.ping();
                 } catch (RemoteException e) {
+                    player.setPlayerRunning(false);
                     player.disconnect();
-                    playerCounter--;
+                    // TODO CHIAMARE PLAYER DOWN
+
+                    this.playerCounter--;
                 }
                 if (player.getNickname().equals(nickname)) {
                     return player.getPlayerRunning();
@@ -490,8 +496,10 @@ public class Server implements ServerController, TimerCallback {
                 try {
                     player.sendAck();
                 } catch (Exception e) {
+                    player.setPlayerRunning(false);
                     player.disconnect();
-                    playerCounter--;
+                    // TODO CHIAMARE PLAYER DOWN
+                    this.playerCounter--;
                 }
                 if (player.getNickname().equals(nickname)) {
                     return player.getPlayerRunning();
@@ -516,6 +524,23 @@ public class Server implements ServerController, TimerCallback {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }
 
+    private void replacePlayerInGame(int id, RemotePlayer newRemotePlayer) {
+        if (newRemotePlayer.getPlayerConnection() == "rmi") {
+            // RIMPIAZZO IL GIOCATORE NEL SERVER
+            players.set(id, newRemotePlayer);
+        }
+        if (newRemotePlayer.getPlayerConnection() == "socket") {
+            // RIMPIAZZO IL GIOCATORE NEL SERVER
+            players.set(id, newRemotePlayer);
+            // RIAPRO LA SUA CONNESSIONE SOCKET
+            //newRemotePlayer.
+        }
+
+        String nickname = newRemotePlayer.getNickname();
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Disconnected player " + nickname + " has been replaced from a new client!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+    }
+
     /**
      * Connecter for player.
      * The connecter work on player connection state flag, putting it true determining a "connection established".
@@ -528,6 +553,10 @@ public class Server implements ServerController, TimerCallback {
         String nickname = remotePlayer.getNickname();
         AnsiConsole.out.println(ansi().fg(GREEN).a("Player " + nickname + " has been connected!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
+    }
+
+    private void playerCounterDecrementer(){
+        this.playerCounter--;
     }
 
     /**

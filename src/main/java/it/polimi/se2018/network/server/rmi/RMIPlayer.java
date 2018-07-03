@@ -105,4 +105,6 @@ public class RMIPlayer extends RemotePlayer {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }
 
+
+
 }

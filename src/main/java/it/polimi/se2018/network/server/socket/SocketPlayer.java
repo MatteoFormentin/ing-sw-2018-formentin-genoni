@@ -229,7 +229,6 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
 
     /**
      * Reset player connection on relogin.
-     *
      */
     public void resetConnection(Socket connection, ObjectOutputStream output, ObjectInputStream input){
         this.tunnel = connection;
