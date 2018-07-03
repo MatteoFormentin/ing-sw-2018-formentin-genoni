@@ -3,10 +3,9 @@ package it.polimi.se2018.network.server;
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.JoinGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
-import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.model.UpdateRequestedByServer;
+import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
 import it.polimi.se2018.network.server.socket.SocketServer;
 import it.polimi.se2018.utils.TimerCallback;
@@ -382,7 +381,8 @@ public class Server implements ServerController, TimerCallback {
     public void joinGame(RemotePlayer remotePlayer) {
         AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
 
-        try {
+        //TODO usare controller.playerUp
+       /* try {
             JoinGame packet = new JoinGame();
             packet.setPlayerName(remotePlayer.getNickname());
             packet.setPlayerId(remotePlayer.getPlayerId());
@@ -390,7 +390,7 @@ public class Server implements ServerController, TimerCallback {
         } catch (RemoteException ex) {
             // DISCONNESSIONE
             remotePlayer.disconnect();
-        }
+        }*/
 
        // this.game.joinGame(remotePlayer.getPlayerId());
     }

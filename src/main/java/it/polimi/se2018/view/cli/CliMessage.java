@@ -371,6 +371,12 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(RED).a("Spiacente, hai esaurito il tempo a tua disposizione!"));
     }
 
+    void showReLogin() {
+        println();
+        AnsiConsole.out.println(ansi().fg(RED).a("E'caduta la connessione."));
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Digita 0 per ricollegarti, 1 per uscire. Ricordati di usare il vecchio nickname."));
+    }
+
     void showEndGameScreen(int[][] ranking, String[] playersName, int myId) {
 
         //Se hai vinto

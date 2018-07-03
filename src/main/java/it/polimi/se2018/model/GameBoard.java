@@ -3,13 +3,16 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.*;
-import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyDrawANewDiceException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
+import it.polimi.se2018.exception.gameboard_exception.player_state_exception.NoDiceInHandException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ColorNotRightException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.RoundTrackIndexException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
 import it.polimi.se2018.model.card.Deck;
-import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.ToolCard;
+import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
 
@@ -33,6 +36,7 @@ public class GameBoard {
     private FactoryDice factoryDiceForThisGame; //nobody can see it
     private DiceColor colorRestriction;
     private UpdaterView updaterView;
+
 
 
     public GameBoard(String[] names) {
@@ -325,6 +329,10 @@ public class GameBoard {
         dicePool.remove(indexDicePool);
         updaterView.updatePlayerHand(indexPlayer);
         updaterView.updateDicePool();
+    }
+
+    public void setStopGame(boolean stopGame) {
+        this.stopGame = stopGame;
     }
 
     /**
