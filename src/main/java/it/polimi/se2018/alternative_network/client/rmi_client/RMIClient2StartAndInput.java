@@ -58,7 +58,7 @@ public class RMIClient2StartAndInput implements AbstractClient2 {
             remoteRef = (RMIClientInterface) UnicastRemoteObject.exportObject(client, 0);
             //creo l'oggetto client
         } catch (NotBoundException ex) {
-            throw new ConnectionProblemException("Il server è stato raggiunto, ma non ci sono Servizi disponibili su questo server");
+            throw new ConnectionProblemException("Il server è stato raggiunto, ma non c'è il servizio richiesto");
         } catch (RemoteException ex) {
             throw new ConnectionProblemException("Non è stato possibile contattare il server, controllare i firewall");
         } catch(MalformedURLException ex){
@@ -90,6 +90,7 @@ public class RMIClient2StartAndInput implements AbstractClient2 {
         try {
             serverRMI.sayHelloToGatherer();
             UnicastRemoteObject.unexportObject(client, true);
+            view.errPrintln("Non sei stato disconnesso dal server");
         }catch(NoSuchObjectException ex){
             view.errPrintln("shutDownClient: ->the Object Remote doesn't exist");
         }catch(RemoteException ex){

@@ -4,13 +4,11 @@ import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
-import it.polimi.se2018.list_event.event_received_by_controller.ControllerEndTurn;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnection;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdatePlayerConnection;
 import it.polimi.se2018.model.UpdateRequestedByServer;
-import it.polimi.se2018.model.UpdaterView;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
@@ -170,6 +168,7 @@ public class GameRoom implements TimerCallback, ServerController2 {
             System.out.println("il Client è stato sostituito");
             players.set(idPlayer, player);
             //TODO send join game e avviso che il giocatore si è ricollegato
+            updater.updateInfoReLogin(idPlayer);
         }
         checkOnLine();
     }
@@ -177,6 +176,11 @@ public class GameRoom implements TimerCallback, ServerController2 {
     @Override
     public void timerCallback() {
         //TODO implementare
+    }
+
+    @Override
+    public void timerCallbackWithIndex(int infoToReturn) {
+
     }
 
 

@@ -237,6 +237,11 @@ public class Server implements ServerController, TimerCallback {
         startGame();
     }
 
+    @Override
+    public void timerCallbackWithIndex(int infoToReturn) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Starter for the timeout, based on a single thread.
      */

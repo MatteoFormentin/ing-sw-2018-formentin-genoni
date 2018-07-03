@@ -22,7 +22,6 @@ import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.model.UpdaterView;
 import it.polimi.se2018.network.server.ServerController;
-import it.polimi.se2018.utils.TimerCallBackWithIndex;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
@@ -37,7 +36,7 @@ import java.util.Properties;
  * @author Luca Genoni
  */
 
-public class Controller implements ControllerVisitor, TimerCallback, TimerCallBackWithIndex {
+public class Controller implements ControllerVisitor, TimerCallback {
     private GameBoard gameBoard;
     private int playerNumber;
     private boolean restoreAble;
@@ -57,7 +56,7 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
     private UpdaterView updaterView;
 
     private boolean started;
-    private boolean timer;
+ //   private boolean timer;
 
     /**
      * Controller constructor.
@@ -87,7 +86,7 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
             System.out.println("Errore caricamento");
         }
         playerTimeout = new TimerThread(this, PLAYER_TIMEOUT);
-        timer = false;
+      //  timer = false;
         //List for effect
         effectToRead = new LinkedList<>();
         currentEffect = 0;
@@ -192,6 +191,7 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
         } catch (WindowSettingCompleteException ex) {
+            started = true;
             //all the window are set
             for (int i = 0; i < playerNumber; i++) {
                 EventView packetFineInit = new InitialEnded();
@@ -203,8 +203,7 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             sendEventToView(turnPacket);
             //TODO fermare il timout per l'init e iniziare quello per il round.
-            playerTimeout.startThread(this,gameBoard.getIndexCurrentPlayer());
-            started = true;
+            playerTimeout.startThread(gameBoard.getIndexCurrentPlayer());
         } catch (WindowPatternAlreadyTakenException ex) {
             //window already chosen
             MessageError packetError = new MessageError(ex.getMessage(), false, true);
@@ -276,8 +275,6 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
     @Override
     public synchronized void visit(ControllerEndTurn event) {
         try {
-            System.out.println(playerTimeout.isAlive()+ "Richiedente: "+event.getPlayerId()+" Attuale: "+gameBoard.getIndexCurrentPlayer());
-            if(playerTimeout.isAlive()) playerTimeout.shutdown();
             if (restoreAble && !gameBoard.getPlayer(event.getPlayerId()).getHandDice().isEmpty())
                 effectGamesStored.getLast().undo();
             EffectGame endTurn = new EndTurn(false);
@@ -291,13 +288,13 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             sendEventToView(turnPacket);
             //Restart timer
-
-            System.out.println("valore inviato al timer :"+gameBoard.getIndexCurrentPlayer());
-            playerTimeout.startThread(this,gameBoard.getIndexCurrentPlayer());
+            playerTimeout.shutdown();
+            playerTimeout.startThread(gameBoard.getIndexCurrentPlayer());
         } catch (GameIsOverException ex) {
             endGame();
             ex.printStackTrace();
         } catch (CurrentPlayerException ex) {
+            System.out.println("Il timer ha provato a fare il furbetto, se rimuovi questa eccezione non sono sicuro che tutto vada ok");
             ex.printStackTrace();
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(), false);
@@ -329,7 +326,7 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
     public void visit(ControllerSelectCellOfWindow event) {
         try {
             gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn(), true);
-            EventView packet = new MessageOk("la massa si è conclusa con successo", true);
+            EventView packet = new MessageOk("la mossa si è conclusa con successo", true);
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
         } catch (CurrentPlayerException ex) {
@@ -393,7 +390,7 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
         }
         //lettura nuovo effetto
         if (effectToRead.isEmpty()) {
-            EventView packet = new MessageOk("il flusso di mosse si è concluso con successo, mostra il menu", true);
+            EventView packet = new MessageOk("il flusso della mossa si è concluso con successo", true);
             packet.setPlayerId(idPlayer);
             sendEventToView(packet);
             restoreAble = false;
@@ -427,43 +424,17 @@ public class Controller implements ControllerVisitor, TimerCallback, TimerCallBa
 
     @Override
     public void timerCallback() {
-        System.out.println("TEMPO SCADUTO!!!!");
-
-        int ind = gameBoard.getIndexCurrentPlayer();
-
-        MoveTimeoutExpired timerPacket = new MoveTimeoutExpired();
-        timerPacket.setPlayerId(ind);
-        sendEventToView(timerPacket);
-
-        ControllerEndTurn event = new ControllerEndTurn();
-        event.setIdGame(ind);
-        visit(event);
-
-        /*
-        try {
-            gameBoard.nextPlayer(gameBoard.getIndexCurrentPlayer());
-            sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
-            StartPlayerTurn turnPacket = new StartPlayerTurn();
-            turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
-            System.err.println("cambiato il turno tocca a " + gameBoard.getIndexCurrentPlayer());
-            sendEventToView(turnPacket);
-
-            //Restart timer
-            playerTimeout.shutdown();
-            playerTimeout.startThread();
-        } catch (Exception ex) {
-            showErrorMessage(ex, gameBoard.getIndexCurrentPlayer(), false);
-        }*/
+        //TODO se si vuole avere il tempo anche per il setUP utilizzare questo callback
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void timerCallbackWithIndex(int index) {
-        timer = true;
         MoveTimeoutExpired timerPacket = new MoveTimeoutExpired();
         timerPacket.setPlayerId(index);
         sendEventToView(timerPacket);
         ControllerEndTurn event = new ControllerEndTurn();
-        event.setIdGame(index);
+        event.setPlayerId(index);
         visit(event);
     }
 }

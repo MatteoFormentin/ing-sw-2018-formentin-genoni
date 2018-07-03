@@ -22,11 +22,11 @@ public class TimerThread implements Runnable {
     private Thread timerThread;
     // Interfaccia server, serve per comunicare col server
     private TimerCallback timerCallback;
-    private TimerCallBackWithIndex timerCallBackWithIndex;
     //Timeout passato da server (caricato da file)
     private long timeout;
     private long startTimerTime;
     private boolean isAlive;
+    private boolean withIndex;
     private AtomicInteger index;
 
     //------------------------------------------------------------------------------------------------------------------
@@ -42,6 +42,7 @@ public class TimerThread implements Runnable {
     public TimerThread(TimerCallback timerCallback, long timeout) {
         this.timeout = timeout;
         this.timerCallback = timerCallback;
+        withIndex=false;
         this.isAlive = false;
         index= new AtomicInteger(0);
     }
@@ -71,11 +72,12 @@ public class TimerThread implements Runnable {
             }
         }
         if (running.get()) {
-            if(timerCallBackWithIndex!=null) timerCallBackWithIndex.timerCallbackWithIndex(index.get());
+            if(withIndex) {
+                timerCallback.timerCallbackWithIndex(index.get());
+            }
             else timerCallback.timerCallback();
         }
         System.out.println("!!!!EXPIRED!!!!");
-        timerCallBackWithIndex=null;
         isAlive = false;
     }
 
@@ -87,14 +89,17 @@ public class TimerThread implements Runnable {
      * Starter for the Timer Thread.
      */
     public void startThread() {
+        withIndex=false;
         timerThread = new Thread(this);
         running.set(true);
         timerThread.start();
     }
 
-    public void startThread(TimerCallBackWithIndex timerCallBackWithIndex,int index) {
-        this.timerCallBackWithIndex =timerCallBackWithIndex;
-        this.index.set(index);
+    public void startThread(int numberToReturn) {
+        withIndex=true;
+        System.out.println("Inderx timer richiesto è:"+numberToReturn);
+        this.index.set(numberToReturn);
+        System.out.println("Inderx timer impostato è: "+index.get());
         timerThread = new Thread(this);
         running.set(true);
         timerThread.start();
@@ -107,8 +112,8 @@ public class TimerThread implements Runnable {
      * Stopper for the Timer Thread.
      */
     public void shutdown() {
+        System.out.println("Richiesto turn off del timer");
         running.set(false);
-        timerCallBackWithIndex =null;
         try {
             Thread.sleep(1);
         } catch (InterruptedException ex) {

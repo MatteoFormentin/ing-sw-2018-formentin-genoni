@@ -226,7 +226,6 @@ public class GameBoard {
      */
     public void nextPlayer(int indexPlayerEnded) throws GameIsBlockedException, CurrentPlayerException,
             GameIsOverException, FatalGameErrorException, ValueDiceWrongException {
-        System.out.println("Round: "+currentRound+"Turn: "+currentTurn+"Tocca a: "+indexCurrentPlayer+" Richiesto da: "+indexPlayerEnded);
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayerEnded != indexCurrentPlayer) throw new CurrentPlayerException();
         if (currentTurn < player.length) {
