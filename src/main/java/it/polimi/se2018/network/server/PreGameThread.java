@@ -61,7 +61,8 @@ public class PreGameThread implements Runnable {
 
                 if(!remotePlayer.getPlayerRunning()){
                     System.out.println("Joining the game...");
-                    server.joinGame(remotePlayer);
+                    //todo
+                    //server.joinGame(remotePlayer);
                     shutdown();
                 } else {
                     System.out.println("Starting the game...");

@@ -3,7 +3,6 @@ package it.polimi.se2018.network.server;
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.JoinGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
 import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.network.RemotePlayer;
@@ -198,7 +197,8 @@ public class Server implements ServerController, TimerCallback {
      */
     public void startGame() {
         AnsiConsole.out.println(ansi().fg(GREEN).a("GAME STARTED!").reset());
-        game = new Controller(this, players.size(), null);
+
+
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("From now the room will not be joinable, except from a RElogin").reset());
         roomJoinable = false;
 
@@ -208,6 +208,8 @@ public class Server implements ServerController, TimerCallback {
             playersName[i] = player.getNickname();
             i++;
         }
+
+        game = new Controller(this, playersName, null);
         for (RemotePlayer player : players) {
             try {
                 StartGame packet = new StartGame(playersName);
@@ -368,7 +370,9 @@ public class Server implements ServerController, TimerCallback {
                     startPreGameThread(remotePlayer);
 
                     // RE INTEGRAZIONE NEL GIOCO
-                    this.game.joinGame(id);
+                    game.playerUp(id);
+
+                    //this.game.joinGame(id);
                 }
                 return true;
             }
@@ -381,6 +385,7 @@ public class Server implements ServerController, TimerCallback {
      *
      * @param remotePlayer reference to RMI or Socket Player.
      */
+    /*
     public void joinGame(RemotePlayer remotePlayer) {
         AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
 
@@ -396,7 +401,7 @@ public class Server implements ServerController, TimerCallback {
         }
 
         this.game.joinGame(remotePlayer.getPlayerId());
-    }
+    }*/
 
     /**
      * Remote method used to send to the server a request to unleash an event.
@@ -484,8 +489,7 @@ public class Server implements ServerController, TimerCallback {
                 } catch (RemoteException e) {
                     player.setPlayerRunning(false);
                     player.disconnect();
-                    // TODO CHIAMARE PLAYER DOWN
-
+                    game.playerDown(player.getPlayerId());
                     this.playerCounter--;
                 }
                 if (player.getNickname().equals(nickname)) {
@@ -498,7 +502,7 @@ public class Server implements ServerController, TimerCallback {
                 } catch (Exception e) {
                     player.setPlayerRunning(false);
                     player.disconnect();
-                    // TODO CHIAMARE PLAYER DOWN
+                    game.playerDown(player.getPlayerId());
                     this.playerCounter--;
                 }
                 if (player.getNickname().equals(nickname)) {
@@ -526,6 +530,10 @@ public class Server implements ServerController, TimerCallback {
 
     private void replacePlayerInGame(int id, RemotePlayer newRemotePlayer) {
         if (newRemotePlayer.getPlayerConnection() == "rmi") {
+            // IMPOSTO LA CONNESSIONE
+            connectPlayer(newRemotePlayer);
+            //players.add(id, newRemotePlayer);
+            //playerCounter++;
             // RIMPIAZZO IL GIOCATORE NEL SERVER
             players.set(id, newRemotePlayer);
         }

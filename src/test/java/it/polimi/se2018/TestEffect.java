@@ -68,10 +68,10 @@ public class TestEffect {
 
             }
 
-            @Override
+            /*@Override
             public void joinGame(RemotePlayer remotePlayer) {
 
-            }
+            }*/
 
             @Override
             public void sendEventToView(EventView eventView) {

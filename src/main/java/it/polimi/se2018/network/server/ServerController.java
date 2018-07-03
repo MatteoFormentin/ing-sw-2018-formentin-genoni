@@ -45,7 +45,7 @@ public interface ServerController {
      *
      * @param remotePlayer reference to RMI or Socket Player.
      */
-    void joinGame(RemotePlayer remotePlayer);
+    //void joinGame(RemotePlayer remotePlayer);
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
