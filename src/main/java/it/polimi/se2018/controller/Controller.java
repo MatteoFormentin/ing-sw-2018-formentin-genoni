@@ -22,6 +22,7 @@ import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.model.UpdaterView;
 import it.polimi.se2018.network.server.ServerController;
+import it.polimi.se2018.utils.TimerCallBackWithIndex;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
@@ -36,7 +37,7 @@ import java.util.Properties;
  * @author Luca Genoni
  */
 
-public class Controller implements ControllerVisitor, TimerCallback {
+public class Controller implements ControllerVisitor, TimerCallback, TimerCallBackWithIndex {
     private GameBoard gameBoard;
     private int playerNumber;
     private boolean restoreAble;
@@ -56,6 +57,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private UpdaterView updaterView;
 
     private boolean started;
+    private boolean timer;
 
     /**
      * Controller constructor.
@@ -85,7 +87,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             System.out.println("Errore caricamento");
         }
         playerTimeout = new TimerThread(this, PLAYER_TIMEOUT);
-
+        timer = false;
         //List for effect
         effectToRead = new LinkedList<>();
         currentEffect = 0;
@@ -201,7 +203,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             sendEventToView(turnPacket);
             //TODO fermare il timout per l'init e iniziare quello per il round.
-            playerTimeout.startThread();
+            playerTimeout.startThread(this,gameBoard.getIndexCurrentPlayer());
             started = true;
         } catch (WindowPatternAlreadyTakenException ex) {
             //window already chosen
@@ -272,8 +274,10 @@ public class Controller implements ControllerVisitor, TimerCallback {
     }
 
     @Override
-    public void visit(ControllerEndTurn event) {
+    public synchronized void visit(ControllerEndTurn event) {
         try {
+            System.out.println(playerTimeout.isAlive()+ "Richiedente: "+event.getPlayerId()+" Attuale: "+gameBoard.getIndexCurrentPlayer());
+            if(playerTimeout.isAlive()) playerTimeout.shutdown();
             if (restoreAble && !gameBoard.getPlayer(event.getPlayerId()).getHandDice().isEmpty())
                 effectGamesStored.getLast().undo();
             EffectGame endTurn = new EndTurn(false);
@@ -287,10 +291,13 @@ public class Controller implements ControllerVisitor, TimerCallback {
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             sendEventToView(turnPacket);
             //Restart timer
-            playerTimeout.shutdown();
-            playerTimeout.startThread();
+
+            System.out.println("valore inviato al timer :"+gameBoard.getIndexCurrentPlayer());
+            playerTimeout.startThread(this,gameBoard.getIndexCurrentPlayer());
         } catch (GameIsOverException ex) {
             endGame();
+            ex.printStackTrace();
+        } catch (CurrentPlayerException ex) {
             ex.printStackTrace();
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(), false);
@@ -447,5 +454,16 @@ public class Controller implements ControllerVisitor, TimerCallback {
         } catch (Exception ex) {
             showErrorMessage(ex, gameBoard.getIndexCurrentPlayer(), false);
         }*/
+    }
+
+    @Override
+    public void timerCallbackWithIndex(int index) {
+        timer = true;
+        MoveTimeoutExpired timerPacket = new MoveTimeoutExpired();
+        timerPacket.setPlayerId(index);
+        sendEventToView(timerPacket);
+        ControllerEndTurn event = new ControllerEndTurn();
+        event.setIdGame(index);
+        visit(event);
     }
 }

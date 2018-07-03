@@ -1,6 +1,7 @@
 package it.polimi.se2018.utils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -21,10 +22,12 @@ public class TimerThread implements Runnable {
     private Thread timerThread;
     // Interfaccia server, serve per comunicare col server
     private TimerCallback timerCallback;
+    private TimerCallBackWithIndex timerCallBackWithIndex;
     //Timeout passato da server (caricato da file)
     private long timeout;
     private long startTimerTime;
     private boolean isAlive;
+    private AtomicInteger index;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -40,6 +43,7 @@ public class TimerThread implements Runnable {
         this.timeout = timeout;
         this.timerCallback = timerCallback;
         this.isAlive = false;
+        index= new AtomicInteger(0);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -66,9 +70,12 @@ public class TimerThread implements Runnable {
                 return;
             }
         }
-        if (running.get()) timerCallback.timerCallback();
+        if (running.get()) {
+            if(timerCallBackWithIndex!=null) timerCallBackWithIndex.timerCallbackWithIndex(index.get());
+            else timerCallback.timerCallback();
+        }
         System.out.println("!!!!EXPIRED!!!!");
-
+        timerCallBackWithIndex=null;
         isAlive = false;
     }
 
@@ -85,6 +92,13 @@ public class TimerThread implements Runnable {
         timerThread.start();
     }
 
+    public void startThread(TimerCallBackWithIndex timerCallBackWithIndex,int index) {
+        this.timerCallBackWithIndex =timerCallBackWithIndex;
+        this.index.set(index);
+        timerThread = new Thread(this);
+        running.set(true);
+        timerThread.start();
+    }
     //------------------------------------------------------------------------------------------------------------------
     // THREAD STOPPER
     //------------------------------------------------------------------------------------------------------------------
@@ -94,6 +108,7 @@ public class TimerThread implements Runnable {
      */
     public void shutdown() {
         running.set(false);
+        timerCallBackWithIndex =null;
         try {
             Thread.sleep(1);
         } catch (InterruptedException ex) {
