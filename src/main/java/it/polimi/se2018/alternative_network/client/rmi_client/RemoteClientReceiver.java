@@ -1,10 +1,6 @@
-package it.polimi.se2018.alternative_network.client;
+package it.polimi.se2018.alternative_network.client.rmi_client;
 
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.view.UIInterface;
-import it.polimi.se2018.view.cli.CliParser;
-
-import java.rmi.RemoteException;
 
 /**
  * this is the class remote class

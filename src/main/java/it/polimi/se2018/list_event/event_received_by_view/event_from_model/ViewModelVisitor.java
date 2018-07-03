@@ -1,9 +1,7 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
 
-import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 
 /**
  * Visitor Pattern for the event received by the view.
@@ -37,13 +35,21 @@ public interface ViewModelVisitor {
 
     void visit(UpdateInfoCurrentTurn event);
 
-    void visit(UpdateSinglePlayerTokenAndPoints event);
+    void visit(UpdateSinglePlayerToken event);
 
     void visit(UpdateSingleToolCardCost event);
 
     void visit(UpdateSingleTurnRoundTrack event);
 
+    void visit(UpdateCurrentPoint event);
+
     //endgame
     void visit(UpdateStatPodium event);
+
+    //info other player
+    void visit(UpdateDisconnection event);
+
+    void visit(UpdatePlayerConnection event);
+
 
 }

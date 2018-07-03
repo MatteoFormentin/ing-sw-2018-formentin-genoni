@@ -3,7 +3,7 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.alternative_network.client.RMIClientInterface;
+import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -65,4 +65,8 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
         return "ping";
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
 }

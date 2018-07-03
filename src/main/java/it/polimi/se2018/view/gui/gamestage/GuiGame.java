@@ -8,7 +8,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_server.PlayerDisconnected;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
 import it.polimi.se2018.view.gui.stage.WaitGame;
@@ -31,6 +31,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
@@ -300,11 +302,16 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         event.acceptModelEvent(this);
     }
 
+
     @Override
-    public void visit(PlayerDisconnected event) {
-        System.out.println("giocatore disconnesso "+event.getPlayerId()+playersName[event.getPlayerId()].getText());
+    public void visit(UpdateDisconnection event) {
+        //TODO implementare
     }
 
+    @Override
+    public void visit(UpdatePlayerConnection event) {
+        //TODO implementare
+    }
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
@@ -700,7 +707,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     public void visit(UpdateSinglePrivateObject event) {
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = createNewImageViewForCard();
         objectivePrivateBox.getChildren().add(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()]);
-        Image newImage = new Image(privateObjectSource + event.getPrivateCard().getId() + ".jpg");
+        Image newImage=null;
+        try{
+            newImage = new Image(new FileInputStream(privateObjectSource + event.getPrivateCard().getId() + ".jpg"));
+        }catch(IOException ex){
+            System.out.println("can't load");
+        }
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()].setImage(newImage);
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()].setOnMouseClicked(e ->
                 cardShow.displayCard(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()], false)
@@ -975,9 +987,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      * @param event UpdateSinglePlayerTokenAndPoints
      */
     @Override
-    public void visit(UpdateSinglePlayerTokenAndPoints event) {
+    public void visit(UpdateSinglePlayerToken event) {
         favorTokenOfEachPlayer[event.getIndexInGame()].setText("Favor : " + event.getFavorToken());
-        pointsOfEachPlayer[event.getIndexInGame()].setText("Points : " + event.getPoints());
+        //TODO removed the points
+        //pointsOfEachPlayer[event.getIndexInGame()].setText("Points : " + event.getPoints());
     }
 
     /**
@@ -998,6 +1011,11 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         for (ComboBox<Image> aComboBoxSingleRound : comboBoxSingleRound) {
             aComboBoxSingleRound.getSelectionModel().clearSelection();
         }
+    }
+
+    @Override
+    public void visit(UpdateCurrentPoint event) {
+        //TODO implements the update of the current points
     }
 
     @Override
@@ -1052,4 +1070,5 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         game.setOnAction(e-> utilStage.setScene(sceneGame));
         utilStage.show();
     }
+
 }

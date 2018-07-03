@@ -13,6 +13,10 @@ public class StartGame extends EventViewFromController {
 
     private String[] playersName;
 
+    public StartGame(String[] playersName) {
+        this.playersName = playersName;
+    }
+
     public String[] getPlayersName() {
         return playersName;
     }

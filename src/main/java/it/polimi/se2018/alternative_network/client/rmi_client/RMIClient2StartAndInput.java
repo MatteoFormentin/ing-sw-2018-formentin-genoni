@@ -1,5 +1,6 @@
-package it.polimi.se2018.alternative_network.client;
+package it.polimi.se2018.alternative_network.client.rmi_client;
 
+import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
@@ -24,7 +25,7 @@ import java.rmi.server.UnicastRemoteObject;
  * 5 chiamare disconnect per disconnettersi legalmente(richiedendo il kick all'interface)
  * 6 utilizzare shutDownClient2 per disconnettersi brutalmente
  *
- *///TODO da eliminare l'extend AbstractClient
+ */
 public class RMIClient2StartAndInput implements AbstractClient2 {
 
     private UIInterface view;

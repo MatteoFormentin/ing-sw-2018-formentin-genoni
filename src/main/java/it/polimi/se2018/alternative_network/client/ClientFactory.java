@@ -1,5 +1,6 @@
 package it.polimi.se2018.alternative_network.client;
 
+import it.polimi.se2018.alternative_network.client.rmi_client.RMIClient2StartAndInput;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
@@ -14,26 +15,28 @@ import java.util.Properties;
 
 /**
  * Operazioni da esportare nel client
- *
+ * <p>
  * 1 creare l'Abstract client concreto installando la view, l'host e la porta
  * 2 connettere l'abstract client al server, se rifiutato ricreare un nuovo abstract client
  * 3 effettuare il login
  * (4 utilizzare sendEventToController per inviare informazioni al giocatore)
  * 5 chiamare disconnect per disconnettersi legalmente
- *
  */
 public class ClientFactory {
 
     private static ClientFactory instance;
-    private UIInterface view;
     private String ipServer;
     private int rmiPort;
     private int socketPort;
     private AbstractClient2 abstractClient;
 
-    public ClientFactory(UIInterface view) {
-        this.view = view;
+    private ClientFactory() {
         loadDefault();
+    }
+
+    public static ClientFactory getClientFactory() {
+        if (instance == null) instance = new ClientFactory();
+        return instance;
     }
 
     private void loadDefault() {
@@ -51,7 +54,8 @@ public class ClientFactory {
             socketPort = 16180;
         }
     }
-    public AbstractClient2 createClient(String serverIpAddress, int port, int rmi0socket1) {
+
+    public AbstractClient2 createClient(UIInterface view, String serverIpAddress, int port, int rmi0socket1) {
         if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = ipServer;
         if (rmi0socket1 == 0) {
             if (port == 0) abstractClient = new RMIClient2StartAndInput(serverIpAddress, rmiPort, view);
@@ -65,15 +69,16 @@ public class ClientFactory {
 
     /**
      * instruction for make it work
+     *
      * @param args
      */
     public static void main(String[] args) {
-        instance = new ClientFactory( new CliController());
+        instance =getClientFactory();
         String IP_SERVER = "localhost";
         int RMI_PORT = 31415;
-       try {
+        try {
             Properties configProperties = new Properties();
-           String connectionConfig = "src/resources/configurations/connection_configuration.properties";
+            String connectionConfig = "src/resources/configurations/connection_configuration.properties";
             FileInputStream inputConnection = new FileInputStream(connectionConfig);
             configProperties.load(inputConnection);
             RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
@@ -81,7 +86,7 @@ public class ClientFactory {
         } catch (IOException e) {
             System.out.println("La configurazione non può essere impostata da file, verrà caricata quella di default");
         }
-        AbstractClient2 abstractClient =instance.createClient(IP_SERVER, RMI_PORT, 0);
+        AbstractClient2 abstractClient = instance.createClient(new CliController(), IP_SERVER, RMI_PORT, 0);
 
         CliParser input = new CliParser();
         System.out.println("Digita 0 per collegarti al server, 1 per uscire: ");

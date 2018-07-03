@@ -14,6 +14,9 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+
 import static it.polimi.se2018.view.gui.gamestage.GuiGame.createGuiGame;
 
 /**
@@ -59,7 +62,13 @@ public class GuiMain extends Application {
             e.consume();
             closeProgram();
         });
-        BackgroundImage backgroundImage = new BackgroundImage(new Image("file:src/resources/Immagine.jpg", 779, 261, true, true),
+        Image home=null;
+        try{
+            home = new Image(new FileInputStream("src/resources/Immagine.jpg"), 779, 261, true, true);
+        }catch(IOException ex){
+            System.out.println("can't load");
+        }
+        BackgroundImage backgroundImage = new BackgroundImage(home,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         menu.setBackground(new Background(backgroundImage));
         menu.setAlignment(Pos.CENTER);

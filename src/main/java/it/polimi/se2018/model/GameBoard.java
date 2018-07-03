@@ -1,32 +1,21 @@
 package it.polimi.se2018.model;
 
 
-import it.polimi.se2018.alternative_network.newserver.GameRoom;
-import it.polimi.se2018.alternative_network.newserver.Server2;
-import it.polimi.se2018.alternative_network.newserver.ServerController2;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ColorNotRightException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.RoundTrackIndexException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
-import it.polimi.se2018.exception.network_exception.server.GameStartedException;
-import it.polimi.se2018.list_event.event_received_by_view.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.model.card.Deck;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.ToolCard;
-import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
-import it.polimi.se2018.network.server.ServerController;
-
-import java.util.LinkedList;
-
 
 /**
- * the game board for one game with all the method that can be used in a game
- * FACADE pattern
+ * the class {@code GameBoard} represents the game board for a game that contains all the information of the game.
+ * Any variation must go through this class to be sure of the reliability of the game data
  *
  * @author Luca Genoni
  */
@@ -43,62 +32,42 @@ public class GameBoard {
     private DiceStack dicePool;//can have only the get
     private FactoryDice factoryDiceForThisGame; //nobody can see it
     private DiceColor colorRestriction;
-    private ServerController server;
-    private GameRoom server2;
+    private UpdaterView updaterView;
 
 
-    public GameBoard(int number, ServerController setServer,GameRoom setServer2) {
-
+    public GameBoard(int number) {
         stopGame = false;
         currentRound = 0;
         currentTurn = 1;
         roundTrack = new DiceStack[10];// don't need to be initialized, they take the reference of from the dicePool
         toolCard = new ToolCard[3];
         objectivePublicCard = new ObjectivePublicCard[3];
-        factoryDiceForThisGame = new BalancedFactoryDice();// here for change the factory
-        Deck deck = Deck.getDeck();
         player = new Player[number];
-        server = setServer;
-        server2 = setServer2;
+        indexCurrentPlayer = 0;
+    }
+
+    public void startGame(UpdaterView updaterView) {
+        this.updaterView = updaterView;
+        Deck deck = Deck.getDeck();
         //setUp player
-        for (int i = 0; i < number; i++) {
+        int diceWindow = 0;
+        for (int i = 0; i < player.length; i++) {
             player[i] = new Player(i);
             player[i].setPrivateObject(deck.drawObjectivePrivateCard());
             WindowPatternCard[] window = new WindowPatternCard[4];
-            for (int n = 0; n < 4; n++) {
-                window[n] = deck.drawWindowPatternCard();
-            }
+            for (int n = 0; n < 4; n++) window[n] = deck.drawWindowPatternCard();
             player[i].setThe4WindowPattern(window);
+            if (diceWindow == 0 && window[0] != null) {
+                diceWindow = window[0].getMatrix().length;
+                if (diceWindow > 0) diceWindow = diceWindow * window[0].getColumn(0).length;
+            }
         }
-        indexCurrentPlayer = 0;
         for (int i = 0; i < toolCard.length; i++) toolCard[i] = deck.drawToolCard();
-
         for (int i = 0; i < objectivePublicCard.length; i++) objectivePublicCard[i] = deck.drawObjectivePublicCard();
-    }
-
-    public void notifyAllCards(int indexPlayer) {
-        UpdateSinglePrivateObject packet = new UpdateSinglePrivateObject(indexPlayer, player[indexPlayer].getPrivateObject());
-        packet.setPlayerId(indexPlayer);
-        sendEventToView(packet);
-        UpdateInitialWindowPatternCard packetWindows = new UpdateInitialWindowPatternCard(player[indexPlayer].getThe4WindowPattern());
-        packetWindows.setPlayerId(indexPlayer);
-        sendEventToView(packetWindows);
-        UpdateAllToolCard packetTool = new UpdateAllToolCard(toolCard);
-        packetTool.setPlayerId(indexPlayer);
-        sendEventToView(packetTool);
-        UpdateAllPublicObject packetObject = new UpdateAllPublicObject(objectivePublicCard);
-        packetObject.setPlayerId(indexPlayer);
-        sendEventToView(packetObject);
-        UpdateInitDimRound packetRound = new UpdateInitDimRound(roundTrack);
-        packetRound.setPlayerId(indexPlayer);
-        sendEventToView(packetRound);
+        factoryDiceForThisGame = new BalancedFactoryDice(player.length, diceWindow,roundTrack.length);// here for change the factory
     }
 
 
-    private void sendEventToView(EventView event){
-        if(server==null) server2.sendEventToView(event);
-        else server.sendEventToView(event);
-    };
     //************************************getter**********************************************
     //************************************getter**********************************************
     //************************************getter**********************************************
@@ -110,11 +79,16 @@ public class GameBoard {
         return currentRound;
     }
 
+
     /**
      * @return the array of DiceStack belonging to the roundtrack
      */
     public DiceStack[] getRoundTrack() {
         return roundTrack;
+    }
+
+    public DiceStack getRoundTrack(int index) {
+        return roundTrack[index];
     }
 
     /**
@@ -208,49 +182,33 @@ public class GameBoard {
         for (int i = 0; i < (2 * player.length + 1); i++) {
             dicePool.add(factoryDiceForThisGame.createDice());
         }
-        updateDicePool();
+        updaterView.updateDicePool();
     }
 
     private void freeHandPlayer(int indexPlayer) {
         while (!player[indexPlayer].getHandDice().isEmpty()) {
             dicePool.addLast(player[indexPlayer].getHandDice().remove(0));
         }
-        updateHand(indexPlayer);
-        updateDicePool();
+        updaterView.updatePlayerHand(indexPlayer);
+        updaterView.updateDicePool();
+        updaterView.updateInfoCurrentTurn();
     }
 
-    private void updateHand(int indexPlayer) {
-        for(int i=0; i<player.length;i++){
-            UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayer, player[indexPlayer].getHandDice());
-            packet.setPlayerId(i);
-            sendEventToView(packet);
-        }
-    }
 
-    private void updateDicePool() {
-        for(int i=0; i<player.length;i++){
-            UpdateDicePool packet = new UpdateDicePool(dicePool);
-            packet.setPlayerId(i);
-            sendEventToView(packet);
-        }
-    }
-
-    private void updateTokenPoints(int indexPlayer) {
-        for(int i=0; i<player.length;i++){
-            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
-            packet.setPlayerId(i);
-            sendEventToView(packet);
-        }
-
-    }
-
-    private void firstTurn(int indexPlayerEnded){
-        //se arrivi dal primo turno il tuo prossimo è un secondo turno
-        //se non arrivi dal primo turno il tuo prossimo è un primo turno
+    private void firstTurn(int indexPlayerEnded) {
         if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
         else player[indexPlayerEnded].endTurn(true);
         freeHandPlayer(indexPlayerEnded);
+        currentTurn++;
     }
+
+    private void secondTurn(int indexPlayerEnded) {
+        if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
+        else player[indexPlayerEnded].endTurn(true);
+        freeHandPlayer(indexPlayerEnded);
+        currentTurn++;
+    }
+
     /**
      * change the current player to the next and end the game.
      * check the state of the player for the first/second turn
@@ -269,63 +227,24 @@ public class GameBoard {
         if (currentTurn < player.length) {
             firstTurn(indexPlayerEnded);
             indexCurrentPlayer = (indexPlayerEnded + 1) % player.length;
-            currentTurn++;
-            for(int i=0; i<player.length;i++){
-                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-                packet.setPlayerId(i);
-                sendEventToView(packet);
-            }
-            //se il prossimo giocatore non è nel primo allora passo al prossimo giocatore
             if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn == player.length) {
             firstTurn(indexPlayerEnded);
-            currentTurn++;
-            for(int i=0; i<player.length;i++){
-                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-                packet.setPlayerId(i);
-                sendEventToView(packet);
-            }
-            //inizio del secondo giro se il giocatore deve fare il primo turno passa avanti
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn < (2 * player.length)) {
-            //se arrivi dal secondo turno il tuo prossimo turno è un secondo
-            //se non arrivi dal secondo turno il tuo prossimo turno è un primo
-            if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
-            else player[indexPlayerEnded].endTurn(true);
+            secondTurn(indexPlayerEnded);
             indexCurrentPlayer = (indexCurrentPlayer - 1) % player.length;
             if (indexCurrentPlayer < 0) indexCurrentPlayer = player.length + indexCurrentPlayer;
-            currentTurn++;
-            freeHandPlayer(indexPlayerEnded);
-            EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-            for(int i=0; i<player.length;i++){
-                UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-                packet.setPlayerId(i);
-                sendEventToView(packet);
-            }
-            //se il giocatore deve fare il primo turno passa avanti
             if (player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
         } else if (currentTurn == (2 * player.length)) { //fine round
-            //se arrivi dal secondo turno il tuo prossimo turno è un secondo
-            //se non arrivi dal secondo turno il tuo prossimo turno è un primo
-            if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
-            else player[indexPlayerEnded].endTurn(true);
-            freeHandPlayer(indexPlayerEnded);
+            secondTurn(indexPlayerEnded);
             roundTrack[currentRound] = dicePool;
-            for(int i=0; i<player.length;i++){
-                UpdateSingleTurnRoundTrack packet = new UpdateSingleTurnRoundTrack(currentRound, roundTrack[currentRound]);
-                packet.setPlayerId(i);
-                sendEventToView(packet);
-            }
+            updaterView.updateSingleTurnRoundTrack(currentRound);
             currentRound++;
             if (currentRound < roundTrack.length) {//se non è finito il gioco
                 indexCurrentPlayer = (indexCurrentPlayer + 1) % player.length;
                 currentTurn = 1;
-                EventView infoTurn = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-                for(int i=0; i<player.length;i++){
-                    UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(currentRound + 1, currentTurn);
-                    packet.setPlayerId(i);
-                    sendEventToView(packet);
-                }
+                updaterView.updateInfoCurrentTurn();
                 dicePool = new DiceStack();
                 for (int i = 0; i < (2 * player.length + 1); i++) {
                     Dice dice = factoryDiceForThisGame.createDice();
@@ -334,160 +253,45 @@ public class GameBoard {
                     }
                     dicePool.add(dice);
                 }
-                updateDicePool();
+                updaterView.updateDicePool();
                 if (!player[indexCurrentPlayer].isFirstTurn()) nextPlayer(indexCurrentPlayer);
             } else {//il gioco è finito
                 stopGame = true;
                 currentTurn = 2 * player.length + 1;
                 //method for the end game
-                try{
-                calculatePoint();
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-                System.err.println("Il gioco è finito");
+                calculateAllPoint();
+
                 throw new GameIsOverException();
             }
         } else {
-            System.err.println("I turni sono impazziti.");
             stopGame = true;
             throw new FatalGameErrorException();
         }
-        System.err.println("Round: " + currentRound + " ------- Turno :" + currentTurn + " ------- tocca a :" + indexCurrentPlayer);
     }
 
-    private class NodePodium {
-        private NodePodium father;
-        private NodePodium leftLessPoint;
-        private NodePodium rightMorePoint;
-        private int indexPlayer;
-        private int totalPoint;
-        private LinkedList detailedPoints;
-
-        private NodePodium(int indexPlayer, int totalPoint, LinkedList detailedPoints) {
-            this.indexPlayer = indexPlayer;
-            this.totalPoint = totalPoint;
-            this.detailedPoints = detailedPoints;
-        }
+    public NodePodium calculatePoint(int indexPlayer){
+        NodePodium newPlayerNode = new NodePodium(player[indexPlayer],objectivePublicCard);
+        newPlayerNode.calculatePoint();
+        return newPlayerNode;
     }
 
-    private class TreePodium {
-        private NodePodium root;
-
-        public NodePodium getRoot() {
-            return root;
-        }
-
-        /**
-         * a parità di punteggio con < quello inserito più tardi vince
-         *                       con <= quello inserito per primo vince
-         * @param newNodePlayer
-         */
-        void insertNodePlayer(NodePodium newNodePlayer) {
-            NodePodium y = null;
-            NodePodium x = root;
-            while (x != null) {
-                y = x;
-                if (newNodePlayer.totalPoint <= x.totalPoint) x = x.leftLessPoint;
-                else x = x.rightMorePoint;
-            }
-            newNodePlayer.father = y;
-            if (y == null) this.root = newNodePlayer;
-            else if (newNodePlayer.totalPoint <= y.totalPoint) y.leftLessPoint = newNodePlayer;
-            else y.rightMorePoint = newNodePlayer;
-        }
-
-        NodePodium max(NodePodium node) {
-            while (node.rightMorePoint != null) node = node.rightMorePoint;
-            return node;
-        }
-
-        NodePodium predecessor(NodePodium nodePlayer) {
-            if (nodePlayer.leftLessPoint != null) return max(nodePlayer.leftLessPoint);
-            NodePodium y = nodePlayer.father;
-            if (y != null) if (y.rightMorePoint == nodePlayer) return y;
-            return null;
-        }
-        int[] returnDetailedArrayInt (NodePodium nodePlayer){
-            int[] infoNode= new int[nodePlayer.detailedPoints.size()];
-            for(int i=0; i<nodePlayer.detailedPoints.size();i++)  infoNode[i] = (int)nodePlayer.detailedPoints.get(i);
-            return infoNode;
-        }
-    }
-
-    private void calculatePoint() {
-        TreePodium podium = new TreePodium();
-        String[] description= new String[9];
-
-        for (int i = 0; i < player.length; i++) {
-            Player playerX = player[i];
-            LinkedList<Integer> point = new LinkedList<>();
-            //calculate point for the private object
-            point.addLast(playerX.getPrivateObject().calculatePoint(playerX.getPlayerWindowPattern()));
-            //calculate point for the public object
-            for (ObjectivePublicCard anObjectivePublicCard : objectivePublicCard) {
-                point.addLast(anObjectivePublicCard.calculatePoint(playerX.getPlayerWindowPattern()));
-            }
-            //add the token left
-            point.addLast(playerX.getFavorToken());
-            //subtract the void cell
-            point.addLast((-20 + playerX.getPlayerWindowPattern().getNumberOfCellWithDice()));
-            //sum of all the points
-            int totalPoint = 0;
-            for (Integer aPoint : point) totalPoint += aPoint;
-            playerX.setPoints(totalPoint);
-            playerX.setDetailedPoint(point);
-            NodePodium newPlayerNode = new NodePodium(i, totalPoint, point);
+    public void calculateAllPoint() {
+        TreePodium podium = new TreePodium(player.length, roundTrack.length);
+        for (Player aPlayer : player) {
+            NodePodium newPlayerNode = new NodePodium(aPlayer, objectivePublicCard);
             podium.insertNodePlayer(newPlayerNode);
         }
-        //inolra a tutti il punteggio
-        for (int i = 0; i < player.length; i++) {
-            for(int j=0; j<player.length;j++){
-                UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(i, player[i].getFavorToken(), player[i].getPoints());
-                packet.setPlayerId(j);
-                sendEventToView(packet);
-            }
-        }
-        //costruzione array ordinato
-        NodePodium currentPlayerSorted = podium.max(podium.getRoot());
-        int header =2;
-        int[][] sortedPlayer = new int[player.length][currentPlayerSorted.detailedPoints.size()+header];
-        for (int i = 0; i < player.length; i++) {
-            sortedPlayer[i][0] = currentPlayerSorted.indexPlayer;
-            sortedPlayer[i][1] = currentPlayerSorted.totalPoint;
-            for(int j=header; j< (currentPlayerSorted.detailedPoints.size()+header);j++){
-                sortedPlayer[i][j] = (int) currentPlayerSorted.detailedPoints.get(j-header);
-            }
-            currentPlayerSorted = podium.predecessor(currentPlayerSorted);
-        }
-        //descrizione informazione dell'array
-        description[0] = "Nome Giocatore";
-        description[1] = "Punti totali accumulati";
-        description[2] = "Obiettivo Privato";
-        description[3] = objectivePublicCard[0].getName();
-        description[4] = objectivePublicCard[1].getName();
-        description[5] = objectivePublicCard[2].getName();
-        description[6] = "Token Rimasti";
-        description[7] = "Celle Vuote";
-        for(int j=0; j<player.length;j++){
-            UpdateStatPodium packet = new UpdateStatPodium(sortedPlayer, description);
-            packet.setPlayerId(j);
-            sendEventToView(packet);
-        }
+        updaterView.updatePlayerTokenAndPoints();
+        updaterView.updateStatPodium(podium.getSortedPlayer(), podium.getRoot().getDescription());
     }
 
 
     public void setWindowOfPlayer(int indexPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException, ValueDiceWrongException {
         if (player[indexPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
         player[indexPlayer].choosePlayerWindowPattern(indexOfTheWindow);
-        for (int i = 0; i < player.length; i++) {
-            UpdateSingleWindow packet = new UpdateSingleWindow(indexPlayer, player[indexPlayer].getPlayerWindowPattern());
-            packet.setPlayerId(i);
-            sendEventToView(packet);
-
-        }
-        updateTokenPoints(indexPlayer);
         countSetWindow++;
+        updaterView.updateWindow(indexPlayer);
+        updaterView.updatePlayerTokenAndPoints(indexPlayer);
         if (countSetWindow == player.length) {
             setUpFirstRound();
             throw new WindowSettingCompleteException();
@@ -513,31 +317,26 @@ public class GameBoard {
         if (dice == null) throw new NoDiceException();
         player[indexPlayer].addDiceToHand(dice, true);
         dicePool.remove(indexDicePool);
-        updateHand(indexPlayer);
-        updateDicePool();
+        updaterView.updatePlayerHand(indexPlayer);
+        updaterView.updateDicePool();
     }
 
     /**
      * method for inser a normal die in the window
      *
      * @param indexPlayer
-     * @param line
+     * @param row
      * @param column
      * @param firstTurnDie
      * @throws GameException
      */
-    public void insertDice(int indexPlayer, int line, int column, boolean firstTurnDie) throws GameException {
+    public void insertDice(int indexPlayer, int row, int column, boolean firstTurnDie) throws GameException {
         checkState(indexPlayer);
         if (player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
-        player[indexPlayer].insertDice(line, column, true, true, true, firstTurnDie);
+        player[indexPlayer].insertDice(row, column, true, true, true, firstTurnDie);
         player[indexPlayer].setHasPlaceANewDice(true);
-        updateHand(indexPlayer);
-        Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        for(int j=0; j<player.length;j++){
-            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-            packet.setPlayerId(j);
-            sendEventToView(packet);
-        }
+        updaterView.updatePlayerHand(indexPlayer);
+        updaterView.updateSingleCell(indexPlayer, row, column);
     }
 
 
@@ -547,16 +346,8 @@ public class GameBoard {
         toolCard[indexOfToolInGame].checkUsabilityToolCard(currentRound, player[indexPlayer]);
         player[indexPlayer].useToolCard(toolCard[indexOfToolInGame].getFavorToken());
         toolCard[indexOfToolInGame].incrementUsage();
-        for(int j=0; j<player.length;j++){
-            UpdateSinglePlayerTokenAndPoints packet = new UpdateSinglePlayerTokenAndPoints(indexPlayer, player[indexPlayer].getFavorToken(), player[indexPlayer].getPoints());
-            packet.setPlayerId(j);
-            sendEventToView(packet);
-        }
-        for(int j=0; j<player.length;j++){
-            UpdateSingleToolCardCost packet = new UpdateSingleToolCardCost(indexOfToolInGame, toolCard[indexOfToolInGame].getFavorToken());
-            packet.setPlayerId(j);
-            sendEventToView(packet);
-        }
+        updaterView.updatePlayerTokenAndPoints(indexPlayer);
+        updaterView.updateToolCardCost(indexOfToolInGame);
     }
     //*****************************************Tool's method of Gameboard **********************************************
     //*****************************************Tool's method of Gameboard **********************************************
@@ -583,23 +374,18 @@ public class GameBoard {
      * method for remove a dice from the window pattern
      *
      * @param indexPlayer
-     * @param line
+     * @param row
      * @param column
      * @param checkRestriction if the color restriction need to be verified
      * @throws GameException
      */
-    public void moveDiceFromWindowPatternToHand(int indexPlayer, int line, int column, boolean checkRestriction) throws GameException {
+    public void moveDiceFromWindowPatternToHand(int indexPlayer, int row, int column, boolean checkRestriction) throws GameException {
         checkState(indexPlayer);
-        if (checkRestriction && !colorRestriction.equals(player[indexPlayer].getPlayerWindowPattern().getCell(line, column).getDice().getColor()))
+        if (checkRestriction && !colorRestriction.equals(player[indexPlayer].getPlayerWindowPattern().getCell(row, column).getDice().getColor()))
             throw new ColorNotRightException();
-        player[indexPlayer].removeDiceFromWindowAndAddToHand(line, column);
-        updateHand(indexPlayer);
-        Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        for(int j=0; j<player.length;j++){
-            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-            packet.setPlayerId(j);
-            sendEventToView(packet);
-        }
+        player[indexPlayer].removeDiceFromWindowAndAddToHand(row, column);
+        updaterView.updatePlayerHand(indexPlayer);
+        updaterView.updateSingleCell(indexPlayer, row, column);
     }
 
 
@@ -615,7 +401,7 @@ public class GameBoard {
         factoryDiceForThisGame.removeDice(dice);
         dice = factoryDiceForThisGame.createDice();
         player[indexPlayer].addDiceToHand(dice, false);
-        updateHand(indexPlayer);
+        updaterView.updatePlayerHand(indexPlayer);
     }
 
     /**
@@ -634,12 +420,8 @@ public class GameBoard {
         Dice dicePlayer = player[indexPlayer].removeDiceFromHand();
         player[indexPlayer].addDiceToHand(roundTrack[round].get(indexStack), false);
         roundTrack[round].add(indexStack, dicePlayer);
-        updateHand(indexPlayer);
-        for(int j=0; j<player.length;j++){
-            EventView packet = new UpdateSingleTurnRoundTrack(round, roundTrack[round]);
-            packet.setPlayerId(j);
-            sendEventToView(packet);
-        }
+        updaterView.updatePlayerHand(indexPlayer);
+        updaterView.updateSingleTurnRoundTrack(round);
     }
 
 
@@ -651,11 +433,7 @@ public class GameBoard {
         checkState(indexPlayer);
         if (currentTurn < player.length) throw new GameException("Non effettuare questa mossa adesso");
         dicePool.reRollAllDiceInStack();
-        for(int j=0; j<player.length;j++){
-            EventView packet = new UpdateDicePool(dicePool);
-            packet.setPlayerId(j);
-            sendEventToView(packet);
-        }
+        updaterView.updateDicePool();
     }
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
@@ -668,7 +446,7 @@ public class GameBoard {
      * method for insert a dice in the window
      *
      * @param indexPlayer
-     * @param line
+     * @param row
      * @param column
      * @param adjacentRestriction
      * @param colorRestriction
@@ -676,19 +454,14 @@ public class GameBoard {
      * @param singleNewDice
      * @throws GameException
      */
-    public void insertDice(int indexPlayer, int line, int column, boolean adjacentRestriction,
+    public void insertDice(int indexPlayer, int row, int column, boolean adjacentRestriction,
                            boolean colorRestriction, boolean valueRestriction, boolean singleNewDice) throws GameException {
         checkState(indexPlayer);
         if (singleNewDice && player[indexPlayer].isHasPlaceANewDice()) throw new AlreadyPlaceANewDiceException();
-        player[indexPlayer].insertDice(line, column, adjacentRestriction, colorRestriction, valueRestriction, singleNewDice);
+        player[indexPlayer].insertDice(row, column, adjacentRestriction, colorRestriction, valueRestriction, singleNewDice);
         if (singleNewDice) player[indexPlayer].setHasPlaceANewDice(true);
-        updateHand(indexPlayer);
-        Cell cell = player[indexPlayer].getPlayerWindowPattern().getCell(line, column);
-        for(int j=0; j<player.length;j++){
-            UpdateSingleCell packet = new UpdateSingleCell(indexPlayer, line, column, cell.getDice(), cell.getValueRestriction(), cell.getColorRestriction());
-            packet.setPlayerId(j);
-            sendEventToView(packet);
-        }
+        updaterView.updatePlayerHand(indexPlayer);
+        updaterView.updateSingleCell(indexPlayer, row, column);
     }
 
     /**
@@ -698,7 +471,7 @@ public class GameBoard {
     public void rollDiceInHand(int indexPlayer) throws GameException {
         checkState(indexPlayer);
         player[indexPlayer].rollDiceInHand();
-        updateHand(indexPlayer);
+        updaterView.updatePlayerHand(indexPlayer);
     }
 
     /**
@@ -708,7 +481,7 @@ public class GameBoard {
     public void oppositeFaceDice(int indexPlayer) throws GameException {
         checkState(indexPlayer);
         player[indexPlayer].oppositeFaceDice();
-        updateHand(indexPlayer);
+        updaterView.updatePlayerHand(indexPlayer);
     }
 
     /**
@@ -724,24 +497,23 @@ public class GameBoard {
     public void setValueDiceHand(int indexPlayer, int value) throws GameException {
         checkState(indexPlayer);
         player[indexPlayer].setValueDiceHand(value);
-        updateHand(indexPlayer);
+        updaterView.updatePlayerHand(indexPlayer);
     }
 
     /**
-     *
      * @param indexPlayer integer that indicate which player send the request of
-     * @param increase true of increase the value false for decrease
-     * @throws GameIsBlockedException if the game can't be access
-     * @throws CurrentPlayerException if it isn't the player's turn
+     * @param increase    true of increase the value false for decrease
+     * @throws GameIsBlockedException  if the game can't be access
+     * @throws CurrentPlayerException  if it isn't the player's turn
      * @throws ValueDiceWrongException if the request doesn't respect the dice domain
-     * @throws NoDiceInHandException if the player have no dice in hand
+     * @throws NoDiceInHandException   if the player have no dice in hand
      * @throws NoDiceException
      */
     public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameIsBlockedException,
             CurrentPlayerException, ValueDiceWrongException, NoDiceInHandException, NoDiceException {
         checkState(indexPlayer);
         player[indexPlayer].increaseOrDecrease(increase);
-        updateHand(indexPlayer);
+        updaterView.updatePlayerHand(indexPlayer);
     }
 
     /**
@@ -751,7 +523,7 @@ public class GameBoard {
      * @throws GameIsBlockedException if the game can't be access
      * @throws CurrentPlayerException if it isn't the player's turn
      */
-    private void checkState(int indexPlayer)throws GameIsBlockedException,CurrentPlayerException {
+    private void checkState(int indexPlayer) throws GameIsBlockedException, CurrentPlayerException {
         if (stopGame) throw new GameIsBlockedException();
         if (indexPlayer != indexCurrentPlayer) throw new CurrentPlayerException();
     }

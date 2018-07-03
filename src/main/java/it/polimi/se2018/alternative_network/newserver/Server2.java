@@ -150,7 +150,7 @@ public class Server2 {
                 //TODO caricare l'address solo per rmi
             }
         }
-        /*
+        /*//TODO startare socket
         startThisServer=true;
         while (!socketStarted && startThisServer){
             try {

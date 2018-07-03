@@ -19,13 +19,13 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectInitialWindowPatternCard;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectToolCard;
 import it.polimi.se2018.model.GameBoard;
-import it.polimi.se2018.network.RemotePlayer;
+import it.polimi.se2018.model.UpdaterView;
+import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.network.server.ServerController;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
 import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Properties;
 
@@ -44,8 +44,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private ServerController server;
     private GameRoom server2;
 
-    //Player
-    private ArrayList<RemotePlayer> players;
 
     //Lista di effetti da eseguire uno alla volta e spostati nello store una volta terminati
     private LinkedList<EffectGame> effectToRead;
@@ -55,19 +53,22 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
     long PLAYER_TIMEOUT; //ms!!
     private TimerThread playerTimeout;
+    private UpdaterView updaterView;
 
+    //TODO
+    private boolean started;
     /**
      * Controller constructor.
      *
      * @param server server on when the game is on.
      */
-    public Controller(ServerController server, int playerNumber,GameRoom server2) {
+    public Controller(ServerController server, int playerNumber,GameRoom room) {
         //set up actual game
         this.server = server;
-        this.server2 =server2;
+        this.server2 =room;
         this.playerNumber = playerNumber;
-        gameBoard = new GameBoard(playerNumber, server,server2);
-
+        gameBoard = new GameBoard(playerNumber);
+        updaterView =new UpdaterView(gameBoard,server,room);
         //set up utils for the game
         restoreAble = false;
         try {
@@ -92,6 +93,52 @@ public class Controller implements ControllerVisitor, TimerCallback {
         System.out.println("CONTROLLER CREATED!!!!!!!!!!!");
     }
 
+    public UpdateRequestedByServer getUpdater(){
+        return updaterView;
+    }
+    public void startController(){
+        gameBoard.startGame(updaterView);
+        this.sendInitCommand();
+    }
+
+    /**
+     * method for se
+     */
+    public void sendInitCommand() {
+        updaterView.updateInfoStart();
+        for (int i = 0; i < playerNumber; i++) {
+            //gameBoard.notifyAllCards(i);
+
+        }
+        //after the notify to all player show the info
+        for (int j = 0; j < playerNumber; j++) {
+            ShowAllCards waitSetUp = new ShowAllCards();
+            waitSetUp.setPlayerId(j);
+            sendEventToView(waitSetUp);
+        }
+        //after showing the info ask the player to choose the window
+        for (int i = 0; i < playerNumber; i++) {
+            SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
+            packet.setPlayerId(i);
+            sendEventToView(packet);
+        }
+        //TODO Start the timer per la selezione della window
+        System.err.println("Iniziato il gioco, inviati tutti i pacchetti per l'inizio del game");
+    }
+
+    public void endGame(){
+        //TODO manda il pacchetto a tutti
+    }
+
+
+    // TODO: MODIFICARE IL METODO
+    public void joinGame(int id) {
+        updaterView.updateInfoReLogin(id,true);
+        SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
+        packet.setPlayerId(id);
+        System.err.println("Player " + id + " has made a relogin.");
+        sendEventToView(packet);
+    }
 
     // EX UPDATE
     public void sendEventToController(EventController event) {
@@ -223,6 +270,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
             playerTimeout.shutdown();
             playerTimeout.startThread();
         } catch (GameIsOverException ex) {
+            //TODO mettere l'invio del'endtrun
+            ex.printStackTrace();
             playerTimeout.shutdown();
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(), false);
@@ -333,41 +382,10 @@ public class Controller implements ControllerVisitor, TimerCallback {
     }
 
 
-    /**
-     * method for se
-     */
-    public void startGame() {
-        for (int i = 0; i < playerNumber; i++) {
-            gameBoard.notifyAllCards(i);
-        }
-        //after the notify to all player show the info
-        for (int j = 0; j < playerNumber; j++) {
-            ShowAllCards waitSetUp = new ShowAllCards();
-            waitSetUp.setPlayerId(j);
-            sendEventToView(waitSetUp);
-        }
-        //after showing the info ask the player to choose the window
-        for (int i = 0; i < playerNumber; i++) {
-            SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
-            packet.setPlayerId(i);
-            sendEventToView(packet);
-        }
-        //TODO Start the timer per la selezione della window
-        System.err.println("Iniziato il gioco, inviati tutti i pacchetti per l'inizio del game");
-
-    }
-
-    // TODO: MODIFICARE IL METODO
-    public void joinGame(int id) {
-        gameBoard.notifyAllCards(id);
-        SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
-        packet.setPlayerId(id);
-        System.err.println("Player " + id + " has made a relogin.");
-        sendEventToView(packet);
-    }
 
 
     private void showErrorMessage(Exception ex, int idPlayer, boolean showMenuTurn) {
+        ex.printStackTrace();
         MessageError packet = new MessageError(ex.getMessage(), showMenuTurn);
         packet.setPlayerId(idPlayer);
         sendEventToView(packet);
@@ -390,6 +408,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
         timerPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
         sendEventToView(timerPacket);
         try {
+            //TODO non si può mettere qui
             gameBoard.nextPlayer(gameBoard.getIndexCurrentPlayer());
             sendWaitTurnToAllTheNonCurrent(gameBoard.getIndexCurrentPlayer());
             StartPlayerTurn turnPacket = new StartPlayerTurn();
