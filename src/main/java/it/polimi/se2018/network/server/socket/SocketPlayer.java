@@ -130,7 +130,7 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
      */
     public void login(String nickname) throws PlayerNetworkException {
         setNickname(nickname);
-
+        SocketServer.socketPlayers.add(this);
         if (!this.serverController.login(this)) {
             throw new PlayerNetworkException("error");
         }

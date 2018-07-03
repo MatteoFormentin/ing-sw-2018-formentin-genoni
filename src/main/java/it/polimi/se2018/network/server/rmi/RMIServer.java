@@ -153,16 +153,6 @@ public class RMIServer extends AbstractServer implements IRMIServer{
     }
 
     /**
-     * Remote method used to send to the server a request to unleash an event.
-     *
-     * @param eventController object that will use the server to unleash the event associated.
-     */
-    @Override
-    public void sendEventToController(EventController eventController) {
-        getServerController().sendEventToController(eventController);
-    }
-
-    /**
      * Remote method used to disconnect a client from the server.
      *
      * @param id id associated to the player.
@@ -172,9 +162,20 @@ public class RMIServer extends AbstractServer implements IRMIServer{
         searchPlayerById(id).disconnect();
     }
 
+    /**
+     * Remote method used to send to the server a request to unleash an event.
+     *
+     * @param eventController object that will use the server to unleash the event associated.
+     */
+    @Override
+    public void sendEventToController(EventController eventController) {
+        getServerController().sendEventToController(eventController);
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
+
 
     /**
      * Method used to remove a player from the RMI server.
@@ -182,7 +183,7 @@ public class RMIServer extends AbstractServer implements IRMIServer{
      * @param remotePlayer player that must be removed.
      */
     public void removePlayer(RemotePlayer remotePlayer){
-        remotePlayer.setPlayerRunning(false);
+        //remotePlayer.setPlayerRunning(false);
         int id = rmiPlayers.indexOf(remotePlayer);
         if(id != -1)
             rmiPlayers.remove(id);

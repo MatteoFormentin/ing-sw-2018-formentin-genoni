@@ -47,14 +47,6 @@ public interface ServerController {
      */
     void joinGame(RemotePlayer remotePlayer);
 
-    /**
-     * Searcher for player id in the game.
-     *
-     * @param id ID of the player associated to the client.
-     * @return player associated to the ID.
-     */
-    RemotePlayer searchPlayerById(int id);
-
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
@@ -71,6 +63,16 @@ public interface ServerController {
      */
     void ping();
 
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHOD
+    //------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * Searcher for player id in the game.
+     *
+     * @param id ID of the player associated to the client.
+     * @return player associated to the ID.
+     */
+    RemotePlayer searchPlayerById(int id);
 }
 

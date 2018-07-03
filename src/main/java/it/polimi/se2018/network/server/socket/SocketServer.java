@@ -23,7 +23,7 @@ public class SocketServer extends AbstractServer {
     private ClientGatherer clientGatherer;
 
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
-    static ArrayList<SocketPlayer> socketPlayers;
+    static ArrayList<SocketPlayer> socketPlayers= new ArrayList<>();;
 
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
@@ -40,7 +40,6 @@ public class SocketServer extends AbstractServer {
      */
     public SocketServer(ServerController serverController) {
         super(serverController);
-        socketPlayers = new ArrayList<>();
         running.set(false);
     }
 

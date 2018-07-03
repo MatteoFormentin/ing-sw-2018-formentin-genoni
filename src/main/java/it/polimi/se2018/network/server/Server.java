@@ -171,83 +171,6 @@ public class Server implements ServerController, TimerCallback {
     }
 
     /**
-     * Disonnecter for player.
-     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
-     * Login supporter method.
-     *
-     * @param remotePlayer reference to RMI Player.
-     */
-    public static void removeRMIPlayer(RemotePlayer remotePlayer) {
-        rmiServer.removePlayer(remotePlayer);
-        AnsiConsole.out.println(ansi().fg(GREEN).a("RMI Player disconnected!").reset());
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-    // GAME STARTER/JOINER (ONLY ONE GAME WITH MAXIMUM 4 PLAYERS)
-    //------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Disonnecter for player.
-     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
-     * Login supporter method.
-     *
-     * @param remotePlayer reference to Socket Player.
-     */
-    public static void removeSOCKETPlayer(RemotePlayer remotePlayer) {
-        socketServer.removePlayer(remotePlayer);
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Socket Player disconnected!").reset());
-    }
-
-    @Override
-    public void timerCallback() {
-        startGame();
-    }
-
-    /**
-     * Joiner for the game.
-     */
-    public void joinGame(RemotePlayer remotePlayer) {
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
-
-        try {
-            JoinGame packet = new JoinGame();
-            packet.setPlayerName(remotePlayer.getNickname());
-            packet.setPlayerId(remotePlayer.getPlayerId());
-            remotePlayer.sendEventToView(packet);
-        } catch (RemoteException ex) {
-            // DISCONNESSIONE
-            remotePlayer.disconnect();
-        }
-
-        this.game.joinGame(remotePlayer.getPlayerId());
-    }
-
-
-    /**
-     * Starter for the timeout, based on a single thread.
-     */
-    public void startTimerThread() {
-        AnsiConsole.out.println(ansi().fg(GREEN).a("TIMEOUT started!").reset());
-        // FACCIO PARTIRE IL THREAD
-        timerThread.startThread();
-    }
-
-    /**
-     * Starter for the pre-game, based on a single thread.
-     */
-    public void startPreGameThread(RemotePlayer remotePlayer) {
-        AnsiConsole.out.println(ansi().fg(GREEN).a("PRE-GAME THREAD started!").reset());
-        // CREO NUOVO PRE GAME THREAD
-        preGameThread = new PreGameThread(this, remotePlayer);
-        // FACCIO PARTIRE IL THREAD
-        preGameThread.startThread();
-    }
-
-    //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
-    //------------------------------------------------------------------------------------------------------------------
-
-    /**
      * Put the server on listen.
      * The server will connect only with the technology selected from client (RMI or Socket).
      *
@@ -264,46 +187,11 @@ public class Server implements ServerController, TimerCallback {
         }
     }
 
-    /**
-     * Remote method used to send to the server a request to unleash an event.
-     *
-     * @param eventController object that will use the server to unleash the event associated.
-     */
-    @Override
-    public void sendEventToController(EventController eventController) {
-        game.sendEventToController(eventController);
-    }
+
 
     //------------------------------------------------------------------------------------------------------------------
-    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    // GAME STARTER (ONLY ONE GAME WITH MAXIMUM 4 PLAYERS)
     //------------------------------------------------------------------------------------------------------------------
-
-    /**
-     * Remote method used to send to the client an update of the game.
-     *
-     * @param eventView object that will use the client to unleash the update associated.
-     */
-    @Override
-    public void sendEventToView(EventView eventView) {
-        try {
-            searchPlayerById(eventView.getPlayerId()).sendEventToView(eventView);
-        } catch (RemoteException ex) {
-            RemotePlayer remotePlayer = searchPlayerById(eventView.getPlayerId());
-            remotePlayer.disconnect();
-        }
-    }
-
-    /**
-     * Searcher for player id in the game.
-     *
-     * @param id ID of the player associated to the client.
-     * @return player associated to the ID.
-     */
-    // RITORNA IL GIOCATORE REMOTO (FAI CON QUESTO IL CHECK PER VEDERE SE IL CLIENT C'è O MENO)
-    @Override
-    public RemotePlayer searchPlayerById(int id) {
-        return players.get(id);
-    }
 
     /**
      * Starter for the game.
@@ -330,6 +218,7 @@ public class Server implements ServerController, TimerCallback {
                 player.disconnect();
             }
         }
+
         //TODO se vuoi ho aggiunto questa interfaccia se chiami un metodo ritorna a te però almeno non devi aver lo sbatti di inviare pacchetti
         UpdateRequestedByServer updater = game.getUpdater();
         game.startController();
@@ -340,29 +229,34 @@ public class Server implements ServerController, TimerCallback {
 
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // SUPPORTER METHODS
-    //------------------------------------------------------------------------------------------------------------------
+    @Override
+    public void timerCallback() {
+        startGame();
+    }
 
     /**
-     * Checker for player nickname in the server.
-     *
-     * @param nickname name of the player associated to the client.
-     * @return true if the nickname exists, false otherwise.
+     * Starter for the timeout, based on a single thread.
      */
-    private boolean checkPlayerNicknameExists(String nickname) {
-        String[] playersName = new String[players.size()];
-        int i = 0;
-
-        for (RemotePlayer player : players) {
-            playersName[i] = player.getNickname();
-            i++;
-            if (player.getNickname().equals(nickname)) {
-                return true;
-            }
-        }
-        return false;
+    public void startTimerThread() {
+        AnsiConsole.out.println(ansi().fg(GREEN).a("TIMEOUT started!").reset());
+        // FACCIO PARTIRE IL THREAD
+        timerThread.startThread();
     }
+
+    /**
+     * Starter for the pre-game, based on a single thread.
+     */
+    public void startPreGameThread(RemotePlayer remotePlayer) {
+        AnsiConsole.out.println(ansi().fg(GREEN).a("PRE-GAME THREAD started!").reset());
+        // CREO NUOVO PRE GAME THREAD
+        preGameThread = new PreGameThread(this, remotePlayer);
+        // FACCIO PARTIRE IL THREAD
+        preGameThread.startThread();
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Remote method used to log the user to the server with his nickname.
@@ -377,7 +271,7 @@ public class Server implements ServerController, TimerCallback {
             // SE LA STANZA è ACCESSIBILE (PRE-GAME)
             if (roomJoinable) {
 
-                if (this.players.size() == 1 && timerThread.isAlive()) {
+                if (players.size()== 1 && timerThread.isAlive()) {
                     timerThread.shutdown();
                     timerThread.startThread();
                 }
@@ -481,32 +375,53 @@ public class Server implements ServerController, TimerCallback {
     }
 
     /**
-     * Replacer for player.
-     * The replacer work on the players ID, in order to not break the array list of RemotePlayer.
-     * Login supporter method.
-     *
-     * @param id              ID of the player associated to the client.
-     * @param newRemotePlayer new player used to replace the old one.
-     */
-    private void replacePlayer(int id, RemotePlayer newRemotePlayer) {
-        players.set(id, newRemotePlayer);
-        String nickname = newRemotePlayer.getNickname();
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Disconnected player " + nickname + " has been replaced from a new client!").reset());
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
-    }
-
-    /**
-     * Connecter for player.
-     * The connecter work on player connection state flag, putting it true determining a "connection established".
-     * Login supporter method.
+     * Joiner for the game.
      *
      * @param remotePlayer reference to RMI or Socket Player.
      */
-    private void connectPlayer(RemotePlayer remotePlayer) {
-        remotePlayer.setPlayerRunning(true);
-        String nickname = remotePlayer.getNickname();
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Player " + nickname + " has been connected!").reset());
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
+    public void joinGame(RemotePlayer remotePlayer) {
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
+
+        try {
+            JoinGame packet = new JoinGame();
+            packet.setPlayerName(remotePlayer.getNickname());
+            packet.setPlayerId(remotePlayer.getPlayerId());
+            remotePlayer.sendEventToView(packet);
+        } catch (RemoteException ex) {
+            // DISCONNESSIONE
+            remotePlayer.disconnect();
+        }
+
+        this.game.joinGame(remotePlayer.getPlayerId());
+    }
+
+    /**
+     * Remote method used to send to the server a request to unleash an event.
+     *
+     * @param eventController object that will use the server to unleash the event associated.
+     */
+    @Override
+    public void sendEventToController(EventController eventController) {
+        game.sendEventToController(eventController);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Remote method used to send to the client an update of the game.
+     *
+     * @param eventView object that will use the client to unleash the update associated.
+     */
+    @Override
+    public void sendEventToView(EventView eventView) {
+        try {
+            searchPlayerById(eventView.getPlayerId()).sendEventToView(eventView);
+        } catch (RemoteException ex) {
+            RemotePlayer remotePlayer = searchPlayerById(eventView.getPlayerId());
+            remotePlayer.disconnect();
+        }
     }
 
     /**
@@ -514,6 +429,42 @@ public class Server implements ServerController, TimerCallback {
      */
     @Override
     public void ping() {
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // SUPPORTER METHODS
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Searcher for player id in the game.
+     *
+     * @param id ID of the player associated to the client.
+     * @return player associated to the ID.
+     */
+    // RITORNA IL GIOCATORE REMOTO (FAI CON QUESTO IL CHECK PER VEDERE SE IL CLIENT C'è O MENO)
+    @Override
+    public RemotePlayer searchPlayerById(int id) {
+        return players.get(id);
+    }
+
+    /**
+     * Checker for player nickname in the server.
+     *
+     * @param nickname name of the player associated to the client.
+     * @return true if the nickname exists, false otherwise.
+     */
+    private boolean checkPlayerNicknameExists(String nickname) {
+        String[] playersName = new String[players.size()];
+        int i = 0;
+
+        for (RemotePlayer player : players) {
+            playersName[i] = player.getNickname();
+            i++;
+            if (player.getNickname().equals(nickname)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -546,5 +497,60 @@ public class Server implements ServerController, TimerCallback {
             }
         }
         return false;
+    }
+
+    /**
+     * Replacer for player.
+     * The replacer work on the players ID, in order to not break the array list of RemotePlayer.
+     * Login supporter method.
+     *
+     * @param id              ID of the player associated to the client.
+     * @param newRemotePlayer new player used to replace the old one.
+     */
+    private void replacePlayer(int id, RemotePlayer newRemotePlayer) {
+        players.set(id, newRemotePlayer);
+        String nickname = newRemotePlayer.getNickname();
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Disconnected player " + nickname + " has been replaced from a new client!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
+    }
+
+    /**
+     * Connecter for player.
+     * The connecter work on player connection state flag, putting it true determining a "connection established".
+     * Login supporter method.
+     *
+     * @param remotePlayer reference to RMI or Socket Player.
+     */
+    private void connectPlayer(RemotePlayer remotePlayer) {
+        remotePlayer.setPlayerRunning(true);
+        String nickname = remotePlayer.getNickname();
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Player " + nickname + " has been connected!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
+    }
+
+    /**
+     * Disonnecter for player.
+     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
+     * Login supporter method.
+     *
+     * @param remotePlayer reference to RMI Player.
+     */
+    public static void removeRMIPlayer(RemotePlayer remotePlayer) {
+        rmiServer.removePlayer(remotePlayer);
+        AnsiConsole.out.println(ansi().fg(GREEN).a("RMI Player disconnected!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
+    }
+
+    /**
+     * Disconnecter for player.
+     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
+     * Login supporter method.
+     *
+     * @param remotePlayer reference to Socket Player.
+     */
+    public static void removeSOCKETPlayer(RemotePlayer remotePlayer) {
+        socketServer.removePlayer(remotePlayer);
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Socket Player disconnected!").reset());
+        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
     }
 }
