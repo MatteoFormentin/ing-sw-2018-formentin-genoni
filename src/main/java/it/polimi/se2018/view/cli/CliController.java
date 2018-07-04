@@ -101,12 +101,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
 
-    public void showMessage(EventView eventView) {
-        eventView.acceptGeneric(this);
-    }
-
-
-
     public void errPrintln(String error) {
         System.err.println();
         System.err.println(error);
@@ -134,7 +128,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     //TODO aggiustare il nuovo metodo
     @Override
-    public void restartConnectionDuringGame(String cause) {
+    public void restartConnection(String cause) {
         System.out.println("La connessione è caduta.\n0 per riconnetterti, 1 per uscire");
         client2.shutDownClient2();
         CliParser input = new CliParser();
@@ -148,6 +142,10 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
+
+    public void showEventView(EventView eventView) {
+        eventView.acceptGeneric(this);
+    }
 
     @Override
     public synchronized void visit(EventViewFromController event) {
@@ -168,12 +166,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         new Thread(exec).start();
     }
 
-/*
-    @Override
-    public void visit(PlayerDisconnected event) {
-        System.out.println("Il giocatore "+event.getPlayerId()+", nickname:"+playersName[event.getPlayerId()]);
-    }TODORImuovere
-*/
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
@@ -543,8 +535,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                 case 1:
                     EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
                     packetInsertDice.setPlayerId(playerId);
-                    if (factory == null) sendEventToController(packetInsertDice);
-                    else sendEventToController(packetInsertDice);
+                    sendEventToController(packetInsertDice);
                     break;
                 //Use tool card
                 case 2:

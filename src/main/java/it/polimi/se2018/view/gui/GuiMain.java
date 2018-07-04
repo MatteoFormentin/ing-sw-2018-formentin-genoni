@@ -62,11 +62,10 @@ public class GuiMain extends Application {
             e.consume();
             closeProgram();
         });
-        Image home=null;
-        try{
+        Image home = null;
+        try {
             home = new Image(new FileInputStream("src/resources/Immagine.jpg"), 779, 261, true, true);
-        }catch(IOException ex){
-            System.out.println("can't load");
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
         BackgroundImage backgroundImage = new BackgroundImage(home,

@@ -249,7 +249,7 @@ public class Client implements ClientController {
         try {
             view.errPrintln("!!!!!!!!!!!!!!!!!!!!!!OK!!!!!!!!!!!!!!!!!!!!!!");
 
-            view.showMessage(eventView);
+            view.showEventView(eventView);
         } catch (Exception ex) {
             System.out.println("!!!PLAYER?");
         }

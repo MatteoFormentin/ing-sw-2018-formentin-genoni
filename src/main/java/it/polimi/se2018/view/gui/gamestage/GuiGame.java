@@ -280,12 +280,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     //*************************************************VISITOR PATTERN**********************************************************************************
 
     @Override
-    public void showMessage(EventView eventView) {
+    public void showEventView(EventView eventView) {
         Platform.runLater(() -> eventView.acceptGeneric(this));
     }
 
     @Override
-    public void restartConnectionDuringGame(String cause) {
+    public void restartConnection(String cause) {
         System.out.println("Connessione persa");
         Platform.runLater(() -> {
             if (utilStage.isShowing()) new AlertMessage(utilStage).displayMessage(cause);
@@ -613,14 +613,14 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     private void activeWindowChoice(int index) {
         boxWindowPoolChoice[index].setOnMouseClicked(e -> {
-            disableWindowChoise();
+            disableWindowChoice();
             ControllerSelectInitialWindowPatternCard packet = new ControllerSelectInitialWindowPatternCard();
             packet.setSelectedIndex(index);
             sendEventAndSetTheId(packet);
         });
     }
 
-    private void disableWindowChoise() {
+    private void disableWindowChoice() {
         IntStream.range(0, boxWindowPoolChoice.length).forEach(i -> boxWindowPoolChoice[i].setOnMouseClicked(null));
     }
 

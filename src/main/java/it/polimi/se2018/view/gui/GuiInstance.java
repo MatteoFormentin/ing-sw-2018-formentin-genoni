@@ -5,10 +5,8 @@ import it.polimi.se2018.alternative_network.client.ClientFactory;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
-import it.polimi.se2018.view.cli.CliController;
 
 import static it.polimi.se2018.view.gui.GuiMain.launchGui;
 import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
@@ -19,6 +17,14 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
  * @author Luca Genoni
  */
 public class GuiInstance implements UIInterface {
+
+    @Override
+    public void errPrintln(String error){
+        System.err.println();
+        System.err.println(error);
+        System.err.println();
+    }
+
     private static GuiInstance instance;
     private static ClientController client;
     private ClientFactory factoryInstance;
@@ -95,21 +101,15 @@ public class GuiInstance implements UIInterface {
      * @param eventView EventView for the gui
      */
     @Override
-    public void showMessage(EventView eventView) {
-        getGuiGame().showMessage(eventView);
+    public void showEventView(EventView eventView) {
+        getGuiGame().showEventView(eventView);
     }
 
     @Override
-    public void restartConnectionDuringGame(String cause) {
-        getGuiGame().restartConnectionDuringGame(cause);
+    public void restartConnection(String cause) {
+        getGuiGame().restartConnection(cause);
     }
 
-    @Override
-    public void errPrintln(String error){
-        System.err.println();
-        System.err.println(error);
-        System.err.println();
-    }
     /**
      * Method for send to the server the Event Controller
      *
@@ -121,7 +121,7 @@ public class GuiInstance implements UIInterface {
             try {
                 client2.sendEventToController2(event);
             }catch (ConnectionProblemException ex){
-                restartConnectionDuringGame(ex.getMessage());
+                restartConnection(ex.getMessage());
             }
         }
     }

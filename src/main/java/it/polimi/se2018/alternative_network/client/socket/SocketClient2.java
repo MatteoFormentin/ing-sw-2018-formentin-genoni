@@ -22,10 +22,8 @@ import java.net.SocketException;
  *
  * @author DavideMammarella
  */
-public class SocketClient2 implements Runnable, AbstractClient2 {
+public class SocketClient2 extends  AbstractClient2 implements Runnable {
 
-    private final String IP_ADDRESS;
-    private final int PORT;
     // comunicazione con il socket
     private Socket clientConnection;
 
@@ -33,8 +31,6 @@ public class SocketClient2 implements Runnable, AbstractClient2 {
     private ObjectInputStream inputStream;
     // stream di output
     private ObjectOutputStream outputStream;
-
-    private UIInterface view;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -48,9 +44,7 @@ public class SocketClient2 implements Runnable, AbstractClient2 {
      * @param serverPort      port used from server to communicate.
      */
     public SocketClient2(String serverIpAddress, int serverPort, UIInterface view) {
-        this.view = view;
-        IP_ADDRESS = serverIpAddress;
-        PORT = serverPort;
+       super(serverIpAddress,serverPort,view);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -134,7 +128,7 @@ public class SocketClient2 implements Runnable, AbstractClient2 {
      */
     @Override
     public void sendEventToUIInterface2(EventView event) {
-        view.showMessage(event);
+        view.showEventView(event);
     }
 
 
@@ -206,7 +200,7 @@ public class SocketClient2 implements Runnable, AbstractClient2 {
     @Override
     public void connectToServer2() throws ConnectionProblemException {
         try {
-            clientConnection = new Socket(IP_ADDRESS, PORT);
+            clientConnection = new Socket(ip_host,port);
             outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
             inputStream = new ObjectInputStream(clientConnection.getInputStream());
             outputStream.flush();

@@ -1,6 +1,6 @@
 package it.polimi.se2018;
 
-import it.polimi.se2018.alternative_network.newserver.ServerController2;
+import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
 import it.polimi.se2018.exception.gameboard_exception.GameIsBlockedException;
@@ -13,7 +13,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestGameBoard {
@@ -23,17 +22,24 @@ public class TestGameBoard {
     private static final GameIsBlockedException gameBlock = new GameIsBlockedException();
     String[] names;
 
-    private ServerController2 gameRoom;
+    private GameInterface gameRoom;
     private int j;
 
     @Before
     public void initGameBoard() {
-        names= new String[3];
-        gameRoom = new ServerController2() {
+        names = new String[3];
+        gameRoom = new GameInterface() {
             @Override
-            public void sendEventToGameRoom(EventController eventController){}
+            public void disconnectFromGameRoom(int indexRoom) {
+            }
+
             @Override
-            public void sendEventToView(EventView eventView){}
+            public void sendEventToGameRoom(EventController eventController) {
+            }
+
+            @Override
+            public void sendEventToView(EventView eventView) {
+            }
         };
     }
 
@@ -43,42 +49,43 @@ public class TestGameBoard {
         UpdaterView updaterView = new UpdaterView(gameBoard, null, gameRoom);
         gameBoard.startGame(updaterView);
         //testa fino al 9° round
-        int numberPlayer= 4;
-        int maxRound=10;
+        int numberPlayer = 4;
+        int maxRound = 10;
         for (int round = 0; round < numberPlayer; round++) {
             //senso orario
             j = round % numberPlayer;
             for (int i = 0; i < numberPlayer; i++) {
                 if (j < 0) j = j + numberPlayer;
                 else j = j % numberPlayer;
-                assertThrows(noRightPlayer.getClass(), () -> gameBoard.nextPlayer(j-1));
-                assertThrows(noRightPlayer.getClass(), () -> gameBoard.nextPlayer(j+1));
+                assertThrows(noRightPlayer.getClass(), () -> gameBoard.nextPlayer(j - 1));
+                assertThrows(noRightPlayer.getClass(), () -> gameBoard.nextPlayer(j + 1));
                 gameBoard.nextPlayer(j++);
             }
             //senso antiorario
-            j = ((numberPlayer-1) +round) %numberPlayer;
+            j = ((numberPlayer - 1) + round) % numberPlayer;
             for (int i = 0; i < numberPlayer; i++) {
-                if (j < 0) j = numberPlayer-1;
+                if (j < 0) j = numberPlayer - 1;
                 else j = j % numberPlayer;
-                assertThrows(noRightPlayer.getClass(), () -> gameBoard.nextPlayer(j-1));
-                assertThrows(noRightPlayer.getClass(), () -> gameBoard.nextPlayer(j+1));
-                if(round==maxRound-1 && i==numberPlayer-1) {
+                assertThrows(noRightPlayer.getClass(), () -> gameBoard.nextPlayer(j - 1));
+                assertThrows(noRightPlayer.getClass(), () -> gameBoard.nextPlayer(j + 1));
+                if (round == maxRound - 1 && i == numberPlayer - 1) {
                     assertThrows(gameOver.getClass(), () -> gameBoard.nextPlayer(j));
-                    assertThrows(gameBlock.getClass(), () -> gameBoard.nextPlayer(j+1));
-                }
-                else gameBoard.nextPlayer(j--);
+                    assertThrows(gameBlock.getClass(), () -> gameBoard.nextPlayer(j + 1));
+                } else gameBoard.nextPlayer(j--);
             }
         }
         gameBoard.calculateAllPoint();
     }
+
     @Test
     public void tryWalkGameBoard2() throws GameException {
         GameBoard gameBoard = new GameBoard(names);
         UpdaterView updaterView = new UpdaterView(gameBoard, null, gameRoom);
-        assertThrows(NullPointerException.class,()->gameBoard.calculateAllPoint());
+        assertThrows(NullPointerException.class, () -> gameBoard.calculateAllPoint());
     }
+
     @After
-    public void cleanUp(){
-        gameRoom =null;
+    public void cleanUp() {
+        gameRoom = null;
     }
 }
