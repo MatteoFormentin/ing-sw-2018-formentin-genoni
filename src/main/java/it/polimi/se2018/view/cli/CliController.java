@@ -173,7 +173,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(StartGame event) {
-        cliMessage.showGameStarted(playersName);
+        cliMessage.showGameStarted(event.getPlayersName());
     }
 
     @Override
