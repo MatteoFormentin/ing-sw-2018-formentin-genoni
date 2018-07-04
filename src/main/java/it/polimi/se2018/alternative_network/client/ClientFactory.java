@@ -19,7 +19,7 @@ import java.util.Properties;
  * 1 creare l'Abstract client concreto installando la view, l'host e la porta
  * 2 connettere l'abstract client al server, se rifiutato ricreare un nuovo abstract client
  * 3 effettuare il login
- * (4 utilizzare sendEventToController per inviare informazioni al giocatore)
+ * (4 utilizzare sendEventToNetwork per inviare informazioni al giocatore)
  * 5 chiamare disconnect per disconnettersi legalmente
  */
 public class ClientFactory {
