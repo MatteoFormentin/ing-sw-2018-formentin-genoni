@@ -33,17 +33,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CliController implements UIInterface, ViewVisitor, ViewControllerVisitor, ViewModelVisitor {
 
     private static CliController instance;
-
+    private static ClientFactory factory;
     private CliMessage cliMessage;
     private CliParserNonBlocking cliParser;
     private ClientController client;
-
-
     //Server alternativo
     private AbstractClient2 client2;
-    private static ClientFactory factory;
-
-
     private int currentRound;
     private int currentTurn;
     private DiceStack[] roundTrack;
@@ -101,10 +96,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
 
-    public void showMessage(EventView eventView) {
-        eventView.acceptGeneric(this);
-    }
-
     public void errPrintln(String error) {
         System.err.println();
         System.err.println(error);
@@ -132,7 +123,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     //TODO aggiustare il nuovo metodo
     @Override
-    public void restartConnectionBecauseLost() {
+    public void restartConnection(String cause) {
         System.out.println("La connessione è caduta.\n0 per riconnetterti, 1 per uscire");
         client2.shutDownClient2();
         CliParser input = new CliParser();
@@ -146,6 +137,10 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
+
+    public void showEventView(EventView eventView) {
+        eventView.acceptGeneric(this);
+    }
 
     @Override
     public synchronized void visit(EventViewFromController event) {
@@ -168,12 +163,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         event.acceptModelEvent(this);
     }
 
-/*
-    @Override
-    public void visit(PlayerDisconnected event) {
-        System.out.println("Il giocatore "+event.getPlayerId()+", nickname:"+playersName[event.getPlayerId()]);
-    }TODORImuovere
-*/
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
@@ -181,14 +170,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(StartGame event) {
-        playerId = event.getPlayerId();
-        playersName = event.getPlayersName();
-        windowPatternCardOfEachPlayer = new WindowPatternCard[playersName.length];
-        objectivePrivateCardOfEachPlayers = new ObjectivePrivateCard[playersName.length];
-        handOfEachPlayer = new DiceStack[playersName.length];
-        favorTokenOfEachPlayer = new int[playersName.length];
-        pointsOfEachPlayer = new int[playersName.length];
-        cliMessage.showGameStarted(playersName);
+        cliMessage.showGameStarted(event.getPlayersName());
     }
 
     @Override
@@ -407,6 +389,18 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
+    public void visit(UpdateNamePlayers event) {
+        //TODO controllare che i nomi vengano aggiornati
+        playerId = event.getPlayerId();
+        playersName = event.getPlayerNames();
+        windowPatternCardOfEachPlayer = new WindowPatternCard[playersName.length];
+        objectivePrivateCardOfEachPlayers = new ObjectivePrivateCard[playersName.length];
+        handOfEachPlayer = new DiceStack[playersName.length];
+        favorTokenOfEachPlayer = new int[playersName.length];
+        pointsOfEachPlayer = new int[playersName.length];
+    }
+
+    @Override
     public void visit(UpdateInitDimRound event) {
         roundTrack = event.getRoundTrack();
     }
@@ -439,7 +433,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(UpdateSinglePlayerToken event) {
         favorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
-        // pointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
     }
 
     @Override
@@ -455,7 +448,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateSingleWindow event) {
-
         windowPatternCardOfEachPlayer[event.getIndexPlayer()] = event.getWindowPatternCard();
     }
 
@@ -540,8 +532,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                 case 1:
                     EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
                     packetInsertDice.setPlayerId(playerId);
-                    if (factory == null) sendEventToController(packetInsertDice);
-                    else sendEventToController(packetInsertDice);
+                    sendEventToController(packetInsertDice);
                     break;
                 //Use tool card
                 case 2:

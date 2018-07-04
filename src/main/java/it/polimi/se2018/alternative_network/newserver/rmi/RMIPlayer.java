@@ -2,7 +2,7 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExeption;
+import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -23,27 +23,27 @@ public class RMIPlayer extends RemotePlayer2 {
 
 
     RMIPlayer(String nickname, RMIClientInterface clientRMIInterface) {
-        super(nickname);
+        setNickname(nickname);
         this.clientRMIInterface = clientRMIInterface;
     }
 
     @Override
-    public void sendEventToView(EventView eventView) throws ConnectionPlayerExeption {
+    public void sendEventToView(EventView eventView) throws ConnectionPlayerException {
         try {
             clientRMIInterface.notifyTheClient(eventView);
         } catch (RemoteException ex) {
-            throw new ConnectionPlayerExeption();
+            throw new ConnectionPlayerException();
         }
     }
 
     @Override
-    public void sayHelloClient() throws ConnectionPlayerExeption {
+    public void sayHelloClient() throws ConnectionPlayerException {
         try {
             AnsiConsole.out.print(ansi().fg(BLUE).a("RMIPlayer -> sayHelloClient :" + getNickname() + "  ").reset());
             AnsiConsole.out.println(ansi().fg(BLUE).a(clientRMIInterface.pong("ping")).reset());
         } catch (RemoteException ex) {
             AnsiConsole.out.println(ansi().fg(BLUE).a("Non connesso.").reset());
-            throw new ConnectionPlayerExeption();
+            throw new ConnectionPlayerException();
         }
     }
 

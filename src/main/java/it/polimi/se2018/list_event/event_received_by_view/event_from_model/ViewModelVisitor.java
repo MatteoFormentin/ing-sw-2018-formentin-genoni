@@ -14,6 +14,8 @@ public interface ViewModelVisitor {
     //**********************************************from Model**************************************
 
     //setup update
+    void visit(UpdateNamePlayers event);
+
     void visit(UpdateInitDimRound event);
 
     void visit(UpdateAllToolCard event);

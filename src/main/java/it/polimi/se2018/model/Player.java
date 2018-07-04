@@ -40,6 +40,7 @@ public class Player {
      */
     public Player(int indexInGame, String nickname) {
         this.indexInGame = indexInGame;
+        System.out.println("Nome memorizzato: "+nickname);
         this.nickname = nickname;
         favorToken = 0;
         points = 0;

@@ -1,6 +1,6 @@
 package it.polimi.se2018.controller;
 
-import it.polimi.se2018.alternative_network.newserver.GameRoom;
+import it.polimi.se2018.alternative_network.newserver.room.GameRoom;
 import it.polimi.se2018.controller.effect.DicePoolEffect;
 import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.EndTurn;
@@ -14,6 +14,7 @@ import it.polimi.se2018.exception.gameboard_exception.player_state_exception.Alr
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
 import it.polimi.se2018.list_event.event_received_by_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectInitialWindowPatternCard;
@@ -56,7 +57,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private UpdaterView updaterView;
 
     private boolean started;
- //   private boolean timer;
+    //   private boolean timer;
 
     /**
      * Controller constructor.
@@ -86,7 +87,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             System.out.println("Errore caricamento");
         }
         playerTimeout = new TimerThread(this, PLAYER_TIMEOUT);
-      //  timer = false;
+        //  timer = false;
         //List for effect
         effectToRead = new LinkedList<>();
         currentEffect = 0;
@@ -120,20 +121,26 @@ public class Controller implements ControllerVisitor, TimerCallback {
             ControllerEndTurn event = new ControllerEndTurn();
             event.setIdGame(index);
             visit(event);
-        } else {
-            ControllerSelectInitialWindowPatternCard packet = new ControllerSelectInitialWindowPatternCard();
-            packet.setPlayerId(index);
-            packet.setSelectedIndex(0);
-            visit(packet);
         }
     }
 
     /**
-     * Used wehen one player
+     * Used when one player
      * made relogin
      */
     public void playerUp(int index) {
         updaterView.updateInfoReLogin(index);
+        if (started) {
+            String[] names= new String[gameBoard.getPlayer().length];
+            for (int i = 0; i < gameBoard.getPlayer().length; i++) names[i]=gameBoard.getPlayer(i).getNickname();
+            StartGame packet = new StartGame(names);
+            packet.setPlayerId(index);
+            sendEventToView(packet);
+        } else {
+            EventViewFromController packet = new SelectInitialWindowPatternCard();
+            packet.setPlayerId(index);
+            sendEventToView(packet);
+        }
     }
 
 
@@ -142,10 +149,11 @@ public class Controller implements ControllerVisitor, TimerCallback {
      */
     public void sendInitCommand() {
         updaterView.updateInfoStart();
+        //TODO forse questo mi permette di avviare il tutto correttamente
         for (int i = 0; i < playerNumber; i++) {
             //gameBoard.notifyAllCards(i);
+
         }
-        //after the notify to all player show the info
         for (int j = 0; j < playerNumber; j++) {
             ShowAllCards waitSetUp = new ShowAllCards();
             waitSetUp.setPlayerId(j);
@@ -203,6 +211,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             turnPacket.setPlayerId(gameBoard.getIndexCurrentPlayer());
             sendEventToView(turnPacket);
             //TODO fermare il timout per l'init e iniziare quello per il round.
+            playerTimeout.shutdown();
             playerTimeout.startThread(gameBoard.getIndexCurrentPlayer());
         } catch (WindowPatternAlreadyTakenException ex) {
             //window already chosen
@@ -294,7 +303,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             endGame();
             ex.printStackTrace();
         } catch (CurrentPlayerException ex) {
-            System.out.println("Il timer ha provato a fare il furbetto, se rimuovi questa eccezione non sono sicuro che tutto vada ok");
+            System.out.println("Questa eccezione va catturata e non reinviata");
             ex.printStackTrace();
         } catch (Exception ex) {
             showErrorMessage(ex, event.getPlayerId(), false);

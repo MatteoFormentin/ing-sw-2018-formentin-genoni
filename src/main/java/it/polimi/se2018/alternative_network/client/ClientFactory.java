@@ -40,10 +40,9 @@ public class ClientFactory {
     }
 
     /**
-     * instruction for make it work
-     *
-     * @param args
-     */
+     * instruction for rmi
+     * @param
+     *//*
     public static void main(String[] args) {
         instance = getClientFactory();
         String IP_SERVER = "localhost";
@@ -79,9 +78,9 @@ public class ClientFactory {
                 ex.printStackTrace();
             }
         }
-        System.out.println("quando vuoi digita 0 per scollegarti dal");
+        System.out.println("quando vuoi digita 10 per scollegarti dal");
         if (input.parseInt(1) == 0) abstractClient.shutDownClient2();
-    }
+    }*/
 
     private void loadDefault() {
         try {
@@ -100,7 +99,7 @@ public class ClientFactory {
     }
 
     public AbstractClient2 createClient(UIInterface view, String serverIpAddress, int port, int rmi0socket1) {
-        if (serverIpAddress.equals("") || serverIpAddress.equals("0")) serverIpAddress = ipServer;
+        if (serverIpAddress==null || serverIpAddress.equals("0")|| serverIpAddress.equals("")) serverIpAddress = ipServer;
         if (rmi0socket1 == 0) {
             if (port == 0) abstractClient = new RMIClient2StartAndInput(serverIpAddress, rmiPort, view);
             else abstractClient = new RMIClient2StartAndInput(serverIpAddress, port, view);
@@ -110,5 +109,4 @@ public class ClientFactory {
         }
         return abstractClient;
     }
-
 }

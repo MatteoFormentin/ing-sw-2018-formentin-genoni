@@ -25,19 +25,14 @@ import java.rmi.server.UnicastRemoteObject;
  * 5 chiamare disconnect per disconnettersi legalmente(richiedendo il kick all'interface)
  * 6 utilizzare shutDownClient2 per disconnettersi brutalmente
  */
-public class RMIClient2StartAndInput implements AbstractClient2 {
+public class RMIClient2StartAndInput extends AbstractClient2 {
 
-    private UIInterface view;
-    private String serverIpAddress;
-    private int serverPort;
     private RMIServerInterfaceSeenByClient serverRMI;
     private RMIClientInterface client; //instance of the stud
     private RMIClientInterface remoteRef; //remoteRef of the stud in the server used for login
 
     public RMIClient2StartAndInput(String serverIpAddress, int serverPort, UIInterface view) {
-        this.serverIpAddress = serverIpAddress;
-        this.serverPort = serverPort;
-        this.view = view;
+        super(serverIpAddress,serverPort,view);
     }
 
     @Override
@@ -45,7 +40,7 @@ public class RMIClient2StartAndInput implements AbstractClient2 {
         try {
             // Chiedo al Registry ( in esecuzione su localhost alla porta di default ) di localizzare 'Server' e restituirmi il suo Stub
             // Naming.lookup(//host:port/name) host è l'ip, port è la porta  name è il nome del servizio offerto dall'host
-            serverRMI = (RMIServerInterfaceSeenByClient) Naming.lookup("//" + serverIpAddress + ":" + serverPort + "/MyServer");
+            serverRMI = (RMIServerInterfaceSeenByClient) Naming.lookup("//" + ip_host + ":" + port + "/MyServer");
             //ping
             serverRMI.sayHelloToGatherer();
             //create the stud
@@ -99,6 +94,6 @@ public class RMIClient2StartAndInput implements AbstractClient2 {
 
     @Override
     public void sendEventToUIInterface2(EventView event) {
-        view.showMessage(event);
+        view.showEventView(event);
     }
 }

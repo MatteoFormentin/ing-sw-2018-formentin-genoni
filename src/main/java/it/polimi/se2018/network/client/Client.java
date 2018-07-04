@@ -247,7 +247,7 @@ public class Client implements ClientController {
     @Override
     public void sendEventToView(EventView eventView) {
         try {
-            view.showMessage(eventView);
+            view.showEventView(eventView);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

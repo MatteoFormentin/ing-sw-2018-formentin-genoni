@@ -34,15 +34,12 @@ public class SagradaLauncher {
             System.out.print("Digita 0 per avviare il server, uno per il client: ");
             if(cliParser.parseInt(1)==0) Server2.main(args);
             else{
-                System.out.print("Digita 0 PER IL TEST , 1 per la cli, 2 per il gui");
-                switch (cliParser.parseInt(2)) {
+                System.out.print("Digita 0 per la cli, 1 per il gui");
+                switch (cliParser.parseInt(1)) {
                     case 0:
                         CliController.main(args);
                         break;
                     case 1:
-                        CliController.main(args);
-                        break;
-                    case 2:
                         GuiInstance.main(args);
                         break;
                 }

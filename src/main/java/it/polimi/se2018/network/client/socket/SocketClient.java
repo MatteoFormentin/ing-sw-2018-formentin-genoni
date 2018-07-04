@@ -29,7 +29,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  *
  * @author DavideMammarella
  */
-public class SocketClient extends AbstractClient implements Runnable, AbstractClient2 {
+public class SocketClient extends AbstractClient implements Runnable{
 
     // comunicazione con il socket
     private Socket clientConnection;
@@ -223,39 +223,6 @@ public class SocketClient extends AbstractClient implements Runnable, AbstractCl
             getView().errPrintln(ex.getMessage());
             // eccezione che dice che c'è stato un errore durante la chiusura di input/output/client
             ex.printStackTrace();
-        }
-    }
-
-    /*************************************************newInterface**********************************/
-    /*************************************************newInterface**********************************/
-    /*************************************************newInterface**********************************/
-    @Override
-    public void sendEventToUIInterface2(EventView event) {
-        getView().showMessage(event);
-    }
-
-    @Override
-    public void shutDownClient2() {
-        closeConnection();
-    }
-
-    @Override
-    public void sendEventToController2(EventController eventController) throws ConnectionProblemException {
-
-    }
-
-    @Override
-    public void login2(String nickname) throws ConnectionProblemException, PlayerAlreadyLoggedException, RoomIsFullException {
-        login(nickname);
-    }
-
-    @Override
-    public void connectToServer2() throws ConnectionProblemException {
-        try {
-            connectToServer();
-        } catch (Exception ex) {
-            getView().errPrintln(ex.getMessage());
-            throw new ConnectionProblemException("Socket Cannot Start");
         }
     }
 }

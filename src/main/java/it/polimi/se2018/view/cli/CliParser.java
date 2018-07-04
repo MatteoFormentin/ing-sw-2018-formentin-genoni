@@ -101,12 +101,12 @@ public class CliParser {
         return parsed;
     }
 
-    public int parsePort(int lowBound, int upperBound,int alreadyTaken){
+    public int parsePort(int lowBound, int upperBound, int alreadyTaken) {
         boolean flag = false;
         int parsed;
         do {
             parsed = parseInt();
-            if (!(parsed < lowBound || parsed > upperBound || parsed==alreadyTaken)) {
+            if (!(parsed < lowBound || parsed > upperBound || parsed == alreadyTaken)) {
                 flag = true;
             } else {
                 cliMessage.showInputNotValid();

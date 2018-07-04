@@ -1,7 +1,6 @@
 package it.polimi.se2018.model;
 
-import it.polimi.se2018.alternative_network.newserver.ServerController2;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
+import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.model.card.ToolCard;
@@ -11,10 +10,10 @@ import it.polimi.se2018.network.server.ServerController;
 public class UpdaterView implements UpdateRequestedByServer {
     private GameBoard gameBoard;
     private ServerController server;
-    private ServerController2 server2;
+    private GameInterface server2;
 
 
-    public UpdaterView(GameBoard gameBoard, ServerController server, ServerController2 server2) {
+    public UpdaterView(GameBoard gameBoard, ServerController server, GameInterface server2) {
         this.gameBoard = gameBoard;
         this.server = server;
         this.server2 = server2;
@@ -286,24 +285,18 @@ public class UpdaterView implements UpdateRequestedByServer {
         for (int i = 0; i < gameBoard.getPlayer().length; i++) currentPoints(i);
     }
 
-    private void nameConfirmedInInTheGame(int indexPlayerToNotify,String[] playersName){
-        StartGame packet = new StartGame(playersName);
+    private void updateName(){
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateName(i);
+    }
+
+    private void updateName(int indexPlayerToNotify){
+        String[] names= new String[gameBoard.getPlayer().length];
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) names[i]=gameBoard.getPlayer(i).getNickname();
+        UpdateNamePlayers packet = new UpdateNamePlayers(names);
         packet.setPlayerId(indexPlayerToNotify);
         if (server == null) server2.sendEventToView(packet);
         else server.sendEventToView(packet);
     }
-
-    private void updateName(int indexPlayerToNotify,String[] playersName){
-        StartGame packet = new StartGame(playersName);
-        packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
-    }
-
-    public void nameConfirmedInInTheGame(String[] playersName){
-        for (int i = 0; i < gameBoard.getPlayer().length; i++)  nameConfirmedInInTheGame(i,playersName);
-    }
-
     @Override
     public void updatePlayerConnected(int index, String name) {
         for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerConnected(i,index,name);
@@ -316,7 +309,10 @@ public class UpdaterView implements UpdateRequestedByServer {
 
     @Override
     public void updateInfoReLogin(int indexPlayerToNotify) {
-        updateInfoStart();//TODO togliere la updateinitial window patternCard
+        System.out.println();
+        System.out.println("Relogin");
+        System.out.println();
+        updateInfoStart(indexPlayerToNotify);
         for (int i = 0; i < gameBoard.getPlayer().length; i++) updateWindow(indexPlayerToNotify,i);
         for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerHand(indexPlayerToNotify,i);
         updateDicePool(indexPlayerToNotify);
@@ -326,16 +322,15 @@ public class UpdaterView implements UpdateRequestedByServer {
 
     @Override
     public void updateInfoStart() {
-        String[] names= new String[gameBoard.getPlayer().length];
-        for(int i=0;i<names.length;i++)  names[i]= gameBoard.getPlayer(i).getNickname();
-        for(int i=0;i<names.length;i++)  updateName(i,names);
-        updateSinglePrivateObject();
-        updateInitialWindowPatternCard();
-        updateAllToolCard();
-        updateAllPublicObject();
-        updateInitDimRound();
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateInfoStart(i);
     }
 
-
-
+    public void updateInfoStart(int indexPlayerToNotify) {
+        updateName(indexPlayerToNotify);
+        updateSinglePrivateObject(indexPlayerToNotify);
+        updateInitialWindowPatternCard(indexPlayerToNotify);
+        updateAllToolCard(indexPlayerToNotify);
+        updateAllPublicObject(indexPlayerToNotify);
+        updateInitDimRound(indexPlayerToNotify);
+    }
 }
