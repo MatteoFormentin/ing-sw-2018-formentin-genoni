@@ -105,6 +105,8 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         eventView.acceptGeneric(this);
     }
 
+
+
     public void errPrintln(String error) {
         System.err.println();
         System.err.println(error);
@@ -132,7 +134,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     //TODO aggiustare il nuovo metodo
     @Override
-    public void restartConnectionBecauseLost() {
+    public void restartConnectionDuringGame(String cause) {
         System.out.println("La connessione è caduta.\n0 per riconnetterti, 1 per uscire");
         client2.shutDownClient2();
         CliParser input = new CliParser();
@@ -179,13 +181,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(StartGame event) {
-        playerId = event.getPlayerId();
-        playersName = event.getPlayersName();
-        windowPatternCardOfEachPlayer = new WindowPatternCard[playersName.length];
-        objectivePrivateCardOfEachPlayers = new ObjectivePrivateCard[playersName.length];
-        handOfEachPlayer = new DiceStack[playersName.length];
-        favorTokenOfEachPlayer = new int[playersName.length];
-        pointsOfEachPlayer = new int[playersName.length];
         cliMessage.showGameStarted(playersName);
     }
 
@@ -405,6 +400,18 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
+    public void visit(UpdateNamePlayers event) {
+        //TODO controllare che i nomi vengano aggiornati
+        playerId = event.getPlayerId();
+        playersName = event.getPlayerNames();
+        windowPatternCardOfEachPlayer = new WindowPatternCard[playersName.length];
+        objectivePrivateCardOfEachPlayers = new ObjectivePrivateCard[playersName.length];
+        handOfEachPlayer = new DiceStack[playersName.length];
+        favorTokenOfEachPlayer = new int[playersName.length];
+        pointsOfEachPlayer = new int[playersName.length];
+    }
+
+    @Override
     public void visit(UpdateInitDimRound event) {
         roundTrack = event.getRoundTrack();
     }
@@ -437,7 +444,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(UpdateSinglePlayerToken event) {
         favorTokenOfEachPlayer[event.getIndexInGame()] = event.getFavorToken();
-        // pointsOfEachPlayer[event.getIndexInGame()] = event.getPoints();
     }
 
     @Override
@@ -453,7 +459,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateSingleWindow event) {
-
         windowPatternCardOfEachPlayer[event.getIndexPlayer()] = event.getWindowPatternCard();
     }
 

@@ -40,10 +40,9 @@ public class ClientFactory {
     }
 
     /**
-     * instruction for make it work
-     *
-     * @param args
-     */
+     * instruction for rmi
+     * @param
+     *//*
     public static void main(String[] args) {
         instance = getClientFactory();
         String IP_SERVER = "localhost";
@@ -79,9 +78,9 @@ public class ClientFactory {
                 ex.printStackTrace();
             }
         }
-        System.out.println("quando vuoi digita 0 per scollegarti dal");
+        System.out.println("quando vuoi digita 10 per scollegarti dal");
         if (input.parseInt(1) == 0) abstractClient.shutDownClient2();
-    }
+    }*/
 
     private void loadDefault() {
         try {
@@ -111,4 +110,47 @@ public class ClientFactory {
         return abstractClient;
     }
 
+    /**
+     * instruction of socket
+     * @param args
+     */
+
+    public static void main(String[] args) {
+        instance = getClientFactory();
+        String IP_SERVER = "localhost";
+        int RMI_PORT = 31415;
+        try {
+            Properties configProperties = new Properties();
+            String connectionConfig = "src/resources/configurations/connection_configuration.properties";
+            FileInputStream inputConnection = new FileInputStream(connectionConfig);
+            configProperties.load(inputConnection);
+            RMI_PORT = Integer.parseInt(configProperties.getProperty("RMI_PORT"));
+            IP_SERVER = configProperties.getProperty("SERVER_ADDRESS");
+        } catch (IOException e) {
+            System.out.println("La configurazione non può essere impostata da file, verrà caricata quella di default");
+        }
+        AbstractClient2 abstractClient = instance.createClient(new CliController(), IP_SERVER, RMI_PORT, 1);
+
+        CliParser input = new CliParser();
+        System.out.println("Digita 0 per collegarti al server, 1 per uscire: ");
+        if (input.parseInt(1) == 0) {
+            try {
+                abstractClient.connectToServer2();
+                try {
+                    System.out.println("inserici il nome: ");
+                    abstractClient.login2(input.parseNickname());
+                } catch (PlayerAlreadyLoggedException ex) {
+                    System.out.println("il nome da te inserito è già stato scelto");
+                } catch (RoomIsFullException ex) {
+                    System.out.println("la stanza è piena");
+                } catch (ConnectionProblemException ex) {
+                    System.out.println("Caduta la linea");
+                }
+            } catch (ConnectionProblemException ex) {
+                ex.printStackTrace();
+            }
+        }
+        System.out.println("quando vuoi digita 10 per scollegarti dal");
+        if (input.parseInt(1) == 0) abstractClient.shutDownClient2();
+    }
 }

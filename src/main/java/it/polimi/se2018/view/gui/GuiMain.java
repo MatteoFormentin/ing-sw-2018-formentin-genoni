@@ -47,7 +47,7 @@ public class GuiMain extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         setPrimaryStage(primaryStage);
-
+        game = createGuiGame();
         //creating a Group object
         VBox menu = new VBox();
         Scene startMenu = new Scene(menu, 779, 261);
@@ -67,6 +67,7 @@ public class GuiMain extends Application {
             home = new Image(new FileInputStream("src/resources/Immagine.jpg"), 779, 261, true, true);
         }catch(IOException ex){
             System.out.println("can't load");
+            ex.printStackTrace();
         }
         BackgroundImage backgroundImage = new BackgroundImage(home,
                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
@@ -77,10 +78,8 @@ public class GuiMain extends Application {
         // add button to the menu
         Button playButton = new Button("Fai il Login e inizia una partita");
         playButton.setOnAction(e -> {
-
             boolean login = new Login(primaryStage).display();
             if (login) {
-                game = createGuiGame();
                 game.setGameWait(primaryStage);
             }
         });

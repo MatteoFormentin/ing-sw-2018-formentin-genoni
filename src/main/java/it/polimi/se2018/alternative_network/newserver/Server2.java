@@ -134,7 +134,7 @@ public class Server2 {
      * Choice of the port, creation of the Registry, start of the RmiServer and SocketServer
      */
     public void start() {
-        newGameRoom = new GameRoom(maxPlayer, timerGame, 0);
+        newGameRoom = new GameRoom(this,maxPlayer, timerGame, 0);
         boolean rmiStarted = false;
         boolean socketStarted = false;
         boolean startThisServer = true;
@@ -159,7 +159,7 @@ public class Server2 {
                 socketServer.startServer();
                 socketStarted = true;
             } catch (ServerStartException ex) {
-                System.out.println("Errore nell'avvio del server RMI. 0 per riprovare, 1 per annullare");
+                System.out.println("Errore nell'avvio del server Socket. 0 per riprovare, 1 per annullare");
                 if (input.parseInt(1) == 1) startThisServer = false;
             }
         }
@@ -202,7 +202,7 @@ public class Server2 {
                 if (newGameRoom == null) {//crea una nuova stanza
                     System.out.println("Creo una nuova stanza");
                     //TODO controllare se qualche partita è finita e mettarla nella lista Conclusa
-                    newGameRoom = new GameRoom(maxPlayer, timerGame, gameRoomRunning.size());
+                    newGameRoom = new GameRoom(this,maxPlayer, timerGame, gameRoomRunning.size());
                 }
                 remotePlayer.setPlayerRunning(true);
                 try {

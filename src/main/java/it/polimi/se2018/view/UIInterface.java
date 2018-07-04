@@ -6,6 +6,6 @@ public interface UIInterface {
 
     //From model and controller
     public void showMessage(EventView eventView);
-    public void restartConnectionBecauseLost();
+    public void restartConnectionDuringGame(String cause);
     public void errPrintln(String error);
 }

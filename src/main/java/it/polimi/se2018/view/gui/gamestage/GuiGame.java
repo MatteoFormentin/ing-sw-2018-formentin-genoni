@@ -285,20 +285,24 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     }
 
     @Override
-    public void restartConnectionBecauseLost() {
+    public void restartConnectionDuringGame(String cause) {
         System.out.println("Connessione persa");
         Platform.runLater(() -> {
+            if (utilStage.isShowing()) new AlertMessage(utilStage).displayMessage(cause);
+            else new AlertMessage(gameStage).displayMessage(cause);
             gameStage.close();
         });
     }
 
     @Override
     public void visit(EventViewFromController event) {
+        System.out.println("Arrivato il pacchetto: "+event+"\n");
         event.acceptControllerEvent(this);
     }
 
     @Override
     public void visit(EventViewFromModel event) {
+        System.out.println("Arrivato il pacchetto: "+event+"\n");
         event.acceptModelEvent(this);
     }
 
@@ -342,64 +346,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     @Override
     public void visit(StartGame event) {
         System.err.println("viene accettato :" + event.toString());
-        int numberOfPlayer = event.getPlayersName().length;
-        playerId = event.getPlayerId();
-        boxAllDataPlayer = new HBox[numberOfPlayer];
-        infoPlayer = new VBox[numberOfPlayer];
-        playersName = new Text[numberOfPlayer];
-        vBoxesHandOfEachPlayer = new VBox[numberOfPlayer];
-        imageViewsHandPlayer = new ImageView[numberOfPlayer][5];
-        favorTokenOfEachPlayer = new Text[numberOfPlayer];
-        pointsOfEachPlayer = new Text[numberOfPlayer];
-        objectivePrivateCardOfEachPlayers = new ImageView[numberOfPlayer];
-        //init array for window
-        boxWindowPlayer = new VBox[numberOfPlayer];
-        nameWindowPlayer = new Text[numberOfPlayer];
-        difficultyWindowPlayer = new Text[numberOfPlayer];
-        gridCellPlayer = new GridPane[numberOfPlayer];
-        imageViewsCellPlayer = new ImageView[numberOfPlayer][][];
 
-        //setUpAllThe boxes
-        for (int i = 0; i < numberOfPlayer; i++) {
-            //box window
-            nameWindowPlayer[i] = new Text("Non scelta");
-            difficultyWindowPlayer[i] = new Text("0");
-            gridCellPlayer[i] = new GridPane();
-            boxWindowPlayer[i] = new VBox(nameWindowPlayer[i], gridCellPlayer[i], difficultyWindowPlayer[i]);
-
-            //box info
-            playersName[i] = new Text(event.getPlayersName(i));
-            favorTokenOfEachPlayer[i] = new Text("Favor : 0");
-            pointsOfEachPlayer[i] = new Text("Points : 0");
-            infoPlayer[i] = new VBox(playersName[i], favorTokenOfEachPlayer[i], pointsOfEachPlayer[i], boxWindowPlayer[i]);
-
-            //box player
-            vBoxesHandOfEachPlayer[i] = new VBox();
-            boxAllDataPlayer[i] = new HBox(infoPlayer[i], vBoxesHandOfEachPlayer[i]);
-
-            //select place
-            if (i != playerId) {
-                opposingPlayers.getChildren().add(boxAllDataPlayer[i]);
-                boxAllDataPlayer[i].setAlignment(Pos.TOP_LEFT);
-            } else {
-                boxAllDataPlayer[i].setAlignment(Pos.CENTER);
-                centerBox.getChildren().add(boxAllDataPlayer[i]);
-            }
-            for (int j = 0; j < imageViewsHandPlayer[i].length; j++) {
-                imageViewsHandPlayer[i][j] = createNewImageViewForDicePool();
-                imageViewsHandPlayer[i][j].setImage(null);
-                vBoxesHandOfEachPlayer[i].getChildren().add(imageViewsHandPlayer[i][j]);
-            }
-        }
-        flowPaneDicePool = new FlowPane(5, 5);
-        flowPaneDicePool.setOrientation(Orientation.HORIZONTAL);
-        flowPaneDicePool.setAlignment(Pos.BOTTOM_CENTER);
-        dicePool = new LinkedList<>();
-        for (int i = 0; i < (2 * numberOfPlayer + 1); i++) {
-            dicePool.add(createNewImageViewForDicePool());
-            flowPaneDicePool.getChildren().add(dicePool.get(i));
-        }
-        centerBox.getChildren().add(flowPaneDicePool);
     }
 
    /* @Override
@@ -698,6 +645,67 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     //************************************* UPLOAD FROM MODEL ************************************************************************************
     //************************************* UPLOAD FROM MODEL ************************************************************************************
 
+    @Override
+    public void visit(UpdateNamePlayers event) {
+        int numberOfPlayer = event.getPlayerNames().length;
+        playerId = event.getPlayerId();
+        boxAllDataPlayer = new HBox[numberOfPlayer];
+        infoPlayer = new VBox[numberOfPlayer];
+        playersName = new Text[numberOfPlayer];
+        vBoxesHandOfEachPlayer = new VBox[numberOfPlayer];
+        imageViewsHandPlayer = new ImageView[numberOfPlayer][5];
+        favorTokenOfEachPlayer = new Text[numberOfPlayer];
+        pointsOfEachPlayer = new Text[numberOfPlayer];
+        objectivePrivateCardOfEachPlayers = new ImageView[numberOfPlayer];
+        //init array for window
+        boxWindowPlayer = new VBox[numberOfPlayer];
+        nameWindowPlayer = new Text[numberOfPlayer];
+        difficultyWindowPlayer = new Text[numberOfPlayer];
+        gridCellPlayer = new GridPane[numberOfPlayer];
+        imageViewsCellPlayer = new ImageView[numberOfPlayer][][];
+
+        //setUpAllThe boxes
+        for (int i = 0; i < numberOfPlayer; i++) {
+            //box window
+            nameWindowPlayer[i] = new Text("Non scelta");
+            difficultyWindowPlayer[i] = new Text("0");
+            gridCellPlayer[i] = new GridPane();
+            boxWindowPlayer[i] = new VBox(nameWindowPlayer[i], gridCellPlayer[i], difficultyWindowPlayer[i]);
+
+            //box info
+            playersName[i] = new Text(event.getNames(i));
+            favorTokenOfEachPlayer[i] = new Text("Favor : 0");
+            pointsOfEachPlayer[i] = new Text("Points : 0");
+            infoPlayer[i] = new VBox(playersName[i], favorTokenOfEachPlayer[i], pointsOfEachPlayer[i], boxWindowPlayer[i]);
+
+            //box player
+            vBoxesHandOfEachPlayer[i] = new VBox();
+            boxAllDataPlayer[i] = new HBox(infoPlayer[i], vBoxesHandOfEachPlayer[i]);
+
+            //select place
+            if (i != playerId) {
+                opposingPlayers.getChildren().add(boxAllDataPlayer[i]);
+                boxAllDataPlayer[i].setAlignment(Pos.TOP_LEFT);
+            } else {
+                boxAllDataPlayer[i].setAlignment(Pos.CENTER);
+                centerBox.getChildren().add(boxAllDataPlayer[i]);
+            }
+            for (int j = 0; j < imageViewsHandPlayer[i].length; j++) {
+                imageViewsHandPlayer[i][j] = createNewImageViewForDicePool();
+                imageViewsHandPlayer[i][j].setImage(null);
+                vBoxesHandOfEachPlayer[i].getChildren().add(imageViewsHandPlayer[i][j]);
+            }
+        }
+        flowPaneDicePool = new FlowPane(5, 5);
+        flowPaneDicePool.setOrientation(Orientation.HORIZONTAL);
+        flowPaneDicePool.setAlignment(Pos.BOTTOM_CENTER);
+        dicePool = new LinkedList<>();
+        for (int i = 0; i < (2 * numberOfPlayer + 1); i++) {
+            dicePool.add(createNewImageViewForDicePool());
+            flowPaneDicePool.getChildren().add(dicePool.get(i));
+        }
+        centerBox.getChildren().add(flowPaneDicePool);
+    }
     /**
      * Method of the Visitor Pattern, event received from the model for setUp a private Object
      *
@@ -814,6 +822,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             );
         });
     }
+
 
     /**
      * Method of the Visitor Pattern, event received from the model for setUp the Round Track.

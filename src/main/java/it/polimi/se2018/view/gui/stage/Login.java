@@ -1,5 +1,8 @@
 package it.polimi.se2018.view.gui.stage;
 
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
+import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -62,16 +65,25 @@ public class Login {
         form.addRow(2, back, connect);
         //components action
         connect.setOnAction(e -> {
-            try {
-                if (getGuiInstance().getClient().login(nameInput.getText())) {
+            if (getGuiInstance().getFactoryInstance() == null) {
+                try {
+                    if (getGuiInstance().getClient().login(nameInput.getText())) {
+                        answer = true;
+                        stage.close();
+                    } else new AlertMessage(stage).displayMessage("Non puoi eseguire il login");
+
+                } catch (NullPointerException ex) {
+                    new AlertMessage(stage).displayMessage("Non sei collegato al server. \n" +
+                            "Imposta prima il server a cui ti vuoi collegare");
+                }
+            } else {
+                try {
+                    getGuiInstance().getClient2().login2(nameInput.getText());
                     answer = true;
                     stage.close();
-                } else {
-                    new AlertMessage(stage).displayMessage("Non puoi eseguire il login");
+                } catch (ConnectionProblemException | PlayerAlreadyLoggedException | RoomIsFullException ex) {
+                    new AlertMessage(stage).displayMessage(ex.getMessage());
                 }
-            } catch (NullPointerException ex) {
-                new AlertMessage(stage).displayMessage("Non sei collegato al server. \n" +
-                        "Imposta prima il server a cui ti vuoi collegare");
             }
         });
         back.setOnAction(e -> stage.close());
