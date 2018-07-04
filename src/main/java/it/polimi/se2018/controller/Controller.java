@@ -126,7 +126,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
     /**
      * Used when one player
-     * made relogin
+     * made reLogin
      */
     public void playerUp(int index) {
         updaterView.updateInfoReLogin(index);

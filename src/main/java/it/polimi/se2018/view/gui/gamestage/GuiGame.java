@@ -10,9 +10,12 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.view.UIInterface;
+import it.polimi.se2018.view.gui.classes_database.PlayerOnline;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
+import it.polimi.se2018.view.gui.stage.ConfirmBox;
 import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -36,8 +39,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
-import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
-import static it.polimi.se2018.view.gui.GuiMain.closeProgram;
+import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 /**
  * Class for handle the Gui gameboard
@@ -176,11 +178,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     private void closeGame(Stage stage) {
         stage.setOnCloseRequest(e -> {
-            closeProgram();/*
             Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
             if (result) {
-
-            } else e.consume();*/
+                getGuiInstance().disconnect();
+                if(utilStage.isShowing()) utilStage.close();
+                else gameStage.close();
+            } else e.consume();
         });
     }
 
@@ -249,11 +252,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         gameStage.setResizable(false);
     }
 
-    private void sendEventAndSetTheId(EventController packet) {
-        packet.setPlayerId(playerId);
-        getGuiInstance().sendEventToNetwork(packet);
-    }
-
     private ImageView createNewImageViewForCard() {
         ImageView imageView = new ImageView();
         imageView.setFitHeight(150);
@@ -281,7 +279,14 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void showEventView(EventView eventView) {
+        System.out.println("Arrivato il pacchetto: "+eventView);
         Platform.runLater(() -> eventView.acceptGeneric(this));
+    }
+
+    @Override
+    public void sendEventToNetwork(EventController eventController) {
+        eventController.setPlayerId(playerId);
+        getGuiInstance().sendEventToNetwork(eventController);
     }
 
     @Override
@@ -308,13 +313,24 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
 
     @Override
-    public void visit(UpdateDisconnection event) {
+    public void visit(UpdateDisconnectionDuringSetup event) {
+        ObservableList<PlayerOnline> allPlayerOnline= waitGame.getPlayerOnlineSingleton();
+        for (PlayerOnline x:allPlayerOnline) {
+            if(x.getNickname().equals(event.getName())){
+                System.out.println("trovato il player disconnesso");
+                waitGame.deletePlayerKicked(event.getName());
+            }
+        }
+    }
+
+    @Override
+    public void visit(UpdateDisconnectionDuringGame event) {
         //TODO implementare
     }
 
     @Override
     public void visit(UpdatePlayerConnection event) {
-        //TODO implementare
+        if(waitGame.getStage().isShowing()) waitGame.addPlayerOnline(event.getIndex(),event.getName(),true);
     }
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
@@ -369,15 +385,15 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         playersName[playerId].setFill(Color.RED);
         gameButton[0].setOnAction(e -> {
             ControllerMoveDrawAndPlaceDie packet = new ControllerMoveDrawAndPlaceDie();
-            sendEventAndSetTheId(packet);
+            sendEventToNetwork(packet);
         });
         gameButton[1].setOnAction(e -> {
             ControllerMoveUseToolCard packet = new ControllerMoveUseToolCard();
-            sendEventAndSetTheId(packet);
+            sendEventToNetwork(packet);
         });
         gameButton[2].setOnAction(e -> {
             ControllerEndTurn packet = new ControllerEndTurn();
-            sendEventAndSetTheId(packet);
+            sendEventToNetwork(packet);
         });
         new AlertMessage(gameStage).displayMessage("è il tuo turno!");
 
@@ -436,7 +452,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             info[0] = indexRow;
             info[1] = indexColumn;
             packet.setInfo(info);
-            sendEventAndSetTheId(packet);
+            sendEventToNetwork(packet);
         });
     }
 
@@ -484,7 +500,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
                 info[0] = indexRound;
                 info[1] = comboBoxSingleRound[indexRound].getSelectionModel().getSelectedIndex();
                 packet.setInfo(info);
-                sendEventAndSetTheId(packet);
+                sendEventToNetwork(packet);
             });
         }
     }
@@ -501,7 +517,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         int[] info = new int[1];
         info[0] = param;
         packet.setInfo(info);
-        sendEventAndSetTheId(packet);
+        sendEventToNetwork(packet);
     }
 
     @Override
@@ -512,7 +528,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         int[] info = new int[1];
         info[0] = param;
         packet.setInfo(info);
-        sendEventAndSetTheId(packet);
+        sendEventToNetwork(packet);
     }
     /**
      * Method of the Visitor Pattern, event received from the controller
@@ -536,7 +552,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
                     int[] info = new int[1];
                     info[0] = index;
                     packet.setInfo(info);
-                    sendEventAndSetTheId(packet);
+            sendEventToNetwork(packet);
                 }
         );
     }
@@ -616,7 +632,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             disableWindowChoice();
             ControllerSelectInitialWindowPatternCard packet = new ControllerSelectInitialWindowPatternCard();
             packet.setSelectedIndex(index);
-            sendEventAndSetTheId(packet);
+            sendEventToNetwork(packet);
         });
     }
 
@@ -796,7 +812,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
                 if (cardShow.displayCard(toolCard[i], true)) {
                     ControllerSelectToolCard packet = new ControllerSelectToolCard();
                     packet.setIndexToolCard(i);
-                    sendEventAndSetTheId(packet);
+                    sendEventToNetwork(packet);
                 }
             });
         });

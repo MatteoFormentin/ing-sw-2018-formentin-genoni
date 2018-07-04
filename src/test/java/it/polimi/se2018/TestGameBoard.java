@@ -1,5 +1,6 @@
 package it.polimi.se2018;
 
+import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
@@ -29,9 +30,6 @@ public class TestGameBoard {
     public void initGameBoard() {
         names = new String[3];
         gameRoom = new GameInterface() {
-            @Override
-            public void disconnectFromGameRoom(int indexRoom) {
-            }
 
             @Override
             public void sendEventToGameRoom(EventController eventController) {
@@ -39,6 +37,11 @@ public class TestGameBoard {
 
             @Override
             public void sendEventToView(EventView eventView) {
+            }
+
+            @Override
+            public void reLogin(RemotePlayer2 oldRemotePlayer, RemotePlayer2 newRemotePlayer) {
+
             }
         };
     }

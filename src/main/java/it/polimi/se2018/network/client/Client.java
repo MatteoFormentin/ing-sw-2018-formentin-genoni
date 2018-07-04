@@ -9,15 +9,15 @@ import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.network.client.socket.SocketClient;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
-import it.polimi.se2018.view.gui.GuiInstance;
+import it.polimi.se2018.view.gui.ControllerGUI;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
-import static it.polimi.se2018.view.gui.GuiInstance.createGuiInstance;
-import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
+import static it.polimi.se2018.view.gui.ControllerGUI.createGuiInstance;
+import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 
 /**
@@ -124,7 +124,7 @@ public class Client implements ClientController {
             if (args[0].equals("gui")) {
                 createGuiInstance(client);
                 view = getGuiInstance();
-                ((GuiInstance) view).startGui();
+                ((ControllerGUI) view).startGui();
             }
         } catch (Exception e) {
             e.printStackTrace();
