@@ -226,7 +226,7 @@ public class Server implements ServerController, TimerCallback {
         UpdateRequestedByServer updater = game.getUpdater();
         game.startController();
         //TODO updatePlayerConnected(int index,String name,boolean duringGame)
-        // per comunicare che è stato effettuato il relogin del giocatore
+        // per comunicare che è stato effettuato il reLogin del giocatore
         // TODO   public void updateDisconnected(int index,String name,boolean duringGame);
         // per comunicare che la disconnessione di un giocatore
 

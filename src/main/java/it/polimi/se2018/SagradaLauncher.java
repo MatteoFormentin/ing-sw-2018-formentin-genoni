@@ -5,7 +5,7 @@ import it.polimi.se2018.network.client.Client;
 import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.view.cli.CliController;
 import it.polimi.se2018.view.cli.CliParser;
-import it.polimi.se2018.view.gui.GuiInstance;
+import it.polimi.se2018.view.gui.ControllerGUI;
 
 
 public class SagradaLauncher {
@@ -40,7 +40,7 @@ public class SagradaLauncher {
                         CliController.main(args);
                         break;
                     case 1:
-                        GuiInstance.main(args);
+                        ControllerGUI.main(args);
                         break;
                 }
             }

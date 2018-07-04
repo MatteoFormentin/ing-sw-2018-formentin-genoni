@@ -13,7 +13,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
+import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 /**
  * class that handle the Login to the server

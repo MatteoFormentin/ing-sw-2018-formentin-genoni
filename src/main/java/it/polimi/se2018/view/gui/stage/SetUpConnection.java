@@ -14,7 +14,7 @@ import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
-import static it.polimi.se2018.view.gui.GuiInstance.getGuiInstance;
+import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 
 /**
