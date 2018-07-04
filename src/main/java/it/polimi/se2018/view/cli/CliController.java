@@ -159,11 +159,13 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public synchronized void visit(EventViewFromModel event) {
-        Runnable exec = () -> {
+        /*Runnable exec = () -> {
             Thread.currentThread().setName("Visitor Handler");
             event.acceptModelEvent(this);
         };
-        new Thread(exec).start();
+        new Thread(exec).start();*/
+
+        event.acceptModelEvent(this);
     }
 
 /*
@@ -586,11 +588,13 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                         cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[i]);
                         cliMessage.println();
                     }
+                    cliParser.readSplash();
                     turn();
                     break;
 
                 //Show dice pool
                 case 7:
+                    cliMessage.eraseScreen();
                     cliMessage.showDiceStack(dicePool);
                     cliParser.readSplash();
                     turn();

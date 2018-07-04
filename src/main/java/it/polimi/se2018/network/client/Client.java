@@ -247,11 +247,9 @@ public class Client implements ClientController {
     @Override
     public void sendEventToView(EventView eventView) {
         try {
-            view.errPrintln("!!!!!!!!!!!!!!!!!!!!!!OK!!!!!!!!!!!!!!!!!!!!!!");
-
             view.showMessage(eventView);
         } catch (Exception ex) {
-            System.out.println("!!!PLAYER?");
+            ex.printStackTrace();
         }
         //TODO:gestisci update
     }
