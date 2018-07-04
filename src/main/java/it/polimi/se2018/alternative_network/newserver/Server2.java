@@ -44,7 +44,7 @@ public class Server2 implements PrincipalServer {
     private TimerThread playerTimeout;
 
     private Server2() {
-        subServer= new LinkedList<>();
+        subServer = new LinkedList<>();
         gameOpen = new AtomicBoolean();
         gameRoomRunning = new LinkedList<>();
         counterAnon = 0;
@@ -119,7 +119,7 @@ public class Server2 implements PrincipalServer {
      * Choice of the port, creation of the Registry, start of the RmiServer and SocketServer
      */
     public void start() {
-        newGameRoom = new GameRoom(this,0);
+        newGameRoom = new GameRoom(this, 0);
         boolean rmiStarted = false;
         boolean socketStarted = false;
         boolean startThisServer = true;
@@ -200,7 +200,7 @@ public class Server2 implements PrincipalServer {
             else playerConnected = newGameRoom.searchIfMatchName(remotePlayer.getNickname());
             if (playerConnected == null) {
                 while (idGame < gameRoomRunning.size() && playerConnected == null) {
-                    if(gameRoomRunning.get(idGame).isClosed()) continue;
+                    if (gameRoomRunning.get(idGame).isClosed()) continue;
                     playerConnected = gameRoomRunning.get(idGame).searchIfMatchName(remotePlayer.getNickname());
                     idGame++;
                 }
@@ -213,7 +213,7 @@ public class Server2 implements PrincipalServer {
                 if (newGameRoom == null) {//crea una nuova stanza
                     System.out.println("Creo una nuova stanza");
                     //TODO controllare se qualche partita è finita e mettarla nella lista Conclusa
-                    newGameRoom = new GameRoom(this,gameRoomRunning.size());
+                    newGameRoom = new GameRoom(this, gameRoomRunning.size());
                 }
                 remotePlayer.setPlayerRunning(true);
                 try {

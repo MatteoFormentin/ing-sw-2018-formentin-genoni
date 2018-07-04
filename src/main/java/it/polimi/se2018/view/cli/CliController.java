@@ -63,6 +63,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     private Thread currentTask;
     private AtomicBoolean isInputActive;
+    private Object MUTEX;
 
 
     public CliController(ClientController clientController) {
@@ -70,6 +71,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         cliMessage = new CliMessage();
         isInputActive = new AtomicBoolean(true);
         cliParser = new CliParserNonBlocking(isInputActive);
+        MUTEX = new Object();
         cliMessage.splashScreen();
         cliParser.readSplash();
         initConnection();
@@ -80,6 +82,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         cliMessage = new CliMessage();
         isInputActive = new AtomicBoolean(true);
         cliParser = new CliParserNonBlocking(isInputActive);
+        MUTEX = new Object();
     }
 
     public static void main(String[] args) {
@@ -143,24 +146,28 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
-    public synchronized void visit(EventViewFromController event) {
-        Runnable exec = () -> {
-            Thread.currentThread().setName("Visitor Handler: " + event.getClass().getSimpleName());
-            event.acceptControllerEvent(this);
-        };
-        currentTask = new Thread(exec);
-        currentTask.start();
+    public void visit(EventViewFromController event) {
+        synchronized (MUTEX) {
+            Runnable exec = () -> {
+                Thread.currentThread().setName("Visitor Handler: " + event.getClass().getSimpleName());
+                event.acceptControllerEvent(this);
+            };
+            currentTask = new Thread(exec);
+            currentTask.start();
+        }
     }
 
     @Override
-    public synchronized void visit(EventViewFromModel event) {
-        /*Runnable exec = () -> {
+    public void visit(EventViewFromModel event) {
+        synchronized (MUTEX) {
+            event.acceptModelEvent(this);
+        }
+         /*Runnable exec = () -> {
             Thread.currentThread().setName("Visitor Handler");
             event.acceptModelEvent(this);
         };
         new Thread(exec).start();*/
 
-        event.acceptModelEvent(this);
     }
 
     //*******************************************Visit for Controller event*******************************************************************************
