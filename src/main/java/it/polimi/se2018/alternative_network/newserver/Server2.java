@@ -187,9 +187,12 @@ public class Server2 implements PrincipalServer {
             checkOnline(true);
             checkOnline(false);
             //se è un anonimo lo aggiungo come Anon
-            if (remotePlayer.getNickname() == null) {
-                remotePlayer.setNickname("Anon" + new Random().nextInt((new Random().nextInt(1)) % 2)
-                        + counterAnon + new Random().nextInt((new Random().nextInt(1)) % 2));
+            if (remotePlayer.getNickname() == null || remotePlayer.getNickname().equals("")) {
+                int i=0;
+                int j=0;
+                while(i<=0) i = new Random().nextInt((new Random().nextInt(5)));
+                while(j<=0) j = new Random().nextInt((new Random().nextInt(5)));
+                remotePlayer.setNickname("Anon" + i + counterAnon + j);
                 counterAnon++;
             }
             //controlla tutte le gameRoom

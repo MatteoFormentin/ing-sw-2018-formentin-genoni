@@ -21,7 +21,7 @@ import java.rmi.server.UnicastRemoteObject;
  * <p>
  * 2 connettere l'abstract client al server, se rifiutato ricreare un nuovo abstract client
  * 3 effettuare il login
- * (4 utilizzare sendEventToController per inviare informazioni dall'UI interface al server)
+ * (4 utilizzare sendEventToNetwork per inviare informazioni dall'UI interface al server)
  * 5 chiamare disconnect per disconnettersi legalmente(richiedendo il kick all'interface)
  * 6 utilizzare shutDownClient2 per disconnettersi brutalmente
  */
@@ -83,8 +83,9 @@ public class RMIClient2StartAndInput extends AbstractClient2 {
     public void shutDownClient2() {
         try {
             serverRMI.sayHelloToGatherer();
+            view.errPrintln("Il server non ti ha cacciato, ti vuole ancora bene <3");
             UnicastRemoteObject.unexportObject(client, true);
-            view.errPrintln("Non sei stato disconnesso dal server");
+            view.errPrintln("Hai Effettuato una disconnessione brutale perchè non ti piace il gioco");
         } catch (NoSuchObjectException ex) {
             view.errPrintln("shutDownClient: ->the Object Remote doesn't exist");
         } catch (RemoteException ex) {
