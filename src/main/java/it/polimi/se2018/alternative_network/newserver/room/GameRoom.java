@@ -8,7 +8,8 @@ import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerExcep
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnection;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnectionDuringGame;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnectionDuringSetup;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdatePlayerConnection;
 import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.utils.TimerCallback;
@@ -59,7 +60,7 @@ public class GameRoom implements TimerCallback,GameInterface {
             }
 
             private void updateDisconnected(int indexToNotify, int index, String name) {
-                UpdateDisconnection packet = new UpdateDisconnection(index, name);
+                UpdateDisconnectionDuringSetup packet = new UpdateDisconnectionDuringSetup(index, name);
                 packet.setPlayerId(indexToNotify);
                 sendEventToView(packet);
             }

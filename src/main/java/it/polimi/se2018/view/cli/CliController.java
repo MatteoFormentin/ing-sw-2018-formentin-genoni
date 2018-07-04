@@ -102,7 +102,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         System.err.println();
     }
 
-    public void sendEventToController(EventController packet) {
+    public void sendEventToNetwork(EventController packet) {
         if (factory == null) client.sendEventToController(packet);
         else {
             try {
@@ -218,7 +218,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                 EventController packet = new ControllerSelectInitialWindowPatternCard();
                 packet.setPlayerId(playerId);
                 ((ControllerSelectInitialWindowPatternCard) packet).setSelectedIndex(selection);
-                sendEventToController(packet);
+                sendEventToNetwork(packet);
             }
         }
     }
@@ -318,7 +318,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         int[] infoPacket = new int[1];
         infoPacket[0] = info;
         packet.setInfo(infoPacket);
-        sendEventToController(packet);
+        sendEventToNetwork(packet);
     }
 
     public void sendInfo(int info1, int info2) {
@@ -328,7 +328,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         infoPacket[0] = info1;
         infoPacket[1] = info2;
         packet.setInfo(infoPacket);
-        sendEventToController(packet);
+        sendEventToNetwork(packet);
     }
 
     @Override
@@ -345,7 +345,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             ControllerSelectToolCard packet = new ControllerSelectToolCard();
             packet.setPlayerId(playerId);
             packet.setIndexToolCard(indexTooLCard);
-            sendEventToController(packet);
+            sendEventToNetwork(packet);
         }
     }
 
@@ -532,20 +532,20 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                 case 1:
                     EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
                     packetInsertDice.setPlayerId(playerId);
-                    sendEventToController(packetInsertDice);
+                    sendEventToNetwork(packetInsertDice);
                     break;
                 //Use tool card
                 case 2:
                     EventController packetUseTool = new ControllerMoveUseToolCard();
                     packetUseTool.setPlayerId(playerId);
-                    sendEventToController(packetUseTool);
+                    sendEventToNetwork(packetUseTool);
                     break;
 
                 //End turn
                 case 3:
                     EventController packetEnd = new ControllerEndTurn();
                     packetEnd.setPlayerId(playerId);
-                    sendEventToController(packetEnd);
+                    sendEventToNetwork(packetEnd);
                     break;
 
                 //Show private object
@@ -620,13 +620,18 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
-    public void visit(UpdateDisconnection event) {
-        cliMessage.showMessage("Il giocatore " + event.getName() + " si è disconnesso dalla partita.");
+    public void visit(UpdateDisconnectionDuringSetup event) {
+        cliMessage.showMessage("Il giocatore " + event.getName() + " ha lasciato la stanza");
+    }
+
+    @Override
+    public void visit(UpdateDisconnectionDuringGame event) {
+        cliMessage.showMessage("Il giocatore " + event.getName() + " ha abbandonato la partita");
     }
 
     @Override
     public void visit(UpdatePlayerConnection event) {
-        cliMessage.showGreenMessage("Il giocatore " + event.getName() + " si è riconnesso dalla partita.");
+        cliMessage.showGreenMessage("Il giocatore " + event.getName() + " si è connesso dalla partita.");
     }
 
     @Override

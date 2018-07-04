@@ -13,6 +13,14 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup
 public interface ViewModelVisitor {
     //**********************************************from Model**************************************
 
+    //event before the setup
+    void visit(UpdateDisconnectionDuringSetup event);
+
+    //info other player connection state during game
+    void visit(UpdateDisconnectionDuringGame event);
+
+    void visit(UpdatePlayerConnection event);
+
     //setup update
     void visit(UpdateNamePlayers event);
 
@@ -48,10 +56,6 @@ public interface ViewModelVisitor {
     //endgame
     void visit(UpdateStatPodium event);
 
-    //info other player
-    void visit(UpdateDisconnection event);
-
-    void visit(UpdatePlayerConnection event);
 
 
 }

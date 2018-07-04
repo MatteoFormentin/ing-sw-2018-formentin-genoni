@@ -267,7 +267,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     }
 
     private void updateDisconnected(int indexPlayerToNotify, int index, String name) {
-        UpdateDisconnection packet =new UpdateDisconnection(index,name);
+        UpdateDisconnectionDuringGame packet =new UpdateDisconnectionDuringGame(index,name);
         packet.setPlayerId(indexPlayerToNotify);
         if (server == null) server2.sendEventToView(packet);
         else server.sendEventToView(packet);
