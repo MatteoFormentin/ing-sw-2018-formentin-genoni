@@ -12,10 +12,16 @@ import java.util.Scanner;
 public class CliParser {
     private CliMessage cliMessage;
 
+    /**
+     * CliParser constructor
+     */
     public CliParser() {
         cliMessage = new CliMessage();
     }
 
+    /**
+     * Read one random character
+     */
     public int readSplash() {
         Scanner in = new Scanner(System.in);
         cliMessage.showWaitInput();
@@ -23,6 +29,9 @@ public class CliParser {
         return 0;
     }
 
+    /**
+     * Read one int
+     */
     public int parseInt() {
         int parsed = 0;
         boolean flag = false;
@@ -39,6 +48,11 @@ public class CliParser {
         return parsed;
     }
 
+    /**
+     * Read one positive int
+     *
+     * @param upperBound max int to parse
+     */
     public int parsePositiveInt(int upperBound) {
         int parsed = 0;
         boolean flag = false;
@@ -55,6 +69,11 @@ public class CliParser {
         return parsed;
     }
 
+    /**
+     * Read one int
+     *
+     * @param upperBound max int to parse
+     */
     public int parseInt(int upperBound) {
         boolean flag = false;
         int parsed;
@@ -69,6 +88,9 @@ public class CliParser {
         return parsed;
     }
 
+    /**
+     * Read nickname
+     */
     public String parseNickname() {
         String parsed = "";
         boolean flag = false;
@@ -85,6 +107,9 @@ public class CliParser {
         return parsed;
     }
 
+    /**
+     * Read IP
+     */
     public String parseIp() {
         String parsed = "";
         boolean flag = false;
@@ -101,6 +126,9 @@ public class CliParser {
         return parsed;
     }
 
+    /**
+     * Read port
+     */
     public int parsePort(int lowBound, int upperBound, int alreadyTaken) {
         boolean flag = false;
         int parsed;

@@ -65,7 +65,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private AtomicBoolean isInputActive;
     private Object MUTEX;
 
-
+    /**
+     * CliController constructor
+     */
     public CliController(ClientController clientController) {
         client = clientController;
         cliMessage = new CliMessage();
@@ -78,6 +80,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         login();
     }
 
+    /**
+     * CliController constructor
+     */
     public CliController() {
         cliMessage = new CliMessage();
         isInputActive = new AtomicBoolean(true);
@@ -85,6 +90,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         MUTEX = new Object();
     }
 
+    /**
+     * Entry point for client
+     */
     public static void main(String[] args) {
         instance = new CliController();
         factory = ClientFactory.getClientFactory();
@@ -93,18 +101,26 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         instance.login();
     }
 
+    /**
+     * Start cli
+     */
     public void start() {
         cliMessage.splashScreen();
         cliParser.readSplash();
     }
 
-
+    /**
+     * Print one error message
+     */
     public void errPrintln(String error) {
         System.err.println();
         System.err.println(error);
         System.err.println();
     }
 
+    /**
+     * Send one event to server
+     */
     public void sendEventToNetwork(EventController packet) {
         if (factory == null) client.sendEventToController(packet);
         else {
@@ -124,6 +140,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         }
     }
 
+    /**
+     * Restart connection when down
+     */
     //TODO aggiustare il nuovo metodo
     @Override
     public void restartConnection(String cause) {
@@ -136,11 +155,193 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         }
     }
 
+    /**
+     * Connect with server
+     */
+    private void initConnection() {
+        boolean flag = false;
+        do {
+            int socketRmi;
+            int port = 0;
+            String ip;
+            cliMessage.showIpRequest();
+            ip = cliParser.parseIp();
+
+            cliMessage.showSocketRmi();
+            socketRmi = cliParser.parseInt(1);
+            if (flag) {
+                cliMessage.showPortRequest();
+                port = cliParser.parseInt(1);
+            }
+            try {
+                if (factory == null) client.startClient(ip, socketRmi);
+                else {
+                    client2 = factory.createClient(this, ip, port, socketRmi);
+                    client2.connectToServer2();
+                }
+                flag = true;
+                cliMessage.showConnectionSuccessful();
+                cliMessage.println();
+            } catch (ConnectionProblemException ex) {
+                cliMessage.showMessage(ex.getMessage());
+            } catch (NoPortRightException ex) {
+                cliMessage.showMessage(ex.getMessage());
+            } catch (Exception ex) {
+                cliMessage.showMessage(ex.getMessage());
+            }
+        } while (!flag);
+    }
+
+    /**
+     * Login to server
+     */
+    private void login() {
+        boolean flag = false;
+        String name = "";
+        while (!flag) {
+            cliMessage.showInsertNickname();
+            name = cliParser.parseNickname();
+            if (factory == null) {
+                if (client.login(name)) {
+                    flag = true;
+                } else {
+                    cliMessage.showNicknameExists();
+                }
+            } else {
+                try {
+                    client2.login2(name);
+                    flag = true;
+                } catch (ConnectionProblemException ex) {
+                    cliMessage.showMessage(ex.getMessage());
+                } catch (PlayerAlreadyLoggedException ex) {
+                    cliMessage.showNicknameExists();
+                } catch (RoomIsFullException ex) {
+                    cliMessage.showNicknameExists();
+                }
+            }
+
+        }
+        cliMessage.showWelcomeNickname(name);
+    }
+
+    /**
+     * Show turn menu
+     */
+    private void turn() {
+        cliMessage.eraseScreen();
+        cliMessage.showYourTurnScreen();
+        cliMessage.showRoundAndTurn(currentRound, currentTurn);
+        cliMessage.showWindowPatternCard(getMyWindowPatternCard());
+        cliMessage.showHandPlayer(getMyHand());
+        cliMessage.showMainMenu();
+        int option = cliParser.parsePositiveInt(8);
+
+        if (option != -1) {
+            switch (option) {
+                //insert a dice in the window
+                case 1:
+                    EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
+                    packetInsertDice.setPlayerId(playerId);
+                    sendEventToNetwork(packetInsertDice);
+                    break;
+                //Use tool card
+                case 2:
+                    EventController packetUseTool = new ControllerMoveUseToolCard();
+                    packetUseTool.setPlayerId(playerId);
+                    sendEventToNetwork(packetUseTool);
+                    break;
+
+                //End turn
+                case 3:
+                    EventController packetEnd = new ControllerEndTurn();
+                    packetEnd.setPlayerId(playerId);
+                    sendEventToNetwork(packetEnd);
+                    break;
+
+                //Show private object
+                case 4:
+                    cliMessage.eraseScreen();
+                    cliMessage.showObjectivePrivateCardMessage();
+                    cliMessage.showObjectivePrivateCard(objectivePrivateCardOfEachPlayers[playerId]);
+                    cliParser.readSplash();
+                    turn();
+                    break;
+
+                //Show public object
+                case 5:
+                    cliMessage.eraseScreen();
+                    cliMessage.showObjectivePublicCardMessage();
+                    for (ObjectivePublicCard card : objectivePublicCards) {
+                        cliMessage.showObjectivePublicCard(card);
+                        cliMessage.println();
+                    }
+                    cliParser.readSplash();
+                    turn();
+                    break;
+
+                //Show opponents window pattern card
+                case 6:
+                    cliMessage.eraseScreen();
+                    cliMessage.showOpponentWindowMessage();
+                    for (int i = 0; i < windowPatternCardOfEachPlayer.length; i++) {
+                        if (i == playerId) continue;
+                        cliMessage.showOpponentWindow(playersName[i]);
+                        cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[i]);
+                        cliMessage.println();
+                    }
+                    cliParser.readSplash();
+                    turn();
+                    break;
+
+                //Show dice pool
+                case 7:
+                    cliMessage.eraseScreen();
+                    cliMessage.showDiceStack(dicePool);
+                    cliParser.readSplash();
+                    turn();
+                    break;
+
+                //Show round track
+                case 8:
+                    cliMessage.eraseScreen();
+                    cliMessage.showRoundTrack(roundTrack);
+                    cliParser.readSplash();
+                    turn();
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Get my window from player window array
+     */
+    private WindowPatternCard getMyWindowPatternCard() {
+        return windowPatternCardOfEachPlayer[playerId];
+    }
+
+    /**
+     * Get my hand from player hand array
+     */
+    private DiceStack getMyHand() {
+        return handOfEachPlayer[playerId];
+    }
+
+    /**
+     * Get my name from player name array
+     */
+    private String getMyName() {
+        return playersName[playerId];
+    }
+
+
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
     //*****************************************Visitor Pattern************************************************************************
 
+    /**
+     * Handler for visitor pattern
+     */
     public void showEventView(EventView eventView) {
         eventView.acceptGeneric(this);
     }
@@ -456,169 +657,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(UpdateSingleWindow event) {
         windowPatternCardOfEachPlayer[event.getIndexPlayer()] = event.getWindowPatternCard();
-    }
-
-
-    //OPERATION HANDLER
-    private void initConnection() {
-        boolean flag = false;
-        do {
-            int socketRmi;
-            int port = 0;
-            String ip;
-            cliMessage.showIpRequest();
-            ip = cliParser.parseIp();
-
-            cliMessage.showSocketRmi();
-            socketRmi = cliParser.parseInt(1);
-            if (flag) {
-                cliMessage.showPortRequest();
-                port = cliParser.parseInt(1);
-            }
-            try {
-                if (factory == null) client.startClient(ip, socketRmi);
-                else {
-                    client2 = factory.createClient(this, ip, port, socketRmi);
-                    client2.connectToServer2();
-                }
-                flag = true;
-                cliMessage.showConnectionSuccessful();
-                cliMessage.println();
-            } catch (ConnectionProblemException ex) {
-                cliMessage.showMessage(ex.getMessage());
-            } catch (NoPortRightException ex) {
-                cliMessage.showMessage(ex.getMessage());
-            } catch (Exception ex) {
-                cliMessage.showMessage(ex.getMessage());
-            }
-        } while (!flag);
-    }
-
-
-    private void login() {
-        boolean flag = false;
-        String name = "";
-        while (!flag) {
-            cliMessage.showInsertNickname();
-            name = cliParser.parseNickname();
-            if (factory == null) {
-                if (client.login(name)) {
-                    flag = true;
-                } else {
-                    cliMessage.showNicknameExists();
-                }
-            } else {
-                try {
-                    client2.login2(name);
-                    flag = true;
-                } catch (ConnectionProblemException ex) {
-                    cliMessage.showMessage(ex.getMessage());
-                } catch (PlayerAlreadyLoggedException ex) {
-                    cliMessage.showNicknameExists();
-                } catch (RoomIsFullException ex) {
-                    cliMessage.showNicknameExists();
-                }
-            }
-
-        }
-        cliMessage.showWelcomeNickname(name);
-    }
-
-    private void turn() {
-        cliMessage.eraseScreen();
-        cliMessage.showYourTurnScreen();
-        cliMessage.showRoundAndTurn(currentRound, currentTurn);
-        cliMessage.showWindowPatternCard(getMyWindowPatternCard());
-        cliMessage.showHandPlayer(getMyHand());
-        cliMessage.showMainMenu();
-        int option = cliParser.parsePositiveInt(8);
-
-        if (option != -1) {
-            switch (option) {
-                //insert a dice in the window
-                case 1:
-                    EventController packetInsertDice = new ControllerMoveDrawAndPlaceDie();
-                    packetInsertDice.setPlayerId(playerId);
-                    sendEventToNetwork(packetInsertDice);
-                    break;
-                //Use tool card
-                case 2:
-                    EventController packetUseTool = new ControllerMoveUseToolCard();
-                    packetUseTool.setPlayerId(playerId);
-                    sendEventToNetwork(packetUseTool);
-                    break;
-
-                //End turn
-                case 3:
-                    EventController packetEnd = new ControllerEndTurn();
-                    packetEnd.setPlayerId(playerId);
-                    sendEventToNetwork(packetEnd);
-                    break;
-
-                //Show private object
-                case 4:
-                    cliMessage.eraseScreen();
-                    cliMessage.showObjectivePrivateCardMessage();
-                    cliMessage.showObjectivePrivateCard(objectivePrivateCardOfEachPlayers[playerId]);
-                    cliParser.readSplash();
-                    turn();
-                    break;
-
-                //Show public object
-                case 5:
-                    cliMessage.eraseScreen();
-                    cliMessage.showObjectivePublicCardMessage();
-                    for (ObjectivePublicCard card : objectivePublicCards) {
-                        cliMessage.showObjectivePublicCard(card);
-                        cliMessage.println();
-                    }
-                    cliParser.readSplash();
-                    turn();
-                    break;
-
-                //Show opponents window pattern card
-                case 6:
-                    cliMessage.eraseScreen();
-                    cliMessage.showOpponentWindowMessage();
-                    for (int i = 0; i < windowPatternCardOfEachPlayer.length; i++) {
-                        if (i == playerId) continue;
-                        cliMessage.showOpponentWindow(playersName[i]);
-                        cliMessage.showWindowPatternCard(windowPatternCardOfEachPlayer[i]);
-                        cliMessage.println();
-                    }
-                    cliParser.readSplash();
-                    turn();
-                    break;
-
-                //Show dice pool
-                case 7:
-                    cliMessage.eraseScreen();
-                    cliMessage.showDiceStack(dicePool);
-                    cliParser.readSplash();
-                    turn();
-                    break;
-
-                //Show round track
-                case 8:
-                    cliMessage.eraseScreen();
-                    cliMessage.showRoundTrack(roundTrack);
-                    cliParser.readSplash();
-                    turn();
-                    break;
-            }
-        }
-    }
-
-    private WindowPatternCard getMyWindowPatternCard() {
-        return windowPatternCardOfEachPlayer[playerId];
-    }
-
-    private DiceStack getMyHand() {
-        return handOfEachPlayer[playerId];
-    }
-
-    private String getMyName() {
-        return playersName[playerId];
     }
 
     @Override

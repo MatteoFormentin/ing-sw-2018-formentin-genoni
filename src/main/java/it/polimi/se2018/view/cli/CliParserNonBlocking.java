@@ -5,17 +5,28 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Contains non blocking CLI input parser function.
+ *
+ * @author Matteo Formentin
+ */
 public class CliParserNonBlocking extends CliParser {
 
     private AtomicBoolean isInputActive;
 
     private CliMessage cliMessage;
 
+    /**
+     * CliParser constructor
+     */
     public CliParserNonBlocking(AtomicBoolean isInputActive) {
         cliMessage = new CliMessage();
         this.isInputActive = isInputActive;
     }
 
+    /**
+     * Read one random character
+     */
     public int readSplash() {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         flush(bufferedReader);
@@ -33,6 +44,9 @@ public class CliParserNonBlocking extends CliParser {
         return -1;
     }
 
+    /**
+     * Read one int
+     */
     public int parseInt() {
         int parsed = 0;
         boolean flag = false;
@@ -56,6 +70,11 @@ public class CliParserNonBlocking extends CliParser {
         return parsed;
     }
 
+    /**
+     * Read one int
+     *
+     * @param upperBound max int to parse
+     */
     public int parseInt(int upperBound) {
         boolean flag = false;
         int parsed;
@@ -73,6 +92,11 @@ public class CliParserNonBlocking extends CliParser {
         return parsed;
     }
 
+    /**
+     * Read one positive int
+     *
+     * @param upperBound max int to parse
+     */
     public int parsePositiveInt(int upperBound) {
         boolean flag = false;
         int parsed;
@@ -90,6 +114,9 @@ public class CliParserNonBlocking extends CliParser {
         return parsed;
     }
 
+    /**
+     * Flush input
+     */
     private void flush(BufferedReader bufferedReader) {
         try {
             if (bufferedReader.ready()) {
