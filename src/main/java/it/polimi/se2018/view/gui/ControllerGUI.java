@@ -66,7 +66,7 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
     }
 
     public static void main(String[] args) {
-        createGuiInstance();
+        getSingletonGUIInstance();
         instance.setFactoryInstance(ClientFactory.getClientFactory());
         instance.startGui();
     }

@@ -8,4 +8,5 @@ public interface PrincipalServer {
     void sendEventToGameRoom(EventController eventController);
 
     void login(RemotePlayer2 remotePlayer)throws PlayerAlreadyLoggedException, RoomIsFullException;
+
 }

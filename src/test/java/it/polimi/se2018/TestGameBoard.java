@@ -43,6 +43,11 @@ public class TestGameBoard {
             public void reLogin(RemotePlayer2 oldRemotePlayer, RemotePlayer2 newRemotePlayer) {
 
             }
+
+            @Override
+            public void disconnectFromGameRoom(RemotePlayer2 oldRemotePlayer) {
+
+            }
         };
     }
 

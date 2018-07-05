@@ -58,6 +58,7 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
 
     @Override
     public void sendEventToController(EventController event) {
+
         mainServer.sendEventToGameRoom(event);
     }
 

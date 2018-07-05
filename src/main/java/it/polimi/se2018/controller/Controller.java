@@ -43,7 +43,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private boolean restoreAble;
     //Server in cui si setterà la partita
     private ServerController server;
-    private GameRoom server2;
+    private GameRoom gameRoom;
 
 
     //Lista di effetti da eseguire uno alla volta e spostati nello store una volta terminati
@@ -67,7 +67,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     public Controller(ServerController server, String[] playerName, GameRoom room) {
         //set up actual game
         this.server = server;
-        this.server2 = room;
+        this.gameRoom = room;
         this.playerNumber = playerName.length;
         gameBoard = new GameBoard(playerName);
         updaterView = new UpdaterView(gameBoard, server, room);
@@ -108,12 +108,13 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
     public void endGame() {
         gameBoard.setStopGame(true);
+        playerTimeout.shutdown();
         for (int i = 0; i < playerNumber; i++) {
             EndGame endGame = new EndGame();
             endGame.setPlayerId(i);
             sendEventToView(endGame);
         }
-        playerTimeout.shutdown();
+        if(gameRoom!=null) gameRoom.endGame();
     }
 
     public void playerDown(int index) {
@@ -176,7 +177,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
     //the handler respond with this method
     private void sendEventToView(EventView event) {
-        if (server == null) server2.sendEventToView(event);
+        if (server == null) gameRoom.sendEventToView(event);
         else server.sendEventToView(event);
     }
 
