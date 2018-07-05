@@ -3,10 +3,10 @@ package it.polimi.se2018.view.gui;
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.alternative_network.client.ClientFactory;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
@@ -14,11 +14,10 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.classes_database.PlayerOnline;
-import it.polimi.se2018.view.gui.stage.AlertMessage;
+import it.polimi.se2018.view.gui.stage.Login;
 import it.polimi.se2018.view.gui.stage.WaitGame;
 
 import java.util.LinkedList;
-import java.util.stream.IntStream;
 
 import static it.polimi.se2018.view.gui.GuiMain.launchGui;
 import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
@@ -30,6 +29,8 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
  */
 public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisitor {
 
+    //TODO this class need to hold on all the stage in game
+
     //field for connect to server
     private static ControllerGUI instance;
     private static ClientController client;
@@ -37,6 +38,7 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
     private AbstractClient2 client2;
 
     //field for handle the gui
+    private Login login;
     private WaitGame waitGame;
 
 
@@ -145,12 +147,12 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
     /**
      * forward the message to the gui
      *
-     * @param eventView EventView for the gui
+     * @param eventClient EventClient for the gui
      */
     @Override
-    public void showEventView(EventView eventView) {
+    public void showEventView(EventClient eventClient) {
         //TODO cambiare qui
-        getGuiGame().showEventView(eventView);
+        getGuiGame().showEventView(eventClient);
     }
 
     /**
@@ -171,32 +173,20 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
     }
 
     @Override
+    public void restartConnection(String message) {
+
+    }
+
+    @Override
+    public void errPrintln(String message) {
+
+    }
+
+    @Override
     public void loginOk() {
 
     }
 
-    /**
-     * notify the Gui of the connection down and ask if need to be restart it
-     *
-     * @param cause the cause of the connection error
-     */
-
-    @Override
-    public void restartConnection(String cause) {
-        getGuiGame().restartConnection(cause);
-    }
-
-    /**
-     * Generic println
-     *
-     * @param error the message
-     */
-    @Override
-    public void errPrintln(String error){
-        System.err.println();
-        System.err.println(error);
-        System.err.println();
-    }
 
     //*************************************************************************************
     //*************************************************************************************
@@ -204,12 +194,12 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
     //*************************************************************************************
     //*************************************************************************************
     @Override
-    public void visit(EventViewFromController eventView) {
+    public void visit(EventClientFromController eventView) {
         eventView.acceptGeneric(this);
     }
 
     @Override
-    public void visit(EventViewFromModel eventView) {
+    public void visit(EventClientFromModel eventView) {
         eventView.acceptGeneric(this);
     }
 

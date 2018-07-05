@@ -18,7 +18,7 @@ it.polimi.se2018.exception.gameboard_exception.window_exception
 it.polimi.se2018.exception.network_exception
 it.polimi.se2018.exception.network_exception.client
 it.polimi.se2018.exception.network_exception.server
-it.polimi.se2018.list_event.event_received_by_controller
+it.polimi.se2018.list_event.event_received_by_server.event_for_game
 it.polimi.se2018.list_event.event_received_by_view
 it.polimi.se2018.list_event.event_received_by_view.event_from_controller
 it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller

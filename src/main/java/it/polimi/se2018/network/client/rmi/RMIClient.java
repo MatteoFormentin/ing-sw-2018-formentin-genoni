@@ -1,8 +1,8 @@
 package it.polimi.se2018.network.client.rmi;
 
 import it.polimi.se2018.exception.network_exception.ClientSideException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.network.server.rmi.IRMIServer;
@@ -128,11 +128,11 @@ public class RMIClient extends AbstractClient implements IRMIClient {
     /**
      * Remote method used to send to the client an update of the game.
      *
-     * @param eventView object that will use the client to unleash the update associated.
+     * @param eventClient object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView) throws RemoteException {
-        getClientController().sendEventToView(eventView);
+    public void sendEventToView(EventClient eventClient) throws RemoteException {
+        getClientController().sendEventToView(eventClient);
     }
 
     /**

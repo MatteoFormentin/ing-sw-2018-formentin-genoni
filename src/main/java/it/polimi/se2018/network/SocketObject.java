@@ -15,7 +15,7 @@ public class SocketObject implements Serializable {
     // TYPE STRING ACCEPTED
     // - Ack
     // - Nack
-    // - EventView
+    // - EventClient
     // - EventController
     //------------------------------------------------------------------------------------------------------------------
 

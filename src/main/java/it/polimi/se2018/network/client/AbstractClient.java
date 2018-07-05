@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.client;
 
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.view.UIInterface;
 
 import java.rmi.RemoteException;

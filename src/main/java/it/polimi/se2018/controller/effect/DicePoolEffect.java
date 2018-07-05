@@ -2,7 +2,7 @@ package it.polimi.se2018.controller.effect;
 
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.effect_exception.NumberInfoWrongException;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectDiceFromDraftPool;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.dice.Dice;
@@ -39,7 +39,7 @@ public class DicePoolEffect extends EffectGame {
     }
 
     @Override
-    public EventView eventViewToAsk() {
+    public EventClient eventViewToAsk() {
         if(trueDrawDieFalseRollDice) return new SelectDiceFromDraftPool();
         return null;
     }

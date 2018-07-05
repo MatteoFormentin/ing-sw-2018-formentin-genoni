@@ -3,8 +3,8 @@ package it.polimi.se2018.network.client;
 import it.polimi.se2018.exception.network_exception.NoPortRightException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.ProblemConnectionException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import it.polimi.se2018.network.client.socket.SocketClient;
 import it.polimi.se2018.view.UIInterface;
@@ -242,12 +242,12 @@ public class Client implements ClientController {
     /**
      * Remote method used to send to the client an update of the game.
      *
-     * @param eventView object that will use the client to unleash the update associated.
+     * @param eventClient object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView) {
+    public void sendEventToView(EventClient eventClient) {
         try {
-            view.showEventView(eventView);
+            view.showEventView(eventClient);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

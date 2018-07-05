@@ -3,8 +3,8 @@ package it.polimi.se2018.alternative_network.client;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.view.UIInterface;
 
 public abstract class AbstractClient2 {
@@ -20,7 +20,7 @@ public abstract class AbstractClient2 {
     }
 
     //metodi del client(senza eccezioni)
-    public abstract void sendEventToUIInterface2(EventView event);
+    public abstract void sendEventToUIInterface2(EventClient event);
 
     public abstract void shutDownClient2();
 

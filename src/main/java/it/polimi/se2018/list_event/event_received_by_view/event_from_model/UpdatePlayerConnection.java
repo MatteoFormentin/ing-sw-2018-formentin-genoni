@@ -1,12 +1,12 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
 /**
- * Extends EventView, updates all the tool cards
+ * Extends EventClient, updates all the tool cards
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdatePlayerConnection extends EventViewFromModel {
+public class UpdatePlayerConnection extends EventClientFromModel {
     private int index;
     private String name;
 

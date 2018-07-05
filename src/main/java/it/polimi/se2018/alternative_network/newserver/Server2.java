@@ -5,10 +5,9 @@ import it.polimi.se2018.alternative_network.newserver.room.GameRoom;
 import it.polimi.se2018.alternative_network.newserver.socket.SocketServer;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.utils.TimerThread;
 import it.polimi.se2018.view.cli.CliParser;
 

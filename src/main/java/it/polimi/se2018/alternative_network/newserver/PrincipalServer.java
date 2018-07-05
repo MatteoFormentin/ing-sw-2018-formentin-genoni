@@ -2,7 +2,7 @@ package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 
 public interface PrincipalServer {
     void sendEventToGameRoom(EventController eventController);

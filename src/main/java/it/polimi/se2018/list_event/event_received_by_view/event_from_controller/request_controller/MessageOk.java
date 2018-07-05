@@ -1,15 +1,15 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller;
 
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 
 /**
- * Extends EventView, tells the view that the last move was ok.
+ * Extends EventClient, tells the view that the last move was ok.
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class MessageOk extends EventViewFromController {
+public class MessageOk extends EventClientFromController {
 
     private String messageConfirm;
     private boolean showTurnMenu;

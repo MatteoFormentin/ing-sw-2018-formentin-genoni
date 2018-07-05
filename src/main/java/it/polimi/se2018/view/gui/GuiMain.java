@@ -22,7 +22,7 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.createGuiGame;
 /**
  * Main class for the Gui, where the JavaFx Application start.
  * Setup of the connection and start of the game.
- * Can't handle the EventView (that are related to the actual game)
+ * Can't handle the EventClient (that are related to the actual game)
  *
  * @author Luca Genoni
  */
@@ -75,7 +75,7 @@ public class GuiMain extends Application {
         menu.setSpacing(20);
 
         // add button to the menu
-        Button playButton = new Button("Fai il Login e inizia una partita");
+        Button playButton = new Button("Fai il EventPreGame e inizia una partita");
         playButton.setOnAction(e -> {
             boolean login = new Login(primaryStage).display();
             if (login) {

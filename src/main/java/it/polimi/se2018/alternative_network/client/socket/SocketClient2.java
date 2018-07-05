@@ -4,8 +4,8 @@ import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.network.SocketObject;
 import it.polimi.se2018.view.UIInterface;
 
@@ -53,7 +53,7 @@ public class SocketClient2 extends  AbstractClient2 {
      * @param event object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToUIInterface2(EventView event) {
+    public void sendEventToUIInterface2(EventClient event) {
         view.showEventView(event);
     }
 
@@ -91,7 +91,7 @@ public class SocketClient2 extends  AbstractClient2 {
         server.start();
         stayAlive.set(true);
         SocketObject packet = new SocketObject();
-        packet.setType("Login");
+        packet.setType("EventPreGame");
         packet.setStringField(nickname);
         server.send(packet);
         //dopo l'invio del login mi metto in attesa di pacchetti

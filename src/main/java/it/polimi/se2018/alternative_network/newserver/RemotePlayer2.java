@@ -2,8 +2,10 @@ package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Generic abstract class for send and receive messages
@@ -11,7 +13,7 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 public abstract class RemotePlayer2 {
 
     private String nickname;
-    private boolean playerRunning;
+    private AtomicBoolean playerRunning;
     private int idPlayerInGame;
     private GameInterface gameInterface;
 
@@ -20,7 +22,7 @@ public abstract class RemotePlayer2 {
      * constructor that set by default the player as running
      */
     public RemotePlayer2() {
-        playerRunning = true;
+        playerRunning.set(true);
     }
 
     /**
@@ -47,7 +49,7 @@ public abstract class RemotePlayer2 {
      * @return true
      */
     public boolean isPlayerRunning() {
-        return playerRunning;
+        return playerRunning.get();
     }
 
     /**
@@ -56,7 +58,7 @@ public abstract class RemotePlayer2 {
      * @param playerRunning false if the player can't be reached, true otherwise
      */
     public void setPlayerRunning(boolean playerRunning) {
-        this.playerRunning = playerRunning;
+        this.playerRunning.set(playerRunning);
     }
 
     /**
@@ -101,13 +103,13 @@ public abstract class RemotePlayer2 {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * this method is used when the game room needs to send some {@code EventView}
+     * this method is used when the game room needs to send some {@code EventClient}
      * to the client related to this remote player
      *
-     * @param eventView event that the client needs
+     * @param eventClient event that the client needs
      * @throws ConnectionPlayerException is thrown if the player didn't respond
      */
-    public abstract void sendEventToView(EventView eventView) throws ConnectionPlayerException;
+    public abstract void sendEventToView(EventClient eventClient) throws ConnectionPlayerException;
 
 
 
@@ -128,9 +130,7 @@ public abstract class RemotePlayer2 {
      *
      * @param eventController event requested by the client
      */
-    public void sendEventToController(EventController eventController){
-        gameInterface.sendEventToGameRoom(eventController);
-    }
+    public abstract void sendEventToController(EventController eventController);
 
 
 

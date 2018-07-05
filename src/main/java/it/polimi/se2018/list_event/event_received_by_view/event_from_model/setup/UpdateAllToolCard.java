@@ -1,16 +1,16 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup;
 
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventViewFromModel;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventClientFromModel;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.ViewModelVisitor;
 import it.polimi.se2018.model.card.ToolCard;
 
 /**
- * Extends EventView, updates all the tool cards
+ * Extends EventClient, updates all the tool cards
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateAllToolCard extends EventViewFromModel {
+public class UpdateAllToolCard extends EventClientFromModel {
 
     private ToolCard[] toolCards;
 

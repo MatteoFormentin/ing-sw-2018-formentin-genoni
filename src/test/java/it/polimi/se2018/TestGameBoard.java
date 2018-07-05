@@ -6,8 +6,8 @@ import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
 import it.polimi.se2018.exception.gameboard_exception.GameIsBlockedException;
 import it.polimi.se2018.exception.gameboard_exception.GameIsOverException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.UpdaterView;
 import org.junit.After;
@@ -36,7 +36,7 @@ public class TestGameBoard {
             }
 
             @Override
-            public void sendEventToView(EventView eventView) {
+            public void sendEventToView(EventClient eventClient) {
             }
 
             @Override

@@ -1,5 +1,7 @@
-package it.polimi.se2018.list_event.event_received_by_controller;
+package it.polimi.se2018.list_event.event_received_by_server.event_for_game;
 
+
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
 
 /**
  * Visitor Pattern for the event received by the controller.

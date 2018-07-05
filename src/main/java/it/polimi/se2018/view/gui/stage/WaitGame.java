@@ -85,7 +85,7 @@ public class WaitGame {
 
 
         //Button
-        Button login = new Button("Login");
+        Button login = new Button("EventPreGame");
         Button disconnect = new Button("Disconnect");
 
 

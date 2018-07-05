@@ -12,9 +12,10 @@ import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteExcep
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
-import it.polimi.se2018.list_event.event_received_by_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.*;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectInitialWindowPatternCard;
@@ -135,14 +136,13 @@ public class Controller implements ControllerVisitor, TimerCallback {
      */
     public void playerUp(int index) {
         updaterView.updateInfoReLogin(index);
+        String[] names= new String[gameBoard.getPlayer().length];
+        for (int i = 0; i < gameBoard.getPlayer().length; i++) names[i]=gameBoard.getPlayer(i).getNickname();
+        StartGame packet = new StartGame(names);
+        packet.setPlayerId(index);
+        sendEventToView(packet);
         if (started) {
-            String[] names= new String[gameBoard.getPlayer().length];
-            for (int i = 0; i < gameBoard.getPlayer().length; i++) names[i]=gameBoard.getPlayer(i).getNickname();
-            StartGame packet = new StartGame(names);
-            packet.setPlayerId(index);
-            sendEventToView(packet);
-        } else {
-            EventViewFromController packet = new SelectInitialWindowPatternCard();
+            EventClientFromController packet2 = new SelectInitialWindowPatternCard();
             packet.setPlayerId(index);
             sendEventToView(packet);
         }
@@ -180,7 +180,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     }
 
     //the handler respond with this method
-    private void sendEventToView(EventView event) {
+    private void sendEventToView(EventClient event) {
         if (server == null) gameRoom.sendEventToView(event);
         else server.sendEventToView(event);
     }
@@ -207,7 +207,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             started = true;
             //all the window are set
             for (int i = 0; i < playerNumber; i++) {
-                EventView packetFineInit = new InitialEnded();
+                EventClient packetFineInit = new InitialEnded();
                 packetFineInit.setPlayerId(i);
                 sendEventToView(packetFineInit);
             }
@@ -256,7 +256,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
                     newList.addLast(insertDice);
                 }
                 effectToRead = newList;
-                EventView packet = effectToRead.getFirst().eventViewToAsk();
+                EventClient packet = effectToRead.getFirst().eventViewToAsk();
                 packet.setPlayerId(event.getPlayerId());
                 sendEventToView(packet);
             }
@@ -340,7 +340,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     public void visit(ControllerSelectCellOfWindow event) {
         try {
             gameBoard.insertDice(event.getPlayerId(), event.getLine(), event.getColumn(), true);
-            EventView packet = new MessageOk("la mossa si è conclusa con successo", true);
+            EventClient packet = new MessageOk("la mossa si è conclusa con successo", true);
             packet.setPlayerId(event.getPlayerId());
             sendEventToView(packet);
         } catch (CurrentPlayerException ex) {
@@ -387,7 +387,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
                 showErrorMessage(ex, event.getPlayerId(), true);
             } catch (Exception ex) {
                 showErrorMessage(ex, event.getPlayerId(), false);
-                EventView packet = effectToRead.getFirst().eventViewToAsk();
+                EventClient packet = effectToRead.getFirst().eventViewToAsk();
                 packet.setPlayerId(event.getPlayerId());
                 sendEventToView(packet);
             }
@@ -404,12 +404,12 @@ public class Controller implements ControllerVisitor, TimerCallback {
         }
         //lettura nuovo effetto
         if (effectToRead.isEmpty()) {
-            EventView packet = new MessageOk("il flusso della mossa si è concluso con successo", true);
+            EventClient packet = new MessageOk("il flusso della mossa si è concluso con successo", true);
             packet.setPlayerId(idPlayer);
             sendEventToView(packet);
             restoreAble = false;
         } else { //there is a another effect to read
-            EventView packet = effectToRead.getFirst().eventViewToAsk();
+            EventClient packet = effectToRead.getFirst().eventViewToAsk();
             if (packet == null) accessToEffect(idPlayer, null); //effect without the need of the player to act
             else { //effect with the need of the player input
                 packet.setPlayerId(idPlayer);
@@ -430,7 +430,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private void sendWaitTurnToAllTheNonCurrent(int currentPlayerId) {
         for (int j = 0; j < playerNumber; j++) {
             if (j == currentPlayerId) continue;
-            EventView waitTurn = new WaitYourTurn(currentPlayerId);
+            EventClient waitTurn = new WaitYourTurn(currentPlayerId);
             waitTurn.setPlayerId(j);
             sendEventToView(waitTurn);
         }

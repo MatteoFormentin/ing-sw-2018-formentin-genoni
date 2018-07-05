@@ -2,7 +2,7 @@ package it.polimi.se2018.network.server.rmi;
 
 import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
 import it.polimi.se2018.exception.network_exception.ServerSideException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.client.rmi.IRMIClient;
 import it.polimi.se2018.network.server.AbstractServer;

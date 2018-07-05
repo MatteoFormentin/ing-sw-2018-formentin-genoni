@@ -3,7 +3,8 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.rmi.NoSuchObjectException;
@@ -28,9 +29,9 @@ public class RMIPlayer extends RemotePlayer2 {
     }
 
     @Override
-    public void sendEventToView(EventView eventView) throws ConnectionPlayerException {
+    public void sendEventToView(EventClient eventClient) throws ConnectionPlayerException {
         try {
-            clientRMIInterface.notifyTheClient(eventView);
+            clientRMIInterface.notifyTheClient(eventClient);
         } catch (RemoteException ex) {
             throw new ConnectionPlayerException();
         }
@@ -65,6 +66,11 @@ public class RMIPlayer extends RemotePlayer2 {
                 AnsiConsole.out.print(ansi().fg(BLUE).a(" perchè già disconnesso").reset());
             }
         }
+    }
+
+    @Override
+    public void sendEventToController(EventController eventController) {
+        getGameInterface().sendEventToGameRoom(eventController);
     }
 
 }

@@ -1,15 +1,15 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller;
 
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 
 /**
- * Extends EventView, tells the view to show an error message
+ * Extends EventClient, tells the view to show an error message
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class MessageError extends EventViewFromController {
+public class MessageError extends EventClientFromController {
     private String message;
     private boolean showMenuTurn;
     private boolean initGame;

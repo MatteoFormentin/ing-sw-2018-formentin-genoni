@@ -5,8 +5,8 @@ import it.polimi.se2018.controller.effect.InsertDice;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
 import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
@@ -30,7 +30,7 @@ public class TestEffect {
     private TestFactory factoryDice;
     private GameBoard game;
     private ServerController fakeServer;
-    private EventView eventViewTest;
+    private EventClient eventClientTest;
     private int[] monoInfo;
     private int[] doubleInfo;
 
@@ -79,8 +79,8 @@ public class TestEffect {
             }*/
 
             @Override
-            public void sendEventToView(EventView eventView) {
-                eventViewTest= eventView;
+            public void sendEventToView(EventClient eventClient) {
+                eventClientTest = eventClient;
             }
 
             @Override

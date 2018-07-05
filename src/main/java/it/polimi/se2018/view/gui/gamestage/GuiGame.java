@@ -1,21 +1,20 @@
 package it.polimi.se2018.view.gui.gamestage;
 
-import it.polimi.se2018.list_event.event_received_by_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.*;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.view.UIInterface;
-import it.polimi.se2018.view.gui.classes_database.PlayerOnline;
 import it.polimi.se2018.view.gui.stage.AlertMessage;
 import it.polimi.se2018.view.gui.stage.ConfirmBox;
 import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.application.Platform;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -278,9 +277,9 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     //*************************************************VISITOR PATTERN**********************************************************************************
 
     @Override
-    public void showEventView(EventView eventView) {
-        System.out.println("Arrivato il pacchetto: "+eventView);
-        Platform.runLater(() -> eventView.acceptGeneric(this));
+    public void showEventView(EventClient eventClient) {
+        System.out.println("Arrivato il pacchetto: "+ eventClient);
+        Platform.runLater(() -> eventClient.acceptGeneric(this));
     }
 
     @Override
@@ -305,13 +304,13 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     }
 
     @Override
-    public void visit(EventViewFromController event) {
+    public void visit(EventClientFromController event) {
         System.out.println("Arrivato il pacchetto: "+event+"\n");
         event.acceptControllerEvent(this);
     }
 
     @Override
-    public void visit(EventViewFromModel event) {
+    public void visit(EventClientFromModel event) {
         System.out.println("Arrivato il pacchetto: "+event+"\n");
         event.acceptModelEvent(this);
     }

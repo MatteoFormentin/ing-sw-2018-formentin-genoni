@@ -121,7 +121,7 @@ class CliMessage {
     }
 
     /**
-     * Show Login successful
+     * Show EventPreGame successful
      *
      * @param nickname player nickname
      */
@@ -131,7 +131,7 @@ class CliMessage {
     }
 
     /**
-     * Show Login failed
+     * Show EventPreGame failed
      */
     synchronized void showNicknameExists() {
         AnsiConsole.out.println(ansi().fg(RED).a("Esiste già un giocatore con il tuo nome. Scegline un altro."));

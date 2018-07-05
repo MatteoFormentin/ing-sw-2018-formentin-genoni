@@ -5,8 +5,8 @@ import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnectionDuringSetup;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdatePlayerConnection;
 import it.polimi.se2018.model.UpdateRequestedByServer;
@@ -19,7 +19,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GameRoom implements TimerCallback, GameInterface {
+public class GameRoom extends Thread implements TimerCallback, GameInterface {
 
     private LinkedList<RemotePlayer2> players;
     private UpdateRequestedByServer updater;
@@ -218,14 +218,14 @@ public class GameRoom implements TimerCallback, GameInterface {
     }
 
     @Override
-    public void sendEventToView(EventView eventView) {
+    public void sendEventToView(EventClient eventClient) {
         System.out.println("!!!GAMEROOM sendEventToView");
-        eventView.setIdGame(idGameBoard);
+        eventClient.setIdGame(idGameBoard);
         try {
-            //  if (players.get(eventView.getPlayerId()).isPlayerRunning())
-                players.get(eventView.getPlayerId()).sendEventToView(eventView);
+              if (players.get(eventClient.getPlayerId()).isPlayerRunning())
+                players.get(eventClient.getPlayerId()).sendEventToView(eventClient);
         } catch (ConnectionPlayerException ex) {
-            removeRemotePlayer(players.get(eventView.getPlayerId()));
+            removeRemotePlayer(players.get(eventClient.getPlayerId()));
         }
     }
 
@@ -233,4 +233,5 @@ public class GameRoom implements TimerCallback, GameInterface {
     public void disconnectFromGameRoom(RemotePlayer2 oldRemotePlayer) {
         removeRemotePlayer(oldRemotePlayer);
     }
+
 }

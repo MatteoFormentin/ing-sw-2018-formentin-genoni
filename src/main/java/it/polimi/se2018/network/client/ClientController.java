@@ -1,7 +1,7 @@
 package it.polimi.se2018.network.client;
 
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 
 import java.rmi.RemoteException;
 
@@ -48,9 +48,9 @@ public interface ClientController {
     /**
      * Method used to send to the client an update of the game.
      *
-     * @param eventView object that will use the client to unleash the update associated.
+     * @param eventClient object that will use the client to unleash the update associated.
      */
-    void sendEventToView(EventView eventView);
+    void sendEventToView(EventClient eventClient);
 
     /**
      * Remote method used to ping the client.

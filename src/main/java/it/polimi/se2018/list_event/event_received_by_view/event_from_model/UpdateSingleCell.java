@@ -4,12 +4,12 @@ import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
 /**
- * Extends EventView, updates the single dice of the cell
+ * Extends EventClient, updates the single dice of the cell
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateSingleCell extends EventViewFromModel {
+public class UpdateSingleCell extends EventClientFromModel {
     private int indexPlayer;//in other word the index of the window
     private int line;
     private int column;

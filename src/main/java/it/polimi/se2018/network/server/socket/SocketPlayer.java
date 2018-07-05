@@ -1,8 +1,8 @@
 package it.polimi.se2018.network.server.socket;
 
 import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.SocketObject;
 import it.polimi.se2018.network.server.ServerController;
@@ -103,14 +103,14 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     private void socketObjectTraducer(SocketObject socketObject) {
         String type = socketObject.getType();
 
-        if (type.equals("Login")) {
+        if (type.equals("EventPreGame")) {
             try {
                 login(socketObject.getStringField());
                 sendAck();
                 //LOGIN OK VIA SOCKET
 
             } catch (PlayerNetworkException ex) {
-                System.err.println("Can't Login using Socket Connection.");
+                System.err.println("Can't EventPreGame using Socket Connection.");
                 sendNack();
                 playerRunning = false;
             }
@@ -191,13 +191,13 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     /**
      * Method used to send to the client an update of the game.
      *
-     * @param eventView object that will use the client to unleash the update associated.
+     * @param eventClient object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView) {
+    public void sendEventToView(EventClient eventClient) {
         SocketObject packet = new SocketObject();
         packet.setType("Event");
-        packet.setObject(eventView);
+        packet.setObject(eventClient);
         sendObject(packet);
     }
 

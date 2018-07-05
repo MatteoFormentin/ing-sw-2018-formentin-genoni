@@ -16,13 +16,22 @@ import javafx.stage.StageStyle;
 import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 /**
- * class that handle the Login to the server
+ * class that handle the EventPreGame to the server
  *
  * @author Luca Genoni
  */
 public class Login {
     private boolean answer;
     private Stage stage;
+
+    /**
+     * for get the stage of the waiting
+     *
+     * @return the stage where the waiting is running
+     */
+    public Stage getStage() {
+        return stage;
+    }
 
     /**
      * Constructor
@@ -60,7 +69,7 @@ public class Login {
         form.addRow(0, ip, nameInput);
 
         //escape
-        Button connect = new Button("Login");
+        Button connect = new Button("EventPreGame");
         Button back = new Button("Back");
         form.addRow(2, back, connect);
         //components action

@@ -1,12 +1,12 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
 /**
- * Extends EventView, updates all the tool cards
+ * Extends EventClient, updates all the tool cards
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateStatPodium extends EventViewFromModel {
+public class UpdateStatPodium extends EventClientFromModel {
 
     private int[][] sortedPlayer;
     private String[] description;

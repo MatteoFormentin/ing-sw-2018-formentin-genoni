@@ -1,4 +1,7 @@
-package it.polimi.se2018.list_event.event_received_by_controller;
+package it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller;
+
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.ControllerVisitor;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 
 /**
  * Extends EventController, the controller receives the selected window's coordinates
@@ -24,6 +27,9 @@ public class ControllerSelectCellOfWindow extends EventController {
     public void setColumn(int column) {
         this.column = column;
     }
+
+
+    @Override
     public void accept(ControllerVisitor visitor) {
         visitor.visit(this);
     }

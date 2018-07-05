@@ -1,6 +1,6 @@
 package it.polimi.se2018.alternative_network.client.rmi_client;
 
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 
 /**
  * this is the class remote class
@@ -14,7 +14,7 @@ public class RemoteClientReceiver implements RMIClientInterface {
     }
 
     @Override
-    public void notifyTheClient(EventView message) {
+    public void notifyTheClient(EventClient message) {
         instanceClient.sendEventToUIInterface2(message);
     }
 

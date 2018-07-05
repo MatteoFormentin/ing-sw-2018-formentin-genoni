@@ -268,7 +268,7 @@ implements java.lang.Runnable</pre>
                                 <td class="colLast"><code><span class="memberNameLink"><a
                                         href="../../../../../../it/polimi/se2018/alternative_network/newserver/socket/SocketPlayer.html#sendEventToController-it.polimi.se2018.list_event.event_received_by_controller.EventController-">sendEventToController</a></span>(<a
                                         href="../../../../../../it/polimi/se2018/list_event/event_received_by_controller/EventController.html"
-                                        title="class in it.polimi.se2018.list_event.event_received_by_controller">EventController</a>&nbsp;eventController)</code>
+                                        title="class in it.polimi.se2018.list_event.event_received_by_server.event_for_game">EventController</a>&nbsp;eventController)</code>
                                     <div class="block">Method used to send to the server a request to unleash an
                                         event.
                                     </div>
@@ -279,7 +279,7 @@ implements java.lang.Runnable</pre>
                                 <td class="colLast"><code><span class="memberNameLink"><a
                                         href="../../../../../../it/polimi/se2018/alternative_network/newserver/socket/SocketPlayer.html#sendEventToView-it.polimi.se2018.list_event.event_received_by_view.EventView-">sendEventToView</a></span>(<a
                                         href="../../../../../../it/polimi/se2018/list_event/event_received_by_view/EventView.html"
-                                        title="class in it.polimi.se2018.list_event.event_received_by_view">EventView</a>&nbsp;eventView)</code>
+                                        title="class in it.polimi.se2018.list_event.event_received_by_view">EventView</a>&nbsp;eventClient)</code>
                                     <div class="block">Method used to send to the client an update of the game.</div>
                                 </td>
                             </tr>
@@ -432,7 +432,7 @@ implements java.lang.Runnable</pre>
                                 <h4>sendEventToController</h4>
                                 <pre>public&nbsp;void&nbsp;sendEventToController(<a
                                         href="../../../../../../it/polimi/se2018/list_event/event_received_by_controller/EventController.html"
-                                        title="class in it.polimi.se2018.list_event.event_received_by_controller">EventController</a>&nbsp;eventController)</pre>
+                                        title="class in it.polimi.se2018.list_event.event_received_by_server.event_for_game">EventController</a>&nbsp;eventController)</pre>
                                 <div class="block">Method used to send to the server a request to unleash an event.
                                 </div>
                                 <dl>
@@ -504,7 +504,7 @@ implements java.lang.Runnable</pre>
                                 <h4>sendEventToView</h4>
                                 <pre>public&nbsp;void&nbsp;sendEventToView(<a
                                         href="../../../../../../it/polimi/se2018/list_event/event_received_by_view/EventView.html"
-                                        title="class in it.polimi.se2018.list_event.event_received_by_view">EventView</a>&nbsp;eventView)</pre>
+                                        title="class in it.polimi.se2018.list_event.event_received_by_view">EventView</a>&nbsp;eventClient)</pre>
                                 <div class="block">Method used to send to the client an update of the game.</div>
                                 <dl>
                                     <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
@@ -515,7 +515,7 @@ implements java.lang.Runnable</pre>
                                                 title="class in it.polimi.se2018.alternative_network.newserver">RemotePlayer2</a></code>
                                     </dd>
                                     <dt><span class="paramLabel">Parameters:</span></dt>
-                                    <dd><code>eventView</code> - object that will use the client to unleash the update
+                                    <dd><code>eventClient</code> - object that will use the client to unleash the update
                                         associated.
                                     </dd>
                                 </dl>

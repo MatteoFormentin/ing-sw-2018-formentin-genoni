@@ -5,8 +5,8 @@ import it.polimi.se2018.alternative_network.newserver.rmi.RMIServerInterfaceSeen
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.view.UIInterface;
 
 import java.net.MalformedURLException;
@@ -94,7 +94,7 @@ public class RMIClient2StartAndInput extends AbstractClient2 {
     }
 
     @Override
-    public void sendEventToUIInterface2(EventView event) {
+    public void sendEventToUIInterface2(EventClient event) {
         view.showEventView(event);
     }
 }

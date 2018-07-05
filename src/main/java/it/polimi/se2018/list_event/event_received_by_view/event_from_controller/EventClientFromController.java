@@ -1,8 +1,7 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_controller;
 
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 
 /**
  * Abstract void class for the event read by the view in a game, implements Serializable.
@@ -11,7 +10,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class EventViewFromController extends EventView {
+public class EventClientFromController extends EventClient {
     @Override
     public void acceptGeneric(ViewVisitor viewVisitor) {viewVisitor.visit(this);}
 
@@ -19,4 +18,5 @@ public class EventViewFromController extends EventView {
     public void acceptControllerEvent(ViewControllerVisitor visitor){
         throw new UnsupportedOperationException();
     }
+
 }

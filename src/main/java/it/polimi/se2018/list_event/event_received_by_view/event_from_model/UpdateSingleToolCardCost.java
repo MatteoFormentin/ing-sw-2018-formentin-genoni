@@ -1,12 +1,12 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
 /**
- * Extends EventView, updates the cost of the tool card
+ * Extends EventClient, updates the cost of the tool card
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateSingleToolCardCost extends EventViewFromModel {
+public class UpdateSingleToolCardCost extends EventClientFromModel {
 
     private int indexToolCard;
     private int costToolCard;

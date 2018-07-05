@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public abstract class EventView implements Serializable {
+public abstract class EventClient implements Serializable {
     private int playerId;
     private int idGame;
 

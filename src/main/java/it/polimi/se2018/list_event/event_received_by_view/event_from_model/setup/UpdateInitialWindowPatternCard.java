@@ -1,16 +1,16 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup;
 
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventViewFromModel;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventClientFromModel;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.ViewModelVisitor;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 
 /**
- * Extends EventView, updates the initial windows Pattern
+ * Extends EventClient, updates the initial windows Pattern
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateInitialWindowPatternCard extends EventViewFromModel {
+public class UpdateInitialWindowPatternCard extends EventClientFromModel {
     private int indexPlayer;
     private WindowPatternCard[] initialWindowPatternCard;
 

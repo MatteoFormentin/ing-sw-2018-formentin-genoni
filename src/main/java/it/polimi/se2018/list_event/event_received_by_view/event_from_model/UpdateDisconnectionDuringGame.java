@@ -1,12 +1,12 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
 /**
- * Extends EventView, updates the player disconnected during the game
+ * Extends EventClient, updates the player disconnected during the game
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateDisconnectionDuringGame extends EventViewFromModel {
+public class UpdateDisconnectionDuringGame extends EventClientFromModel {
     private int index;
     private String name;
 

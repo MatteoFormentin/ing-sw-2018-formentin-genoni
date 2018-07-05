@@ -1,7 +1,7 @@
 package it.polimi.se2018.controller.effect;
 
 import it.polimi.se2018.exception.GameException;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.model.GameBoard;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ public abstract class EffectGame implements Serializable {
 
     public abstract void doEffect(GameBoard gameBoard, int idPlayer,int[] infoMove) throws GameException;
     public abstract void undo() throws GameException;
-    public abstract EventView eventViewToAsk();
+    public abstract EventClient eventViewToAsk();
 
     GameBoard getGameBoard() {
         return gameBoard;

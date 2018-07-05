@@ -1,6 +1,6 @@
 package it.polimi.se2018.network.client.rmi;
 
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -26,9 +26,9 @@ public interface IRMIClient extends Remote {
     /**
      * Remote method used to send to the client an update of the game.
      *
-     * @param eventView object that will use the client to unleash the update associated.
+     * @param eventClient object that will use the client to unleash the update associated.
      */
-    void sendEventToView(EventView eventView) throws RemoteException;
+    void sendEventToView(EventClient eventClient) throws RemoteException;
 
     /**
      * Remote method used to ping the client.

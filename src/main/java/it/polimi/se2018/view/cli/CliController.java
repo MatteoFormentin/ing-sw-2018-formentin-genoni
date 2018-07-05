@@ -6,10 +6,11 @@ import it.polimi.se2018.exception.network_exception.NoPortRightException;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
-import it.polimi.se2018.list_event.event_received_by_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.*;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventViewFromController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
@@ -125,6 +126,11 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         System.err.println();
     }
 
+    @Override
+    public void loginOk() {
+
+    }
+
     /**
      * Send one event to server
      */
@@ -148,23 +154,8 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
-    public void loginOk() {
+    public void restartConnection(String message) {
 
-    }
-
-    /**
-     * Restart connection when down
-     */
-    //TODO aggiustare il nuovo metodo
-    @Override
-    public void restartConnection(String cause) {
-        System.out.println("La connessione è caduta.\n0 per riconnetterti, 1 per uscire");
-        client2.shutDownClient2();
-        CliParser input = new CliParser();
-        if (input.parseInt(1) == 0) {
-            initConnection();
-            login();
-        }
     }
 
     /**
@@ -205,7 +196,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     /**
-     * Login to server
+     * EventPreGame to server
      */
     private void login() {
         boolean flag = false;
@@ -354,12 +345,12 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     /**
      * Handler for visitor pattern
      */
-    public void showEventView(EventView eventView) {
-        eventView.acceptGeneric(this);
+    public void showEventView(EventClient eventClient) {
+        eventClient.acceptGeneric(this);
     }
 
     @Override
-    public void visit(EventViewFromController event) {
+    public void visit(EventClientFromController event) {
         synchronized (MUTEX) {
             Runnable exec = () -> {
                 Thread.currentThread().setName("Visitor Handler: " + event.getClass().getSimpleName());
@@ -371,7 +362,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
-    public void visit(EventViewFromModel event) {
+    public void visit(EventClientFromModel event) {
         synchronized (MUTEX) {
             event.acceptModelEvent(this);
         }

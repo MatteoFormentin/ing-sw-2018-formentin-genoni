@@ -1,6 +1,6 @@
 package it.polimi.se2018.alternative_network.client.socket;
 
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.network.SocketObject;
 import it.polimi.se2018.view.UIInterface;
 
@@ -53,13 +53,13 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
                     //this.stopConnection();
                 } else {
                     if (type.equals("Event")) {
-                        view.showEventView((EventView) received.getObject());
+                        view.showEventView((EventClient) received.getObject());
                     }
                     if (type.equals("RoomIsFullException")) {
-                        view.showEventView((EventView) received.getObject());
+                        view.showEventView((EventClient) received.getObject());
                     }
                     if (type.equals("Event")) {
-                        view.showEventView((EventView) received.getObject());
+                        view.showEventView((EventClient) received.getObject());
                     }
                     if (type.equals("Ping")) {
                         //TODO for ping

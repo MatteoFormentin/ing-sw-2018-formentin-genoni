@@ -1,12 +1,12 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
 /**
- * Extends EventView, updates the favor Tokens and the points of one player
+ * Extends EventClient, updates the favor Tokens and the points of one player
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateSinglePlayerToken extends EventViewFromModel {
+public class UpdateSinglePlayerToken extends EventClientFromModel {
     private int indexInGame;
     private int favorToken;
 

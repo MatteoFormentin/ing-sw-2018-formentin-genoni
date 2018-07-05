@@ -3,12 +3,12 @@ package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 
 /**
- * Extends EventView, updates a single window
+ * Extends EventClient, updates a single window
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateSingleWindow extends EventViewFromModel {
+public class UpdateSingleWindow extends EventClientFromModel {
     private int indexPlayer;
     private WindowPatternCard windowPatternCard;
 

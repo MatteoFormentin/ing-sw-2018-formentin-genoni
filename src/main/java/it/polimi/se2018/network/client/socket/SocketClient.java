@@ -1,11 +1,8 @@
 package it.polimi.se2018.network.client.socket;
 
-import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.network.SocketObject;
 import it.polimi.se2018.network.client.AbstractClient;
 import it.polimi.se2018.network.client.ClientController;
@@ -85,6 +82,7 @@ public class SocketClient extends AbstractClient implements Runnable{
             outputStream.writeObject(socketObject);
             outputStream.reset();
         } catch (IOException ex) {
+
             getView().errPrintln(ex.getMessage());
             ex.printStackTrace();
         }
@@ -98,7 +96,7 @@ public class SocketClient extends AbstractClient implements Runnable{
     @Override
     public void login(String nickname) throws PlayerAlreadyLoggedException {
         SocketObject packet = new SocketObject();
-        packet.setType("Login");
+        packet.setType("EventPreGame");
         packet.setStringField(nickname);
         sendObject(packet);
 
@@ -140,10 +138,10 @@ public class SocketClient extends AbstractClient implements Runnable{
     /**
      * Method used to send to the client an update of the game.
      *
-     * @param eventView object that will use the client to unleash the update associated.
+     * @param eventClient object that will use the client to unleash the update associated.
      */
-    void sendEventToView(EventView eventView) {
-        getClientController().sendEventToView(eventView);
+    void sendEventToView(EventClient eventClient) {
+        getClientController().sendEventToView(eventClient);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -159,7 +157,7 @@ public class SocketClient extends AbstractClient implements Runnable{
         String type = socketObject.getType();
         if (type.equals("Event")) {
             //try {
-            sendEventToView((EventView) socketObject.getObject());
+            sendEventToView((EventClient) socketObject.getObject());
             /*} catch (SocketException ex) {
                 //TODO socket non lancia RemoteException!!! sistemare le interfaccie
                 getView().errPrintln(ex.getMessage());

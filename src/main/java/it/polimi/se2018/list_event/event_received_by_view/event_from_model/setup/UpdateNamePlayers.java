@@ -1,15 +1,15 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup;
 
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventViewFromModel;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventClientFromModel;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.ViewModelVisitor;
 
 /**
- * Extends EventView, updates the initial length of the RoundTrack
+ * Extends EventClient, updates the initial length of the RoundTrack
  *
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class UpdateNamePlayers extends EventViewFromModel {
+public class UpdateNamePlayers extends EventClientFromModel {
 
     private String[] playerNames;
 

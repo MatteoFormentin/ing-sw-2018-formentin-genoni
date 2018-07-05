@@ -248,7 +248,7 @@ extends java.lang.Object</pre>
                                 <td class="colLast"><code><span class="memberNameLink"><a
                                         href="../../../../../it/polimi/se2018/alternative_network/newserver/RemotePlayer2.html#sendEventToController-it.polimi.se2018.list_event.event_received_by_controller.EventController-">sendEventToController</a></span>(<a
                                         href="../../../../../it/polimi/se2018/list_event/event_received_by_controller/EventController.html"
-                                        title="class in it.polimi.se2018.list_event.event_received_by_controller">EventController</a>&nbsp;eventController)</code>
+                                        title="class in it.polimi.se2018.list_event.event_received_by_server.event_for_game">EventController</a>&nbsp;eventController)</code>
                                     <div class="block">method of the Rmi player for send the event directly to the game
                                         room
                                         without passing thought the main server that hold all the game room
@@ -260,7 +260,7 @@ extends java.lang.Object</pre>
                                 <td class="colLast"><code><span class="memberNameLink"><a
                                         href="../../../../../it/polimi/se2018/alternative_network/newserver/RemotePlayer2.html#sendEventToView-it.polimi.se2018.list_event.event_received_by_view.EventView-">sendEventToView</a></span>(<a
                                         href="../../../../../it/polimi/se2018/list_event/event_received_by_view/EventView.html"
-                                        title="class in it.polimi.se2018.list_event.event_received_by_view">EventView</a>&nbsp;eventView)</code>
+                                        title="class in it.polimi.se2018.list_event.event_received_by_view">EventView</a>&nbsp;eventClient)</code>
                                     <div class="block">this method is used when the game room needs to send some <code>EventView</code>
                                         to the client related to this remote player
                                     </div>
@@ -477,7 +477,7 @@ extends java.lang.Object</pre>
                                 <h4>sendEventToView</h4>
                                 <pre>public abstract&nbsp;void&nbsp;sendEventToView(<a
                                         href="../../../../../it/polimi/se2018/list_event/event_received_by_view/EventView.html"
-                                        title="class in it.polimi.se2018.list_event.event_received_by_view">EventView</a>&nbsp;eventView)
+                                        title="class in it.polimi.se2018.list_event.event_received_by_view">EventView</a>&nbsp;eventClient)
                               throws <a href="../../../../../it/polimi/se2018/exception/network_exception/server/ConnectionPlayerException.html"
                                         title="class in it.polimi.se2018.exception.network_exception.server">ConnectionPlayerException</a></pre>
                                 <div class="block">this method is used when the game room needs to send some <code>EventView</code>
@@ -485,7 +485,7 @@ extends java.lang.Object</pre>
                                 </div>
                                 <dl>
                                     <dt><span class="paramLabel">Parameters:</span></dt>
-                                    <dd><code>eventView</code> - event that the client needs</dd>
+                                    <dd><code>eventClient</code> - event that the client needs</dd>
                                     <dt><span class="throwsLabel">Throws:</span></dt>
                                     <dd><code><a
                                             href="../../../../../it/polimi/se2018/exception/network_exception/server/ConnectionPlayerException.html"
@@ -538,7 +538,7 @@ extends java.lang.Object</pre>
                                 <h4>sendEventToController</h4>
                                 <pre>public&nbsp;void&nbsp;sendEventToController(<a
                                         href="../../../../../it/polimi/se2018/list_event/event_received_by_controller/EventController.html"
-                                        title="class in it.polimi.se2018.list_event.event_received_by_controller">EventController</a>&nbsp;eventController)</pre>
+                                        title="class in it.polimi.se2018.list_event.event_received_by_server.event_for_game">EventController</a>&nbsp;eventController)</pre>
                                 <div class="block">method of the Rmi player for send the event directly to the game room
                                     without passing thought the main server that hold all the game room
                                 </div>

@@ -1,9 +1,9 @@
 package it.polimi.se2018.network.server;
 
 import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.list_event.event_received_by_controller.ControllerEndTurn;
-import it.polimi.se2018.list_event.event_received_by_controller.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventView;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.ControllerEndTurn;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartPlayerTurn;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.UpdateNamePlayersDuringSetUp;
@@ -462,15 +462,15 @@ public class Server implements ServerController, TimerCallback {
     /**
      * Remote method used to send to the client an update of the game.
      *
-     * @param eventView object that will use the client to unleash the update associated.
+     * @param eventClient object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventView eventView) {
-        int id = eventView.getPlayerId();
+    public void sendEventToView(EventClient eventClient) {
+        int id = eventClient.getPlayerId();
         if (!playerConnected[id]) {
             System.err.println("PLAYER DISCONNESSO! L'EVENTO NON SARA' INVIATO");
 
-            if (eventView instanceof StartPlayerTurn) {
+            if (eventClient instanceof StartPlayerTurn) {
                 ControllerEndTurn packet = new ControllerEndTurn();
                 packet.setPlayerId(id);
                 game.visit(packet);
@@ -478,9 +478,9 @@ public class Server implements ServerController, TimerCallback {
         } else {
 
             try {
-                searchPlayerById(id).sendEventToView(eventView);
+                searchPlayerById(id).sendEventToView(eventClient);
             } catch (RemoteException ex) {
-                RemotePlayer remotePlayer = searchPlayerById(eventView.getPlayerId());
+                RemotePlayer remotePlayer = searchPlayerById(eventClient.getPlayerId());
                 playerDisconnect(remotePlayer);
             }
         }
@@ -603,7 +603,7 @@ public class Server implements ServerController, TimerCallback {
     /**
      * Connecter for player.
      * The connecter work on player connection state flag, putting it true determining a "connection established".
-     * Login supporter method.
+     * EventPreGame supporter method.
      *
      * @param remotePlayer reference to RMI or Socket Player.
      */
