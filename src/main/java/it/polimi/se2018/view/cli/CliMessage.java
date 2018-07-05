@@ -21,15 +21,24 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 class CliMessage {
 
+    /**
+     * CliMessage constructor
+     */
     CliMessage() {
         System.setProperty("jansi.passthrough", "true");
         AnsiConsole.systemInstall();
     }
 
+    /**
+     * Print one empty line
+     */
     void println() {
         AnsiConsole.out.println();
     }
 
+    /**
+     * Erase screen
+     */
     void eraseScreen() {
         for (int i = 0; i < 50; i++) {
             println();
@@ -37,6 +46,9 @@ class CliMessage {
 
     }
 
+    /**
+     * Show splash Screen
+     */
     synchronized void splashScreen() {
 
         // AnsiConsole.out.println(ansi().eraseScreen().fg(RED).a("BENVENUTO").fg(BLUE).a(" su"));
@@ -65,36 +77,62 @@ class CliMessage {
     //  CONNECTION MESSAGES
     //--------------------------
 
+    /**
+     * Show request socket or rmi
+     */
     synchronized void showSocketRmi() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita 0 per utilizzare RMI, 1 per socket: "));
     }
 
+    /**
+     * Show ip request
+     */
     synchronized void showIpRequest() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci indirizzo ip del server (0 per default): "));
     }
 
+    /**
+     * Show port request
+     */
     synchronized void showPortRequest() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci porta del server: "));
     }
 
+    /**
+     * Show Connection Successful
+     */
     synchronized void showConnectionSuccessful() {
         AnsiConsole.out.println(ansi().fg(GREEN).a("Connesso al Server!"));
     }
 
+    /**
+     * Show Connection Failed
+     */
     synchronized void showConnectionFailed() {
         AnsiConsole.out.println(ansi().fg(RED).a("Impossibile connettersi al server! Riprova"));
 
     }
 
+    /**
+     * Show insert nickname request
+     */
     synchronized void showInsertNickname() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Inserisci il tuo nome: "));
     }
 
+    /**
+     * Show Login successful
+     *
+     * @param nickname player nickname
+     */
     synchronized void showWelcomeNickname(String nickname) {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Benvenuto ").fg(BLUE).a(nickname));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Registrato nella lobby. Attendi che tutti i giocatori siano connessi. "));
     }
 
+    /**
+     * Show Login failed
+     */
     synchronized void showNicknameExists() {
         AnsiConsole.out.println(ansi().fg(RED).a("Esiste già un giocatore con il tuo nome. Scegline un altro."));
     }
@@ -103,6 +141,11 @@ class CliMessage {
     //  INIT MESSAGES
     //--------------------------
 
+    /**
+     * Show some game information
+     *
+     * @param playersName array with name of all players
+     */
     synchronized void showGameStarted(String[] playersName) {
         AnsiConsole.out.println(ansi().fg(GREEN).a("Tutti i giocatori sono connessi, la partita inizierà a breve!"));
         AnsiConsole.out.println(ansi().fg(GREEN).a("Partecipano " + playersName.length + " giocatori:"));
@@ -112,6 +155,9 @@ class CliMessage {
         AnsiConsole.out.println();
     }
 
+    /**
+     * Show Initial Window Pattern Card Selection request
+     */
     synchronized void showInitialWindowPatternCardSelection() {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita 0..3 per selezionare la tua card: "));
     }
@@ -120,17 +166,30 @@ class CliMessage {
     //  GAME MESSAGES
     //--------------------------
 
+    /**
+     * Show Your Turn Screen
+     */
     synchronized void showYourTurnScreen() {
         AnsiConsole.out.println(ansi().fg(GREEN).a("---------------------------------------------"));
         AnsiConsole.out.println(ansi().fg(GREEN).a("|                ").fg(MAGENTA).a("Tocca a te!").fg(GREEN).a("                |"));
         AnsiConsole.out.println(ansi().fg(GREEN).a("---------------------------------------------"));
     }
 
+    /**
+     * Show wait Turn Screen
+     *
+     * @param name opponent turn name
+     */
     synchronized void showWaitYourTurnScreen(String name) {
         AnsiConsole.out.println(ansi().fg(RED).a("Tocca a " + name));
         AnsiConsole.out.println(ansi().fg(RED).a("Aspetta che finisca il suo turno!"));
     }
 
+    /**
+     * Show one Window Pattern Card
+     *
+     * @param card Window Pattern Card
+     */
     synchronized void showWindowPatternCard(WindowPatternCard card) {
         AnsiConsole.out().println();
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Nome: " + card.getName()));
@@ -188,11 +247,19 @@ class CliMessage {
         }
     }
 
+    /**
+     * Show Objective Public Card
+     */
     synchronized void showObjectivePublicCardMessage() {
         AnsiConsole.out.println(ansi().fg(BLUE).a("Carte obiettivo pubbliche:"));
 
     }
 
+    /**
+     * Show Objective Public Card
+     *
+     * @param card to show
+     */
     synchronized void showObjectivePublicCard(ObjectivePublicCard card) {
         AnsiConsole.out.println(ansi().fg(BLUE).a(card.getId() + " - " + card.getName()));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Punti: " + card.getPoint()));
@@ -200,32 +267,63 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getDescription()));
     }
 
+    /**
+     * Show Objective Private Card
+     */
     synchronized void showObjectivePrivateCardMessage() {
         AnsiConsole.out.println(ansi().fg(RED).a("Carta obiettivo privata:"));
     }
 
+    /**
+     * Show Objective Private Card
+     *
+     * @param card to show
+     */
     synchronized void showObjectivePrivateCard(ObjectivePrivateCard card) {
         AnsiConsole.out.println(ansi().fg(RED).a(card.getId() + " - " + card.getName()));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getDescription()));
     }
 
+    /**
+     * Show Opponent Window Message
+     */
     synchronized void showOpponentWindowMessage() {
         AnsiConsole.out.println(ansi().fg(YELLOW).a("Carte vetrate degli avversari:"));
     }
 
+    /**
+     * Show Opponent insert dice move
+     *
+     * @param name   opponent name
+     * @param line   line of opponent window
+     * @param column column of opponent
+     */
     synchronized void showOpponentInsertDice(String name, int line, int column) {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(name + " ha inserito un dado in (" + line + "," + column + ")"));
     }
 
+    /**
+     * Show Opponent Window
+     *
+     * @param name opponent name
+     */
     synchronized void showOpponentWindow(String name) {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Vetrata di " + name));
     }
 
-
+    /**
+     * Show Tool Card
+     */
     synchronized void showToolCardMessage() {
         AnsiConsole.out.println(ansi().fg(GREEN).a("Carte utensile:"));
     }
 
+
+    /**
+     * Show Tool Card
+     *
+     * @param card to show
+     */
     synchronized void showToolCard(ToolCard card) {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getId() + " - " + card.getName()));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Punti necessari: " + card.getFavorToken()));
@@ -233,6 +331,12 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a(card.getDescription()));
     }
 
+
+    /**
+     * Show Dice
+     *
+     * @param dice to show
+     */
     synchronized void showDice(Dice dice) {
         Color color = DEFAULT;
         switch (dice.getColor()) {
@@ -256,6 +360,12 @@ class CliMessage {
         AnsiConsole.out.print(ansi().fg(color).a(dice.getValue()));
     }
 
+
+    /**
+     * Show Round Track
+     *
+     * @param roundTrack to show
+     */
     synchronized void showRoundTrack(DiceStack[] roundTrack) {
         if (roundTrack[0] != null) {
             for (int m = 0; m < roundTrack.length; m++) {
@@ -274,6 +384,9 @@ class CliMessage {
     //  MENU MESSAGES
     //--------------------------
 
+    /**
+     * Show main menu
+     */
     synchronized void showMainMenu() {
         AnsiConsole.out.println();
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Cosa vuoi fare?"));
@@ -288,30 +401,53 @@ class CliMessage {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita il numero corrispondente: "));
     }
 
+    /**
+     * Show insert row
+     */
     synchronized void showChoiceRow() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale riga della window vuoi selezionare?"));
     }
 
+    /**
+     * Show insert column
+     */
     synchronized void showChoiceColumn() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale colonna della window vuoi selezionare? "));
     }
 
+    /**
+     * Show insert round
+     */
     synchronized void showChoiceRound() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale round vuoi selezionare? "));
     }
 
+    /**
+     * Show insert round dice
+     */
     synchronized void showChoiceInRound() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale dado del round vuoi selezionare? "));
     }
 
+    /**
+     * Show insert dice value
+     */
     synchronized void showValueDice() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Quale valore vuoi impostare per il dado? "));
     }
 
+    /**
+     * Show increment or decrement dice choice
+     */
     synchronized void showIncrementDecrement() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Inserisci 0 per decrementare 1 per incrementare il valore "));
     }
 
+    /**
+     * Show dice stack
+     *
+     * @param diceStack to show
+     */
     synchronized void showDiceStack(DiceStack diceStack) {
         for (int i = 0; i < diceStack.size(); i++) {
             AnsiConsole.out.print(ansi().fg(DEFAULT).a(i + ": "));
@@ -321,11 +457,21 @@ class CliMessage {
         AnsiConsole.out.println();
     }
 
+    /**
+     * Show dice pool
+     *
+     * @param diceStack to show
+     */
     synchronized void showDicePool(DiceStack diceStack) {
         showDiceStack(diceStack);
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Digita il numero corrispondente al dado che vuoi inserire: "));
     }
 
+    /**
+     * Show dice hand
+     *
+     * @param hand to show
+     */
     synchronized void showHandPlayer(DiceStack hand) {
         AnsiConsole.out.print(ansi().fg(DEFAULT).a("Dadi in mano: "));
         if (hand == null || hand.isEmpty()) {
@@ -336,6 +482,11 @@ class CliMessage {
         }
     }
 
+    /**
+     * Show all tool card
+     *
+     * @param toolCard to show
+     */
     synchronized void showToolCardChoice(ToolCard[] toolCard) {
         for (int i = 0; i < toolCard.length; i++) {
             showToolCard(toolCard[i]);
@@ -343,40 +494,75 @@ class CliMessage {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita quale toolcard vuoi usare 1°, 2°, 3°: "));
     }
 
+    /**
+     * Show input not valid
+     */
     synchronized void showInputNotValid() {
         AnsiConsole.out.print(ansi().fg(RED).a("Valore inserito non valido. Riprova: "));
     }
 
+    /**
+     * Show insert one character to continue
+     */
     synchronized void showWaitInput() {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("Digita un carattere per continuare"));
     }
 
+    /**
+     * Show round and turn
+     *
+     * @param round current round
+     * @param turn  current turn
+     */
     synchronized void showRoundAndTurn(int round, int turn) {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("      Round: " + round));
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("      Turn: " + turn));
     }
 
+    /**
+     * Show one message with red color
+     *
+     * @param message to show
+     */
     synchronized void showMessage(String message) {
         println();
         AnsiConsole.out.println(ansi().fg(RED).a(message));
     }
 
+    /**
+     * Show one message with green color
+     *
+     * @param message to show
+     */
     synchronized void showGreenMessage(String message) {
         println();
         AnsiConsole.out.println(ansi().fg(GREEN).a(message));
     }
 
+    /**
+     * Show timer is expired
+     */
     synchronized void showMoveTimeoutExpired() {
         println();
         AnsiConsole.out.println(ansi().fg(RED).a("Spiacente, hai esaurito il tempo a tua disposizione!"));
     }
 
+    /**
+     * Show relogin request
+     */
     synchronized void showReLogin() {
         println();
         AnsiConsole.out.println(ansi().fg(RED).a("E'caduta la connessione."));
         AnsiConsole.out.println(ansi().fg(GREEN).a("Digita 0 per ricollegarti, 1 per uscire. Ricordati di usare il vecchio nickname."));
     }
 
+    /**
+     * Show end game screen
+     *
+     * @param ranking     point value
+     * @param playersName players name
+     * @param myId        player id
+     */
     synchronized void showEndGameScreen(int[][] ranking, String[] playersName, int myId) {
 
         //Se hai vinto

@@ -18,7 +18,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.Properties;
 
 import static org.fusesource.jansi.Ansi.Color.*;
@@ -32,9 +31,6 @@ import static org.fusesource.jansi.Ansi.ansi;
  * @author DavideMammarella
  */
 public class RMIServer extends AbstractServer implements IRMIServer{
-
-    // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
-    private ArrayList<RMIPlayer> rmiPlayers;
 
     // Indirizzo su cui le comunicazioni sono aperte a lato server
     private static String SERVER_ADDRESS;
@@ -78,7 +74,6 @@ public class RMIServer extends AbstractServer implements IRMIServer{
             // Default RMI PORT in case of exception.
             SERVER_RMI_PORT = 31415;
         }
-        rmiPlayers = new ArrayList<>();
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -142,7 +137,6 @@ public class RMIServer extends AbstractServer implements IRMIServer{
     public void login(String nickname, IRMIClient iRMIClient) throws RemoteException {
         RMIPlayer player = new RMIPlayer(iRMIClient);
         player.setNickname(nickname);
-        rmiPlayers.add(player);
         try {
             if (!getServerController().login(player)) {
                 throw new RemoteException();
@@ -159,7 +153,6 @@ public class RMIServer extends AbstractServer implements IRMIServer{
      */
     @Override
     public void disconnect(int id) throws IOException {
-
         searchPlayerById(id).disconnect();
     }
 
@@ -176,19 +169,6 @@ public class RMIServer extends AbstractServer implements IRMIServer{
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
     //------------------------------------------------------------------------------------------------------------------
-
-
-    /**
-     * Method used to remove a player from the RMI server.
-     *
-     * @param remotePlayer player that must be removed.
-     */
-    public void removePlayer(RemotePlayer remotePlayer){
-        //remotePlayer.setPlayerRunning(false);
-        int id = rmiPlayers.indexOf(remotePlayer);
-        if(id != -1)
-            rmiPlayers.remove(id);
-    }
 
     /**
      * Method used to search a player on the RMI server.

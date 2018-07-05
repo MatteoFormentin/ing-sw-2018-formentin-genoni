@@ -125,6 +125,10 @@ public class Controller implements ControllerVisitor, TimerCallback {
         }
     }
 
+    public void winBecauseOfDisconnection(int winnerId) {
+        //TODO vittoria a tavolino per mancanza di player
+    }
+
     /**
      * Used when one player
      * made reLogin

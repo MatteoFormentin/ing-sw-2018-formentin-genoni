@@ -64,6 +64,11 @@ public class TestEffect {
             }
 
             @Override
+            public void playerDisconnect(RemotePlayer player) {
+
+            }
+
+            @Override
             public void ping(){
 
             }
