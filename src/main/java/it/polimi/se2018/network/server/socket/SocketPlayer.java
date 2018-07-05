@@ -83,9 +83,8 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
                 SocketObject received = (SocketObject) inputStream.readObject();
                 socketObjectTraducer(received);
             } catch (EOFException e) {
-                System.err.println("Player: " + getNickname() + " has made a disconnection!");
                 // se si disconnette metto il running a false e tengo in memoria il player
-                playerRunning=false;
+                serverController.playerDisconnect(this);
                 closeConnection();
                 flag = false;
             } catch (IOException | ClassNotFoundException ex) {
@@ -135,7 +134,6 @@ public class SocketPlayer extends RemotePlayer implements Runnable {
     public void login(String nickname) throws PlayerNetworkException {
         setNickname(nickname);
         // inserisco il socket player nella lista
-        //socketPlayers.put(nickname,this);
         if (!this.serverController.login(this)) {
             throw new PlayerNetworkException("error");
         }
