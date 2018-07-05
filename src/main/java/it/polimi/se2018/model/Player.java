@@ -3,11 +3,10 @@ package it.polimi.se2018.model;
 
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.NoDiceException;
-import it.polimi.se2018.exception.gameboard_exception.cell_exception.CellException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.NoEnoughTokenException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.*;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.Dice;
@@ -34,9 +33,10 @@ public class Player {
     private boolean hasUsedToolCard;
 
     /**
-     * Constructor for a new player
+     * Constructor for a new player.
      *
-     * @param indexInGame of the player if needed
+     * @param indexInGame ID of the player.
+     * @param nickname nickname of the player.
      */
     public Player(int indexInGame, String nickname) {
         this.indexInGame = indexInGame;
@@ -169,9 +169,10 @@ public class Player {
     //************************************window's method**********************************************
 
     /**
-     * add a die to hand, without check.
+     * Method to add a dice to hand.
      *
-     * @param dice the dice to add
+     * @param dice the dice to add.
+     * @param fromDicePool true if the dice come from dice pool.
      */
     void addDiceToHand(Dice dice,boolean fromDicePool) throws NoDiceException,AlreadyDrawANewDiceException {
         if (dice == null) throw new NoDiceException();
@@ -181,16 +182,16 @@ public class Player {
     }
 
     /**
-     * Method for insert the dice
+     * Method used to insert the dice on the window pattern.
      *
-     * @param line index of the window's line
-     * @param column index of the window's column
-     * @param adjacentR true if need to be near a dice, false otherwise
-     * @param colorR true if need to check this restriction
-     * @param valueR true if need to check this restriction
-     * @param firstInsert true if it insert a new dice for the turn
-     * @throws WindowRestriction the specific exception of the insert
-     * @throws PlayerException the exception regarding the state of the player
+     * @param line index of the window's line.
+     * @param column index of the window's column.
+     * @param adjacentR true if need to be near a dice, false otherwise.
+     * @param colorR true if need to check this restriction.
+     * @param valueR true if need to check this restriction.
+     * @param firstInsert true if it insert a new dice for the turn.
+     * @throws WindowRestriction the specific exception of the insert.
+     * @throws PlayerException the exception regarding the state of the player.
      */
     public void insertDice(int line, int column, boolean adjacentR, boolean colorR, boolean valueR,boolean firstInsert)
             throws WindowRestriction,PlayerException {
@@ -205,7 +206,7 @@ public class Player {
      * A method for activated the use of the toolCard methods
      * Check the state of the player and his money.
      *
-     * @param cost of the tool card
+     * @param cost of the tool card.
      */
     void useToolCard(int cost) throws AlreadyUseToolCardException,NoEnoughTokenException {
         if (cost > favorToken) throw new NoEnoughTokenException();

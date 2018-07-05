@@ -17,8 +17,8 @@ import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.*;
 
 /**
- * the class {@code GameBoard} represents the game board for a game that contains all the information of the game.
- * Any variation must go through this class to be sure of the reliability of the game data
+ * Class that represents the game board for a game that contains all the information of the game.
+ * Any variation must go through this class to be sure of the reliability of the game data.
  *
  * @author Luca Genoni
  */
@@ -37,8 +37,11 @@ public class GameBoard {
     private DiceColor colorRestriction;
     private UpdaterView updaterView;
 
-
-
+    /**
+     * Constructor for the gameboard.
+     *
+     * @param names names of the player on the game.
+     */
     public GameBoard(String[] names) {
         stopGame = false;
         currentRound = 0;
@@ -54,6 +57,11 @@ public class GameBoard {
         indexCurrentPlayer = 0;
     }
 
+    /**
+     * Starter for the game.
+     *
+     * @param updaterView packet that contain an update for the view.
+     */
     public void startGame(UpdaterView updaterView) {
         this.updaterView = updaterView;
         Deck deck = Deck.getDeck();
@@ -74,13 +82,14 @@ public class GameBoard {
         factoryDiceForThisGame = new BalancedFactoryDice(player.length, diceWindow,roundTrack.length);// here for change the factory
     }
 
-
-    //************************************getter**********************************************
-    //************************************getter**********************************************
-    //************************************getter**********************************************
+    //------------------------------------------------------------------------------------------------------------------
+    // GETTER
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * @return int for the current round
+     * Getter for the current round.
+     *
+     * @return int for the current round.
      */
     public int getCurrentRound() {
         return currentRound;
@@ -88,26 +97,37 @@ public class GameBoard {
 
 
     /**
-     * @return the array of DiceStack belonging to the roundtrack
+     * Getter for the round track.
+     *
+     * @return the array of DiceStack belonging to the roundtrack.
      */
     public DiceStack[] getRoundTrack() {
         return roundTrack;
     }
 
+    /**
+     * Getter for the round track.
+     * @param index index of the cell of the round track.
+     * @return a dice of the round track.
+     */
     public DiceStack getRoundTrack(int index) {
         return roundTrack[index];
     }
 
     /**
-     * @return array of all the Player
+     * Getter for players.
+     *
+     * @return array of all the Player.
      */
     public Player[] getPlayer() {
         return player;
     }
 
     /**
-     * @param index of the player domain [0, n°player-1]
-     * @return the player relative to the index, null if the index is wrong
+     * Getter for player.
+     *
+     * @param index of the player, domain [0, n°player-1].
+     * @return the player relative to the index, null if the index is wrong.
      */
     public Player getPlayer(int index) {
         if (index < 0 || index >= player.length) return null;
@@ -115,15 +135,19 @@ public class GameBoard {
     }
 
     /**
-     * @return an array of Tool Card
+     * Getter for tool card.
+     *
+     * @return an array of tool card.
      */
     public ToolCard[] getToolCard() {
         return toolCard;
     }
 
     /**
-     * @param index of the Tool card domain [0,2]
-     * @return the ToolCard relative to the index, null if the index is wrong
+     * Getter for tool card.
+     *
+     * @param index of the Tool card, domain [0,2].
+     * @return the ToolCard relative to the index, null if the index is wrong.
      */
     public ToolCard getToolCard(int index) {
         if (index < 0 || index > toolCard.length) return null;
@@ -131,8 +155,10 @@ public class GameBoard {
     }
 
     /**
-     * @param index of the Tool card domain [0,2]
-     * @return the ID of the ToolCard in position of the param index, -1 if index is wrong
+     * Getter for the id of a tool card.
+     *
+     * @param index of the Tool card domain [0,2].
+     * @return the ID of the ToolCard in position of the param index, -1 if index is wrong.
      */
     public int getIdToolCard(int index) {
         if (index < 0 || index >= toolCard.length) return -1;
@@ -140,48 +166,63 @@ public class GameBoard {
     }
 
     /**
-     * @return an array of ObjectivePublicCard
+     * Getter for objective public card.
+     *
+     * @return an array of Objective Public Cards.
      */
     public ObjectivePublicCard[] getObjectivePublicCard() {
         return objectivePublicCard;
     }
 
     /**
-     * @return a DiceStack relative to the DicePool
+     * Getter for dice pool.
+     *
+     * @return a DiceStack relative to the DicePool.
      */
     public DiceStack getDicePool() {
         return dicePool;
     }
 
     /**
-     * @return the index relative to the current player [0, n°player-1]
+     * Getter of the ID of the current player.
+     *
+     * @return the index relative to the current player [0, n°player-1].
      */
     public int getIndexCurrentPlayer() {
         return indexCurrentPlayer;
     }
 
     /**
-     * @return the number of the current round
+     * Getter for the current round.
+     *
+     * @return the number of the current round.
      */
     public int getCurrentTurn() {
         return currentTurn;
     }
 
     /**
-     * @return true if the game over, false otherwise
+     * Getter of the game over.
+     *
+     * @return true if the game over, false otherwise.
      */
     public boolean isStopGame() {
         return stopGame;
     }
 
-//no setter
-
-    //**************************************Observer/observable**************************************************
-
+    //------------------------------------------------------------------------------------------------------------------
+    // OBSERVER / OBSERVABLE
+    //------------------------------------------------------------------------------------------------------------------
 
     //************************************class's method**********************************************
     //************************************class's method**********************************************
     //************************************class's method**********************************************
+
+    /**
+     * Method used to set up the first round.
+     *
+     * @throws ValueDiceWrongException if the value of the dice is wrong for the game restriction.
+     */
     private void setUpFirstRound() throws ValueDiceWrongException {
         //create the First Round
         stopGame = false;
@@ -192,6 +233,11 @@ public class GameBoard {
         updaterView.updateDicePool();
     }
 
+    /**
+     * Method used to have a free hand player.
+     *
+     * @param indexPlayer ID of the free hand player.
+     */
     private void freeHandPlayer(int indexPlayer) {
         while (!player[indexPlayer].getHandDice().isEmpty()) {
             dicePool.addLast(player[indexPlayer].getHandDice().remove(0));
@@ -201,7 +247,11 @@ public class GameBoard {
         updaterView.updateInfoCurrentTurn();
     }
 
-
+    /**
+     * Method used to manage the first turn of the player.
+     *
+     * @param indexPlayerEnded ID of the player that ended the turn.
+     */
     private void firstTurn(int indexPlayerEnded) {
         if (player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(false);
         else player[indexPlayerEnded].endTurn(true);
@@ -209,6 +259,11 @@ public class GameBoard {
         currentTurn++;
     }
 
+    /**
+     * Method used to manage the second turn of the player.
+     *
+     * @param indexPlayerEnded ID of the player that ended the turn.
+     */
     private void secondTurn(int indexPlayerEnded) {
         if (!player[indexPlayerEnded].isFirstTurn()) player[indexPlayerEnded].endTurn(true);
         else player[indexPlayerEnded].endTurn(true);
@@ -217,15 +272,14 @@ public class GameBoard {
     }
 
     /**
-     * change the current player to the next and end the game.
-     * check the state of the player for the first/second turn
-     * move the dice in hand to the DicePool.
+     * Method used t change the current player to the next and end the game.
+     * It check the state of the player for the first/second turn and move the dice in hand to the DicePool.
      *
-     * @param indexPlayerEnded that request the move
-     * @throws GameIsBlockedException  if the game can't be modified
-     * @throws CurrentPlayerException  if the requester isn't the current player
-     * @throws GameIsOverException     if the game is over
-     * @throws FatalGameErrorException if the game is corrupted
+     * @param indexPlayerEnded that request the move.
+     * @throws GameIsBlockedException  if the game can't be modified.
+     * @throws CurrentPlayerException  if the requester isn't the current player.
+     * @throws GameIsOverException     if the game is over.
+     * @throws FatalGameErrorException if the game is corrupted.
      */
     public void nextPlayer(int indexPlayerEnded) throws GameIsBlockedException, CurrentPlayerException,
             GameIsOverException, FatalGameErrorException, ValueDiceWrongException {
@@ -282,12 +336,21 @@ public class GameBoard {
         }
     }
 
+    /**
+     * Method used to calculate point of the game.
+     *
+     * @param indexPlayer ID of the player.
+     * @return NodePodium of the player.
+     */
     public NodePodium calculatePoint(int indexPlayer){
         NodePodium newPlayerNode = new NodePodium(player[indexPlayer],objectivePublicCard);
         newPlayerNode.calculatePoint();
         return newPlayerNode;
     }
 
+    /**
+     * Method used to calculate all the point of the game.
+     */
     public void calculateAllPoint() {
         TreePodium podium = new TreePodium(player.length, roundTrack.length);
         for (Player aPlayer : player) {
@@ -298,7 +361,15 @@ public class GameBoard {
         updaterView.updateStatPodium(podium.getSortedPlayer(), podium.getRoot().getDescription());
     }
 
-
+    /**
+     * Method used to set a window pattern.
+     *
+     * @param indexPlayer ID of the player that set the window pattern.
+     * @param indexOfTheWindow index of the winow pattern.
+     * @throws WindowPatternAlreadyTakenException if the window pattern is already taken.
+     * @throws WindowSettingCompleteException if the window pattern are over.
+     * @throws ValueDiceWrongException if the value of the dice is wrong for the game restriction.
+     */
     public void setWindowOfPlayer(int indexPlayer, int indexOfTheWindow) throws WindowPatternAlreadyTakenException, WindowSettingCompleteException, ValueDiceWrongException {
         if (player[indexPlayer].getPlayerWindowPattern() != null) throw new WindowPatternAlreadyTakenException();
         player[indexPlayer].choosePlayerWindowPattern(indexOfTheWindow);
@@ -311,16 +382,16 @@ public class GameBoard {
         }
     }
 
-//*****************************************metodi del player************************************************************************
-//*****************************************metodi del player************************************************************************
-//*****************************************metodi del player************************************************************************
-//*****************************************metodi del player************************************************************************
-//*****************************************metodi del player************************************************************************
+    //------------------------------------------------------------------------------------------------------------------
+    // PLAYER METHODS
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * @param indexPlayer   index of the player that request the move
-     * @param indexDicePool index of the dice chosen
-     * @throws NoDiceException there is no dice in the selected position
+     * Method used to add new dice to hand from dice pool
+     *
+     * @param indexPlayer   index of the player that request the move.
+     * @param indexDicePool index of the dice chosen.
+     * @throws NoDiceException there is no dice in the selected position.
      */
     public void addNewDiceToHandFromDicePool(int indexPlayer, int indexDicePool) throws NoDiceException, GameIsBlockedException,
             CurrentPlayerException, AlreadyDrawANewDiceException {
@@ -339,13 +410,13 @@ public class GameBoard {
     }
 
     /**
-     * method for inser a normal die in the window
+     * Method used to insert a normal dice in the window pattern card.
      *
-     * @param indexPlayer
-     * @param row
-     * @param column
-     * @param firstTurnDie
-     * @throws GameException
+     * @param indexPlayer ID of the player.
+     * @param row row of the window pattern card.
+     * @param column column of the window pattern card.
+     * @param firstTurnDie true if the turn is over, false otherwise.
+     * @throws GameException exception derivate from game restriction.
      */
     public void insertDice(int indexPlayer, int row, int column, boolean firstTurnDie) throws GameException {
         checkState(indexPlayer);
@@ -356,7 +427,13 @@ public class GameBoard {
         updaterView.updateSingleCell(indexPlayer, row, column);
     }
 
-
+    /**
+     * Method used to use a tool card.
+     *
+     * @param indexPlayer ID of the player.
+     * @param indexOfToolInGame index of the tool card in the game.
+     * @throws GameException exception derivate from game restriction.
+     */
     public void useToolCard(int indexPlayer, int indexOfToolInGame) throws GameException {
         checkState(indexPlayer);
         if (player[indexPlayer].isHasUsedToolCard()) throw new AlreadyUseToolCardException();
@@ -366,19 +443,18 @@ public class GameBoard {
         updaterView.updatePlayerTokenAndPoints(indexPlayer);
         updaterView.updateToolCardCost(indexOfToolInGame);
     }
-    //*****************************************Tool's method of Gameboard **********************************************
-    //*****************************************Tool's method of Gameboard **********************************************
-    //*****************************************Tool's method of Gameboard **********************************************
-    //*****************************************Tool's method of Gameboard **********************************************
-    //*****************************************Tool's method of Gameboard **********************************************
+
+    //------------------------------------------------------------------------------------------------------------------
+    // TOOL'S METHOD
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Method to select the restriction for remove the next dice form the window pattern
+     * Method to select the restriction to remove the next dice form the window pattern.
      *
-     * @param indexPlayer
-     * @param round
-     * @param index
-     * @throws GameException
+     * @param indexPlayer ID of the player.
+     * @param round round of the game.
+     * @param index index of the dice.
+     * @throws GameException exception derivate from game restriction.
      */
     public void imposeColorRestriction(int indexPlayer, int round, int index) throws GameException {
         checkState(indexPlayer);
@@ -388,13 +464,13 @@ public class GameBoard {
     }
 
     /**
-     * method for remove a dice from the window pattern
+     * Method used to remove a dice from the window pattern.
      *
-     * @param indexPlayer
-     * @param row
-     * @param column
-     * @param checkRestriction if the color restriction need to be verified
-     * @throws GameException
+     * @param indexPlayer ID of the player.
+     * @param row row of the window pattern.
+     * @param column column of the window pattern.
+     * @param checkRestriction if the color restriction need to be verified.
+     * @throws GameException exception derivate from game restriction.
      */
     public void moveDiceFromWindowPatternToHand(int indexPlayer, int row, int column, boolean checkRestriction) throws GameException {
         checkState(indexPlayer);
@@ -407,10 +483,10 @@ public class GameBoard {
 
 
     /**
-     * move for take the active dice in hand and change it with a new one
+     * Method used to take the active dice in hand and change it with a new one.
      *
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @return true if is gone all ok, false otherwise
+     * @param indexPlayer who send the request of the move.
+     * @return true if is gone all ok, false otherwise.
      */
     public void changeDiceBetweenHandAndFactory(int indexPlayer) throws GameException {
         checkState(indexPlayer);
@@ -422,12 +498,11 @@ public class GameBoard {
     }
 
     /**
-     * swap the die in hand and the roundtrack
+     * Method used to swap the dice in hand and the round track.
      *
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @param round
-     * @param indexStack
-     * @return
+     * @param indexPlayer who send the request of the move.
+     * @param round round of the game.
+     * @param indexStack index of the dice stack of the round track.
      */
     public void changeDiceBetweenHandAndRoundTrack(int indexPlayer, int round, int indexStack) throws GameException {
         checkState(indexPlayer);
@@ -443,8 +518,9 @@ public class GameBoard {
 
 
     /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @return
+     * Method use to roll the dice pool.
+     *
+     * @param indexPlayer who send the request of the move.
      */
     public void rollDicePool(int indexPlayer) throws GameException {
         checkState(indexPlayer);
@@ -452,24 +528,22 @@ public class GameBoard {
         dicePool.reRollAllDiceInStack();
         updaterView.updateDicePool();
     }
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
-    //*********************************************Tool's method*************************************************
+
+    //------------------------------------------------------------------------------------------------------------------
+    // TOOL'S METHOD
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * method for insert a dice in the window
+     * Method used to insert the dice on the window pattern.
      *
-     * @param indexPlayer
-     * @param row
-     * @param column
-     * @param adjacentRestriction
-     * @param colorRestriction
-     * @param valueRestriction
-     * @param singleNewDice
-     * @throws GameException
+     * @param indexPlayer ID of the player.
+     * @param row index of the window's line
+     * @param column index of the window's column
+     * @param adjacentRestriction true if need to be near a dice, false otherwise
+     * @param colorRestriction true if need to check this restriction
+     * @param valueRestriction true if need to check this restriction
+     * @param singleNewDice new dice.
+     * @throws GameException exception derivate from game restriction.
      */
     public void insertDice(int indexPlayer, int row, int column, boolean adjacentRestriction,
                            boolean colorRestriction, boolean valueRestriction, boolean singleNewDice) throws GameException {
@@ -482,8 +556,10 @@ public class GameBoard {
     }
 
     /**
-     * @param indexPlayer
-     * @throws GameException
+     * Method used to roll a dice in hand.
+     *
+     * @param indexPlayer ID of the player.
+     * @throws GameException exception derivate from game restriction.
      */
     public void rollDiceInHand(int indexPlayer) throws GameException {
         checkState(indexPlayer);
@@ -492,8 +568,10 @@ public class GameBoard {
     }
 
     /**
-     * @param indexPlayer
-     * @throws GameException
+     * Mehod used to have the opposite face of the dice.
+     *
+     * @param indexPlayer ID of the player.
+     * @throws GameException exception derivate from game restriction.
      */
     public void oppositeFaceDice(int indexPlayer) throws GameException {
         checkState(indexPlayer);
@@ -502,8 +580,10 @@ public class GameBoard {
     }
 
     /**
-     * @param indexPlayer who send the request of the move,(it should be the current player)
-     * @return
+     * Method used to end turn (special).
+     *
+     * @param indexPlayer who send the request of the move.
+     * @throws GameException exception derivate from game restriction.
      */
     public void endSpecialFirstTurn(int indexPlayer) throws GameException {
         checkState(indexPlayer);
@@ -511,6 +591,13 @@ public class GameBoard {
         freeHandPlayer(indexPlayer);
     }
 
+    /**
+     * Method used to set value of the dice in hand.
+     *
+     * @param indexPlayer ID of the player.
+     * @param value value of the dice.
+     * @throws GameException exception derivate from game restriction.
+     */
     public void setValueDiceHand(int indexPlayer, int value) throws GameException {
         checkState(indexPlayer);
         player[indexPlayer].setValueDiceHand(value);
@@ -518,13 +605,15 @@ public class GameBoard {
     }
 
     /**
+     * Method used to increase or decrease the value of the dice.
+     *
      * @param indexPlayer integer that indicate which player send the request of
      * @param increase    true of increase the value false for decrease
      * @throws GameIsBlockedException  if the game can't be access
      * @throws CurrentPlayerException  if it isn't the player's turn
      * @throws ValueDiceWrongException if the request doesn't respect the dice domain
      * @throws NoDiceInHandException   if the player have no dice in hand
-     * @throws NoDiceException
+     * @throws NoDiceException if there are no dice.
      */
     public void increaseOrDecrease(int indexPlayer, boolean increase) throws GameIsBlockedException,
             CurrentPlayerException, ValueDiceWrongException, NoDiceInHandException, NoDiceException {
@@ -534,11 +623,11 @@ public class GameBoard {
     }
 
     /**
-     * check the state of the game board and if it's the player turn
+     * Method used to check the state of the game board and if it's or not the player turn.
      *
-     * @param indexPlayer integer that indicate which player send the request of
-     * @throws GameIsBlockedException if the game can't be access
-     * @throws CurrentPlayerException if it isn't the player's turn
+     * @param indexPlayer integer that indicate which player send the request of.
+     * @throws GameIsBlockedException if the game can't be access.
+     * @throws CurrentPlayerException if it isn't the player's turn.
      */
     private void checkState(int indexPlayer) throws GameIsBlockedException, CurrentPlayerException {
         if (stopGame) throw new GameIsBlockedException();
