@@ -46,13 +46,13 @@ public class RMIServer extends AbstractServer2 {
             setStarted(false);
             throw new ServerStartException();
         }
-        try {
+     /*   try {
             clientGatherer = RMIClientGatherer.getSingletonClientGatherer(getServerController());
         } catch (RemoteException ex) {
             AnsiConsole.out.println(ansi().fg(BLUE).a("RMIClientGatherer non può essere istanziato").reset());
             setStarted(false);
             throw new ServerStartException();
-        }
+        }*/
         try {
             Naming.bind("//" + getHost() + ":" + getPort() + "/MyServer", clientGatherer);
         } catch (AlreadyBoundException ex) {

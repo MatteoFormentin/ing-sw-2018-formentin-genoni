@@ -1,6 +1,7 @@
 package it.polimi.se2018.alternative_network.newserver.socket;
 
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
+import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
@@ -15,6 +16,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.Color.GREEN;
@@ -27,7 +29,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  *
  * @author DavideMammarella
  */
-public class SocketPlayer extends RemotePlayer2 implements Runnable {
+public class SocketPlayer extends Thread implements RemotePlayer2 {
 
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
     static HashMap<String, SocketPlayer> socketPlayers;
@@ -39,6 +41,14 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
 
     private LinkedList<SocketObject> eventViews;
     private SocketServer serverController;
+
+
+    private String nickname;
+    private AtomicBoolean playerRunning;
+    private int idPlayerInGame;
+    private GameInterface gameInterface;
+
+
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -174,24 +184,45 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
         }
     }
 
-    /**
-     * Method used to to send an ACK (Acknowledge) packet from server to client in order to signal
-     * the correct reception of a data packet.
-     */
-    public void sendAck() {
-        SocketObject packet = new SocketObject();
-        packet.setType("Ack");
-        sendObject(packet);
+
+    @Override
+    public String getNickname() {
+        return nickname;
     }
 
-    /**
-     * Method used to to send a NACK (Not Acknowledge) packet from server to client in order to signal
-     * a missing reception of a data packet.
-     */
-    public void sendNack() {
-        SocketObject packet = new SocketObject();
-        packet.setType("Nack");
-        sendObject(packet);
+    @Override
+    public void setNickname(String nickname) {
+        this.nickname=nickname;
+    }
+
+    @Override
+    public boolean isPlayerRunning() {
+        return playerRunning.get();
+    }
+
+    @Override
+    public void setPlayerRunning(boolean playerRunning) {
+        this.playerRunning.set(playerRunning);
+    }
+
+    @Override
+    public int getIdPlayerInGame() {
+        return idPlayerInGame;
+    }
+
+    @Override
+    public void setIdPlayerInGame(int idPlayerInGame) {
+        this.idPlayerInGame=idPlayerInGame;
+    }
+
+    @Override
+    public GameInterface getGameInterface() {
+        return gameInterface;
+    }
+
+    @Override
+    public void setGameInterface(GameInterface gameInterface) {
+        this.gameInterface=gameInterface;
     }
 
     /**

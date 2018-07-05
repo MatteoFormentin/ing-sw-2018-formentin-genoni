@@ -134,15 +134,14 @@ public class RMIServer extends AbstractServer implements IRMIServer{
      * @param nickname name of the player.
      * @param iRMIClient client associated to the player.*/
     @Override
-    public void login(String nickname, IRMIClient iRMIClient) throws RemoteException {
+    public void login(String nickname, IRMIClient iRMIClient){
         RMIPlayer player = new RMIPlayer(iRMIClient);
         player.setNickname(nickname);
         try {
-            if (!getServerController().login(player)) {
-                throw new RemoteException();
-            }
-        } catch (PlayerNetworkException e) {
-            e.printStackTrace();
+            player.ping();
+            getServerController().login(player);
+        }catch (RemoteException ex){
+            System.out.println("il giocatore rmi che voleva fare il login non può perchè ");
         }
     }
 

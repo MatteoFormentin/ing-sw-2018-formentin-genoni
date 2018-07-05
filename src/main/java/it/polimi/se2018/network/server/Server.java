@@ -1,11 +1,20 @@
 package it.polimi.se2018.network.server;
 
 import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.list_event.event_received_by_server.EventServer;
+import it.polimi.se2018.list_event.event_received_by_server.ServerVisitor;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.ControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.ControllerEndTurn;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGame;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGameVisitor;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game.LoginRequest;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.MessageError;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.MessageOk;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartPlayerTurn;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdatePlayerConnection;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.UpdateNamePlayersDuringSetUp;
 import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.network.RemotePlayer;
@@ -31,7 +40,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  *
  * @author DavideMammarella
  */
-public class Server implements ServerController, TimerCallback {
+public class Server implements ServerController, TimerCallback, ServerVisitor, EventPreGameVisitor {
 
     //Porta su cui si appoggierà la comunicazione Socket
     public static int SOCKET_PORT;
@@ -260,11 +269,9 @@ public class Server implements ServerController, TimerCallback {
     /**
      * Remote method used to log the user to the server with his nickname.
      *
-     * @param remotePlayer reference to RMI or Socket Player.
-     * @return true if the user is logged, false otherwise.
+     * @param remotePlayer reference to RMI or Socket Player.     *
      */
-    @Override
-    public boolean login(RemotePlayer remotePlayer) {
+    public void login(RemotePlayer remotePlayer) {
         synchronized (PLAYERS_MUTEX) {
 
             // SE LA STANZA è ACCESSIBILE (PRE-GAME)
@@ -310,7 +317,24 @@ public class Server implements ServerController, TimerCallback {
                 // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
                 else if (checkPlayerNicknameExists(remotePlayer.getNickname()) && checkPlayerRunning(remotePlayer.getNickname())) {
                     System.err.println("Player: " + remotePlayer.getNickname() + " already logged, use another nickname...");
-                    return false;
+                    //  return false;TODO old
+                    MessageError packet = new MessageError("Player: \" + remotePlayer.getNickname() + \" already logged, use another nickname...", false, true);
+                    //TODO controllare se va bene così
+                    Runnable exec;
+                    exec = () -> {
+                        Thread.currentThread().setName("Thread Login made");
+                        try {//TODO check with testing
+                            Thread.sleep(20);
+                            remotePlayer.sendEventToView(packet);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        } catch (RemoteException ex) {
+                            System.out.println("Il giocatore " + remotePlayer.getNickname() + "Si è scollegato dal gioco mentre chiedeva la connessione al gioco");
+                            ex.printStackTrace();
+                        }
+                        ;
+                    };
+                    (new Thread(exec)).start();
                 }
 
                 // ESISTE PLAYER CON QUEL NICKNAME MA NON è CONNESSO (NEL PRE-GAME)
@@ -328,30 +352,83 @@ public class Server implements ServerController, TimerCallback {
                     // IMPOSTO LA CONNESSIONE
                     connectPlayer(remotePlayer);
                     AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
+                    //DOPO AVER IMPOSTATO LA CONNESSIONE GLI MANDO L'OK E AGGIORNO LA LISTA DEI GIOCATORI NELLA WAIT ROOM
 
+                    MessageOk packet = new MessageOk("Login made!", false, false);
+                    UpdateNamePlayersDuringSetUp names = new UpdateNamePlayersDuringSetUp((String[]) players.toArray());
+                    RemotePlayer[] tocheck = (RemotePlayer[]) players.toArray();
+                    //TODO controllare se va bene così
+                    Runnable exec;
+                    exec = () -> {
+                        Thread.currentThread().setName("Login PreGame");
+                        int i = 0;
+                        boolean someOnDown = true;
+                        do {
+                            try {//TODO check with testing
+                                Thread.sleep(20);
+                                // è fondamentale prima mandargli gli update e poi digli ok, inquesto modo prima si aggiorna
+                                // e poi mostra il messaggio
+                                tocheck[i].sendEventToView(packet);
+                                for (; i < players.size(); i++) tocheck[i].sendEventToView(names);
+                                tocheck[i].sendEventToView(names);
+                                someOnDown = false;
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            } catch (RemoteException ex) {
+                                System.out.println("Il giocatore " + players.get(i).getNickname() + "Si è scollegato dalla wait room");
+                                ex.printStackTrace();
+                            }
+                            ;//TODO per non mettere questo try & catch progettare meglio rmi
+                        } while (someOnDown);
+                    };
+                    (new Thread(exec)).start();
                 }
-
-                Runnable exec = () -> {
-                    Thread.currentThread().setName("");
-                    try {
-                        Thread.sleep(20);
-
+           /*     //TODO controllare sulla gui/cli che vada bene così
+                MessageOk packet = new MessageOk("Relogin made!", false, false);
+                //TODO controllare se va bene così
+                Runnable exec;
+                exec = () -> {
+                    Thread.currentThread().setName("Relogin Updater");
+                    try {//TODO check with testing
+                        Thread.sleep(30);
+                        // è fondamentale prima mandargli gli update e poi digli ok, inquesto modo prima si aggiorna
+                        // e poi mostra il messaggio
+                        game.playerUp(remotePlayer.getPlayerId());
+                        remotePlayer.sendEventToView(packet);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
+                    } catch (RemoteException ex) {
+                        System.out.println("Il giocatore " + remotePlayer.getNickname() + "Si è scollegato dal gioco");
+                        ex.printStackTrace();
                     }
-                    sendPlayerNickname();
+                    ;//TODO per non mettere questo try & catch progettare meglio rmi
                 };
-                (new Thread(exec)).start();
-
-                return true;
+                (new Thread(exec)).start();*/
             }
 
             // SE LA STANZA NON è ACCESSIBILE (IN-GAME)
             else {
                 // ESISTE IL PLAYER CON QUEL NICKNAME ED è CONNESSO
                 if (nicknameExist(remotePlayer.getNickname()) && isPlayerConnected(remotePlayer.getNickname())) {
+                    MessageError packet = new MessageError("", false, false);
+                    //TODO controllare se va bene così
+                    Runnable exec;
+                    exec = () -> {
+                        Thread.currentThread().setName("Sorry \" + remotePlayer.getNickname() + \" but the room is closed and your nickname is already a player in the game!");
+                        try {//TODO check with testing
+                            Thread.sleep(30);
+                            // è fondamentale prima mandargli gli update e poi digli ok, inquesto modo prima si aggiorna
+                            // e poi mostra il messaggio
+                            remotePlayer.sendEventToView(packet);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        } catch (RemoteException ex) {
+                            ex.printStackTrace();
+                        }
+                        ;//TODO per non mettere questo try & catch progettare meglio rmi
+                    };
+                    (new Thread(exec)).start();
                     System.err.println("Sorry " + remotePlayer.getNickname() + " but the room is closed and your nickname is already a player in the game!");
-                    return false;
                 }
 
                 // ESISTE IL PLAYER CON QUEL NICKNAME E NON è CONNESSO
@@ -372,31 +449,66 @@ public class Server implements ServerController, TimerCallback {
                     connectPlayer(remotePlayer);
 
                     // RE INTEGRAZIONE NEL GIOCO
+                    RemotePlayer[] toCheck = (RemotePlayer[]) players.toArray();
                     players.add(remotePlayer);
                     playerConnected[id] = true;
+                    String[] names = (String[]) players.toArray();
 
-
+                    //INVIO DELLA RICONNESSIONE A TUTTI I GIOCATORI GIA COLLEGATI E IL MESSAGE OK A CHI SI é RICOLLEGATO
+                    UpdatePlayerConnection packet = new UpdatePlayerConnection(remotePlayer.getPlayerId(), remotePlayer.getNickname());
+                    MessageOk okmessage = new MessageOk("Effettuata riconnessione", false, false);
                     Runnable exec = () -> {
                         Thread.currentThread().setName("");
-                        try {
-                            Thread.sleep(2);
-
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
-                        }
+                        int i = 0;
+                        boolean someOnDown = true;
                         reLogPlayer(id);
+                        do {
+                            try {//TODO check with testing
+                                Thread.sleep(20);
+                                // è fondamentale prima mandargli gli update e poi digli ok, inquesto modo prima si aggiorna
+                                // e poi mostra il messaggio
+                                toCheck[i].sendEventToView(okmessage);
+                                for (; i < players.size(); i++) toCheck[i].sendEventToView(packet);
+                                someOnDown = false;
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            } catch (RemoteException ex) {
+                                System.out.println("Il giocatore " + players.get(i).getNickname() + "Si è scollegato dalla wait room");
+                                ex.printStackTrace();
+                            }
+                            ;//TODO per non mettere questo try & catch progettare meglio rmi
+                        } while (someOnDown);
+
                     };
                     (new Thread(exec)).start();
-                    return true;
 
                     //this.game.joinGame(id);
                 } else {
                     System.err.println("Room is closed, " + remotePlayer.getNickname() + " can't access!");
-                    return false;
+                    MessageError error = new MessageError("Room is closed", false, true);
+                    Runnable exec = () -> {
+                        Thread.currentThread().setName("Thread Room si closed");
+                        try {//TODO check with testing
+                            Thread.sleep(20);
+                            // è fondamentale prima mandargli gli update e poi digli ok, inquesto modo prima si aggiorna
+                            // e poi mostra il messaggio
+                            remotePlayer.sendEventToView(error);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        } catch (RemoteException ex) {
+                            System.out.println("Il giocatore " + remotePlayer.getNickname() + "Si è scollegato dalla wait room");
+                            ex.printStackTrace();
+                        }
+
+                    };
+                    (new Thread(exec)).start();
                 }
             }
         }
     }
+
+
+
 
     int getIdByNickname(String nickname) {
         for (int i = 0; i < 4; i++) {
@@ -444,16 +556,6 @@ public class Server implements ServerController, TimerCallback {
         }
     }
 
-
-    /**
-     * Remote method used to send to the server a request to unleash an event.
-     *
-     * @param eventController object that will use the server to unleash the event associated.
-     */
-    @Override
-    public void sendEventToController(EventController eventController) {
-        game.sendEventToController(eventController);
-    }
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
@@ -614,4 +716,27 @@ public class Server implements ServerController, TimerCallback {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
     }
 
+
+    //******************************************** Visitor pattern ***********************************************
+
+    @Override
+    public void sendEventToController(EventServer eventController) {
+        eventController.acceptGeneric(this);
+    }
+
+
+    @Override
+    public void visit(EventController event) {
+        game.sendEventToController(event);
+    }
+
+    @Override
+    public void visit(EventPreGame event) {
+        event.acceptGeneric(this);
+    }
+
+    @Override
+    public void visit(LoginRequest event) {
+        login(event.getRemotePleyer());
+    }
 }

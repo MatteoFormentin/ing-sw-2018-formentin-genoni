@@ -35,7 +35,7 @@ public class RMIPlayer extends RemotePlayer {
     public RMIPlayer(IRMIClient iRMIClient) {
         // TODO FORSE RIMUOVI PLAYERRUNNING
         playerRunning = true;
-        playerConnection="rmi";
+        playerConnection = "rmi";
         this.iRMIClient = iRMIClient;
     }
 
@@ -49,7 +49,7 @@ public class RMIPlayer extends RemotePlayer {
      * @param eventClient object that will use the client to unleash the update associated.
      */
     @Override
-    public void sendEventToView(EventClient eventClient) throws RemoteException{
+    public void sendEventToView(EventClient eventClient) throws RemoteException {
         iRMIClient.sendEventToView(eventClient);
     }
 
@@ -58,14 +58,8 @@ public class RMIPlayer extends RemotePlayer {
      * If the remote player that will call the ping will not found the disconnection of the player will be called.
      */
     @Override
-    public void ping(){
-            try{
-                this.iRMIClient.ping();
-                playerRunning=true;
-            } catch (RemoteException e){
-                System.err.println("Player: "+getNickname()+" has a broken connection.\nTrying to delete the connection from the server...");
-                disconnect();
-            }
+    public void ping()throws RemoteException {
+        this.iRMIClient.ping();
     }
 
     /**
@@ -73,7 +67,8 @@ public class RMIPlayer extends RemotePlayer {
      * the correct reception of a data packet. (SOCKET)
      */
     @Override
-    public void sendAck() { }
+    public void sendAck() {
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     // SUPPORTER METHODS
@@ -93,18 +88,17 @@ public class RMIPlayer extends RemotePlayer {
      * This method will also set the playerRunning boolean to false in order to remove correctly the user.
      */
     @Override
-    public void disconnect(){
+    public void disconnect() {
         //Server.removeRMIPlayer(this);
-        playerRunning=false;
+        playerRunning = false;
         try {
             UnicastRemoteObject.unexportObject(iRMIClient, true);
-        }catch(NoSuchObjectException ex){
+        } catch (NoSuchObjectException ex) {
             System.err.println("No reference to the remote object.");
         }
-        AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname()+" has been removed!").reset());
+        AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname() + " has been removed!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
     }
-
 
 
 }
