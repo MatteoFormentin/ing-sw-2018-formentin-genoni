@@ -8,7 +8,9 @@ import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.SocketObject;
+import it.polimi.se2018.network.server.Server;
 import org.fusesource.jansi.AnsiConsole;
+import sun.awt.image.ImageWatched;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -34,14 +36,13 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
     static HashMap<String, SocketPlayer> socketPlayers;
     // comunicazione con il server
-    private final Server2 server;
+
     private Socket tunnel;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
 
-    private LinkedList<SocketObject>  eventViews;
-
-
+    private LinkedList<SocketObject> eventViews;
+    private SocketServer serverController;
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -52,10 +53,10 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
      * @param serverController server interface, used as controller to communicate with the server.
      * @param connection       tunnel used to manage the socket connection.
      */
-    public SocketPlayer(Server2 serverController, Socket connection) {
-        this.server = serverController;
-
+    public SocketPlayer(SocketServer serverController, Socket connection) {
+        this.serverController = serverController;
         this.tunnel = connection;
+        this.eventViews=new LinkedList<>();
 
         try {
             this.outputStream = new ObjectOutputStream(tunnel.getOutputStream());
@@ -78,22 +79,66 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
     @Override
     public void run() {
         Thread.currentThread().setName("Socket Player Thread");
-        boolean flag = true;
-        while (flag && tunnel.isConnected()) {
-            try {
-                SocketObject received = (SocketObject) inputStream.readObject();
-                socketObjectTraducer(received);
-            } catch (EOFException e) {
-                System.err.println("Player: " + getNickname() + " has made a disconnection!");
-                // se si disconnette metto il running a false e tengo in memoria il player
-                closeConnection();
-                flag = false;
-            } catch (IOException | ClassNotFoundException ex) {
-                ex.printStackTrace();
-                flag = false;
+        try {
+            System.out.println("Waiting for messages.");
+            inputStream = new ObjectInputStream(tunnel.getInputStream());
+            outputStream = new ObjectOutputStream(tunnel.getOutputStream());
+            boolean loop = true;
+
+            while (loop) {
+                try {
+                    SocketObject received = (SocketObject) inputStream.readObject();
+                    String type = received.getType();
+
+
+                    System.out.println(type);
+                    System.out.println(received.getStringField());
+                    if (type == null) {
+                        if (tunnel.isClosed()) System.out.println("UScito");
+                        else {
+                            SocketObject packet = new SocketObject();
+                            packet.setType("Login");
+                            sendObject(packet);
+                        }
+                        //TODO loop = false; se non ricevo nulla lo devo disconnettere?
+                        //getGameInterface().disconnectFromGameRoom(this);
+                        // } else {
+                        if (type.equals("Login")) {
+                            try {
+                                setNickname(received.getStringField());
+                                serverController.login(this);
+                                System.out.println("Effettuato il login con successo");
+                            } catch (RoomIsFullException | PlayerAlreadyLoggedException ex) {
+                                SocketObject packet = new SocketObject();
+                                packet.setType(ex.getMessage());
+                                sendObject(packet);
+                            }
+                        } else if (type.equals("Disconnect")) {
+                            SocketObject packet = new SocketObject();
+                            packet.setType("Disconnect");
+                            sendObject(packet);
+                            //TODO legal disconnect
+                        } else if (type.equals("Pong")) {
+                            SocketObject packet = new SocketObject();
+                            packet.setType("Ping");
+                            sendObject(packet);
+                            //TODO aveva richiesto il pingnon fare nulla
+                        }
+                    }
+                    SocketObject packet = new SocketObject();
+                    packet.setType("Server");
+                    sendObject(packet);
+                } catch (Exception ex) {
+                    //TODO loop = false trovata un'eccezione
+                    ex.printStackTrace();
+                }
             }
+            tunnel.close();
+            //TODO send info of the disconnection ti the gameboard
+            System.out.println("Connection closed.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        closeConnection();
     }
 
     /**
@@ -101,39 +146,12 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
      *
      * @param socketObject object that will use the server to unleash the event associated.
      */
-    private void socketObjectTraducer(SocketObject socketObject) {
-        String type = socketObject.getType();
 
-        if (type.equals("Login")) {
-            try {
-                setNickname(socketObject.getStringField());
-                setPlayerRunning(true);
-                server.login(this);
-                sendAck();
-            } catch (RoomIsFullException | PlayerAlreadyLoggedException ex) {
-                System.err.println("Can't Login using Socket Connection.");
-                sendNack();
-            }
-        }
-
-        if (type.equals("Event")) {
-            sendEventToController((EventController) socketObject.getObject());
-        }
-
-    }
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
     //------------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Method used to log the user to the server with his nickname.
-     *
-     * @param nickname name of the player.
-     */
-    public void login(String nickname) throws PlayerAlreadyLoggedException, PlayerNetworkException, RoomIsFullException {
-
-    }
 
     /**
      * Method used to send to the server a request to unleash an event.
@@ -141,7 +159,7 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
      * @param eventController object that will use the server to unleash the event associated.
      */
     public void sendEventToController(EventController eventController) {
-        this.server.sendEventToGameRoom(eventController);
+        this.getGameInterface().sendEventToGameRoom(eventController);
     }
 
     //------------------------------------------------------------------------------------------------------------------

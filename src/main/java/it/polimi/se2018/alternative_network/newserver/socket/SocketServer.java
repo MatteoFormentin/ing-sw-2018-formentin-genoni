@@ -2,9 +2,16 @@ package it.polimi.se2018.alternative_network.newserver.socket;
 
 import it.polimi.se2018.alternative_network.newserver.AbstractServer2;
 import it.polimi.se2018.alternative_network.newserver.Server2;
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
+import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.ServerSideException;
+import it.polimi.se2018.exception.network_exception.server.ServerStartException;
+import it.polimi.se2018.network.server.ServerController;
 
+import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -18,26 +25,27 @@ public class SocketServer extends AbstractServer2 {
 
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
-    private final AtomicBoolean running = new AtomicBoolean();
-    // socket lato server
-    private ServerSocket serverSocket;
+    private final AtomicBoolean running;
 
-    // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
-    //static ArrayList<SocketPlayer> socketPlayers= new ArrayList<>();
-    private ClientGatherer clientGatherer;
+
+    // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO LA CONNESSIONE AL SERVER SENZA LOGIN
+    private LinkedList<SocketPlayer> socketPlayers;
+    private ClientGatherer2 clientGatherer2;
 
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Socket Server constructor.
      *
-     * @param serverController server interface, used as controller to communicate with the server.
+     * @param serverController server implementation
+     * @param host host
+     * @param port port
      */
     public SocketServer(Server2 serverController, String host, int port) {
         super(serverController, host, port);
-        running.set(false);
+        socketPlayers = new LinkedList<>();
+        running = new AtomicBoolean(false);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -48,19 +56,30 @@ public class SocketServer extends AbstractServer2 {
      * Starter for Socket Server.
      */
     @Override
-    public void startServer() {
+    public void startServer()throws ServerStartException {
         try {
-            if (!running.get()) {
-                // Inizializzo il server socket
-                clientGatherer = new ClientGatherer(getPort(), getServerController());
-                running.set(true);
-                new Thread(clientGatherer).start();
-            } else {
-                throw new ServerSideException();
-            }
-        } catch (ServerSideException e) {
-            System.err.println("Socket Server Connection refused on this port!");
+            //servizio offerto al client
+            clientGatherer2 = new ClientGatherer2(this, getPort());
+            running.set(true);
+            clientGatherer2.start();
+        }catch(IOException ex){
+            throw new ServerStartException(ex.getMessage());
         }
+
+    }
+
+
+    protected synchronized void addClient(Socket clientConnection) {
+
+        // Creo un VirtualClient per ogni nuovo client,
+        // per ogni client un thread che ascolta i messaggi provenienti da quel client
+        SocketPlayer newPlayer = new SocketPlayer(this,clientConnection);
+        socketPlayers.add(newPlayer);
+        newPlayer.run();
+    }
+
+    protected synchronized void login(SocketPlayer newSocketPlayer)throws PlayerAlreadyLoggedException,RoomIsFullException {
+        getServerController().login(newSocketPlayer);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -80,6 +99,6 @@ public class SocketServer extends AbstractServer2 {
      * Stopper for the client gatherer thread.
      */
     public void stopServer() {
-        clientGatherer.stop();
+        clientGatherer2.stop();
     }
 }

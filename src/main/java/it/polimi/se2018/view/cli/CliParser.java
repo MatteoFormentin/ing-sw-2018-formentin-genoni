@@ -129,12 +129,13 @@ public class CliParser {
     /**
      * Read port
      */
-    public int parsePort(int lowBound, int upperBound, int alreadyTaken) {
+    public int parsePort(int lowBound) {
+        int upperBound = 65535;// l'upper bound delle porte è fisso, va bene anche harcodato
         boolean flag = false;
         int parsed;
         do {
             parsed = parseInt();
-            if (!(parsed < lowBound || parsed > upperBound || parsed == alreadyTaken)) {
+            if (!(parsed < lowBound || parsed > upperBound)) {
                 flag = true;
             } else {
                 cliMessage.showInputNotValid();

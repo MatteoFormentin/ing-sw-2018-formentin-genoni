@@ -1,23 +1,15 @@
 package it.polimi.se2018.alternative_network.client.socket;
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
-import it.polimi.se2018.alternative_network.client.ServerSocketInterface;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.SocketObject;
-import it.polimi.se2018.network.server.Server;
 import it.polimi.se2018.view.UIInterface;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.SocketException;
 import java.util.LinkedList;
-import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -72,7 +64,7 @@ public class SocketClient2 extends  AbstractClient2 {
      */
     @Override
     public void shutDownClient2() {
-
+        //TODO mettere lo shutDown
     }
 
 
@@ -106,7 +98,7 @@ public class SocketClient2 extends  AbstractClient2 {
         while (stayAlive.get()) {
             //TODO dare qualche spazio di tempo con un altro ciclo while
             if(!eventControllers.isEmpty()){
-                eventControllers.getFirst();
+                server.send(eventControllers.getFirst());
                 eventControllers.removeFirst();
             }
         }
