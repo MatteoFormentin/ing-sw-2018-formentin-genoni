@@ -86,9 +86,9 @@ public class Server2 implements PrincipalServer {
             IP_SERVER = input.parseIp();
             if (IP_SERVER.equals("0")) IP_SERVER = "localhost";
             System.out.println("inserisci la porta per RMI: ");
-            RMI_PORT = input.parsePort(1024, 65535, 0);
+            RMI_PORT = input.parsePort(1024);
             System.out.println("inserisci la porta per SOCKET: ");
-            SOCKET_PORT = input.parsePort(1024, 65535, RMI_PORT);
+            SOCKET_PORT = input.parsePort(1024);
         }
         //creazione standard sei server
         //   RMIServer = new RMIServer(this, IP_SERVER, RMI_PORT);

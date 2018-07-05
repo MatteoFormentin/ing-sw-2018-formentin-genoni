@@ -15,7 +15,7 @@ import static org.fusesource.jansi.Ansi.Color.BLUE;
 import static org.fusesource.jansi.Ansi.ansi;
 
 /**
- * Cass that build and destroy the connection with the Rmi player
+ * Class that build and destroy the connection with the Rmi player
  * this is the class that can receive the messages from the player
  */
 public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient {
@@ -43,6 +43,7 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
     @Override
     public void addClient(String nickname, RMIClientInterface client) throws PlayerAlreadyLoggedException, RoomIsFullException {
         //il collegamento viene assegnato al RMIPLayer
+        //visto che ho già il nome posso richiedere direttamente il login
         RMIPlayer player = new RMIPlayer(nickname, client);
         mainServer.login(player);
     }

@@ -1,4 +1,4 @@
-package it.polimi.se2018.alternative_network.client;
+package it.polimi.se2018.alternative_network.client.socket;
 
 import it.polimi.se2018.network.SocketObject;
 
