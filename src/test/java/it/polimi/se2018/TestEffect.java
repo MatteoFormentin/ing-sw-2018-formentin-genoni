@@ -5,6 +5,7 @@ import it.polimi.se2018.controller.effect.InsertDice;
 import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
 import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
+import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
@@ -49,12 +50,12 @@ public class TestEffect {
 
         fakeServer = new ServerController() {
             @Override
-            public boolean login(RemotePlayer remotePlayer) throws PlayerNetworkException {
-                return false;
+            public void login(RemotePlayer remotePlayer){
+
             }
 
             @Override
-            public void sendEventToController(EventController eventController) {
+            public void sendEventToController(EventServer eventController) {
 
             }
 

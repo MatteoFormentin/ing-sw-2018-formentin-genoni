@@ -1,6 +1,7 @@
 package it.polimi.se2018.network.server;
 
 import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
+import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.network.RemotePlayer;
@@ -26,14 +27,14 @@ public interface ServerController {
      * @param remotePlayer reference to RMI or Socket Player.
      * @return true if the user is logged, false otherwise.
      */
-    boolean login(RemotePlayer remotePlayer) throws PlayerNetworkException;
+    void login(RemotePlayer remotePlayer);
 
     /**
      * Remote method used to send to the server a request to unleash an event.
      *
      * @param eventController object that will use the server to unleash the event associated.
      */
-    void sendEventToController(EventController eventController);
+    void sendEventToController(EventServer eventController);
 
     /**
      * Remote method used to start the game.

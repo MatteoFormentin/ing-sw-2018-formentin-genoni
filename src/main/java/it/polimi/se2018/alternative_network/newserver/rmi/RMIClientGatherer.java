@@ -20,19 +20,19 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient {
     private static RMIClientGatherer instance;
-    private transient Server2 mainServer;
+    private transient RMIServer server;
 
 
-    private RMIClientGatherer(Server2 mainServer) throws RemoteException {
-        super(mainServer.getRMI_PORT());
-        this.mainServer = mainServer;
+    private RMIClientGatherer(RMIServer server,int port) throws RemoteException {
+        super(port);
+        this.server=server;
     }
     //********************************* FROM THE SERVER **********************************************
     //********************************* FROM THE SERVER **********************************************
     //********************************* FROM THE SERVER **********************************************
 
-    static RMIClientGatherer getSingletonClientGatherer(Server2 mainServer) throws RemoteException {
-        if (instance == null) instance = new RMIClientGatherer(mainServer);
+    static RMIClientGatherer getSingletonClientGatherer(RMIServer mainServer,int port) throws RemoteException {
+        if (instance == null) instance = new RMIClientGatherer(mainServer,port);
         return instance;
     }
     //__________________________________________________________
@@ -45,7 +45,7 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
         //il collegamento viene assegnato al RMIPLayer
         //visto che ho già il nome posso richiedere direttamente il login
         RMIPlayer player = new RMIPlayer(nickname, client);
-        mainServer.login(player);
+        //server.a
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
     @Override
     public void sendEventToController(EventController event) {
 
-        mainServer.sendEventToGameRoom(event);
+      //  mainServer.sendEventToGameRoom(event);
     }
 
     public String sayHelloToGatherer() {
