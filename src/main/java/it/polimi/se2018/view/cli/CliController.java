@@ -101,6 +101,11 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         System.out.println("main esaurito");
         instance.initConnection();
         instance.login();
+
+        boolean flag = true;
+        while (flag) {
+
+        }
     }
 
     /**

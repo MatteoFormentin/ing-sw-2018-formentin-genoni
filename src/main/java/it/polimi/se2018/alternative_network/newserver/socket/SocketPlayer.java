@@ -9,7 +9,6 @@ import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.SocketObject;
 import org.fusesource.jansi.AnsiConsole;
-import sun.awt.image.ImageWatched;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -108,6 +107,7 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
         if (type.equals("Login")) {
             try {
                 setNickname(socketObject.getStringField());
+                setPlayerRunning(true);
                 server.login(this);
                 sendAck();
             } catch (RoomIsFullException | PlayerAlreadyLoggedException ex) {

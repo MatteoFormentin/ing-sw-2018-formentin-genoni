@@ -4,9 +4,9 @@ import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.list_event.event_received_by_controller.ControllerEndTurn;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.MessageError;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.StartPlayerTurn;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.UpdateNamePlayersDuringSetUp;
 import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.network.RemotePlayer;
 import it.polimi.se2018.network.server.rmi.RMIServer;
@@ -201,6 +201,7 @@ public class Server implements ServerController, TimerCallback {
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("From now the room will not be joinable, except from a RElogin").reset());
         roomJoinable = false;
 
+
         String[] playersName = new String[players.size()];
         int i = 0;
         for (RemotePlayer player : players) {
@@ -209,6 +210,7 @@ public class Server implements ServerController, TimerCallback {
         }
 
         game = new Controller(this, playersName, null);
+
         for (RemotePlayer player : players) {
             try {
                 StartGame packet = new StartGame(playersName);
@@ -303,7 +305,6 @@ public class Server implements ServerController, TimerCallback {
                         //startPreGameThread(remotePlayer);
                         startGame();
                     }
-                    return true;
                 }
 
                 // ESISTE PLAYER CON QUEL NICKNAME ED è CONNESSO
@@ -322,18 +323,31 @@ public class Server implements ServerController, TimerCallback {
                     AnsiConsole.out.println(ansi().fg(DEFAULT).a("Welcome, " + nickname + " I noticed your disconnection.\nI'm trying to relog you in the game...").reset());
 
                     // ASSEGNO UN NUOVO REMOTEPLAYER AL NICKNAME
-                    replacePlayer(id, remotePlayer);
+                    //replacePlayer(id, remotePlayer);
 
                     // IMPOSTO LA CONNESSIONE
                     connectPlayer(remotePlayer);
                     AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
 
-                    return true;
                 }
+
+                Runnable exec = () -> {
+                    Thread.currentThread().setName("");
+                    try {
+                        Thread.sleep(20);
+
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    sendPlayerNickname();
+                };
+                (new Thread(exec)).start();
+
+                return true;
             }
 
             // SE LA STANZA NON è ACCESSIBILE (IN-GAME)
-            else if (!roomJoinable) {
+            else {
                 // ESISTE IL PLAYER CON QUEL NICKNAME ED è CONNESSO
                 if (nicknameExist(remotePlayer.getNickname()) && isPlayerConnected(remotePlayer.getNickname())) {
                     System.err.println("Sorry " + remotePlayer.getNickname() + " but the room is closed and your nickname is already a player in the game!");
@@ -360,11 +374,20 @@ public class Server implements ServerController, TimerCallback {
                     // RE INTEGRAZIONE NEL GIOCO
                     players.add(remotePlayer);
                     playerConnected[id] = true;
-                    // game.playerUp(id);
 
-                    MessageError m = new MessageError("RICONNESSO", true);
-                    m.setPlayerId(id);
-                    sendEventToView(m);
+
+                    Runnable exec = () -> {
+                        Thread.currentThread().setName("");
+                        try {
+                            Thread.sleep(2);
+
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        reLogPlayer(id);
+                    };
+                    (new Thread(exec)).start();
+                    return true;
 
                     //this.game.joinGame(id);
                 } else {
@@ -372,7 +395,6 @@ public class Server implements ServerController, TimerCallback {
                     return false;
                 }
             }
-            return true;
         }
     }
 
@@ -407,25 +429,21 @@ public class Server implements ServerController, TimerCallback {
     /**
      * Joiner for the game.
      *
-     * @param remotePlayer reference to RMI or Socket Player.
+     * @param index reference to RMI or Socket Player.
      */
-    /*
-    public void joinGame(RemotePlayer remotePlayer) {
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Relogin made!").reset());
 
-        try {
-            JoinGame packet = new JoinGame();
-            packet.setPlayerName(remotePlayer.getNickname());
-            packet.setPlayerId(remotePlayer.getPlayerId());
-            remotePlayer.sendEventToView(packet);
-        } catch (RemoteException ex) {
-            // DISCONNESSIONE
-            remotePlayer.disconnect();
-            this.playerCounter--;
+    public void reLogPlayer(int index) {
+        game.playerUp(index);
+    }
+
+    public void sendPlayerNickname() {
+        for (RemotePlayer p : players) {
+            UpdateNamePlayersDuringSetUp packet = new UpdateNamePlayersDuringSetUp(playerNickname);
+            packet.setPlayerId(p.getPlayerId());
+            sendEventToView(packet);
         }
+    }
 
-        this.game.joinGame(remotePlayer.getPlayerId());
-    }*/
 
     /**
      * Remote method used to send to the server a request to unleash an event.
@@ -560,20 +578,6 @@ public class Server implements ServerController, TimerCallback {
         else game.winBecauseOfDisconnection(getLastRunningPlayer());
     }
 
-    /**
-     * Replacer for player.
-     * The replacer work on the players ID, in order to not break the array list of RemotePlayer.
-     * Login supporter method.
-     *
-     * @param id              ID of the player associated to the client.
-     * @param newRemotePlayer new player used to replace the old one.
-     */
-    private void replacePlayer(int id, RemotePlayer newRemotePlayer) {
-        players.set(id, newRemotePlayer);
-        String nickname = newRemotePlayer.getNickname();
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Disconnected player " + nickname + " has been replaced from a new client!").reset());
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
-    }
 
     private void replacePlayerInGame(int id, RemotePlayer newRemotePlayer) {
         if (newRemotePlayer.getPlayerConnection() == "rmi") {
@@ -609,104 +613,5 @@ public class Server implements ServerController, TimerCallback {
         AnsiConsole.out.println(ansi().fg(GREEN).a("Player " + nickname + " has been connected!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
     }
-
-
-    /**
-     * Disonnecter for player.
-     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
-     * Login supporter method.
-     *
-     * @param remotePlayer reference to RMI Player.
-     */
-    /*
-    public static void removeRMIPlayer(RemotePlayer remotePlayer) {
-        rmiServer.removePlayer(remotePlayer);
-        AnsiConsole.out.println(ansi().fg(GREEN).a("RMI Player disconnected!").reset());
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
-    }*/
-
-    /**
-     * Disconnecter for player.
-     * The disconnecter work on player connection state flag, putting it false determining a "disconnection established".
-     * Login supporter method.
-     */
-    /*
-    public void removeSOCKETPlayer(RemotePlayer remotePlayer) {
-        SocketPlayer.removePlayer(remotePlayer);
-        AnsiConsole.out.println(ansi().fg(GREEN).a("Socket Player disconnected!").reset());
-        AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------\n").reset());
-    }*/
-
-    /*
-    private class PlayerDisconnected {
-
-        private ArrayList<OnePlayer> players;
-
-        PlayerDisconnected() {
-            players = new ArrayList<>();
-        }
-
-        synchronized void addPlayer(int id, String nicknme) {
-            players.add(new OnePlayer(id, nicknme));
-        }
-
-        synchronized void remove(int id) {
-            for (OnePlayer p : players) {
-                if (p.getId() == id) players.remove(p);
-            }
-        }
-
-        synchronized void remove(String nickname) {
-            for (OnePlayer p : players) {
-                if (p.getNickname().equals(nickname)) players.remove(p);
-            }
-        }
-
-        synchronized boolean contains(int id) {
-            for (OnePlayer p : players) {
-                if (p.getId() == id) return true;
-            }
-            return false;
-        }
-
-        synchronized boolean contains(String nickname) {
-            for (OnePlayer p : players) {
-                if (p.getNickname().equals(nickname)) return true;
-            }
-            return false;
-        }
-
-        synchronized String get(int id) {
-            for (OnePlayer p : players) {
-                if (p.getId() == id) return p.getNickname();
-            }
-            return "";
-        }
-
-        synchronized int get(String nickname) {
-            for (OnePlayer p : players) {
-                if (p.getNickname().equals(nickname)) return p.getId();
-            }
-            return -1;
-        }
-
-        private class OnePlayer {
-            private int id;
-            private String nickname;
-
-            OnePlayer(int id, String nickname) {
-                this.id = id;
-                this.nickname = nickname;
-            }
-
-            synchronized public int getId() {
-                return id;
-            }
-
-            synchronized public String getNickname() {
-                return nickname;
-            }
-        }
-    }*/
 
 }

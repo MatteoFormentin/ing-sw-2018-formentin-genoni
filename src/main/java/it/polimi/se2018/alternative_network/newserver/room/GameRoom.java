@@ -1,15 +1,12 @@
 package it.polimi.se2018.alternative_network.newserver.room;
 
-import it.polimi.se2018.alternative_network.newserver.PrincipalServer;
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
-import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.controller.Controller;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnectionDuringGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnectionDuringSetup;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdatePlayerConnection;
 import it.polimi.se2018.model.UpdateRequestedByServer;
@@ -222,9 +219,10 @@ public class GameRoom implements TimerCallback, GameInterface {
 
     @Override
     public void sendEventToView(EventView eventView) {
+        System.out.println("!!!GAMEROOM sendEventToView");
         eventView.setIdGame(idGameBoard);
         try {
-            if (players.get(eventView.getPlayerId()).isPlayerRunning())
+            //  if (players.get(eventView.getPlayerId()).isPlayerRunning())
                 players.get(eventView.getPlayerId()).sendEventToView(eventView);
         } catch (ConnectionPlayerException ex) {
             removeRemotePlayer(players.get(eventView.getPlayerId()));
