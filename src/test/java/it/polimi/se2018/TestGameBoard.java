@@ -57,7 +57,7 @@ public class TestGameBoard {
         UpdaterView updaterView = new UpdaterView(gameBoard, null, gameRoom);
         gameBoard.startGame(updaterView);
         //testa fino al 9° round
-        int numberPlayer = 4;
+        int numberPlayer = names.length;
         int maxRound = 10;
         for (int round = 0; round < numberPlayer; round++) {
             //senso orario
