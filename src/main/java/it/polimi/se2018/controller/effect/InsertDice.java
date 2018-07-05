@@ -8,7 +8,7 @@ import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.dice.Dice;
 
 /**
- * the effect that able to inset a dice
+ * Class that manage the inserting of the dice on a window pattern.
  */
 public class InsertDice extends EffectGame {
     private int line;
@@ -18,6 +18,14 @@ public class InsertDice extends EffectGame {
     private boolean valueR;
     private boolean firstDieOfTheTurn;
 
+    /**
+     * Constructor.
+     *
+     * @param adjacentR true if need to be near a dice, false otherwise.
+     * @param colorR true if need to check this restriction, false otherwise.
+     * @param valueR true if need to check this restriction, false otherwise.
+     * @param firstDieOfTheTurn true if it's the first dice of the turn, false otherwise.
+     */
     public InsertDice(boolean adjacentR, boolean colorR, boolean valueR, boolean firstDieOfTheTurn) {
         this.adjacentR = adjacentR;
         this.colorR = colorR;
@@ -25,6 +33,14 @@ public class InsertDice extends EffectGame {
         this.firstDieOfTheTurn = firstDieOfTheTurn;
     }
 
+    /**
+     * Method used to applicate an effect to the game.
+     *
+     * @param gameBoard gameboard on when the player are playing.
+     * @param idPlayer ID of the player that requested the effect.
+     * @param infoMove information of the moves played with the effect.
+     * @throws GameException exception derivate from game restriction.
+     */
     @Override
     public void doEffect(GameBoard gameBoard, int idPlayer, int[] infoMove) throws GameException {
         if (infoMove.length != 2) throw new NumberInfoWrongException();
@@ -35,12 +51,22 @@ public class InsertDice extends EffectGame {
         getGameBoard().insertDice(getIdPlayer(),line,column,adjacentR,colorR,valueR, firstDieOfTheTurn);
     }
 
+    /**
+     * Method used to undo the application of an effect to the game.
+     *
+     * @throws GameException exception derivate from game restriction.
+     */
     @Override
     public void undo() throws GameException {
         Dice dice =getGameBoard().getPlayer(getIdPlayer()).getPlayerWindowPattern().removeDice(line,column);
         getGameBoard().getPlayer(getIdPlayer()).getHandDice().addFirst(dice);
     }
 
+    /**
+     * Method used to ask an event view.
+     *
+     * @return cell of the window for the dice inserting.
+     */
     @Override
     public EventClient eventViewToAsk() {
         return new SelectCellOfWindow();
