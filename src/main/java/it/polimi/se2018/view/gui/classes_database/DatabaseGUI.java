@@ -1,4 +1,4 @@
-package it.polimi.se2018.view;
+package it.polimi.se2018.view.gui.classes_database;
 
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
@@ -8,15 +8,45 @@ import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.DiceStack;
 import it.polimi.se2018.view.gui.classes_database.PlayerOnline;
+import it.polimi.se2018.view.gui.gamestage.GuiGame;
+import it.polimi.se2018.view.gui.gamestage.ShowValue;
 import it.polimi.se2018.view.gui.stage.WaitGame;
 import javafx.collections.ObservableList;
 
 import java.util.LinkedList;
 
-public class DatabaseGUI implements ViewModelVisitor {
-
+public class DatabaseGUI{ //implements ViewModelVisitor {
+/*
     private WaitGame waitGame;
+    private GuiGame guiGame;
+   // private ShowCardBox showCardBox;
 
+
+
+
+
+    private int currentRound;
+    private int currentTurn;
+    private DiceStack[] roundTrack;
+    private ToolCard[] toolCard;
+    private DiceStack dicePool;
+    private ObjectivePublicCard[] objectivePublicCards;
+    // need for 1 time
+    private WindowPatternCard windowPatternCardsToChoose;
+
+    //the players
+    private String[] playersName;
+    boolean[] connected;
+    private WindowPatternCard[] windowPatternCardOfEachPlayer;
+    private DiceStack[] handOfEachPlayer;
+    private int[] favorTokenOfEachPlayer;
+    private int[] pointsOfEachPlayer;
+    private ObjectivePrivateCard[] objectivePrivateCardOfEachPlayers; //almost all null until the end game
+    private int playerId;
+
+    //Updated stat
+
+    private int[][] ranking;
     private int currentRound;
     private int currentTurn;
     private DiceStack[] roundTrack;
@@ -99,7 +129,7 @@ public class DatabaseGUI implements ViewModelVisitor {
      *
      * @param event event received for the server
      */
-    @Override
+ /*   @Override
     public void visit(UpdateInfoCurrentTurn event) {
         currentRound = event.getCurrentRound();
         currentTurn = event.getCurrentTurn();
@@ -133,11 +163,16 @@ public class DatabaseGUI implements ViewModelVisitor {
 
     @Override
     public void visit(UpdateDisconnectionDuringSetup event) {
+
+    }
+
+    @Override
+    public void visit(UpdateNamePlayersDuringSetUp event) {
         ObservableList<PlayerOnline> allPlayerOnline= waitGame.getPlayerOnlineSingleton();
-        for (PlayerOnline x:allPlayerOnline) {
-            if(x.getNickname().equals(event.getName())){
+        for (int i=0;i<event.getPlayerNames().length;i++) {
+            if(x.getNickname().equals(event.getPlayerNames())){
                 System.out.println("trovato il player disconnesso");
-                waitGame.deletePlayerKicked(event.getName());
+                waitGame.deletePlayerKicked(event.getPlayerNames());
             }
         }
     }
@@ -147,7 +182,7 @@ public class DatabaseGUI implements ViewModelVisitor {
      *
      * @param event received by the server
      */
-    @Override
+  /*  @Override
     public void visit(UpdateDisconnectionDuringGame event) {
 
     }
@@ -155,5 +190,5 @@ public class DatabaseGUI implements ViewModelVisitor {
     @Override
     public void visit(UpdatePlayerConnection event) {
 
-    }
+    }*/
 }

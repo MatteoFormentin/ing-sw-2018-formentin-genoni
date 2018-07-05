@@ -9,6 +9,7 @@ import it.polimi.se2018.list_event.event_received_by_controller.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventView;
 import it.polimi.se2018.network.SocketObject;
 import org.fusesource.jansi.AnsiConsole;
+import sun.awt.image.ImageWatched;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import static org.fusesource.jansi.Ansi.Color.DEFAULT;
 import static org.fusesource.jansi.Ansi.Color.GREEN;
@@ -37,6 +39,8 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
     private Socket tunnel;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+
+    private LinkedList<SocketObject>  eventViews;
 
 
     //------------------------------------------------------------------------------------------------------------------
@@ -228,13 +232,6 @@ public class SocketPlayer extends RemotePlayer2 implements Runnable {
         closeConnection();
         AnsiConsole.out.println(ansi().fg(GREEN).a(getNickname() + " has been removed!").reset());
         AnsiConsole.out.println(ansi().fg(DEFAULT).a("-----------------------------------------").reset());
-    }
-
-    @Override
-    public void sayHelloClient() {
-        SocketObject packet = new SocketObject();
-        packet.setType("Ping");
-        sendObject(packet);
     }
 
     @Override

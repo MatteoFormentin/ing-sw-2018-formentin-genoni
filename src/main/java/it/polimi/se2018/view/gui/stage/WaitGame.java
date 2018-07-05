@@ -118,6 +118,18 @@ public class WaitGame {
     }
 
     /**
+     * Method for add the player to the list of the player connected
+     *
+     * @param names an array of name to add as connected
+     */
+    public void addPlayerOnline(String[] names){
+        for(int i=0; i<names.length;i++){
+            PlayerOnline player = new PlayerOnline(i,names[i],true);
+            tableView.getItems().add(player);
+        }
+    }
+
+    /**
      * Method for delete the player from the list
      *
      * @param nickname of the player that need to remove
@@ -129,6 +141,19 @@ public class WaitGame {
             if(x.getNickname().equals(nickname)) allPlayerOnline.remove(x);
         }
     }
+
+    /**
+     * Method for delete All the player from the list
+     *
+     */
+    public void deletePlayerKicked(){
+        ObservableList<PlayerOnline> allPlayerOnline;
+        allPlayerOnline = tableView.getItems();
+        for (PlayerOnline x:allPlayerOnline) {allPlayerOnline.remove(x);}
+    }
+
+
+
 
     /**
      * Method for get all the player in the game

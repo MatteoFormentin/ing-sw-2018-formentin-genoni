@@ -35,7 +35,7 @@ public class RMIPlayer extends RemotePlayer2 {
             throw new ConnectionPlayerException();
         }
     }
-
+/*
     @Override
     public void sayHelloClient() throws ConnectionPlayerException {
         try {
@@ -45,7 +45,7 @@ public class RMIPlayer extends RemotePlayer2 {
             AnsiConsole.out.println(ansi().fg(BLUE).a("Non connesso.").reset());
             throw new ConnectionPlayerException();
         }
-    }
+    }*/
 
     @Override
     public void kickPlayerOut() {

@@ -290,6 +290,11 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     }
 
     @Override
+    public void loginOk() {
+
+    }
+
+    @Override
     public void restartConnection(String cause) {
         System.out.println("Connessione persa");
         Platform.runLater(() -> {
@@ -314,13 +319,13 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(UpdateDisconnectionDuringSetup event) {
-        ObservableList<PlayerOnline> allPlayerOnline= waitGame.getPlayerOnlineSingleton();
-        for (PlayerOnline x:allPlayerOnline) {
-            if(x.getNickname().equals(event.getName())){
-                System.out.println("trovato il player disconnesso");
-                waitGame.deletePlayerKicked(event.getName());
-            }
-        }
+        waitGame.deletePlayerKicked();
+    }
+
+    @Override
+    public void visit(UpdateNamePlayersDuringSetUp event) {
+        waitGame.deletePlayerKicked();
+        waitGame.addPlayerOnline(event.getPlayerNames());
     }
 
     @Override

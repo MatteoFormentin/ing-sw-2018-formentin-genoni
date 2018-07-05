@@ -188,7 +188,7 @@ public class Server2 implements PrincipalServer {
 
     @Override
     public void login(RemotePlayer2 newRemotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
-        try {
+
             System.out.println("è stato rilevato un tentativo di login al server");
             if (newRemotePlayer.getNickname() == null || newRemotePlayer.getNickname().equals("")) {
                 System.out.println("Anon");
@@ -242,9 +242,7 @@ public class Server2 implements PrincipalServer {
                 players.add(newRemotePlayer);
                 addPlayerToGameRoom(newRemotePlayer);
             }
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
+
         System.out.println("uscito dal login");
     }
 

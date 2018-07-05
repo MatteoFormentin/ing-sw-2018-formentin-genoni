@@ -6,8 +6,12 @@ import it.polimi.se2018.list_event.event_received_by_view.EventView;
 public interface UIInterface {
 
     //From model and controller
-    public void showEventView(EventView eventView);
-    public void sendEventToNetwork(EventController eventController);
-    public void restartConnection(String cause);
-    public void errPrintln(String error);
+    void showEventView(EventView eventView);
+    void sendEventToNetwork(EventController eventController);
+
+    //TODO da tradurre come EventController
+    void loginOk();
+    void restartConnection(String cause);
+    void errPrintln(String error);
+
 }

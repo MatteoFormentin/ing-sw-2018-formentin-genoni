@@ -109,12 +109,6 @@ public abstract class RemotePlayer2 {
      */
     public abstract void sendEventToView(EventView eventView) throws ConnectionPlayerException;
 
-    /**
-     * this method is used when the game room needs to know if the player is still connected
-     *
-     * @throws ConnectionPlayerException is thrown if the player didn't respond
-     */
-    public abstract void sayHelloClient() throws ConnectionPlayerException;
 
 
     //------------------------------------------------------------------------------------------------------------------

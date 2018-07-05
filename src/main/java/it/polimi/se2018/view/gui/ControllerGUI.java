@@ -14,9 +14,11 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.classes_database.PlayerOnline;
+import it.polimi.se2018.view.gui.stage.AlertMessage;
 import it.polimi.se2018.view.gui.stage.WaitGame;
 
 import java.util.LinkedList;
+import java.util.stream.IntStream;
 
 import static it.polimi.se2018.view.gui.GuiMain.launchGui;
 import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
@@ -147,6 +149,7 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
      */
     @Override
     public void showEventView(EventView eventView) {
+        //TODO cambiare qui
         getGuiGame().showEventView(eventView);
     }
 
@@ -165,6 +168,11 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
                 restartConnection(ex.getMessage());
             }
         }
+    }
+
+    @Override
+    public void loginOk() {
+
     }
 
     /**
@@ -264,7 +272,13 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
 
     @Override
     public void visit(MoveTimeoutExpired event) {
-
+     /*   IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
+        //disattiva dicepool, windowPattern, roundtrack, toolcard
+        disableDiceOfDicePool();
+        disableWindow(playerId);
+        disableAllRound();
+        if(value.isDisplaying()) toolStage.close();
+        new AlertMessage(gameStage).displayMessage("Hai finito il tempo a disposizione");*/
     }
 
     @Override

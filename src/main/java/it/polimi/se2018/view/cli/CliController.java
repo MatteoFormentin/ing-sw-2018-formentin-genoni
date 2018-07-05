@@ -50,6 +50,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     //the players
     private String[] playersName;
+    boolean[] connected;
     private WindowPatternCard[] windowPatternCardOfEachPlayer;
     private DiceStack[] handOfEachPlayer;
     private int[] favorTokenOfEachPlayer;
@@ -97,6 +98,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         instance = new CliController();
         factory = ClientFactory.getClientFactory();
         instance.start();
+        System.out.println("main esaurito");
         instance.initConnection();
         instance.login();
     }
@@ -138,6 +140,11 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                 }
             }
         }
+    }
+
+    @Override
+    public void loginOk() {
+
     }
 
     /**
@@ -667,6 +674,15 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(UpdateDisconnectionDuringSetup event) {
         cliMessage.showMessage("Il giocatore " + event.getName() + " ha lasciato la stanza");
+    }
+
+    @Override
+    public void visit(UpdateNamePlayersDuringSetUp event) {
+        playersName= event.getPlayerNames();
+        boolean[] connected = new boolean[playersName.length];
+        System.out.println("Giocatori attualmente nella stanza");
+        System.out.println();
+        for(int i=0;i<playersName.length;i++) System.out.println("Nome: "+playersName[i]);
     }
 
     @Override

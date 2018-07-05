@@ -16,6 +16,8 @@ public interface ViewModelVisitor {
     //event before the setup
     void visit(UpdateDisconnectionDuringSetup event);
 
+    void visit(UpdateNamePlayersDuringSetUp event);
+
     //info other player connection state during game
     void visit(UpdateDisconnectionDuringGame event);
 

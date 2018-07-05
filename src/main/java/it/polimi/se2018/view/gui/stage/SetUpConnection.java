@@ -82,20 +82,23 @@ public class SetUpConnection {
         //components action
         connect.setOnAction(e -> {
             int i = Integer.parseInt(group.getSelectedToggle().getUserData().toString());
-            try {
-                if (getGuiInstance().getFactoryInstance() == null) getGuiInstance().getClient().startClient(ipInput.getText(), i);
-                else {
-                    AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i);
-                    client.connectToServer2();
-                    getGuiInstance().setClient2(client);
+            if (isInt(portInput2) || portInput2.getText() == null || portInput2.getText().equals("")) {
+                try {
+                    if (getGuiInstance().getFactoryInstance() == null)
+                        getGuiInstance().getClient().startClient(ipInput.getText(), i);
+                    else {
+                        AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i);
+                        client.connectToServer2();
+                        getGuiInstance().setClient2(client);
+                    }
+                    stage.close();
+                } catch (IOException ex) {
+                    new AlertMessage(stage).displayMessage(ex.getMessage());
+                } catch (NoPortRightException ex) {
+                    new AlertMessage(stage).displayMessage(ex.getMessage());
+                } catch (Exception ex) {
+                    new AlertMessage(stage).displayMessage(ex.getMessage());
                 }
-                stage.close();
-            } catch (IOException ex) {
-                new AlertMessage(stage).displayMessage(ex.getMessage());
-            } catch (NoPortRightException ex) {
-                new AlertMessage(stage).displayMessage(ex.getMessage());
-            }  catch (Exception ex) {
-                new AlertMessage(stage).displayMessage(ex.getMessage());
             }
         });
         back.setOnAction(e -> stage.close());

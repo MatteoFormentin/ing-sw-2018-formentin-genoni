@@ -22,7 +22,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GameRoom implements TimerCallback,GameInterface {
+public class GameRoom implements TimerCallback, GameInterface {
 
     private LinkedList<RemotePlayer2> players;
     private UpdateRequestedByServer updater;
@@ -96,8 +96,9 @@ public class GameRoom implements TimerCallback,GameInterface {
             System.out.println("Errore caricamento delle risorse");
         }
         //TODO rimuovere ma tenere per i test
-        maxPlayer=2;
+        maxPlayer = 2;
     }
+
     public RemotePlayer2 get(int index) {
         return players.get(index);
     }
@@ -121,13 +122,6 @@ public class GameRoom implements TimerCallback,GameInterface {
         }
     }
 
-    public RemotePlayer2 searchIfMatchName(String name) {
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getNickname().equals(name)) return players.get(i);
-        }
-        return null;
-    }
-
 
     public void addRemotePlayer(RemotePlayer2 remotePlayer) throws RoomIsFullException, GameStartedException {
         if (players.size() < maxPlayer) {
@@ -135,7 +129,7 @@ public class GameRoom implements TimerCallback,GameInterface {
             players.add(remotePlayer);
             remotePlayer.setPlayerRunning(true);
             remotePlayer.setGameInterface(this);
-            for(int i=0;i<players.size();i++) players.get(i).setIdPlayerInGame(i);
+            for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
             updater.updatePlayerConnected(remotePlayer.getIdPlayerInGame(), remotePlayer.getNickname());
             currentConnected.incrementAndGet();
             //  checkOnLine();
@@ -178,46 +172,23 @@ public class GameRoom implements TimerCallback,GameInterface {
             remotePlayerDown.setPlayerRunning(false);
             updater.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
             players.remove(remotePlayerDown);
-            for(int i=0;i<players.size();i++) players.get(i).setIdPlayerInGame(i);
+            for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
             //TODO sostituire con thead
             if (currentConnected.get() == 1) timerThread.shutdown();
         }
         System.out.println(" ");
     }
 
-    /**
-     * check the player online in the game room
-     */
-    public void checkOnLine() {
-        RemotePlayer2 remotePlayer2=null;
-        try {
-            for (int i=0; i < players.size(); i++) {
-                remotePlayer2 = players.get(i);
-                if (remotePlayer2.isPlayerRunning()) {
-                    remotePlayer2.sayHelloClient();
-                }
-            }
-        } catch (ConnectionPlayerException ex) {
-            removeRemotePlayer(remotePlayer2);
-        }
-    }
 
     public void reLogin(RemotePlayer2 oldRemotePlayer, RemotePlayer2 newRemotePlayer) {
         currentConnected.incrementAndGet();
-        try {
-            oldRemotePlayer.sayHelloClient();
-            //TODO provare ad inviare un evento a caso ti seri collegato
-            System.out.println("il Client, era ancora collegato e precedentemente non è stato disconnesso");
-        } catch (ConnectionPlayerException ex) {
-            System.out.println("il Client è stato sostituito");
-            int i =oldRemotePlayer.getIdPlayerInGame();
-            newRemotePlayer.setIdPlayerInGame(i);
-            newRemotePlayer.setGameInterface(this);
-            players.set(i, newRemotePlayer);
-            //TODO send join game e avviso che il giocatore si è ricollegato
-            updater.updateInfoReLogin(i);
-        }
-        checkOnLine();
+        System.out.println("il Client è stato sostituito");
+        int i = oldRemotePlayer.getIdPlayerInGame();
+        newRemotePlayer.setIdPlayerInGame(i);
+        newRemotePlayer.setGameInterface(this);
+        players.set(i, newRemotePlayer);
+        updater.updateInfoReLogin(i);
+
     }
 
     @Override
@@ -261,7 +232,7 @@ public class GameRoom implements TimerCallback,GameInterface {
     }
 
     @Override
-    public void disconnectFromGameRoom(RemotePlayer2 oldRemotePlayer){
+    public void disconnectFromGameRoom(RemotePlayer2 oldRemotePlayer) {
         removeRemotePlayer(oldRemotePlayer);
     }
 }
