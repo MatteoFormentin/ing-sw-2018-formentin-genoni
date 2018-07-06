@@ -63,9 +63,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private int playerId;
 
     //Updated stat
-
-    private int[][] ranking;
-
     private Thread currentTask;
     private AtomicBoolean isInputActive;
     private Object MUTEX;
@@ -116,10 +113,8 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
      */
     public static void main(String[] args) {
         instance = new CliController();
-        System.out.println("\nuscito dal constructor della cli");
         instance.initConnection();
         // instance.login();
-        System.out.println("uscito dal main");
 
     }
 
@@ -353,8 +348,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(LoginResponse event) {
-        if (event.isLoginSuccessFull()) System.out.println("Hai effetturato il login");
-        else {
+        if (event.isLoginSuccessFull()) {
+            cliMessage.showWelcomeNickname(event.getNickname());
+        } else {
             System.out.println(event.getCause());
             System.out.println("0 per riprovare il login 1 per spegnere");
             if (cliParser.parseInt(1) == 0) {
@@ -376,14 +372,14 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(AskLogin event) {
         //TODO da sistemare
-        System.out.println("Inserisci il nome: ");
+        System.out.print("Inserisci il tuo nickname: ");
         LoginRequest packet = new LoginRequest(cliParser.parseNickname());
         sendEventToNetwork(packet);
     }
 
     @Override
     public void visit(StartGame event) {
-        cliMessage.showGameStarted(event.getPlayersName());
+        cliMessage.showGameStarted(playersName);
     }
 
     @Override
@@ -416,7 +412,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(SelectInitialWindowPatternCard event) {
         isInputActive.set(true);
-        cliMessage.showYourTurnScreen();
         cliMessage.showMessage("Quando sei pronto per scegliere la carta");
         int read = cliParser.readSplash();
         if (read != -1) {
@@ -463,7 +458,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(EndGame event) {
-        cliMessage.showEndGameScreen(ranking, playersName, playerId);
+        //cliMessage.showEndGameScreen(ranking, playersName, playerId);
         System.exit(0);
     }
 
@@ -565,8 +560,11 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(MessageError event) {
         cliMessage.showMessage(event.getMessage());
-        // cliParser.readSplash();
-        if (event.isShowMenuTurn()) turn();
+
+        if (event.isShowMenuTurn()) {
+            cliParser.readSplash();
+            turn();
+        }
     }
 
     @Override
@@ -666,7 +664,25 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateStatPodium event) {
-        ranking = event.getSortedPlayer();
+
+      /*  for (int i = 1; i < (event.getSortedPlayer().length + 1); i++) {
+        }
+
+        //prima colonna
+        for (int currentDescription = 0; currentDescription < event.getOneSortedPlayer(0).length; currentDescription++) {
+            System.out.print(event.getDescription(currentDescription));
+        }
+
+        for (int i = 0; i < event.getSortedPlayer().length; i++) {
+            System.out.print(playersName[event.getOneSortedPlayerInfo(i, 0)]);
+
+            for (int j = 1; j < event.getOneSortedPlayer(i).length; j++) {
+                System.out.print(event.getOneSortedPlayerInfo(i, j));
+
+            }
+        }*/
+
+        cliMessage.showEndGameScreen(event, playersName, playerId);
     }
 
     @Override

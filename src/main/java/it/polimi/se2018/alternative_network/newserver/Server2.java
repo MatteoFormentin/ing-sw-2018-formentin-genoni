@@ -80,12 +80,12 @@ public class Server2 implements PrincipalServer {
         input = new CliParser();
         boolean defaultSet = setUPConnection();
         if (!defaultSet) {
-            System.out.println("inserisci l'ip: ");
+            System.out.print("Inserisci l'ip: ");
             IP_SERVER = input.parseIp();
             if (IP_SERVER.equals("0")) IP_SERVER = "localhost";
-            System.out.println("inserisci la porta per RMI: ");
+            System.out.print("Inserisci la porta per RMI: ");
             RMI_PORT = input.parsePort(1024);
-            System.out.println("inserisci la porta per SOCKET: ");
+            System.out.print("Inserisci la porta per SOCKET: ");
             SOCKET_PORT = input.parsePort(1024);
         }
         //creazione standard sei server
@@ -95,7 +95,7 @@ public class Server2 implements PrincipalServer {
     }
 
     private boolean setUPConnection() {
-        System.out.print("Digita 0 per settare l'ip e porta da config o default, 1 per settare manualmente");
+        System.out.print("Digita 0 per settare l'ip e porta da config o default, 1 per settare manualmente: ");
         if (input.parseInt(1) == 0) {
             try {
                 Properties configProperties = new Properties();
@@ -113,7 +113,7 @@ public class Server2 implements PrincipalServer {
                 IP_SERVER = "localhost";
                 RMI_PORT = 1099;
                 SOCKET_PORT = 1090;
-                System.out.println("Digitare 0 per confermare 1 per inserirla manualmente");
+                System.out.print("Digitare 0 per confermare 1 per inserirla manualmente: ");
                 return input.parseInt(1) == 0;
             }
         }
@@ -162,7 +162,8 @@ public class Server2 implements PrincipalServer {
     public void stopServer() {
         System.out.println("Digita 0 per spegnare il server");
         if (input.parseInt(0) == 0) {
-            for (AbstractServer2 aSubServer : subServer) if (aSubServer.isStarted()) aSubServer.stopServer();
+            // for (AbstractServer2 aSubServer : subServer) if (aSubServer.isStarted()) aSubServer.stopServer();
+            System.exit(0);
         }
     }
 
@@ -258,6 +259,7 @@ public class Server2 implements PrincipalServer {
         } catch (GameStartedException ex) {
             response = new LoginResponse(false, "La stanza era piena riprova ad effettuare il login");
         }
+        response.setNickname(newRemotePlayer.getNickname());
         ResponseEventLogin responseEventLogin = new ResponseEventLogin(response, newRemotePlayer);
         responseEventLogin.start();
     }
@@ -273,11 +275,11 @@ public class Server2 implements PrincipalServer {
         @Override
         public void run() {
             Thread.currentThread().setName("Response Login");
-            try {
-                Thread.sleep(400);
+            /*try {
+                Thread.sleep(20);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
-            }
+            }*/
             newRemotePlayer.sendEventToView(response);
         }
     }

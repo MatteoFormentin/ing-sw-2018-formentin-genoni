@@ -7,6 +7,7 @@ public class LoginResponse extends EventClientFromController {
 
     private boolean loginSuccessFull;
     private String cause;
+    private String nickname;
 
     public LoginResponse(boolean loginSuccessFull, String cause) {
         this.loginSuccessFull = loginSuccessFull;
@@ -19,6 +20,14 @@ public class LoginResponse extends EventClientFromController {
 
     public String getCause() {
         return cause;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     @Override

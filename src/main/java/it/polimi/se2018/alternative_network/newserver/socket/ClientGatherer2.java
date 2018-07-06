@@ -21,7 +21,7 @@ public class ClientGatherer2 extends Thread {
 
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
-    private final AtomicBoolean running = new AtomicBoolean();
+    private final AtomicBoolean running;
 
     private ServerSocket serverSocket;
 
@@ -30,6 +30,8 @@ public class ClientGatherer2 extends Thread {
         this.server = server;
         //Client gatherer created!
         this.serverSocket = new ServerSocket(port);
+        running = new AtomicBoolean();
+        running.set(false);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -44,11 +46,11 @@ public class ClientGatherer2 extends Thread {
      */
     @Override
     public void run() {
+        running.set(true);
         Thread.currentThread().setName("Client Gatherer Thread");
-
         // In loop attendo la connessione di nuovi client
         // Per ogni client che si collega non può ancora essere associato ad un socket player
-        while (true) {
+        while (running.get()) {
             Socket newClientConnection;
             try {
                 newClientConnection = serverSocket.accept();
@@ -62,5 +64,9 @@ public class ClientGatherer2 extends Thread {
                 System.out.println(ex.getMessage());
             }
         }
+    }
+
+    public void stopGatherer() {
+        running.set(false);
     }
 }

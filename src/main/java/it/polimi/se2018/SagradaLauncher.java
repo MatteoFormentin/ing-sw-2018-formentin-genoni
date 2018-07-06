@@ -13,7 +13,7 @@ public class SagradaLauncher {
         System.out.print("Digita 0 per avviare il server, uno per il client: ");
         if (cliParser.parseInt(1) == 0) Server2.main(args);
         else {
-            System.out.print("Digita 0 per la cli, 1 per il gui");
+            System.out.print("Digita 0 per avviare la cli, 1 per il gui: ");
             switch (cliParser.parseInt(1)) {
                 case 0:
                     CliController.main(args);

@@ -28,6 +28,8 @@ public interface ControllerVisitor {
     void visit(ControllerSelectCellOfWindow event);
     void visit(ControllerSelectDiceFromDraftPool event);
 
+    void visit(ControllerUndoDiceInsert event);
+
 
 
 }

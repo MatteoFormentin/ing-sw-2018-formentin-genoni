@@ -5,6 +5,7 @@ import it.polimi.se2018.controller.effect.DicePoolEffect;
 import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.controller.effect.EndTurn;
 import it.polimi.se2018.controller.effect.InsertDice;
+import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.CurrentPlayerException;
 import it.polimi.se2018.exception.gameboard_exception.GameIsOverException;
 import it.polimi.se2018.exception.gameboard_exception.WindowPatternAlreadyTakenException;
@@ -100,6 +101,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
     /**
      * Method used to get update requested by server.
+     *
      * @return update requested by server.
      */
     public UpdateRequestedByServer getUpdater() {
@@ -127,7 +129,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             endGame.setPlayerId(i);
             sendEventToView(endGame);
         }
-        if(gameRoom!=null) gameRoom.resetOrStoreGameRoom();
+        if (gameRoom != null) gameRoom.resetOrStoreGameRoom();
     }
 
     /**
@@ -157,9 +159,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
      */
     public void playerUp(int index) {
         updaterView.updateInfoReLogin(index);
-        String[] names= new String[gameBoard.getPlayer().length];
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) names[i]=gameBoard.getPlayer(i).getNickname();
-        StartGame packet = new StartGame(names);
+
+        StartGame packet = new StartGame();
         packet.setPlayerId(index);
         sendEventToView(packet);
         if (started) {
@@ -176,15 +177,15 @@ public class Controller implements ControllerVisitor, TimerCallback {
      */
     public void sendInitCommand() {
 
+        updaterView.updateInfoStart();
+
         for (int j = 0; j < playerNumber; j++) {
-            StartGame waitSetUp = new StartGame(playersName);
+            StartGame waitSetUp = new StartGame();
             waitSetUp.setPlayerId(j);
             sendEventToView(waitSetUp);
         }
 
-        updaterView.updateInfoStart();
         //TODO forse questo mi permette di avviare il tutto correttamente
-
 
 
         for (int j = 0; j < playerNumber; j++) {
@@ -203,6 +204,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     }
 
     // EX UPDATE
+
     /**
      * Method used to send an event to the controller (server).
      *
@@ -374,6 +376,18 @@ public class Controller implements ControllerVisitor, TimerCallback {
         }
     }
 
+    @Override
+    public void visit(ControllerUndoDiceInsert event) {
+
+        try {
+            effectGamesStored.getLast().undo();
+
+        } catch (GameException ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
     /**
      * Method of Visitor Pattern, event received from the view to let the player selecting a cell of the window pattern.
      *
@@ -441,7 +455,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
      * Method used to access to effect of the card.
      *
      * @param idPlayer ID of the player that will get the effect.
-     * @param info information of the effect.
+     * @param info     information of the effect.
      */
     private void accessToEffect(int idPlayer, int[] info) throws Exception {
         if (effectToRead.getFirst() != null) {
@@ -471,8 +485,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
     /**
      * Method used to show an error message to the player.
      *
-     * @param ex exception that indicate the error.
-     * @param idPlayer ID player that will get the error.
+     * @param ex           exception that indicate the error.
+     * @param idPlayer     ID player that will get the error.
      * @param showMenuTurn true if the player will get the menu turn, false otherwise.
      */
     private void showErrorMessage(Exception ex, int idPlayer, boolean showMenuTurn) {

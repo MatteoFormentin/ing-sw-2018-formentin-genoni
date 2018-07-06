@@ -1,5 +1,6 @@
 package it.polimi.se2018.view.cli;
 
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateStatPodium;
 import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
@@ -563,8 +564,8 @@ class CliMessage {
      * @param playersName players name
      * @param myId        player id
      */
-    synchronized void showEndGameScreen(int[][] ranking, String[] playersName, int myId) {
-
+    synchronized void showEndGameScreen(UpdateStatPodium event, String[] playersName, int myId) {
+    /*
         //Se hai vinto
         if (myId == ranking[0][0]) {
             AnsiConsole.out.println(ansi().fg(GREEN).a("                                                                                           ,---,  \n" +
@@ -591,5 +592,35 @@ class CliMessage {
             else
                 AnsiConsole.out.println(ansi().fg(DEFAULT).a((i + 1) + "° Posto: " + playersName[ranking[i][0]]) + " Punti: " + ranking[i][1]);
         }
+    */
+
+        if (myId == event.getOneSortedPlayerInfo(0, 0)) {
+            AnsiConsole.out.println(ansi().fg(GREEN).a("                                                                                           ,---,  \n" +
+                    "        ,--,                                                                            ,`--.' |  \n" +
+                    "      ,--.'|                                                             ___            |   :  :  \n" +
+                    "   ,--,  | :            ,--,                  ,---. ,--,               ,--.'|_          '   '  ;  \n" +
+                    ",---.'|  : '          ,--.'|                 /__./,--.'|        ,---,  |  | :,'   ,---. |   |  |  \n" +
+                    "|   | : _' |          |  |,             ,---.;  ; |  |,     ,-+-. /  | :  : ' :  '   ,'\\'   :  ;  \n" +
+                    ":   : |.'  | ,--.--.  `--'_            /___/ \\  | `--'_    ,--.'|'   .;__,'  /  /   /   |   |  '  \n" +
+                    "|   ' '  ; :/       \\ ,' ,'|           \\   ;  \\ ' ,' ,'|  |   |  ,\"' |  |   |  .   ; ,. '   :  |  \n" +
+                    "'   |  .'. .--.  .-. |'  | |            \\   \\  \\: '  | |  |   | /  | :__,'| :  '   | |: ;   |  ;  \n" +
+                    "|   | :  | '\\__\\/: . .|  | :             ;   \\  ' |  | :  |   | |  | | '  : |__'   | .; `---'. |  \n" +
+                    "'   : |  : ;,\" .--.; |'  : |__            \\   \\   '  : |__|   | |  |/  |  | '.'|   :    |`--..`;  \n" +
+                    "|   | '  ,//  /  ,.  ||  | '.'|            \\   `  |  | '.'|   | |--'   ;  :    ;\\   \\  /.--,_     \n" +
+                    ";   : ;--';  :   .'   ;  :    ;             :   \\ ;  :    |   |/       |  ,   /  `----' |    |`.  \n" +
+                    "|   ,/    |  ,     .-.|  ,   /               '---\"|  ,   /'---'         ---`-'          `-- -`, ; \n" +
+                    "'---'      `--`---'    ---`-'                      ---`-'                                 '---`\"  \n" +
+                    "                                                                                                  "));
+        }
+        for (int i = 0; i < event.getSortedPlayer().length; i++) {
+            println();
+            AnsiConsole.out.println(ansi().fg(GREEN).a(((i + 1) + "° Posto: " + playersName[event.getOneSortedPlayerInfo(i, 0)])));
+            for (int j = 1; j < event.getOneSortedPlayer(i).length; j++) {
+                AnsiConsole.out.println(ansi().fg(BLUE).a((" @ " + event.getDescription(j) + ": " + event.getOneSortedPlayerInfo(i, j))));
+            }
+            println();
+        }
+
+
     }
 }

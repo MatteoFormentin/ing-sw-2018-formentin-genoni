@@ -93,7 +93,6 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
             System.out.println("Errore caricamento delle risorse");
         }
         //TODO rimuovere ma tenere per i test
-        maxPlayer = 2;
     }
 
     public RemotePlayer2 get(int index) {
@@ -118,12 +117,15 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
             for(int i=0;i<playersInGame.length;i++){
                 playersInGame[i]= players.get(i);
                 playersName[i] = playersInGame[i].getNickname();
+                System.err.println(playersInGame[i].getNickname());
             }
             controller = new Controller(playersName, this);
             controller.startController();
+
+
         }else{
             //TODO qui implementare il replay della partita
-            System.out.println("errore è gia stata inizziata questa partita");
+            System.out.println("errore è gia stata iniziata questa partita");
             throw new GameStartedException();
         }
     }
@@ -152,6 +154,7 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
                 System.err.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi, " + players.size() + " registrati");
                 if (currentConnected.get() == maxPlayer) {
                     //TODO set something boolean of i don't know
+                    timerThread.shutdown();
                     startGame();
                 }
                 if (currentConnected.get() == 2) timerThread.startThread();

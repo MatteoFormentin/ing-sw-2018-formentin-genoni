@@ -37,17 +37,17 @@ public class SocketServer implements AbstractServer2 {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     *
      * @param serverController server implementation
-     * @param host host
-     * @param port port
+     * @param host             host
+     * @param port             port
      */
     public SocketServer(Server2 serverController, String host, int port) {
         this.server = serverController;
-        this.host=host;
-        this.port=port;
+        this.host = host;
+        this.port = port;
         socketPlayers = new LinkedList<>();
         running = new AtomicBoolean(false);
+        started = false;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -58,20 +58,20 @@ public class SocketServer implements AbstractServer2 {
      * Starter for Socket Server.
      */
     @Override
-    public void startServer()throws ServerStartException {
+    public void startServer() throws ServerStartException {
         try {
             //servizio offerto al client
             clientGatherer2 = new ClientGatherer2(server, getPort());
             running.set(true);
             clientGatherer2.start();
-            System.out.println("Acceso Socket" + clientGatherer2.getState());
-        }catch(IOException ex){
+            started = true;
+        } catch (IOException ex) {
             ex.printStackTrace();
             throw new ServerStartException(ex.getMessage());
         }
     }
 
-    protected synchronized void login(SocketPlayer newSocketPlayer)throws PlayerAlreadyLoggedException,RoomIsFullException {
+    protected synchronized void login(SocketPlayer newSocketPlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
         getServer().login(newSocketPlayer);
     }
 
@@ -92,7 +92,8 @@ public class SocketServer implements AbstractServer2 {
      * Stopper for the client gatherer thread.
      */
     public void stopServer() {
-        clientGatherer2.stop();
+        clientGatherer2.stopGatherer();
+        started = false;
     }
 
     @Override
@@ -117,6 +118,6 @@ public class SocketServer implements AbstractServer2 {
 
     @Override
     public void setStarted(boolean started) {
-        this.started=started;
+        this.started = started;
     }
 }

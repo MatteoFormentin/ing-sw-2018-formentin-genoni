@@ -66,7 +66,6 @@ public class ClientFactory {
             if(cli){
                 //TODO forse assegnare all'abstract client la nuova view
                 // 1° solzione è questa
-                System.out.println("Sei uscito bingooooooooo");
             }
         }
         return abstractClient;
