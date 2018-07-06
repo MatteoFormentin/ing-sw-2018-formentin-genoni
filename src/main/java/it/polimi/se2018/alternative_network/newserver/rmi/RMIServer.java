@@ -3,7 +3,6 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 import it.polimi.se2018.alternative_network.newserver.AbstractServer2;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
-import it.polimi.se2018.utils.TimerCallback;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.net.MalformedURLException;
@@ -107,7 +106,7 @@ public class RMIServer implements AbstractServer2 {
     }
 
     @Override
-    public Server2 getServerController() {
+    public Server2 getServer() {
         return serverController;
     }
 

@@ -1,5 +1,6 @@
 package it.polimi.se2018.alternative_network.newserver.socket;
 
+import it.polimi.se2018.alternative_network.newserver.PrincipalServer;
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
@@ -35,8 +36,6 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
     static HashMap<String, SocketPlayer> socketPlayers;
     // comunicazione con il server
 
-    private SocketServer serverController;
-
     private Socket tunnel;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
@@ -46,6 +45,7 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
     private int idPlayerInGame;
     private GameInterface gameInterface;
 
+    private PrincipalServer server;
 
     @Override
     public String getNickname() {
@@ -83,11 +83,10 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
     /**
      * Socket Player Constructor.
      *
-     * @param serverController server interface, used as controller to communicate with the server.
      * @param connection       tunnel used to manage the socket connection.
      */
-    public SocketPlayer(SocketServer serverController, Socket connection) {
-        this.serverController = serverController;
+    public SocketPlayer(Socket connection, PrincipalServer server) {
+        this.server = server;
         this.tunnel = connection;
         //TODO inizzializzare una variabile atomic boolean per segnare se il thread è attivo oppure no
         try {
@@ -139,12 +138,12 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
 
     @Override
     public void visit(LoginRequest event) {
-        serverController.getServerController().login(this);
+        server.login(this);
     }
 
     @Override
     public void visit(EventController event) {
-        serverController.getServerController().sendEventToGame(event);
+        server.sendEventToGame(event);
     }
 
     /**

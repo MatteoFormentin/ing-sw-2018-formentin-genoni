@@ -1,19 +1,13 @@
 package it.polimi.se2018.alternative_network.newserver.socket;
 
 
-import it.polimi.se2018.alternative_network.newserver.Server2;
-import org.fusesource.jansi.AnsiConsole;
+import it.polimi.se2018.alternative_network.newserver.PrincipalServer;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
 
 import java.io.IOException;
-import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.fusesource.jansi.Ansi.Color.DEFAULT;
-import static org.fusesource.jansi.Ansi.Color.GREEN;
-import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * Gatherer for client.
@@ -23,7 +17,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 public class ClientGatherer2 extends Thread {
 
-    private SocketServer server;
+    private PrincipalServer server;
 
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
@@ -32,7 +26,7 @@ public class ClientGatherer2 extends Thread {
     private ServerSocket serverSocket;
 
 
-    public ClientGatherer2(SocketServer server, int port) throws IOException {
+    public ClientGatherer2(PrincipalServer server, int port) throws IOException {
         this.server = server;
         //Client gatherer created!
         this.serverSocket = new ServerSocket(port);
@@ -59,7 +53,10 @@ public class ClientGatherer2 extends Thread {
             try {
                 newClientConnection = serverSocket.accept();
                 System.out.println("A new client connected.");
-                server.addClient(newClientConnection);
+                SocketPlayer newPlayer = new SocketPlayer(newClientConnection, server);
+                newPlayer.run();
+                AskLogin packet = new AskLogin();
+                newPlayer.sendEventToView(packet);
             } catch (IOException ex) {
                 ex.printStackTrace();
                 System.out.println(ex.getMessage());

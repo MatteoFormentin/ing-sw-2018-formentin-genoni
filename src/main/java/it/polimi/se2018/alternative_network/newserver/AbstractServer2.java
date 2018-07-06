@@ -8,7 +8,7 @@ public interface AbstractServer2 {
 
     public void stopServer();
 
-    public Server2 getServerController();
+    public Server2 getServer();
 
     public String getHost();
 

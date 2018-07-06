@@ -7,7 +7,6 @@ import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -20,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class SocketServer implements AbstractServer2 {
 
-    private final Server2 serverController;
+    private final Server2 server;
     private final String host;
     private final int port;
     private boolean started;
@@ -44,7 +43,7 @@ public class SocketServer implements AbstractServer2 {
      * @param port port
      */
     public SocketServer(Server2 serverController, String host, int port) {
-        this.serverController=serverController;
+        this.server = serverController;
         this.host=host;
         this.port=port;
         socketPlayers = new LinkedList<>();
@@ -62,27 +61,17 @@ public class SocketServer implements AbstractServer2 {
     public void startServer()throws ServerStartException {
         try {
             //servizio offerto al client
-            clientGatherer2 = new ClientGatherer2(this, getPort());
+            clientGatherer2 = new ClientGatherer2(server, getPort());
             running.set(true);
             clientGatherer2.start();
-            System.out.println("Acceso Sokcet"+clientGatherer2.getState());
+            System.out.println("Acceso Socket" + clientGatherer2.getState());
         }catch(IOException ex){
             throw new ServerStartException(ex.getMessage());
         }
     }
 
-
-    protected synchronized void addClient(Socket clientConnection) {
-
-        // Creo un VirtualClient per ogni nuovo client,
-        // per ogni client un thread che ascolta i messaggi provenienti da quel client
-        SocketPlayer newPlayer = new SocketPlayer(this,clientConnection);
-        socketPlayers.add(newPlayer);
-        newPlayer.run();
-    }
-
     protected synchronized void login(SocketPlayer newSocketPlayer)throws PlayerAlreadyLoggedException,RoomIsFullException {
-        getServerController().login(newSocketPlayer);
+        getServer().login(newSocketPlayer);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -106,8 +95,8 @@ public class SocketServer implements AbstractServer2 {
     }
 
     @Override
-    public Server2 getServerController() {
-        return serverController;
+    public Server2 getServer() {
+        return server;
     }
 
     @Override
