@@ -13,5 +13,5 @@ public interface RMIClientInterface extends Remote {
 
     void notifyTheClient(EventClient message) throws RemoteException;
 
-    void ping() throws RemoteException;
+    String ping(String name)throws RemoteException;
 }

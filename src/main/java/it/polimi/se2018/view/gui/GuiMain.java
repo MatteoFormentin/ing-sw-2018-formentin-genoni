@@ -77,10 +77,8 @@ public class GuiMain extends Application {
         // add button to the menu
         Button playButton = new Button("Fai il EventPreGame e inizia una partita");
         playButton.setOnAction(e -> {
-            boolean login = new Login(primaryStage).display();
-            if (login) {
-                game.setGameWait(primaryStage);
-            }
+            new Login(primaryStage).display();
+            game.setGameWait(primaryStage);
         });
         Button connectionButton = new Button("Impostazioni di rete");
         connectionButton.setOnAction(e -> new SetUpConnection(primaryStage).display());

@@ -3,13 +3,15 @@ package it.polimi.se2018.alternative_network.newserver;
 import it.polimi.se2018.alternative_network.newserver.rmi.RMIServer;
 import it.polimi.se2018.alternative_network.newserver.room.GameRoom;
 import it.polimi.se2018.alternative_network.newserver.socket.SocketServer;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.utils.TimerThread;
 import it.polimi.se2018.view.cli.CliParser;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -182,8 +184,9 @@ public class Server2 implements PrincipalServer {
             newGameRoom.sendEventToGameRoom(eventController);
         }
     }
+
     @Override
-    public synchronized LoginResponse login(RemotePlayer2 newRemotePlayer) {
+    public synchronized void login(RemotePlayer2 newRemotePlayer) {
         LoginResponse response = new LoginResponse(false, "errore nel login del server principale");
         System.out.println("è stato rilevato un tentativo di login al server");
         //funzione pre gli anonimi
@@ -197,7 +200,7 @@ public class Server2 implements PrincipalServer {
             counterAnon++;
         }
         //ricerca del giocatore
-        try{
+        try {
             if (players.isEmpty()) {
                 System.out.println("Il primo giocatore della giornata!");
                 players.add(newRemotePlayer);
@@ -255,10 +258,30 @@ public class Server2 implements PrincipalServer {
                     i++;
                 }
             }
-        }catch (GameStartedException ex){
+        } catch (GameStartedException ex) {
             response = new LoginResponse(false, "La stanza era piena riprova ad effettuare il login");
         }
-        return response;
+        ResponseEventLogin responseEventLogin = new ResponseEventLogin(response, newRemotePlayer);
+        responseEventLogin.start();
     }
 
+    private class ResponseEventLogin extends Thread {
+        private final LoginResponse response;
+        private final RemotePlayer2 newRemotePlayer;
+
+        public ResponseEventLogin(LoginResponse response, RemotePlayer2 remotePlayer2) {
+            this.response = response;
+            this.newRemotePlayer = remotePlayer2;
+        }
+        @Override
+        public void run() {
+            Thread.currentThread().setName("Response Login");
+            try {
+                Thread.sleep(400);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            newRemotePlayer.sendEventToView(response);
+        }
+    }
 }

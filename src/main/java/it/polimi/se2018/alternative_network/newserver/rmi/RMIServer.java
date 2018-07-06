@@ -3,12 +3,14 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 import it.polimi.se2018.alternative_network.newserver.AbstractServer2;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
+import it.polimi.se2018.utils.TimerCallback;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.LinkedList;
 
 import static org.fusesource.jansi.Ansi.Color.BLUE;
 import static org.fusesource.jansi.Ansi.ansi;
@@ -23,6 +25,8 @@ public class RMIServer implements AbstractServer2 {
     private final int port;
     private boolean started;
     private RMIClientGatherer clientGatherer;
+
+    private LinkedList<RMIPlayer> players;
 
     public RMIServer(Server2 serverController, String host, int port) {
         this.serverController=serverController;

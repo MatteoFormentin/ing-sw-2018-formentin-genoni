@@ -9,6 +9,6 @@ public interface PrincipalServer {
 
     void sendEventToGame(EventController eventController);
 
-    LoginResponse login(RemotePlayer2 remotePlayer);
+    void login(RemotePlayer2 remotePlayer);
 
 }

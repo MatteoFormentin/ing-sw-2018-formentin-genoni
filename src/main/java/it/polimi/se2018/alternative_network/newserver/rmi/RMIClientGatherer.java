@@ -6,6 +6,8 @@ import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.network.client.rmi.RMIClient;
 import org.fusesource.jansi.AnsiConsole;
 
@@ -13,6 +15,7 @@ import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import static org.fusesource.jansi.Ansi.Color.BLUE;
 import static org.fusesource.jansi.Ansi.ansi;
@@ -24,9 +27,9 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient {
     private static RMIClientGatherer instance;
     private transient RMIServer server;
-    private transient Server2 mainServer;
+    private Server2 mainServer;
     //MAKE HASH MAP
-    static HashMap<String,RMIPlayer> rmiPlayerHashMap;
+    static LinkedList<RMIPlayer> playerLinkedList;
     private RMIClientGatherer(Server2 mainServer,RMIServer server,int port) throws RemoteException {
         super(port);
         this.server=server;
@@ -51,8 +54,8 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
         //visto che ho già il nome posso richiedere direttamente il login
         RMIPlayer player = new RMIPlayer(nickname, client);
         mainServer.login(player);
-        //server.a
     }
+
 
     @Override
     public void disconnect(RMIClientInterface client) {

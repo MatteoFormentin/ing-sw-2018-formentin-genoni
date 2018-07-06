@@ -134,7 +134,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
      */
     public static void main(String[] args) {
         instance = new CliController();
-        System.out.println("uscito dal constructor della cli");
+        System.out.println("\nuscito dal constructor della cli");
         instance.initConnection();
        // instance.login();
         System.out.println("uscito dal main");

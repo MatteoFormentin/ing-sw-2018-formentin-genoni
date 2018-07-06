@@ -25,7 +25,7 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
 
     private LinkedList<RemotePlayer2> players;
     private RemotePlayer2[] playersInGame;
-    private UpdateRequestedByServer updateStateConnection;
+ //   private UpdateRequestedByServer updateStateConnection;
     private Controller controller;
 
     private int idGameBoard;
@@ -43,7 +43,7 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
         timerThread = new TimerThread(this, roomTimeout);
         players = new LinkedList<>();
         currentConnected = new AtomicInteger(0);
-        updateStateConnection = new UpdateRequestedByServer() {
+      /*  updateStateConnection = new UpdateRequestedByServer() {
             @Override
             public void updatePlayerConnected(int index, String name) {
                 for (int i = 0; i < players.size(); i++) updatePlayerConnected(i, index, name);
@@ -75,7 +75,7 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
             public void updateInfoStart() {
 
             }
-        };
+        };*/
     }
 
 
@@ -149,7 +149,7 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
                 // viene settata la gameboard
                 remotePlayer.setGameInterface(this);
                 for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
-                updateStateConnection.updatePlayerConnected(remotePlayer.getIdPlayerInGame(), remotePlayer.getNickname());
+            //    updateStateConnection.updatePlayerConnected(remotePlayer.getIdPlayerInGame(), remotePlayer.getNickname());
                 currentConnected.incrementAndGet();
                 //  checkOnLine();
                 System.err.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi, " + players.size() + " registrati");
@@ -181,16 +181,17 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
             System.out.println("Gameroom -> removeRemotePlayer: ci sono " + currentConnected + " connessi e " + players.size() + " registrati");
             remotePlayerDown.kickPlayerOut();
             //TODO implementare un corretto end game
+            for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
             if (currentConnected.get() == 1) controller.endGame();
             else {
-                updateStateConnection.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
+                //updateStateConnection.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
                 controller.playerDown(remotePlayerDown.getIdPlayerInGame());
             }
         } else {
             //hard remove game not started
             System.out.println("Hard Remove");
             remotePlayerDown.kickPlayerOut();
-            updateStateConnection.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
+         //   updateStateConnection.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
             players.remove(remotePlayerDown);
            // for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
             //TODO sostituire con thead

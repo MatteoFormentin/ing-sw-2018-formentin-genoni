@@ -28,7 +28,7 @@ public class RMIPlayer implements RemotePlayer2 {
     private String nickname;
     private int idPlayerInGame;
     private GameInterface gameInterface;
-
+   // private Object MUTEX;
 
     @Override
     public String getNickname() {
@@ -72,6 +72,7 @@ public class RMIPlayer implements RemotePlayer2 {
     RMIPlayer(String nickname, RMIClientInterface clientRMIInterface) {
         setNickname(nickname);
         this.clientRMIInterface = clientRMIInterface;
+      //  MUTEX=new Object();
     }
 
 
@@ -92,7 +93,7 @@ public class RMIPlayer implements RemotePlayer2 {
         AnsiConsole.out.println();
         AnsiConsole.out.print(ansi().fg(BLUE).a("RMIPlayer -> kickPlayerOut: " + getNickname() + "  ").reset());
         try {
-            clientRMIInterface.ping();
+            clientRMIInterface.ping("ping");
             UnicastRemoteObject.unexportObject(clientRMIInterface, true);
         } catch (NoSuchObjectException ex) {
             AnsiConsole.out.print(ansi().fg(BLUE).a(" ").reset());
@@ -109,7 +110,7 @@ public class RMIPlayer implements RemotePlayer2 {
     @Override
     public boolean checkOnline() {
         try {
-            clientRMIInterface.ping();
+            clientRMIInterface.ping("ping");
         } catch (RemoteException ex) {
             System.out.println("non c'è la connessione attiva");
             try {
@@ -124,7 +125,9 @@ public class RMIPlayer implements RemotePlayer2 {
 
     @Override
     public void sendEventToController(EventController eventController) {
-        getGameInterface().sendEventToGameRoom(eventController);
+    //    synchronized (MUTEX){
+            getGameInterface().sendEventToGameRoom(eventController);
+    //    }
     }
 
 }

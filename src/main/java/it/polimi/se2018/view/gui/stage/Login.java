@@ -53,7 +53,7 @@ public class Login {
      *
      * @return true if login is successful, false otherwise
      */
-    public boolean display() {
+    public void display() {
         GridPane form = new GridPane();
         Scene scene = new Scene(form, 250, 150);
         stage.setScene(scene);
@@ -91,6 +91,7 @@ public class Login {
                     //TODO creare il pachetto di login e inviarlo
                 EventPreGame packet = new LoginRequest(nameInput.getText());
                 getGuiInstance().getClient2().sendEventToController2(packet);
+                stage.close();
                   //  getGuiInstance().getClient2().login2(nameInput.getText());
                  //   answer = true;
                  //   stage.close();
@@ -99,6 +100,5 @@ public class Login {
         });
         back.setOnAction(e -> stage.close());
         stage.showAndWait();
-        return answer;
     }
 }
