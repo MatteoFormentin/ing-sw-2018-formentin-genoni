@@ -38,6 +38,6 @@ public class EventController extends EventServer{
     public void acceptGeneric(ServerVisitor viewVisitor) {viewVisitor.visit(this);}
 
     //ha bisogno dell'overriding
-    public void accept(ControllerVisitor visitor){throw new UnsupportedOperationException();}
+    public void acceptInGame(ControllerVisitor visitor){throw new UnsupportedOperationException();}
 
 }

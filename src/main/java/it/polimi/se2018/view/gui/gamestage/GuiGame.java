@@ -6,6 +6,9 @@ import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
@@ -334,7 +337,9 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(UpdatePlayerConnection event) {
+        if(waitGame==null) System.out.println("è ");
         if(waitGame.getStage().isShowing()) waitGame.addPlayerOnline(event.getIndex(),event.getName(),true);
+
     }
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
@@ -355,6 +360,25 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         disableAllRound();
         if(value.isDisplaying()) toolStage.close();
         new AlertMessage(gameStage).displayMessage("Hai finito il tempo a disposizione");
+    }
+
+    @Override
+    public void visit(LoginResponse event) {
+        //TODO disattivare lo stage del login e avviare la wait room se restituisce false
+        System.out.println(event.getCause());
+    }
+
+    @Override
+    public void visit(ConnectionDown event) {
+        System.out.println("da implementare: "+event);
+        //TODO mo fare il comeoeng
+
+    }
+
+    @Override
+    public void visit(AskLogin event) {
+        System.out.println("da implementare: "+event);
+        //TODO mo fare il comeoeng
     }
 
     /**

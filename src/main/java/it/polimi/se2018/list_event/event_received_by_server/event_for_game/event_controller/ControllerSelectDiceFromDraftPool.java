@@ -21,7 +21,7 @@ public class ControllerSelectDiceFromDraftPool extends EventController {
     }
 
     @Override
-    public void accept(ControllerVisitor visitor) {
+    public void acceptInGame(ControllerVisitor visitor) {
         visitor.visit(this);
     }
 

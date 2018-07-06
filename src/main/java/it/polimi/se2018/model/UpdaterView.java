@@ -66,7 +66,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     }
 
     private void updateInitialWindowPatternCard(int indexHolderWindow){
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateInitialWindowPatternCard(i,indexHolderWindow);
+        updateInitialWindowPatternCard(indexHolderWindow,indexHolderWindow);
     }
 
     private void updateInitialWindowPatternCard(int indexPlayerToNotify,int indexHolderWindow){

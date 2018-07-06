@@ -9,6 +9,7 @@ import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.network.SocketObject;
 import org.fusesource.jansi.AnsiConsole;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,26 +30,55 @@ import static org.fusesource.jansi.Ansi.ansi;
  *
  * @author DavideMammarella
  */
-public class SocketPlayer extends Thread implements RemotePlayer2 {
+//TODO implementare Remote PLayer2
+public class SocketPlayer implements Runnable,RemotePlayer2{
 
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
     static HashMap<String, SocketPlayer> socketPlayers;
     // comunicazione con il server
 
+    private SocketServer serverController;
+
     private Socket tunnel;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
 
-    private LinkedList<SocketObject> eventViews;
-    private SocketServer serverController;
-
-
+    //info remote player
     private String nickname;
-    private AtomicBoolean playerRunning;
     private int idPlayerInGame;
     private GameInterface gameInterface;
 
 
+
+    @Override
+    public String getNickname() {
+        return nickname;
+    }
+
+    @Override
+    public void setNickname(String nickname) {
+        this.nickname=nickname;
+    }
+
+    @Override
+    public int getIdPlayerInGame() {
+        return idPlayerInGame;
+    }
+
+    @Override
+    public void setIdPlayerInGame(int idPlayerInGame) {
+        this.idPlayerInGame=idPlayerInGame;
+    }
+
+    @Override
+    public GameInterface getGameInterface() {
+        return gameInterface;
+    }
+
+    @Override
+    public void setGameInterface(GameInterface gameInterface) {
+        this.gameInterface=gameInterface;
+    }
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
@@ -62,8 +92,7 @@ public class SocketPlayer extends Thread implements RemotePlayer2 {
     public SocketPlayer(SocketServer serverController, Socket connection) {
         this.serverController = serverController;
         this.tunnel = connection;
-        this.eventViews = new LinkedList<>();
-
+        //TODO inizzializzare una variabile atomic boolean per segnare se il thread è attivo oppure no
         try {
             this.outputStream = new ObjectOutputStream(tunnel.getOutputStream());
             this.inputStream = new ObjectInputStream(tunnel.getInputStream());
@@ -86,61 +115,24 @@ public class SocketPlayer extends Thread implements RemotePlayer2 {
     public void run() {
         Thread.currentThread().setName("Socket Player Thread");
         //TODO fixare il flusso di eventi che la virtual view, SocketPlayer
-        try {
-            System.out.println("Waiting for messages.");
-            inputStream = new ObjectInputStream(tunnel.getInputStream());
-            outputStream = new ObjectOutputStream(tunnel.getOutputStream());
-
-            while (isPlayerRunning()) {
-                try {
-                    SocketObject received = (SocketObject) inputStream.readObject();
-                    String type = received.getType();
-
-
-                    System.out.println(type);
-                    System.out.println(received.getStringField());
-                    if (type == null) {
-                        SocketObject packet = new SocketObject();
-                        packet.setType("Disconnect");
-                        sendObject(packet);
-                        getGameInterface().disconnectFromGameRoom(this);
-                        // } else {
-                        if (type.equals("EventPreGame")) {
-                            try {
-                                setNickname(received.getStringField());
-                                serverController.login(this);
-                                System.out.println("Effettuato il login con successo");
-                            } catch (RoomIsFullException | PlayerAlreadyLoggedException ex) {
-                                SocketObject packet2 = new SocketObject();
-                                packet.setType(ex.getMessage());
-                                sendObject(packet);
-                            }
-                        } else if (type.equals("Disconnect")) {
-                            SocketObject packet2 = new SocketObject();
-                            packet.setType("Disconnect");
-                            sendObject(packet);
-                            //TODO legal disconnect
-                        } else if (type.equals("Pong")) {
-                            SocketObject packet2 = new SocketObject();
-                            packet.setType("Ping");
-                            sendObject(packet);
-                            //TODO aveva richiesto il pingnon fare nulla
-                        }
-                    }
-                    SocketObject packet = new SocketObject();
-                    packet.setType("Server");
-                    sendObject(packet);
-                } catch (Exception ex) {
-                    //TODO loop = false trovata un'eccezione
-                    ex.printStackTrace();
-                }
+        Thread.currentThread().setName("Socket Player Thread");
+        boolean flag = true;
+        while (flag && tunnel.isConnected()) {
+            try {
+                SocketObject received = (SocketObject) inputStream.readObject();
+                //socketObjectTraducer(received);
+            } catch (EOFException e) {
+                // se si disconnette metto il running a false e tengo in memoria il player
+                if(gameInterface==null) ;//TODO non ho ancora fatto il login
+                    else gameInterface.disconnectFromGameRoom(this);
+                closeConnection();
+                flag = false;
+            } catch (IOException | ClassNotFoundException ex) {
+                ex.printStackTrace();
+                flag = false;
             }
-            tunnel.close();
-            //TODO send info of the disconnection ti the gameboard
-            System.out.println("Connection closed.");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        closeConnection();
     }
 
     /**
@@ -185,45 +177,6 @@ public class SocketPlayer extends Thread implements RemotePlayer2 {
     }
 
 
-    @Override
-    public String getNickname() {
-        return nickname;
-    }
-
-    @Override
-    public void setNickname(String nickname) {
-        this.nickname=nickname;
-    }
-
-    @Override
-    public boolean isPlayerRunning() {
-        return playerRunning.get();
-    }
-
-    @Override
-    public void setPlayerRunning(boolean playerRunning) {
-        this.playerRunning.set(playerRunning);
-    }
-
-    @Override
-    public int getIdPlayerInGame() {
-        return idPlayerInGame;
-    }
-
-    @Override
-    public void setIdPlayerInGame(int idPlayerInGame) {
-        this.idPlayerInGame=idPlayerInGame;
-    }
-
-    @Override
-    public GameInterface getGameInterface() {
-        return gameInterface;
-    }
-
-    @Override
-    public void setGameInterface(GameInterface gameInterface) {
-        this.gameInterface=gameInterface;
-    }
 
     /**
      * Method used to send to the client an update of the game.
@@ -235,7 +188,8 @@ public class SocketPlayer extends Thread implements RemotePlayer2 {
         SocketObject packet = new SocketObject();
         packet.setType("Event");
         packet.setObject(eventClient);
-        eventViews.addLast(packet);
+        //TODO mandare il pacchetto
+       // eventViews.addLast(packet);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -277,11 +231,20 @@ public class SocketPlayer extends Thread implements RemotePlayer2 {
 
     @Override
     public void kickPlayerOut() {
-        setPlayerRunning(false);
+        //TODO variabile Atomic solo per socket per segnare se il thread è attivo o no
+
+       // setta la variabile come false
         AnsiConsole.out.println();
         AnsiConsole.out.print(ansi().fg(YELLOW).a("SocketPlayer -> kickPlayerOut: " + getNickname() + "  ").reset());
         //TODO try to send a ping
         //if he is still connected then reopen the connection
+    }
+
+    @Override
+    public boolean checkOnline() {
+        //TODO variabile Atomic solo per socket per segnare se il thread è attivo o no
+        // setta la variabile come false
+        return false;
     }
 
     /*

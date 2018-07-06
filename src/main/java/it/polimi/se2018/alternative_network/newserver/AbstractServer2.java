@@ -2,41 +2,19 @@ package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 
-public abstract class AbstractServer2 {
+public interface AbstractServer2 {
 
-    private final Server2 serverController;
-    private final String host;
-    private final int port;
-    private boolean started;
+    public void startServer()throws ServerStartException;
 
-    protected AbstractServer2(Server2 serverController, String host, int port) {
-        this.serverController = serverController;
-        this.host = host;
-        this.port = port;
-        this.started = false;
-    }
+    public void stopServer();
 
-    public abstract void startServer() throws ServerStartException;
+    public Server2 getServerController();
 
-    public abstract void stopServer();
+    public String getHost();
 
-    public Server2 getServerController() {
-        return serverController;
-    }
+    public int getPort();
 
-    public String getHost() {
-        return host;
-    }
+    public boolean isStarted();
 
-    public int getPort() {
-        return port;
-    }
-
-    public boolean isStarted() {
-        return started;
-    }
-
-    public void setStarted(boolean started) {
-        this.started = started;
-    }
+    public void setStarted(boolean started);
 }

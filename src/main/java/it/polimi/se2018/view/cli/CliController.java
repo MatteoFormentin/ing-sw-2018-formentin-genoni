@@ -3,15 +3,19 @@ package it.polimi.se2018.view.cli;
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.alternative_network.client.ClientFactory;
 import it.polimi.se2018.exception.network_exception.NoPortRightException;
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
+import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.*;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGame;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game.LoginRequest;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
@@ -37,6 +41,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private static ClientFactory factory;
     private CliMessage cliMessage;
     private CliParserNonBlocking cliParser;
+    private CliParser cliParserBlocking;
+
+
     private ClientController client;
     //Server alternativo
     private AbstractClient2 client2;
@@ -67,6 +74,10 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private AtomicBoolean isInputActive;
     private Object MUTEX;
 
+    public ClientFactory getFactory() {
+        return factory;
+    }
+
     /**
      * CliController constructor
      */
@@ -90,6 +101,32 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         isInputActive = new AtomicBoolean(true);
         cliParser = new CliParserNonBlocking(isInputActive);
         MUTEX = new Object();
+        factory = ClientFactory.getClientFactory();
+        cliMessage.splashScreen();
+        cliParser.readSplash();
+    }
+
+    /**
+     * Constructor for the socket Cli
+     *
+     * @param client2
+     */
+    public CliController(AbstractClient2 client2) {
+        this.client2 = client2;
+        cliMessage = new CliMessage();
+        isInputActive = new AtomicBoolean(true);
+        cliParser = new CliParserNonBlocking(isInputActive);
+        MUTEX = new Object();
+        client2.connectToServer2();
+     /*   System.out.println("Inserisci il nome: ");
+        LoginRequest packet = new LoginRequest(cliParser.parseNickname());
+        sendEventToNetwork(packet);*/
+        System.out.println("uscito dal costruttore");
+    }
+
+    public boolean checkShutDown() {
+        System.out.println("Digita 0 per Resettare la connessione, 1 per uscire");
+        return (cliParserBlocking.parseInt(1) == 1);
     }
 
     /**
@@ -97,16 +134,11 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
      */
     public static void main(String[] args) {
         instance = new CliController();
-        factory = ClientFactory.getClientFactory();
-        instance.start();
-        System.out.println("main esaurito");
+        System.out.println("uscito dal constructor della cli");
         instance.initConnection();
-        instance.login();
+       // instance.login();
+        System.out.println("uscito dal main");
 
-        boolean flag = true;
-        while (flag) {
-
-        }
     }
 
     /**
@@ -137,19 +169,14 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     public void sendEventToNetwork(EventController packet) {
         if (factory == null) client.sendEventToController(packet);
         else {
-            try {
-                client2.sendEventToController2(packet);
-            } catch (ConnectionProblemException ex) {
+            client2.sendEventToController2(packet);
+        }
+    }
 
-                cliMessage.showReLogin();
-                int choice = cliParser.parseInt(1);
-                if (choice == 0) {
-                    initConnection();
-                    login();
-                } else {
-                    System.exit(0);
-                }
-            }
+    public void sendEventToNetwork(EventServer packet) {
+        if (factory == null) ;// client.sendEventToController(packet);
+        else {
+            client2.sendEventToController2(packet);
         }
     }
 
@@ -179,17 +206,21 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             try {
                 if (factory == null) client.startClient(ip, socketRmi);
                 else {
-                    client2 = factory.createClient(this, ip, port, socketRmi);
+                    client2 = factory.createClient(this, ip, port, socketRmi, true);
                     client2.connectToServer2();
                 }
                 flag = true;
                 cliMessage.showConnectionSuccessful();
                 cliMessage.println();
             } catch (ConnectionProblemException ex) {
+                ex.printStackTrace();
                 cliMessage.showMessage(ex.getMessage());
+                ex.printStackTrace();
             } catch (NoPortRightException ex) {
+                ex.printStackTrace();
                 cliMessage.showMessage(ex.getMessage());
             } catch (Exception ex) {
+                ex.printStackTrace();
                 cliMessage.showMessage(ex.getMessage());
             }
         } while (!flag);
@@ -211,16 +242,10 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
                     cliMessage.showNicknameExists();
                 }
             } else {
-                try {
-                    client2.login2(name);
-                    flag = true;
-                } catch (ConnectionProblemException ex) {
-                    cliMessage.showMessage(ex.getMessage());
-                } catch (PlayerAlreadyLoggedException ex) {
-                    cliMessage.showNicknameExists();
-                } catch (RoomIsFullException ex) {
-                    cliMessage.showNicknameExists();
-                }
+                //TODO creare
+                EventPreGame packet = new LoginRequest(cliParser.parseNickname());
+                sendEventToNetwork(packet);
+
             }
 
         }
@@ -378,6 +403,35 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     //*******************************************Visit for Controller event*******************************************************************************
     //*******************************************Visit for Controller event*******************************************************************************
 
+
+    @Override
+    public void visit(LoginResponse event) {
+        if (event.isLoginSuccessFull()) System.out.println("Hai effetturato il login");
+        else {
+            System.out.println(event.getCause());
+            System.out.println("0 per riprovare il login 1 per spegnere");
+            if (cliParser.parseInt(1) == 0) {
+                AskLogin packet = new AskLogin();
+                visit(packet);
+            } else {
+                client2.shutDownClient2();
+            }
+        }
+    }
+
+    @Override
+    public void visit(ConnectionDown event) {
+        //TODO messaggio di connessione down
+        System.out.println("Connessione Caduta perchè uscito dal contructor della cli");
+    }
+
+    @Override
+    public void visit(AskLogin event) {
+        //TODO da sistemare
+        System.out.println("Inserisci il nome: ");
+        LoginRequest packet = new LoginRequest(cliParser.parseNickname());
+        sendEventToNetwork(packet);
+    }
 
     @Override
     public void visit(StartGame event) {
@@ -674,11 +728,11 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(UpdateNamePlayersDuringSetUp event) {
-        playersName= event.getPlayerNames();
+        playersName = event.getPlayerNames();
         boolean[] connected = new boolean[playersName.length];
         System.out.println("Giocatori attualmente nella stanza");
         System.out.println();
-        for(int i=0;i<playersName.length;i++) System.out.println("Nome: "+playersName[i]);
+        for (int i = 0; i < playersName.length; i++) System.out.println("Nome: " + playersName[i]);
     }
 
     @Override

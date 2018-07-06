@@ -126,7 +126,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             endGame.setPlayerId(i);
             sendEventToView(endGame);
         }
-        if(gameRoom!=null) gameRoom.endGame();
+        if(gameRoom!=null) gameRoom.resetOrStoreGameRoom();
     }
 
     /**
@@ -202,7 +202,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
      * @param event event that will be unleashed on the game.
      */
     public void sendEventToController(EventController event) {
-        if (!gameBoard.isStopGame()) event.accept(this);
+        if (!gameBoard.isStopGame()) event.acceptInGame(this);
     }
 
     //the handler respond with this method

@@ -12,7 +12,7 @@ import it.polimi.se2018.list_event.event_received_by_server.event_for_game.Event
 public class ControllerMoveUseToolCard extends EventController {
 
     @Override
-    public void accept(ControllerVisitor visitor) {
+    public void acceptInGame(ControllerVisitor visitor) {
         visitor.visit(this);
     }
 

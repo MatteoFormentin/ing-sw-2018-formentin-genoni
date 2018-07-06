@@ -2,12 +2,14 @@ package it.polimi.se2018.view.gui;
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.alternative_network.client.ClientFactory;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
@@ -164,11 +166,7 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
     public void sendEventToNetwork(EventController eventController) {
         if(factoryInstance==null) client.sendEventToController(eventController);
         else {
-            try {
-                client2.sendEventToController2(eventController);
-            }catch (ConnectionProblemException ex){
-                restartConnection(ex.getMessage());
-            }
+               client2.sendEventToController2(eventController);
         }
     }
 
@@ -209,6 +207,21 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
     //                           Visitor Event From Controller
     //*************************************************************************************
     //*************************************************************************************
+
+    @Override
+    public void visit(LoginResponse event) {
+        //TODO cambiare lo stage dalla waitRoom
+    }
+
+    @Override
+    public void visit(ConnectionDown event) {
+        //TODO mostrare messaggio di connessione down
+    }
+
+    @Override
+    public void visit(AskLogin event) {
+        //TODO mostrare messaggio di login
+    }
 
     @Override
     public void visit(StartGame event) {

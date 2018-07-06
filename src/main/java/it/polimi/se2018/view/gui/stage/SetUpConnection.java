@@ -87,7 +87,7 @@ public class SetUpConnection {
                     if (getGuiInstance().getFactoryInstance() == null)
                         getGuiInstance().getClient().startClient(ipInput.getText(), i);
                     else {
-                        AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i);
+                        AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i,false);
                         client.connectToServer2();
                         getGuiInstance().setClient2(client);
                     }

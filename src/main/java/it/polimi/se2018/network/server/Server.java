@@ -737,6 +737,6 @@ public class Server implements ServerController, TimerCallback, ServerVisitor, E
 
     @Override
     public void visit(LoginRequest event) {
-        login(event.getRemotePleyer());
+        //login(event.getRemotePlayer());
     }
 }

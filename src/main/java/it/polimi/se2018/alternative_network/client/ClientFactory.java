@@ -61,7 +61,7 @@ public class ClientFactory {
         }
     }
 
-    public AbstractClient2 createClient(UIInterface view, String serverIpAddress, int port, int rmi0socket1) {
+    public AbstractClient2 createClient(UIInterface view, String serverIpAddress, int port, int rmi0socket1,boolean cli) {
         if (serverIpAddress == null || serverIpAddress.equals("0") || serverIpAddress.equals(""))
             serverIpAddress = ipServer;
         if (rmi0socket1 == 0) {
@@ -70,7 +70,17 @@ public class ClientFactory {
         } else if (rmi0socket1 == 1) {
             if (port == 0) abstractClient = new SocketClient2(serverIpAddress, socketPort, view);
             else abstractClient = new SocketClient2(serverIpAddress, port, view);
+            if(cli){
+                view = new CliController(abstractClient);
+                //TODO forse assegnare all'abstract client la nuova view
+                // 1° solzione è questa
+                System.out.println("Sei uscito bingooooooooo");
+            }
         }
         return abstractClient;
+    }
+
+    public static void main(String[] args) {
+        System.out.println();
     }
 }

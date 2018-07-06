@@ -1,6 +1,9 @@
 package it.polimi.se2018.alternative_network.client.socket;
 
+import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.network.SocketObject;
 import it.polimi.se2018.view.UIInterface;
 
@@ -22,13 +25,14 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
     public NetworkHandler(String host, int port, UIInterface view) {
         try {
             clientConnection = new Socket(host, port);
-            System.out.println("Connected.");
             inputStream = new ObjectInputStream(clientConnection.getInputStream());
             this.view = view;
+            this.start();
+            AskLogin packet = new AskLogin();
+            view.showEventView(packet);
         } catch (Exception ex) {
-            //TODO stoppare il ciclo while in attesa degli eventi da cli
-            ex.printStackTrace();
-            view.errPrintln(ex.getMessage());
+            ConnectionDown packet = new ConnectionDown("Connection Error.",false);
+            view.showEventView(packet);
         }
     }
 
@@ -42,29 +46,16 @@ public class NetworkHandler extends Thread implements ServerSocketInterface {
                 String type = received.getType();
                 System.out.println(type);
                 System.out.println(received.getStringField());
+                SocketObject socketObject = (SocketObject) inputStream.readObject();
 
-                if (type == null) {
-                    if (clientConnection.isClosed()) System.out.println("UScito");
-                    else {
-                        System.out.println("hai ricevuto un pacchetto null mentre eri connesso");
-                    }
-                    //TODO in
-                    //loop = false;
-                    //this.stopConnection();
-                } else {
-                    if (type.equals("Event")) {
-                        view.showEventView((EventClient) received.getObject());
-                    }
-                    if (type.equals("RoomIsFullException")) {
-                        view.showEventView((EventClient) received.getObject());
-                    }
-                    if (type.equals("Event")) {
-                        view.showEventView((EventClient) received.getObject());
-                    }
-                    if (type.equals("Ping")) {
-                        //TODO for ping
-                    }
+                if (socketObject.getType().equals("Ack")) {
+                    (new Thread(this)).start();
                 }
+
+                if (socketObject.getType().equals("Nack")) {
+                    throw new PlayerAlreadyLoggedException("error");
+                }
+
 
             } catch (Exception ex) {
                 ex.printStackTrace();

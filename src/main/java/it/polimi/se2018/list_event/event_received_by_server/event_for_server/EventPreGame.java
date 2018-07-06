@@ -10,8 +10,6 @@ public class EventPreGame extends EventServer {
     public void acceptGeneric(ServerVisitor viewVisitor) {viewVisitor.visit(this);}
 
     //ha bisogno dell'overriding
-    public void accept(EventPreGameVisitor visitor){
-        throw new UnsupportedOperationException();
-    }
+    public void acceptPreGame(EventPreGameVisitor visitor){}
 
 }

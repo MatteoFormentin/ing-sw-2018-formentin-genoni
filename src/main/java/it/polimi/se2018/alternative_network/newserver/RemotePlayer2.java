@@ -12,6 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public interface RemotePlayer2 {
 
+
+
     /**
      * method for get the name of the remote player
      *
@@ -19,26 +21,13 @@ public interface RemotePlayer2 {
      */
     public String getNickname();
 
+
     /**
      * method for set the name of the player, typically is received when he ask to make the login
      *
      * @param nickname the nickname of the player
      */
     public void setNickname(String nickname);
-
-    /**
-     * method for get if the remote player is still reachable by the server or game room
-     *
-     * @return true
-     */
-    public boolean isPlayerRunning();
-
-    /**
-     * method for set if the remote player is still connected without trying to contact him
-     *
-     * @param playerRunning false if the player can't be reached, true otherwise
-     */
-    public void setPlayerRunning(boolean playerRunning);
 
     /**
      * method for get the id of the remote player in the game room
@@ -53,7 +42,6 @@ public interface RemotePlayer2 {
      * @param idPlayerInGame associated to this player
      */
     public void setIdPlayerInGame(int idPlayerInGame);
-
     /**
      * when the remote player is associated with a game return the reference to the interface
      * that allows to send messages directly to the game room and to notify a disconnection.
@@ -69,18 +57,21 @@ public interface RemotePlayer2 {
      */
     public void setGameInterface(GameInterface gameInterface);
 
+
+
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
 
     /**
      * this method is used when the game room needs to send some {@code EventClient}
-     * to the client related to this remote player
+     * to the client related to this remote player. this methos handle the connection problemn
      *
      * @param eventClient event that the client needs
-     * @throws ConnectionPlayerException is thrown if the player didn't respond
      */
-    public  void sendEventToView(EventClient eventClient) throws ConnectionPlayerException;
+    //TODO l'implementazione deve gestire la disconnessione
+    public  void sendEventToView(EventClient eventClient);
 
 
 
@@ -95,6 +86,12 @@ public interface RemotePlayer2 {
      */
     public  void kickPlayerOut();
 
+    /**
+     * method it's the same as is player running so
+     * rmi can try to ping
+     * socket response true or false depending if the thread is open
+     */
+    public  boolean checkOnline();
     /**
      * method of the Rmi player for send the event directly to the game room
      * without passing thought the main server that hold all the game room

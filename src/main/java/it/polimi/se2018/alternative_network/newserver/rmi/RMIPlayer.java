@@ -24,10 +24,11 @@ public class RMIPlayer implements RemotePlayer2 {
     //for send event to the client
     private RMIClientInterface clientRMIInterface;
 
+
     private String nickname;
-    private AtomicBoolean playerRunning;
     private int idPlayerInGame;
     private GameInterface gameInterface;
+
 
     @Override
     public String getNickname() {
@@ -37,16 +38,6 @@ public class RMIPlayer implements RemotePlayer2 {
     @Override
     public void setNickname(String nickname) {
         this.nickname=nickname;
-    }
-
-    @Override
-    public boolean isPlayerRunning() {
-        return playerRunning.get();
-    }
-
-    @Override
-    public void setPlayerRunning(boolean playerRunning) {
-        this.playerRunning.set(playerRunning);
     }
 
     @Override
@@ -70,11 +61,11 @@ public class RMIPlayer implements RemotePlayer2 {
     }
 
     @Override
-    public void sendEventToView(EventClient eventClient) throws ConnectionPlayerException {
+    public void sendEventToView(EventClient eventClient){
         try {
             clientRMIInterface.notifyTheClient(eventClient);
         } catch (RemoteException ex) {
-            throw new ConnectionPlayerException();
+            getGameInterface().disconnectFromGameRoom(this);
         }
     }
 
@@ -98,11 +89,10 @@ public class RMIPlayer implements RemotePlayer2 {
 
     @Override
     public void kickPlayerOut() {
-        setPlayerRunning(false);
         AnsiConsole.out.println();
         AnsiConsole.out.print(ansi().fg(BLUE).a("RMIPlayer -> kickPlayerOut: " + getNickname() + "  ").reset());
         try {
-            AnsiConsole.out.println(clientRMIInterface.pong("ping"));
+            clientRMIInterface.ping();
             UnicastRemoteObject.unexportObject(clientRMIInterface, true);
         } catch (NoSuchObjectException ex) {
             AnsiConsole.out.print(ansi().fg(BLUE).a(" ").reset());
@@ -114,6 +104,22 @@ public class RMIPlayer implements RemotePlayer2 {
                 AnsiConsole.out.print(ansi().fg(BLUE).a(" perchè già disconnesso").reset());
             }
         }
+    }
+
+    @Override
+    public boolean checkOnline() {
+        try {
+            clientRMIInterface.ping();
+        } catch (RemoteException ex) {
+            System.out.println("non c'è la connessione attiva");
+            try {
+                UnicastRemoteObject.unexportObject(clientRMIInterface, true);
+            } catch (NoSuchObjectException ex2) {
+                System.out.println("è stato già rimosso");
+                ex.printStackTrace();
+            }
+        }
+        return false;
     }
 
     @Override

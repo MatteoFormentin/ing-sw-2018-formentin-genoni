@@ -16,12 +16,18 @@ import static org.fusesource.jansi.Ansi.ansi;
 /**
  * Probabilemte no errori
  */
-public class RMIServer extends AbstractServer2 {
+public class RMIServer implements AbstractServer2 {
 
+    private final Server2 serverController;
+    private final String host;
+    private final int port;
+    private boolean started;
     private RMIClientGatherer clientGatherer;
 
     public RMIServer(Server2 serverController, String host, int port) {
-        super(serverController, host, port);
+        this.serverController=serverController;
+        this.host=host;
+        this.port=port;
     }
 
     @Override
@@ -46,13 +52,13 @@ public class RMIServer extends AbstractServer2 {
             setStarted(false);
             throw new ServerStartException();
         }
-     /*   try {
-            clientGatherer = RMIClientGatherer.getSingletonClientGatherer(getServerController());
+        try {
+            clientGatherer = RMIClientGatherer.getSingletonClientGatherer(serverController,this,getPort());
         } catch (RemoteException ex) {
             AnsiConsole.out.println(ansi().fg(BLUE).a("RMIClientGatherer non può essere istanziato").reset());
             setStarted(false);
             throw new ServerStartException();
-        }*/
+        }
         try {
             Naming.bind("//" + getHost() + ":" + getPort() + "/MyServer", clientGatherer);
         } catch (AlreadyBoundException ex) {
@@ -94,5 +100,30 @@ public class RMIServer extends AbstractServer2 {
                 AnsiConsole.out.println(ansi().fg(BLUE).a("Il servizio su questa porta è stato già disattivato").reset());
             }
         }
+    }
+
+    @Override
+    public Server2 getServerController() {
+        return serverController;
+    }
+
+    @Override
+    public String getHost() {
+        return host;
+    }
+
+    @Override
+    public int getPort() {
+        return port;
+    }
+
+    @Override
+    public boolean isStarted() {
+        return started;
+    }
+
+    @Override
+    public void setStarted(boolean started) {
+        this.started=started;
     }
 }

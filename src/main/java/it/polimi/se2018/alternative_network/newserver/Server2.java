@@ -3,11 +3,11 @@ package it.polimi.se2018.alternative_network.newserver;
 import it.polimi.se2018.alternative_network.newserver.rmi.RMIServer;
 import it.polimi.se2018.alternative_network.newserver.room.GameRoom;
 import it.polimi.se2018.alternative_network.newserver.socket.SocketServer;
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.utils.TimerThread;
 import it.polimi.se2018.view.cli.CliParser;
 
@@ -167,93 +167,98 @@ public class Server2 implements PrincipalServer {
         }
     }
 
-    public void addPlayerToGameRoom(RemotePlayer2 newRemotePlayer) throws RoomIsFullException {
-        try {
-            newGameRoom.addRemotePlayer(newRemotePlayer);
-        } catch (GameStartedException ex) {
-            //TODO aprire un'altra stanza e loggarlo per le stanze multiple
-            ex.printStackTrace();
-            if (newGameRoom == null) {
-                newGameRoom = new GameRoom(gameRoomRunning.size());
-                gameRoomRunning.add(newGameRoom);
-            } else throw new RoomIsFullException("la stanza è piena, riprova il login");
-        }
-    }
-
 
     //****************************** Event from the listener *******************************************************
     //****************************** Event from the listener *******************************************************
     //****************************** Event from the listener *******************************************************
+
 
     @Override
-    public void login(RemotePlayer2 newRemotePlayer) throws PlayerAlreadyLoggedException, RoomIsFullException {
-
-            System.out.println("è stato rilevato un tentativo di login al server");
-            if (newRemotePlayer.getNickname() == null || newRemotePlayer.getNickname().equals("")) {
-                System.out.println("Anon");
-                int i = 0;
-                int j = 0;
-                while (i <= 0) i = new Random().nextInt(100);
-                while (j <= 0) j = new Random().nextInt(100);
-                newRemotePlayer.setNickname("Anon" + i + counterAnon + j);
-                counterAnon++;
-            }
-            RemotePlayer2 oldRemotePlayer;
-            for (int i = 0; i < players.size(); i++) {
-                oldRemotePlayer = players.get(i);
-
-                // se i nomi combaciano
-                if (oldRemotePlayer.getNickname().equals(newRemotePlayer.getNickname())) {
-                    System.out.println("nome combacia");
-
-                    //è già collegato
-                    if (oldRemotePlayer.isPlayerRunning()) {
-                        //TODO provare a mandare un ping? non si può :/ ma se il socket player mi setta a false
-                        // appena trova la disconnessione è ok, al massimo fare la variabile nel remote player come Atomic boolean
-                        throw new PlayerAlreadyLoggedException("Il nickname da te ha già effettuato il login");
-                    } else { //non è collegato
-                        System.out.println("non è collegato");
-                        if (oldRemotePlayer.getGameInterface() == null) {//se non è associato ad una partita
-                            //TODO per persistenza fare un visitor patter per salvare i dati del vecchio giocatore
-                            System.out.println("non è associato ad una partita");
-                            players.remove(oldRemotePlayer);
-                            players.add(newRemotePlayer);
-                            addPlayerToGameRoom(newRemotePlayer);
-                        } else { //se è associato ad una gameboard
-                            //TODO reLogin
-                            System.out.println("è associato ad una gameboard");
-                            oldRemotePlayer.getGameInterface().reLogin(oldRemotePlayer, newRemotePlayer);
-                        }
-                    }
-                } else { //il nome non combacia
-                    //TODO login
-                    System.out.println("nome non combacia");
-                    players.add(newRemotePlayer);
-                    if (newGameRoom == null) {
-                        newGameRoom = new GameRoom(gameRoomRunning.size());
-                        gameRoomRunning.add(newGameRoom);
-                    }
-                    addPlayerToGameRoom(newRemotePlayer);
-                }
-            }
-            if (players.size() == 0) {
-                System.out.println("ci sono 0 giocatori");
-                players.add(newRemotePlayer);
-                addPlayerToGameRoom(newRemotePlayer);
-            }
-
-        System.out.println("uscito dal login");
-    }
-
-    @Override
-    public void sendEventToGameRoom(EventController eventController) {
-        System.out.println("arrivato messaggio al server");
+    public void sendEventToGame(EventController eventController) {
         try {
+            //TODO provo prima a mandarlo alle running, sa se ho delle eccezioni non è ancora partita la gameRoom
             gameRoomRunning.get(eventController.getIdGame()).sendEventToGameRoom(eventController);
         } catch (NullPointerException | IndexOutOfBoundsException ex) {
             newGameRoom.sendEventToGameRoom(eventController);
         }
     }
+    @Override
+    public synchronized LoginResponse login(RemotePlayer2 newRemotePlayer) {
+        LoginResponse response = new LoginResponse(false, "errore nel login del server principale");
+        System.out.println("è stato rilevato un tentativo di login al server");
+        //funzione pre gli anonimi
+        if (newRemotePlayer.getNickname() == null || newRemotePlayer.getNickname().equals("")) {
+            System.out.println("Anon");
+            int i = 0;
+            int j = 0;
+            while (i <= 0) i = new Random().nextInt(100);
+            while (j <= 0) j = new Random().nextInt(100);
+            newRemotePlayer.setNickname("Anon" + i + counterAnon + j);
+            counterAnon++;
+        }
+        //ricerca del giocatore
+        try{
+            if (players.isEmpty()) {
+                System.out.println("Il primo giocatore della giornata!");
+                players.add(newRemotePlayer);
+                newGameRoom.addRemotePlayer(newRemotePlayer);
+                response = new LoginResponse(true, "Hai effettuato il login, complimenti sei il primo");
 
+            } else {
+                RemotePlayer2 oldRemotePlayer;
+                boolean findIt = false;
+                int i = 0;
+                while (i < players.size() && !findIt) {
+                    oldRemotePlayer = players.get(i);
+                    // se i nomi combaciano
+                    if (oldRemotePlayer.getNickname().equals(newRemotePlayer.getNickname())) {
+                        System.out.println("nome combacia");
+                        findIt = true; //uscirà dal while
+
+                        if (oldRemotePlayer.checkOnline()) { //è già collegato
+                            //TODO provare a mandare un ping? non si può :/ ma se il socket player mi setta a false
+                            // appena trova la disconnessione è ok, al massimo fare la variabile nel remote player come Atomic boolean
+                            System.out.println("Giocatore sta già giocando.");
+                            response = new LoginResponse(false, "Giocatore sta già giocando.");
+                        } else { //non è collegato
+                            System.out.println("non è collegato");
+                            if (oldRemotePlayer.getGameInterface() == null) {//se non è associato ad una partita
+                                System.out.println("non è associato ad una partita");
+                                //TODO aggiorno i riferimenti del giocatore nel server principale, se voglio persistenza devo salvare i dati
+                                newGameRoom.addRemotePlayer(newRemotePlayer);
+                                players.remove(oldRemotePlayer);
+                                players.add(newRemotePlayer);
+                                response = new LoginResponse(true, "Hai effettuato il login");
+                                System.out.println("Ha effettuato il login");
+                            } else { //se è associato ad una gameboard
+                                //TODO reLogin
+                                System.out.println("è associato ad una gameboard, viene fatto il cambio ");
+                                //rimuovo detinitivamente il vecchio
+                                System.out.println("Ha effettuato il relogin");
+                                oldRemotePlayer.getGameInterface().reLogin(oldRemotePlayer, newRemotePlayer);
+                                //TODO controllare se va rimosso
+                  /*      players.remove(oldRemotePlayer);
+                        players.add(newRemotePlayer);*/
+                                response = new LoginResponse(true, "Hai effettuato il relogin");
+                            }
+                        }
+                    } else { //il nome non combacia
+                        //TODO login
+                        System.out.println("nome non combacia, lo inserisco nella linked list dei giocatori che si sono registrati al server (persistenza)");
+                        players.add(newRemotePlayer);
+                        findIt = true;
+                        //TODO per multistanza lo aggiorno qui
+                        newGameRoom.addRemotePlayer(newRemotePlayer);
+                        response = new LoginResponse(true, "Hai effettuato il relogin");
+                    }
+                    System.out.println("Controllato giocatore " + i + " esimo nella linked list del server principale");
+                    i++;
+                }
+            }
+        }catch (GameStartedException ex){
+            response = new LoginResponse(false, "La stanza era piena riprova ad effettuare il login");
+        }
+        return response;
+    }
 
 }

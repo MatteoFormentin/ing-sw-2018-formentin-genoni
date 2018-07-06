@@ -4,12 +4,9 @@ import it.polimi.se2018.alternative_network.newserver.AbstractServer2;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.exception.network_exception.ServerSideException;
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
-import it.polimi.se2018.network.server.ServerController;
 
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,8 +18,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author DavideMammarella
  */
-public class SocketServer extends AbstractServer2 {
+public class SocketServer implements AbstractServer2 {
 
+    private final Server2 serverController;
+    private final String host;
+    private final int port;
+    private boolean started;
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
     private final AtomicBoolean running;
@@ -43,7 +44,9 @@ public class SocketServer extends AbstractServer2 {
      * @param port port
      */
     public SocketServer(Server2 serverController, String host, int port) {
-        super(serverController, host, port);
+        this.serverController=serverController;
+        this.host=host;
+        this.port=port;
         socketPlayers = new LinkedList<>();
         running = new AtomicBoolean(false);
     }
@@ -62,10 +65,10 @@ public class SocketServer extends AbstractServer2 {
             clientGatherer2 = new ClientGatherer2(this, getPort());
             running.set(true);
             clientGatherer2.start();
+            System.out.println("Acceso Sokcet"+clientGatherer2.getState());
         }catch(IOException ex){
             throw new ServerStartException(ex.getMessage());
         }
-
     }
 
 
@@ -100,5 +103,30 @@ public class SocketServer extends AbstractServer2 {
      */
     public void stopServer() {
         clientGatherer2.stop();
+    }
+
+    @Override
+    public Server2 getServerController() {
+        return serverController;
+    }
+
+    @Override
+    public String getHost() {
+        return host;
+    }
+
+    @Override
+    public int getPort() {
+        return port;
+    }
+
+    @Override
+    public boolean isStarted() {
+        return started;
+    }
+
+    @Override
+    public void setStarted(boolean started) {
+        this.started=started;
     }
 }

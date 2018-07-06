@@ -2,6 +2,8 @@ package it.polimi.se2018.alternative_network.newserver.room;
 
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
 import it.polimi.se2018.controller.Controller;
+import it.polimi.se2018.exception.gameboard_exception.GameIsBlockedException;
+import it.polimi.se2018.exception.gameboard_exception.GameIsOverException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
 import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
@@ -22,7 +24,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GameRoom extends Thread implements TimerCallback, GameInterface {
 
     private LinkedList<RemotePlayer2> players;
-    private UpdateRequestedByServer updater;
+    private RemotePlayer2[] playersInGame;
+    private UpdateRequestedByServer updateStateConnection;
     private Controller controller;
 
     private int idGameBoard;
@@ -40,7 +43,7 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
         timerThread = new TimerThread(this, roomTimeout);
         players = new LinkedList<>();
         currentConnected = new AtomicInteger(0);
-        updater = new UpdateRequestedByServer() {
+        updateStateConnection = new UpdateRequestedByServer() {
             @Override
             public void updatePlayerConnected(int index, String name) {
                 for (int i = 0; i < players.size(); i++) updatePlayerConnected(i, index, name);
@@ -105,41 +108,63 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
         return players.size();
     }
 
-    public void startGame() {
+    /**
+     * metodo per startare la partita
+     * è compatibile con il replay di una partita già fatta, ma non è stato implementato
+     */
+    public synchronized void startGame()throws GameStartedException{
         if (controller == null) {
             timerThread.shutdown();
+            //TODO metterli nell'array
+            playersInGame = new RemotePlayer2[players.size()];
             String[] playersName = new String[players.size()];
-            for (int i = 0; i < players.size(); i++) {
-                System.out.println("Player " + i + " -> " + players.get(i).getNickname());
-                playersName[i] = players.get(i).getNickname();
+            for(int i=0;i<playersInGame.length;i++){
+                playersInGame[i]= players.get(i);
+                playersName[i] = playersInGame[i].getNickname();
             }
             controller = new Controller(null, playersName, this);
-            updater = controller.getUpdater();
             controller.startController();
+        }else{
+            //TODO qui implementare il replay della partita
+            System.out.println("errore è gia stata inizziata questa partita");
+            throw new GameStartedException();
         }
     }
 
+    public synchronized void resetOrStoreGameRoom(){
+        //TODO refrech
+    }
 
-    public void addRemotePlayer(RemotePlayer2 remotePlayer) throws RoomIsFullException, GameStartedException {
-        if (players.size() < maxPlayer) {
-            System.err.println("viene aggiunto il player");
-            players.add(remotePlayer);
-            remotePlayer.setPlayerRunning(true);
-            remotePlayer.setGameInterface(this);
-            for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
-            updater.updatePlayerConnected(remotePlayer.getIdPlayerInGame(), remotePlayer.getNickname());
-            currentConnected.incrementAndGet();
-            //  checkOnLine();
-            System.err.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi, " + players.size() + " registrati");
-            if (currentConnected.get() == maxPlayer) {
-                //TODO set something boolean of i don't know
-                timerThread.shutdown();
-                startGame();
+    /**
+     * aggiongere un giocatore alla partita
+     *
+     * @param remotePlayer
+     * @throws RoomIsFullException
+     */
+    public void addRemotePlayer(RemotePlayer2 remotePlayer) throws GameStartedException{
+        if(controller==null){
+            if (players.size() < maxPlayer) {
+                System.err.println("viene aggiunto il player");
+                players.add(remotePlayer);
+                // viene settata la gameboard
+                remotePlayer.setGameInterface(this);
+                for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
+                updateStateConnection.updatePlayerConnected(remotePlayer.getIdPlayerInGame(), remotePlayer.getNickname());
+                currentConnected.incrementAndGet();
+                //  checkOnLine();
+                System.err.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi, " + players.size() + " registrati");
+                if (currentConnected.get() == maxPlayer) {
+                    //TODO set something boolean of i don't know
+                    startGame();
+                }
+                if (currentConnected.get() == 2) timerThread.startThread();
+            } else {
+                System.out.println("Gameroom -> addRemotePlayer: ci sono la partita è già iniziata. ");
+                throw new GameStartedException();
             }
-            if (currentConnected.get() == 2) timerThread.startThread();
-        } else {
-            System.out.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi e ");
-            throw new RoomIsFullException("The current room is starting retry login.");
+        }else{
+            System.out.println("Gameroom -> addRemotePlayer: ci sono la partita è già iniziata. ");
+            throw new GameStartedException();
         }
     }
 
@@ -155,36 +180,38 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
             System.out.println("light Remove. Disconnected during game");
             System.out.println("Gameroom -> removeRemotePlayer: ci sono " + currentConnected + " connessi e " + players.size() + " registrati");
             remotePlayerDown.kickPlayerOut();
-            remotePlayerDown.setPlayerRunning(false);
-            //TODO sostituire con un thead
+            //TODO implementare un corretto end game
             if (currentConnected.get() == 1) controller.endGame();
             else {
-                updater.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
+                updateStateConnection.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
                 controller.playerDown(remotePlayerDown.getIdPlayerInGame());
             }
         } else {
             //hard remove game not started
             System.out.println("Hard Remove");
             remotePlayerDown.kickPlayerOut();
-            remotePlayerDown.setPlayerRunning(false);
-            updater.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
+            updateStateConnection.updateDisconnected(remotePlayerDown.getIdPlayerInGame(), remotePlayerDown.getNickname());
             players.remove(remotePlayerDown);
-            for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
+           // for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
             //TODO sostituire con thead
             if (currentConnected.get() == 1) timerThread.shutdown();
         }
-        System.out.println(" ");
     }
 
 
+    /**
+     * riaggiusta il collegamento con la
+     * @param oldRemotePlayer
+     * @param newRemotePlayer
+     */
     public void reLogin(RemotePlayer2 oldRemotePlayer, RemotePlayer2 newRemotePlayer) {
         currentConnected.incrementAndGet();
         System.out.println("il Client è stato sostituito");
         int i = oldRemotePlayer.getIdPlayerInGame();
         newRemotePlayer.setIdPlayerInGame(i);
         newRemotePlayer.setGameInterface(this);
-        players.set(i, newRemotePlayer);
-        updater.updateInfoReLogin(i);
+        playersInGame[i]= newRemotePlayer;
+        controller.playerUp(i);
 
     }
 
@@ -198,13 +225,6 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
 
     }
 
-
-    public void endGame() {
-        closed.set(true);
-        //TODO per stoppare il thread della partita
-    }
-
-
     //***********************************************************************************************************************/
     //***********************************************************************************************************************/
     //
@@ -214,18 +234,38 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
 
     @Override
     public void sendEventToGameRoom(EventController eventController) {
-        controller.sendEventToController(eventController);
+        //TODO rilevare che la partita è finita per aggiornare la gameRoom usare il try and catch
+        if(controller==null){
+            System.out.println("non è ancora iniziata la partita");
+        }else{
+            System.out.println("è in corso la partita");
+            controller.sendEventToController(eventController);
+        }
+      //  try{
+
+    /*    }catch(GameIsOverException ex){
+
+        }*/
+
     }
 
+    /**
+     * metodo per aggiornare la view sia nel pregame che nel gioco in corso
+     * @param eventClient
+     */
     @Override
     public void sendEventToView(EventClient eventClient) {
         System.out.println("!!!GAMEROOM sendEventToView");
-        eventClient.setIdGame(idGameBoard);
-        try {
-              if (players.get(eventClient.getPlayerId()).isPlayerRunning())
+        if(controller ==null){
+            System.out.println("Non è ancora startata la partita mando il messaggio alla linked list");
+            eventClient.setIdGame(idGameBoard);
+            if (players.get(eventClient.getPlayerId()).checkOnline())
                 players.get(eventClient.getPlayerId()).sendEventToView(eventClient);
-        } catch (ConnectionPlayerException ex) {
-            removeRemotePlayer(players.get(eventClient.getPlayerId()));
+            else removeRemotePlayer(players.get(eventClient.getPlayerId()));
+        }else{
+            System.out.println("Durante la partita mando il messaggio all'array fisso");
+            eventClient.setIdGame(idGameBoard);
+            if (playersInGame[eventClient.getPlayerId()].checkOnline())  playersInGame[eventClient.getPlayerId()].sendEventToView(eventClient);
         }
     }
 
