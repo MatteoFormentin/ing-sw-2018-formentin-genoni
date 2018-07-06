@@ -62,7 +62,6 @@ public class ClientFactory {
             if (port == 0) abstractClient = new SocketClient2(serverIpAddress, socketPort, view);
             else abstractClient = new SocketClient2(serverIpAddress, port, view);
             if(cli){
-                view = new CliController(abstractClient);
                 //TODO forse assegnare all'abstract client la nuova view
                 // 1° solzione è questa
                 System.out.println("Sei uscito bingooooooooo");
