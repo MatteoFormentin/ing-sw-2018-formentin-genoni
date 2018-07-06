@@ -9,9 +9,6 @@ import it.polimi.se2018.list_event.event_received_by_server.event_for_game.Event
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.utils.TimerThread;
 import it.polimi.se2018.view.cli.CliParser;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +18,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @Davide Mammarella
+ * @author DavideMammarella
  */
 public class Server2 implements PrincipalServer {
     //info for the operation of the server

@@ -3,7 +3,6 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import org.fusesource.jansi.AnsiConsole;
@@ -11,7 +10,6 @@ import org.fusesource.jansi.AnsiConsole;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.fusesource.jansi.Ansi.Color.BLUE;
 import static org.fusesource.jansi.Ansi.ansi;
@@ -19,6 +17,8 @@ import static org.fusesource.jansi.Ansi.ansi;
 /**
  * Classe utilizzata per inviare messaggi al client
  * NON RICEVE MESSAGGI DAL CLIENT (se non per il return)
+ *
+ * @author DavideMammarella
  */
 public class RMIPlayer implements RemotePlayer2 {
     //for send event to the client

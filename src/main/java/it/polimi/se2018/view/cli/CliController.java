@@ -369,7 +369,8 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(ConnectionDown event) {
         //TODO messaggio di connessione down
-        System.out.println("Connessione Caduta perchè uscito dal contructor della cli");
+        System.out.println(event.getCause());
+        initConnection();
     }
 
     @Override

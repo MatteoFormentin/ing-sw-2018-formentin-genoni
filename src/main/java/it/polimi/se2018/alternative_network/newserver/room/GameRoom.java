@@ -15,6 +15,9 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @author Luca Genoni
+ */
 public class GameRoom extends Thread implements TimerCallback, GameInterface {
 
     private LinkedList<RemotePlayer2> players;
@@ -212,7 +215,11 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
 
     @Override
     public void timerCallback() {
-        // startGameRoom(server);
+        try {
+            startGame();
+        } catch (GameStartedException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override

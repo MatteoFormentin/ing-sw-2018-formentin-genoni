@@ -1,13 +1,12 @@
 package it.polimi.se2018.alternative_network.client;
 
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
-import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.view.UIInterface;
 
+/**
+ * @author DavideMammarella
+ */
 public abstract class AbstractClient2 {
 
     public String ip_host;

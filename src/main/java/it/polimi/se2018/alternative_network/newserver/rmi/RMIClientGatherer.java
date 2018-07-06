@@ -16,6 +16,9 @@ import static org.fusesource.jansi.Ansi.ansi;
 /**
  * Class that build and destroy the connection with the Rmi player
  * this is the class that can receive the messages from the player
+ *
+ * @author DavideMammarella
+ * @author Luca Genoni
  */
 public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient {
     private static RMIClientGatherer instance;
