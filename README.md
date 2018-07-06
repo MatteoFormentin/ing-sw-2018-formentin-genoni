@@ -2,7 +2,8 @@
   
 [![Build Status](https://travis-ci.com/MatteoFormentin/ing-sw-2018-formentin-genoni-mammarella.svg?token=Axkx1JzxX5Fiya9Qs982&branch=master)](https://travis-ci.com/MatteoFormentin/ing-sw-2018-formentin-genoni-mammarella)
 
-Contributors: Matteo Formentin, Luca Genoni, Davide Mammarella.
+Contributors: Matteo Formentin, Luca Genoni, Davide Mammarella.  
+Notes: We use Travis to run continuos integration testing.
 
 ### STARTING GAME
 Launch `SagradaLuncher` main class then choose 0 to start server, 1 to start client.
