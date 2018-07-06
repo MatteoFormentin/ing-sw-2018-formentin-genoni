@@ -212,7 +212,11 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
 
     @Override
     public void timerCallback() {
-        // startGameRoom(server);
+        try {
+            startGame();
+        } catch (GameStartedException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
