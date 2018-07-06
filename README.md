@@ -15,5 +15,5 @@ If client is choosed, you will asked to either run command line or graphic inter
 - GUI  
 - RMI  
 - Socket
-- Costum Window Pattern Card
+- Custom Window Pattern Card
 
