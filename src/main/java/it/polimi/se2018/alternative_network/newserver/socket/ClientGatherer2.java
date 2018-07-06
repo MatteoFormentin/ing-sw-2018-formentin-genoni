@@ -2,7 +2,6 @@ package it.polimi.se2018.alternative_network.newserver.socket;
 
 
 import it.polimi.se2018.alternative_network.newserver.PrincipalServer;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -56,9 +55,7 @@ public class ClientGatherer2 extends Thread {
                 newClientConnection = serverSocket.accept();
                 System.out.println("A new client connected.");
                 SocketPlayer newPlayer = new SocketPlayer(newClientConnection, server);
-                newPlayer.run();
-                AskLogin packet = new AskLogin();
-                newPlayer.sendEventToView(packet);
+                (new Thread(newPlayer)).start();
             } catch (IOException ex) {
                 ex.printStackTrace();
                 System.out.println(ex.getMessage());

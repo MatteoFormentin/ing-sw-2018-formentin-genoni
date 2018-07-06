@@ -77,7 +77,6 @@ public class TimerThread implements Runnable {
             }
             else timerCallback.timerCallback();
         }
-        System.out.println("!!!!EXPIRED!!!!");
         isAlive = false;
     }
 
@@ -115,7 +114,6 @@ public class TimerThread implements Runnable {
      * Stopper for the Timer Thread.
      */
     public void shutdown() {
-        System.out.println("Richiesto turn off del timer");
         running.set(false);
         try {
             Thread.sleep(1);

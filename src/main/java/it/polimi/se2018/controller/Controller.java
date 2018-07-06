@@ -95,7 +95,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
         currentEffect = 0;
         effectGamesStored = new LinkedList<>();
         started = false;
-        System.out.println("CONTROLLER CREATED!!!!!!!!!!!");
     }
 
 
@@ -130,6 +129,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
             sendEventToView(endGame);
         }
         if (gameRoom != null) gameRoom.resetOrStoreGameRoom();
+        gameRoom.stopServer();
     }
 
     /**

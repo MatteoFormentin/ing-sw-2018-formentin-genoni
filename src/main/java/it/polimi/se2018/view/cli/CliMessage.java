@@ -621,6 +621,6 @@ class CliMessage {
             println();
         }
 
-
+        AnsiConsole.out.println(ansi().fg(RED).a("PARTITA TERMINATA! GRAZIE PER AVER GIOCATO"));
     }
 }

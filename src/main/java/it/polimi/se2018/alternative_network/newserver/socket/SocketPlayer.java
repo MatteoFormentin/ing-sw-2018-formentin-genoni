@@ -31,7 +31,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * @author DavideMammarella
  */
 //TODO implementare Remote PLayer2
-public class SocketPlayer implements RemotePlayer2, ServerVisitor, EventPreGameVisitor,Runnable {
+public class SocketPlayer implements RemotePlayer2, ServerVisitor, EventPreGameVisitor, Runnable {
 
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
     static HashMap<String, SocketPlayer> socketPlayers;
@@ -86,12 +86,12 @@ public class SocketPlayer implements RemotePlayer2, ServerVisitor, EventPreGameV
     /**
      * Socket Player Constructor.
      *
-     * @param connection       tunnel used to manage the socket connection.
+     * @param connection tunnel used to manage the socket connection.
      */
     public SocketPlayer(Socket connection, PrincipalServer server) {
         this.server = server;
         this.tunnel = connection;
-        online= new AtomicBoolean(true);
+        online = new AtomicBoolean(true);
         //TODO inizzializzare una variabile atomic boolean per segnare se il thread è attivo oppure no
         try {
             this.outputStream = new ObjectOutputStream(tunnel.getOutputStream());
@@ -122,11 +122,9 @@ public class SocketPlayer implements RemotePlayer2, ServerVisitor, EventPreGameV
             try {
                 EventServer received = (EventServer) inputStream.readObject();
                 received.acceptGeneric(this);
-
-                System.out.println("run socket player");
             } catch (EOFException e) {
                 online.set(false);
-                e.printStackTrace();
+                //e.printStackTrace();
                 // se si disconnette metto il running a false e tengo in memoria il player
                 if (gameInterface == null) ;//TODO non ho ancora fatto il login
                 else gameInterface.disconnectFromGameRoom(this);
@@ -192,7 +190,6 @@ public class SocketPlayer implements RemotePlayer2, ServerVisitor, EventPreGameV
         try {
             outputStream.writeObject(socketObject);
             outputStream.reset();
-            System.out.println("sendObject");
         } catch (SocketException e) {
             online.set(false);
 

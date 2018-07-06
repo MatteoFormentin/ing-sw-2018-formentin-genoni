@@ -124,7 +124,7 @@ public class Server2 implements PrincipalServer {
      * Choice of the port, creation of the Registry, start of the RmiServer and SocketServer
      */
     public void start() {
-        newGameRoom = new GameRoom(0);
+        newGameRoom = new GameRoom(0, this);
         boolean rmiStarted = false;
         boolean socketStarted = false;
         boolean startThisServer = true;
@@ -262,6 +262,16 @@ public class Server2 implements PrincipalServer {
         response.setNickname(newRemotePlayer.getNickname());
         ResponseEventLogin responseEventLogin = new ResponseEventLogin(response, newRemotePlayer);
         responseEventLogin.start();
+    }
+
+    @Override
+    public void endGame() {
+        for (RemotePlayer2 p : players) {
+            p.kickPlayerOut();
+        }
+        System.out.println();
+        System.out.println("PARTITA FINITA! GRAZIE PER AVER GIOCATO!");
+        System.exit(0);
     }
 
     private class ResponseEventLogin extends Thread {

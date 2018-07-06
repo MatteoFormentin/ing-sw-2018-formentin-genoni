@@ -11,4 +11,6 @@ public interface PrincipalServer {
 
     void login(RemotePlayer2 remotePlayer);
 
+    void endGame();
+
 }

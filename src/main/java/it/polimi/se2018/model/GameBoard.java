@@ -51,7 +51,6 @@ public class GameBoard {
         objectivePublicCard = new ObjectivePublicCard[3];
         player = new Player[names.length];
         for (int i = 0; i < names.length; i++) {
-            System.out.println("name player stored: "+names[i]);
             player[i] = new Player(i,names[i]);
         }
         indexCurrentPlayer = 0;
