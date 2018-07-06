@@ -1,5 +1,7 @@
 package it.polimi.se2018.view.gui.stage;
 
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGame;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game.LoginRequest;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,6 +11,8 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 /**
  * class that handle the EventPreGame to the server
@@ -68,30 +72,13 @@ public class Login {
         Button back = new Button("Back");
         form.addRow(2, back, connect);
         //components action
-        /*connect.setOnAction(e -> {
-            if (getGuiInstance().getFactoryInstance() == null) {
-                try {
-                    if (getGuiInstance().getClient().login(nameInput.getText())) {
-                        answer = true;
-                        stage.close();
-                    } else new AlertMessage(stage).displayMessage("Non puoi eseguire il login");
-
-                } catch (NullPointerException ex) {
-                    new AlertMessage(stage).displayMessage("Non sei collegato al server. \n" +
-                            "Imposta prima il server a cui ti vuoi collegare");
-                }
-            } else {
+        connect.setOnAction(e -> {
                     //TODO creare il pachetto di login e inviarlo
-                EventPreGame packet = new LoginRequest(nameInput.getText());
+                LoginRequest packet = new LoginRequest(nameInput.getText());
                 getGuiInstance().getClient2().sendEventToController2(packet);
                 stage.close();
-                  //  getGuiInstance().getClient2().login2(nameInput.getText());
-                 //   answer = true;
-                 //   stage.close();
-
-            }
-        });*/
+        });
         back.setOnAction(e -> stage.close());
-        stage.showAndWait();
+        stage.show();
     }
 }

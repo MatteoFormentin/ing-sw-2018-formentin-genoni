@@ -119,8 +119,9 @@ public class RMIPlayer implements RemotePlayer2 {
                 System.out.println("è stato già rimosso");
                 ex.printStackTrace();
             }
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override

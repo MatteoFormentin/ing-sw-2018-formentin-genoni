@@ -4,6 +4,7 @@ package it.polimi.se2018.alternative_network.client.socket;
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.view.UIInterface;
 
@@ -114,7 +115,10 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
             inputStream = new ObjectInputStream(clientConnection.getInputStream());
             outputStream.flush();
             (new Thread(this)).start();
+            AskLogin packet = new AskLogin();
+            sendEventToView(packet);
         } catch (IOException ex) {
+            ex.printStackTrace();
             ConnectionDown packet = new ConnectionDown("Controlla ip e porta.", false);
             sendEventToView(packet);
         }
@@ -154,6 +158,7 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
                 EventClient received = (EventClient) inputStream.readObject();
                 sendEventToView(received);
             } catch (IOException | ClassNotFoundException ex) {
+                ex.printStackTrace();
                 flag = false;
 
                 ConnectionDown packet = new ConnectionDown("Sei stato disconnesso dal server. Controlla la connessione.", false);

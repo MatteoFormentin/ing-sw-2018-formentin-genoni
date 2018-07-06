@@ -190,7 +190,7 @@ public class Server2 implements PrincipalServer {
         LoginResponse response = new LoginResponse(false, "errore nel login del server principale");
         System.out.println("è stato rilevato un tentativo di login al server");
         //funzione pre gli anonimi
-        if (newRemotePlayer.getNickname() == null || newRemotePlayer.getNickname().equals("")) {
+        if (newRemotePlayer.getNickname().equals("")) {
             System.out.println("Anon");
             int i = 0;
             int j = 0;
@@ -231,7 +231,7 @@ public class Server2 implements PrincipalServer {
                                 newGameRoom.addRemotePlayer(newRemotePlayer);
                                 players.remove(oldRemotePlayer);
                                 players.add(newRemotePlayer);
-                                response = new LoginResponse(true, "Hai effettuato il login");
+                                response = new LoginResponse(true, "Hai effettuato il relogin");
                                 System.out.println("Ha effettuato il login");
                             } else { //se è associato ad una gameboard
                                 //TODO reLogin

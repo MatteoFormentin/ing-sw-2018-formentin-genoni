@@ -14,9 +14,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.view.UIInterface;
-import it.polimi.se2018.view.gui.stage.AlertMessage;
-import it.polimi.se2018.view.gui.stage.ConfirmBox;
-import it.polimi.se2018.view.gui.stage.WaitGame;
+import it.polimi.se2018.view.gui.stage.*;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -365,20 +363,18 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     @Override
     public void visit(LoginResponse event) {
         //TODO disattivare lo stage del login e avviare la wait room se restituisce false
-        System.out.println(event.getCause());
+        new WaitGame(utilStage).displayMessage("aspetta che si connettano tutti");
     }
 
     @Override
     public void visit(ConnectionDown event) {
-        System.out.println("da implementare: "+event);
-        //TODO mo fare il comeoeng
+        new SetUpConnection(utilStage).display();
 
     }
 
     @Override
     public void visit(AskLogin event) {
-        System.out.println("da implementare: "+event);
-        //TODO mo fare il comeoeng
+        new Login(utilStage).display();
     }
 
     /**

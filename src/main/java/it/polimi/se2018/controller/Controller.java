@@ -40,6 +40,7 @@ import java.util.Properties;
 public class Controller implements ControllerVisitor, TimerCallback {
     private GameBoard gameBoard;
     private int playerNumber;
+    private String[] playersName;
     private boolean restoreAble;
     //Server in cui si setterà la partita
     private GameRoom gameRoom;
@@ -67,6 +68,8 @@ public class Controller implements ControllerVisitor, TimerCallback {
         //set up actual game
         this.gameRoom = room;
         this.playerNumber = playerName.length;
+        playersName = new String[playerName.length];
+        System.out.println(playerName.length);
         gameBoard = new GameBoard(playerName);
         updaterView = new UpdaterView(gameBoard, room);
         //set up utils for the game
@@ -172,12 +175,18 @@ public class Controller implements ControllerVisitor, TimerCallback {
      * It show the initial cards to the player and ask the player to choose the window pattern card.
      */
     public void sendInitCommand() {
+
+        for (int j = 0; j < playerNumber; j++) {
+            StartGame waitSetUp = new StartGame(playersName);
+            waitSetUp.setPlayerId(j);
+            sendEventToView(waitSetUp);
+        }
+
         updaterView.updateInfoStart();
         //TODO forse questo mi permette di avviare il tutto correttamente
-        for (int i = 0; i < playerNumber; i++) {
-            //gameBoard.notifyAllCards(i);
 
-        }
+
+
         for (int j = 0; j < playerNumber; j++) {
             ShowAllCards waitSetUp = new ShowAllCards();
             waitSetUp.setPlayerId(j);

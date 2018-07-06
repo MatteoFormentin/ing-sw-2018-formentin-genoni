@@ -66,6 +66,7 @@ public class SocketServer implements AbstractServer2 {
             clientGatherer2.start();
             System.out.println("Acceso Socket" + clientGatherer2.getState());
         }catch(IOException ex){
+            ex.printStackTrace();
             throw new ServerStartException(ex.getMessage());
         }
     }

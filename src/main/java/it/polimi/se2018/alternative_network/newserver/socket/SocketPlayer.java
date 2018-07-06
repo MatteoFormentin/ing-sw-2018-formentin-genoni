@@ -19,6 +19,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
@@ -30,7 +31,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * @author DavideMammarella
  */
 //TODO implementare Remote PLayer2
-public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, EventPreGameVisitor {
+public class SocketPlayer implements RemotePlayer2, ServerVisitor, EventPreGameVisitor,Runnable {
 
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
     static HashMap<String, SocketPlayer> socketPlayers;
@@ -44,6 +45,8 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
     private String nickname;
     private int idPlayerInGame;
     private GameInterface gameInterface;
+
+    private AtomicBoolean online;
 
     private PrincipalServer server;
 
@@ -88,12 +91,14 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
     public SocketPlayer(Socket connection, PrincipalServer server) {
         this.server = server;
         this.tunnel = connection;
+        online= new AtomicBoolean(true);
         //TODO inizzializzare una variabile atomic boolean per segnare se il thread è attivo oppure no
         try {
             this.outputStream = new ObjectOutputStream(tunnel.getOutputStream());
             this.inputStream = new ObjectInputStream(tunnel.getInputStream());
             this.outputStream.flush();
         } catch (IOException ex) {
+            online.set(false);
             ex.printStackTrace();
         }
     }
@@ -117,13 +122,19 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
             try {
                 EventServer received = (EventServer) inputStream.readObject();
                 received.acceptGeneric(this);
+
+                System.out.println("run socket player");
             } catch (EOFException e) {
+                online.set(false);
+                e.printStackTrace();
                 // se si disconnette metto il running a false e tengo in memoria il player
                 if (gameInterface == null) ;//TODO non ho ancora fatto il login
                 else gameInterface.disconnectFromGameRoom(this);
                 closeConnection();
                 flag = false;
             } catch (IOException | ClassNotFoundException ex) {
+                online.set(false);
+
                 ex.printStackTrace();
                 flag = false;
             }
@@ -138,6 +149,7 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
 
     @Override
     public void visit(LoginRequest event) {
+        this.setNickname(event.getNickname());
         server.login(this);
     }
 
@@ -180,9 +192,15 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
         try {
             outputStream.writeObject(socketObject);
             outputStream.reset();
+            System.out.println("sendObject");
         } catch (SocketException e) {
+            online.set(false);
+
+            e.printStackTrace();
             //System.err.println("Connection issue during client connection.\nError: " + e.getMessage());
         } catch (IOException ex) {
+
+            online.set(false);
             ex.printStackTrace();
         }
     }
@@ -213,6 +231,7 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        online.set(false);
     }
 
     /**
@@ -238,7 +257,7 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
     @Override
     public void kickPlayerOut() {
         //TODO variabile Atomic solo per socket per segnare se il thread è attivo o no
-
+        online.set(false);
         // setta la variabile come false
         AnsiConsole.out.println();
         AnsiConsole.out.print(ansi().fg(YELLOW).a("SocketPlayer -> kickPlayerOut: " + getNickname() + "  ").reset());
@@ -250,7 +269,7 @@ public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, Eve
     public boolean checkOnline() {
         //TODO variabile Atomic solo per socket per segnare se il thread è attivo o no
         // setta la variabile come false
-        return false;
+        return online.get();
     }
 
     /*

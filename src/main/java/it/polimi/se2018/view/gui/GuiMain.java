@@ -28,7 +28,7 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.createGuiGame;
  */
 public class GuiMain extends Application {
     private static Stage primaryStage;
-    private GuiGame game;
+    private static GuiGame game;
 
     static void launchGui() {
         launch();
