@@ -76,12 +76,12 @@ public class SetUpConnection {
         Button back = new Button("Back");
         form.addRow(3, back, connect);
         //components action
-       connect.setOnAction(e -> {
+        connect.setOnAction(e -> {
             int i = Integer.parseInt(group.getSelectedToggle().getUserData().toString());
             if (isInt(portInput2) || portInput2.getText() == null || portInput2.getText().equals("")) {
-                        AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i,false);
-                        client.connectToServer2();
-                        getGuiInstance().setClient2(client);
+                AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i, false);
+                client.connectToServer2();
+                getGuiInstance().setClient2(client);
             }
         });
         back.setOnAction(e -> stage.close());

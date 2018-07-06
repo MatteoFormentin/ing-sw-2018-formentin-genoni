@@ -1,7 +1,6 @@
 package it.polimi.se2018.model.dice;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * Enum for the color of the dice
@@ -31,6 +30,7 @@ public enum DiceColor implements Serializable {
     /**
      * return the number of color types available
      * DiceColor.values().length
+     *
      * @return int number of color types
      */
     public static int getNumberOfDiceColors() {

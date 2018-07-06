@@ -11,9 +11,9 @@ public class UpdateStatPodium extends EventClientFromModel {
     private int[][] sortedPlayer;
     private String[] description;
 
-    public UpdateStatPodium(int[][] sortedPlayer, String[] description ) {
+    public UpdateStatPodium(int[][] sortedPlayer, String[] description) {
         this.sortedPlayer = sortedPlayer;
-        this.description =description;
+        this.description = description;
     }
 
     public String getDescription(int index) {
@@ -23,17 +23,17 @@ public class UpdateStatPodium extends EventClientFromModel {
     public int[][] getSortedPlayer() {
         return sortedPlayer;
     }
-    public int[] getOneSortedPlayer(int index){
+
+    public int[] getOneSortedPlayer(int index) {
         return sortedPlayer[index];
     }
 
     /**
-     *
-     * @param index the number in the podium
+     * @param index     the number in the podium
      * @param indexInfo in 0 there is the id of the player, 1 there is the sum of the points, the other are the detailed points
      * @return the int requested
      */
-    public int getOneSortedPlayerInfo(int index,int indexInfo) {
+    public int getOneSortedPlayerInfo(int index, int indexInfo) {
         return sortedPlayer[index][indexInfo];
     }
 

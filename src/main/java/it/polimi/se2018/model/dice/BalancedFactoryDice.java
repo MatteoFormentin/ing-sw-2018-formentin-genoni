@@ -22,14 +22,14 @@ public class BalancedFactoryDice implements FactoryDice {
      * and adjust the number of the total dice based on the number of the color available
      *
      * @param numberPlayer the number of players in game
-     * @param diceWindow the number of dice that each players needs
-     * @param numberRound the total number of round
+     * @param diceWindow   the number of dice that each players needs
+     * @param numberRound  the total number of round
      */
-    public BalancedFactoryDice(int numberPlayer,int diceWindow, int numberRound) {
-        double range =((diceWindow*numberPlayer)/10);
-        numberOfDice = (numberPlayer*diceWindow)+numberRound+ (int)range;
-        int fix = DiceColor.getNumberOfDiceColors()-(numberOfDice%DiceColor.getNumberOfDiceColors());
-        if(fix!=0) numberOfDice +=fix;
+    public BalancedFactoryDice(int numberPlayer, int diceWindow, int numberRound) {
+        double range = ((diceWindow * numberPlayer) / 10);
+        numberOfDice = (numberPlayer * diceWindow) + numberRound + (int) range;
+        int fix = DiceColor.getNumberOfDiceColors() - (numberOfDice % DiceColor.getNumberOfDiceColors());
+        if (fix != 0) numberOfDice += fix;
         currentNumberOfDice = numberOfDice;
         currentNumberOfEachDice = new int[DiceColor.getNumberOfDiceColors()];
         availableColours = new LinkedList<>();

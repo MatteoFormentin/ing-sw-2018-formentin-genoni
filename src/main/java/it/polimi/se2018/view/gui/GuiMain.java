@@ -39,6 +39,18 @@ public class GuiMain extends Application {
     }
 
     /**
+     * Method for close the application
+     */
+    public static void closeProgram() {
+        Boolean result = new ConfirmBox(primaryStage).displayMessage("Sei sicuro di voler uscire dal gioco?");
+        if (result) {
+            primaryStage.close();
+            Platform.exit();
+            System.err.println("Se non termina controllare i thread ancora attivi sul client divesi da quello della gui");
+        }
+    }
+
+    /**
      * The start of the JavaFx thread
      *
      * @param primaryStage received by the Application.launch() method
@@ -91,17 +103,5 @@ public class GuiMain extends Application {
         //show the stage after the setup
         primaryStage.show();
         primaryStage.setAlwaysOnTop(false);
-    }
-
-    /**
-     * Method for close the application
-     */
-    public static void closeProgram() {
-        Boolean result = new ConfirmBox(primaryStage).displayMessage("Sei sicuro di voler uscire dal gioco?");
-        if (result) {
-            primaryStage.close();
-            Platform.exit();
-            System.err.println("Se non termina controllare i thread ancora attivi sul client divesi da quello della gui");
-        }
     }
 }

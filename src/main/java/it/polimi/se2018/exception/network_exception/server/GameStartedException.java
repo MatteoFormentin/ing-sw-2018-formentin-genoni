@@ -5,7 +5,7 @@ package it.polimi.se2018.exception.network_exception.server;
  */
 
 public class GameStartedException extends Exception {
-    public GameStartedException(){
+    public GameStartedException() {
         super("La stanza è stata avviata");
     }
 

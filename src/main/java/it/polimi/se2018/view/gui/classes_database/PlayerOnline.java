@@ -25,8 +25,8 @@ public class PlayerOnline {
     /**
      * Constructor
      *
-     * @param index of the player in the game
-     * @param nickname of the player in the game
+     * @param index     of the player in the game
+     * @param nickname  of the player in the game
      * @param connected true if the player is connected, false otherwise
      */
     public PlayerOnline(int index, String nickname, boolean connected) {

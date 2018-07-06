@@ -20,6 +20,8 @@ public class RestrictionAdjacentFirstDiceViolatedException extends WindowRestric
      * as its detail message. The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public RestrictionAdjacentFirstDiceViolatedException() {super("The first die in the window should be placed on the edges");}
+    public RestrictionAdjacentFirstDiceViolatedException() {
+        super("The first die in the window should be placed on the edges");
+    }
 
 }

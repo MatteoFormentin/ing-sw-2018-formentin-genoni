@@ -26,5 +26,7 @@ public class LoginRequest extends EventPreGame {
     }
 
     @Override
-    public void acceptPreGame(EventPreGameVisitor visitor){ visitor.visit(this);}
+    public void acceptPreGame(EventPreGameVisitor visitor) {
+        visitor.visit(this);
+    }
 }

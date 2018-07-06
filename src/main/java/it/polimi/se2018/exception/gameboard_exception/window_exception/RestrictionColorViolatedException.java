@@ -20,6 +20,8 @@ public class RestrictionColorViolatedException extends WindowRestriction {
      * as its detail message. The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public RestrictionColorViolatedException() {super("Adjacent orthogonally to this cell there is a nut with the same color");}
+    public RestrictionColorViolatedException() {
+        super("Adjacent orthogonally to this cell there is a nut with the same color");
+    }
 
 }

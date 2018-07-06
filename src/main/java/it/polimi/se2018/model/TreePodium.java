@@ -5,32 +5,33 @@ class TreePodium {
     private int[] orderWinTies;
     private int numberPlayer;
     private int numberRound;
+
     /**
      * Costruttore necessita sapere il numero totale dei giocatori e il numero dei round
      * per poter determinare l'ordine di vittoria in caso di assoluta parità
      *
      * @param numberPlayer numero dei giocatori che verranno inseriti nel podio
-     * @param numberRound numero dei round della partita
+     * @param numberRound  numero dei round della partita
      */
     TreePodium(int numberPlayer, int numberRound) {
         root = null;
-        this.numberPlayer=numberPlayer;
-        this.numberRound=numberRound;
+        this.numberPlayer = numberPlayer;
+        this.numberRound = numberRound;
     }
 
     public NodePodium getRoot() {
         return root;
     }
 
-    private void buildLastRound(){
-        if(orderWinTies==null){
-            if(numberRound<0) return;
+    private void buildLastRound() {
+        if (orderWinTies == null) {
+            if (numberRound < 0) return;
             orderWinTies = new int[numberPlayer];
-            int lastPlayer = (numberRound-1) % numberPlayer;
+            int lastPlayer = (numberRound - 1) % numberPlayer;
             int counter;
-            for (int i=0;i< numberPlayer;i++){
-                counter = (i+ lastPlayer) % numberPlayer;
-                orderWinTies[counter] = numberPlayer -i;
+            for (int i = 0; i < numberPlayer; i++) {
+                counter = (i + lastPlayer) % numberPlayer;
+                orderWinTies[counter] = numberPlayer - i;
             }
         }
     }
@@ -97,7 +98,7 @@ class TreePodium {
 
     private NodePodium predecessor(NodePodium nodePlayer) {
         if (nodePlayer.getLeftLessPoint() != null) return max(nodePlayer.getLeftLessPoint());
-        if(nodePlayer.getFather()!=null){
+        if (nodePlayer.getFather() != null) {
             NodePodium y = nodePlayer.getFather();
             if (y.getRightMorePoint() == nodePlayer) return y;
         }
@@ -105,12 +106,12 @@ class TreePodium {
     }
 
     int[][] getSortedPlayer() {
-        if(root!=null){
+        if (root != null) {
             NodePodium currentPlayerSorted = this.max(root);
             int numberInfo = currentPlayerSorted.getArrayIntInfo().length;
             int[][] sortedPlayer = new int[numberPlayer][numberInfo];
             int i = 0;
-            while (i < numberPlayer &&currentPlayerSorted!= null) {
+            while (i < numberPlayer && currentPlayerSorted != null) {
                 sortedPlayer[i] = currentPlayerSorted.getArrayIntInfo();
                 currentPlayerSorted = this.predecessor(currentPlayerSorted);
                 i++;

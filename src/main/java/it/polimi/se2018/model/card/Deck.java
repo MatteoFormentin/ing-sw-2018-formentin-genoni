@@ -20,15 +20,14 @@ import java.util.TreeSet;
 public class Deck {
 
     private static Deck singleDeck;
+    private final int objectivePublicCardNumber = 10;
+    private final int objectivePrivatedNumber = 5;
+    private final int toolCardNumber = 12;
     private ArrayList<WindowPatternCard> windowPatternCardsDeck;
     private TreeSet<Integer> extractedPublic;
     private TreeSet<Integer> extractedPrivate;
     private TreeSet<Integer> extractedTool;
     private TreeSet<Integer> extractedWindow;
-
-    private final int objectivePublicCardNumber = 10;
-    private final int objectivePrivatedNumber = 5;
-    private final int toolCardNumber = 12;
     private int windowPatternCardNumber;
 
 
@@ -177,10 +176,10 @@ public class Deck {
                 //-------------load effect tool
                 effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new SelectValue(false));
-                effect.addLast(new InsertDice(true,true,true,true));
+                effect.addLast(new InsertDice(true, true, true, true));
                 newToolCard.setListEffect(effect);
                 //-------------load preCheck tool
-                newToolCard.setCheck(true,true);
+                newToolCard.setCheck(true, true);
                 return newToolCard;
             case 1:
                 newToolCard.setId(1);
@@ -188,9 +187,9 @@ public class Deck {
                 newToolCard.setDescription("Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di colore.\n" +
                         "Devi rispettare tutte le altre restrizioni di piazzamento");
                 effect.addLast(new RemoveDiceFromWindow(false));
-                effect.addLast(new InsertDice(true,false,true,false));
+                effect.addLast(new InsertDice(true, false, true, false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(false,1);
+                newToolCard.setCheck(false, 1);
                 return newToolCard;
             case 2:
                 newToolCard.setId(2);
@@ -198,20 +197,20 @@ public class Deck {
                 newToolCard.setDescription("Muovi un qualsiasi dado nella tua vetrata ignorando le restrizioni di valore\n" +
                         "Devi rispettare tutte le altre restrizioni di piazzamento");
                 effect.addLast(new RemoveDiceFromWindow(false));
-                effect.addLast(new InsertDice(true,true,false,false));
+                effect.addLast(new InsertDice(true, true, false, false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(false,1);
+                newToolCard.setCheck(false, 1);
                 return newToolCard;
             case 3:
                 newToolCard.setId(3);
                 newToolCard.setName("Lathekin");
                 newToolCard.setDescription("Muovi  esattamente  due  dadi,  rispettando  tutte  le  restrizioni  di  piazzamento");
                 effect.addLast(new RemoveDiceFromWindow(false));
-                effect.addLast(new InsertDice(true,true,true,false));
+                effect.addLast(new InsertDice(true, true, true, false));
                 effect.addLast(new RemoveDiceFromWindow(false));
-                effect.addLast(new InsertDice(true,true,true,false));
+                effect.addLast(new InsertDice(true, true, true, false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(false,2);
+                newToolCard.setCheck(false, 2);
                 return newToolCard;
             case 4:
                 newToolCard.setId(4);
@@ -219,9 +218,9 @@ public class Deck {
                 newToolCard.setDescription("Dopo aver scelto un dado, scambia quel dado con un dado sul Tracciato dei Round");
                 effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new RoundTrackEffect(true));
-                effect.addLast(new InsertDice(true,true,true,true));
+                effect.addLast(new InsertDice(true, true, true, true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(true,true,true);
+                newToolCard.setCheck(true, true, true);
                 return newToolCard;
             case 5:
                 newToolCard.setId(5);
@@ -230,7 +229,7 @@ public class Deck {
                         "Se non puoi piazzarlo, riponilo nella Riserva");
                 effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new ChangeDiceValue(true));
-                newToolCard.setCheck(true,true);
+                newToolCard.setCheck(true, true);
                 newToolCard.setListEffect(effect);
                 return newToolCard;
             case 6:
@@ -240,7 +239,7 @@ public class Deck {
                         "Questa carta può essera usata solo durante il tuo secondo turno, prima di scegliere il secondo dado");
                 effect.addLast(new DicePoolEffect(false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(true,false,false,false);
+                newToolCard.setCheck(true, false, false, false);
                 return newToolCard;
             case 7:
                 newToolCard.setId(7);
@@ -249,9 +248,9 @@ public class Deck {
                         "Salta il tuo secondo turno in questo round");
                 effect.addLast(new EndTurn(true));
                 effect.addLast(new DicePoolEffect(true));
-                effect.addLast(new InsertDice(true,true,true,true));
+                effect.addLast(new InsertDice(true, true, true, true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(false,false,false,true);
+                newToolCard.setCheck(false, false, false, true);
                 return newToolCard;
             case 8:
                 newToolCard.setId(8);
@@ -259,9 +258,9 @@ public class Deck {
                 newToolCard.setDescription("Dopo aver scelto un dado, piazzalo in una casella che non sia adiacente a un altro dado\n" +
                         "Devi rispettare tutte le restrizioni di piazzamento");
                 effect.addLast(new DicePoolEffect(true));
-                effect.addLast(new InsertDice(false,true,true,true));
+                effect.addLast(new InsertDice(false, true, true, true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(true,true);
+                newToolCard.setCheck(true, true);
                 return newToolCard;
             case 9:
                 newToolCard.setId(9);
@@ -270,9 +269,9 @@ public class Deck {
                         "6 diventa 1, 5 diventa 2, 4 diventa 3 ecc.");
                 effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new ChangeDiceValue(false));
-                effect.addLast(new InsertDice(true,true,true,true));
+                effect.addLast(new InsertDice(true, true, true, true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(true,true);
+                newToolCard.setCheck(true, true);
                 return newToolCard;
             case 10:
                 newToolCard.setId(10);
@@ -282,9 +281,9 @@ public class Deck {
                 effect.addLast(new DicePoolEffect(true));
                 effect.addLast(new FactoryEffect());
                 effect.addLast(new SelectValue(true));
-                effect.addLast(new InsertDice(true,true,true,true));
+                effect.addLast(new InsertDice(true, true, true, true));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(true,true);
+                newToolCard.setCheck(true, true);
                 return newToolCard;
             case 11:
                 newToolCard.setId(11);
@@ -294,11 +293,11 @@ public class Deck {
 
                 effect.addLast(new RoundTrackEffect(false));
                 effect.addLast(new RemoveDiceFromWindow(true));
-                effect.addLast(new InsertDice(true,true,true,false));
+                effect.addLast(new InsertDice(true, true, true, false));
                 effect.addLast(new RemoveDiceFromWindow(true));
-                effect.addLast(new InsertDice(true,true,true,false));
+                effect.addLast(new InsertDice(true, true, true, false));
                 newToolCard.setListEffect(effect);
-                newToolCard.setCheck(false,2);
+                newToolCard.setCheck(false, 2);
                 return newToolCard;
             default:
                 throw new IndexOutOfBoundsException("Error");

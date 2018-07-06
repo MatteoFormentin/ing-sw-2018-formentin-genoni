@@ -24,49 +24,6 @@ public class ColoredDiagonal extends ObjectivePublicCard {
         windowOfColor = null;
     }
 
-    private class ColorCell {
-        private DiceColor color;
-        private boolean hasBeenVisited;
-        private List<ColorCell> diagonalColorCell;
-
-        private ColorCell() {
-            color = null;
-            hasBeenVisited = false;
-            diagonalColorCell = new LinkedList<>();
-        }
-
-        private void setColor(DiceColor color) {
-            this.color = color;
-        }
-
-        private void setHasBeenVisited(boolean hasBeenVisited) {
-            this.hasBeenVisited = hasBeenVisited;
-        }
-
-        private void addDiagonalColorCell(ColorCell colorCell) {
-            this.diagonalColorCell.add(colorCell);
-        }
-
-        private int numberOfDiagonal() {
-            return diagonalColorCell.size();
-        }
-
-        private int pointDiagonal(int diagonal) {
-            if (color == diagonalColorCell.get(diagonal).color && color !=null) {
-                if (diagonalColorCell.get(diagonal).hasBeenVisited && this.hasBeenVisited) return 0;
-                if (!diagonalColorCell.get(diagonal).hasBeenVisited && !this.hasBeenVisited) {
-                    diagonalColorCell.get(diagonal).setHasBeenVisited(true);
-                    this.setHasBeenVisited(true);
-                    return 2;
-                }
-                diagonalColorCell.get(diagonal).setHasBeenVisited(true);
-                this.setHasBeenVisited(true);
-                return 1;
-            }
-            return 0;
-        }
-    }
-
     private void setRelationWindowOfColor(ColorCell[][] windowOfColor) {
         for (int line = 0; line < windowOfColor.length; line++) {
             for (int column = 0; column < windowOfColor[0].length; column++) {
@@ -75,7 +32,7 @@ public class ColoredDiagonal extends ObjectivePublicCard {
                     if (column == 0)
                         windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column + 1]);
                     else {
-                        if (column == windowOfColor[0].length-1)
+                        if (column == windowOfColor[0].length - 1)
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column - 1]);
                         else {
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column + 1]);
@@ -88,7 +45,7 @@ public class ColoredDiagonal extends ObjectivePublicCard {
                         if (column == 0)
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column + 1]);
                         else {
-                            if (column == windowOfColor[0].length-1)
+                            if (column == windowOfColor[0].length - 1)
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column - 1]);
                             else {
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column + 1]);
@@ -100,7 +57,7 @@ public class ColoredDiagonal extends ObjectivePublicCard {
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column + 1]);
                             windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column + 1]);
                         } else {
-                            if (column == windowOfColor[0].length-1) {
+                            if (column == windowOfColor[0].length - 1) {
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line - 1][column - 1]);
                                 windowOfColor[line][column].addDiagonalColorCell(windowOfColor[line + 1][column - 1]);
                             } else {
@@ -142,7 +99,8 @@ public class ColoredDiagonal extends ObjectivePublicCard {
         //set the color of each ColorCell and HasBeenVisited to false
         for (int line = 0; line < windowOfColor.length; line++) {
             for (int column = 0; column < windowOfColor[0].length; column++) {
-                if(matrix[line][column].getDice()!=null) windowOfColor[line][column].setColor(matrix[line][column].getDice().getColor());
+                if (matrix[line][column].getDice() != null)
+                    windowOfColor[line][column].setColor(matrix[line][column].getDice().getColor());
                 windowOfColor[line][column].setHasBeenVisited(false);
             }
         }
@@ -154,6 +112,49 @@ public class ColoredDiagonal extends ObjectivePublicCard {
             }
         }
         return counter * getPoint();
+    }
+
+    private class ColorCell {
+        private DiceColor color;
+        private boolean hasBeenVisited;
+        private List<ColorCell> diagonalColorCell;
+
+        private ColorCell() {
+            color = null;
+            hasBeenVisited = false;
+            diagonalColorCell = new LinkedList<>();
+        }
+
+        private void setColor(DiceColor color) {
+            this.color = color;
+        }
+
+        private void setHasBeenVisited(boolean hasBeenVisited) {
+            this.hasBeenVisited = hasBeenVisited;
+        }
+
+        private void addDiagonalColorCell(ColorCell colorCell) {
+            this.diagonalColorCell.add(colorCell);
+        }
+
+        private int numberOfDiagonal() {
+            return diagonalColorCell.size();
+        }
+
+        private int pointDiagonal(int diagonal) {
+            if (color == diagonalColorCell.get(diagonal).color && color != null) {
+                if (diagonalColorCell.get(diagonal).hasBeenVisited && this.hasBeenVisited) return 0;
+                if (!diagonalColorCell.get(diagonal).hasBeenVisited && !this.hasBeenVisited) {
+                    diagonalColorCell.get(diagonal).setHasBeenVisited(true);
+                    this.setHasBeenVisited(true);
+                    return 2;
+                }
+                diagonalColorCell.get(diagonal).setHasBeenVisited(true);
+                this.setHasBeenVisited(true);
+                return 1;
+            }
+            return 0;
+        }
     }
 
 }

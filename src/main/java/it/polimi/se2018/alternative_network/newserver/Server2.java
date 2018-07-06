@@ -282,6 +282,7 @@ public class Server2 implements PrincipalServer {
             this.response = response;
             this.newRemotePlayer = remotePlayer2;
         }
+
         @Override
         public void run() {
             Thread.currentThread().setName("Response Login");

@@ -59,5 +59,4 @@ public interface ViewModelVisitor {
     void visit(UpdateStatPodium event);
 
 
-
 }

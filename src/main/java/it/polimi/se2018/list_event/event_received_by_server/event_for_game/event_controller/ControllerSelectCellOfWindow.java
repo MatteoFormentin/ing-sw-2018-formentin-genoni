@@ -12,6 +12,7 @@ import it.polimi.se2018.list_event.event_received_by_server.event_for_game.Event
 public class ControllerSelectCellOfWindow extends EventController {
     private int line;
     private int column;
+
     public int getLine() {
         return line;
     }

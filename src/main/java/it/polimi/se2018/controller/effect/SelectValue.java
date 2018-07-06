@@ -28,8 +28,8 @@ public class SelectValue extends EffectGame {
      * Method used to applicate an effect to the game.
      *
      * @param gameBoard gameboard on when the player are playing.
-     * @param idPlayer ID of the player that requested the effect.
-     * @param infoMove information of the moves played with the effect.
+     * @param idPlayer  ID of the player that requested the effect.
+     * @param infoMove  information of the moves played with the effect.
      * @throws GameException exception derivate from game restriction.
      */
     @Override
@@ -38,10 +38,10 @@ public class SelectValue extends EffectGame {
         this.setGameBoard(gameBoard);
         this.setIdPlayer(idPlayer);
         valueDice = infoMove[0];
-        if(trueSetValueFalseIncrementDec) getGameBoard().setValueDiceHand(getIdPlayer(),valueDice);
+        if (trueSetValueFalseIncrementDec) getGameBoard().setValueDiceHand(getIdPlayer(), valueDice);
         else {
-            if(valueDice==1) getGameBoard().increaseOrDecrease(getIdPlayer(),true);
-            else if(valueDice==-1) getGameBoard().increaseOrDecrease(getIdPlayer(),false);
+            if (valueDice == 1) getGameBoard().increaseOrDecrease(getIdPlayer(), true);
+            else if (valueDice == -1) getGameBoard().increaseOrDecrease(getIdPlayer(), false);
             else throw new GameException("View implementata male");
         }
     }
@@ -64,7 +64,7 @@ public class SelectValue extends EffectGame {
      */
     @Override
     public EventClient eventViewToAsk() {
-        if(trueSetValueFalseIncrementDec) return new SelectValueDice();
+        if (trueSetValueFalseIncrementDec) return new SelectValueDice();
         else return new SelectIncrementOrDecreaseDice();
     }
 }

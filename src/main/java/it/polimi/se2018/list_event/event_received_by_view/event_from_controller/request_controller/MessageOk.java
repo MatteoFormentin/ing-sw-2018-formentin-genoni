@@ -19,20 +19,20 @@ public class MessageOk extends EventClientFromController {
      * constructor for ok message during the game.
      *
      * @param messageConfirm the string to forward
-     * @param showTurnMenu if the view need to show the turn menu
+     * @param showTurnMenu   if the view need to show the turn menu
      */
     public MessageOk(String messageConfirm, boolean showTurnMenu) {
         this.messageConfirm = messageConfirm;
         this.showTurnMenu = showTurnMenu;
-        initGame= false;
+        initGame = false;
     }
 
     /**
      * constructor for ok message, let choose if it's during the game or not(init or end).
      *
      * @param messageConfirm the string to forward
-     * @param showTurnMenu if the view need to show the turn menu
-     * @param initGame if the message is
+     * @param showTurnMenu   if the view need to show the turn menu
+     * @param initGame       if the message is
      */
     public MessageOk(String messageConfirm, boolean showTurnMenu, boolean initGame) {
         this.messageConfirm = messageConfirm;

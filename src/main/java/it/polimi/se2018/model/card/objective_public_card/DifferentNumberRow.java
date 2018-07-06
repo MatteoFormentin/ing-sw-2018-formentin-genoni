@@ -59,7 +59,7 @@ public class DifferentNumberRow extends ObjectivePublicCard {
                     six++;
                 }
             }
-            if (one <= 1 && two <= 1 && three <= 1 && four <= 1 && five <= 1 && six <= 1 && nul==0) {
+            if (one <= 1 && two <= 1 && three <= 1 && four <= 1 && five <= 1 && six <= 1 && nul == 0) {
                 points += this.getPoint();
             }
             one = 0;

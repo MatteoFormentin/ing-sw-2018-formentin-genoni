@@ -20,6 +20,8 @@ public class RestrictionAntiAdjacentViolatedException extends WindowRestriction 
      * as its detail message. The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public RestrictionAntiAdjacentViolatedException() {super("The die can't be inserted near other dice");}
+    public RestrictionAntiAdjacentViolatedException() {
+        super("The die can't be inserted near other dice");
+    }
 
 }

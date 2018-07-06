@@ -24,7 +24,7 @@ public class RemoteClientReceiver implements RMIClientInterface {
     }
 
     @Override
-    public String ping(String name)throws RemoteException{
+    public String ping(String name) throws RemoteException {
         return "pong";
     }
 

@@ -7,9 +7,12 @@ public interface UIInterface {
 
     //From model and controller
     void showEventView(EventClient eventClient);
+
     void sendEventToNetwork(EventController eventController);
 
     void restartConnection(String message);
+
     void errPrintln(String message);
+
     void loginOk();
 }

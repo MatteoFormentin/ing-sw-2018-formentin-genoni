@@ -28,8 +28,8 @@ public class RoundTrackEffect extends EffectGame {
      * Method used to applicate an effect to the game.
      *
      * @param gameBoard gameboard on when the player are playing.
-     * @param idPlayer ID of the player that requested the effect.
-     * @param infoMove information of the moves played with the effect.
+     * @param idPlayer  ID of the player that requested the effect.
+     * @param infoMove  information of the moves played with the effect.
      * @throws GameException exception derivate from game restriction.
      */
     @Override
@@ -37,12 +37,12 @@ public class RoundTrackEffect extends EffectGame {
         if (infoMove.length != 2) throw new NumberInfoWrongException();
         this.setGameBoard(gameBoard);
         this.setIdPlayer(idPlayer);
-        round=infoMove[0];
-        index=infoMove[1];
-        if(trueSwapDiceFalseSetColorRestriction){
-            gameBoard.changeDiceBetweenHandAndRoundTrack(getIdPlayer(),round,index);
-        }else{
-            gameBoard.imposeColorRestriction(getIdPlayer(),round,index);
+        round = infoMove[0];
+        index = infoMove[1];
+        if (trueSwapDiceFalseSetColorRestriction) {
+            gameBoard.changeDiceBetweenHandAndRoundTrack(getIdPlayer(), round, index);
+        } else {
+            gameBoard.imposeColorRestriction(getIdPlayer(), round, index);
         }
     }
 

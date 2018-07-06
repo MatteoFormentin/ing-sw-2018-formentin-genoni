@@ -14,14 +14,15 @@ public class UpdateInitialWindowPatternCard extends EventClientFromModel {
     private int indexPlayer;
     private WindowPatternCard[] initialWindowPatternCard;
 
-    public UpdateInitialWindowPatternCard(int indexPlayer,WindowPatternCard[] initialWindowPatternCard) {
-        this.indexPlayer=indexPlayer;
+    public UpdateInitialWindowPatternCard(int indexPlayer, WindowPatternCard[] initialWindowPatternCard) {
+        this.indexPlayer = indexPlayer;
         this.initialWindowPatternCard = initialWindowPatternCard;
     }
 
     public WindowPatternCard[] getInitialWindowPatternCard() {
         return initialWindowPatternCard;
     }
+
     public WindowPatternCard getInitialWindowPatternCard(int i) {
         return initialWindowPatternCard[i];
     }

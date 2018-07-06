@@ -161,9 +161,9 @@ public class ToolCard implements Serializable {
     }
 
     /**
-     * @param checkDrawDice        if i care that the player make this move
-     * @param checkSomeDiceInHand  if checkSomeDiceInHand is true the player should have some dice in hand, false otherwise
-     * @param checkFirstRound      if false don't care, if true the round shouldn't be the first one
+     * @param checkDrawDice       if i care that the player make this move
+     * @param checkSomeDiceInHand if checkSomeDiceInHand is true the player should have some dice in hand, false otherwise
+     * @param checkFirstRound     if false don't care, if true the round shouldn't be the first one
      */
     public void setCheck(boolean checkDrawDice, boolean checkSomeDiceInHand, boolean checkFirstRound) {
         this.checkDrawDice = checkDrawDice;
@@ -192,8 +192,8 @@ public class ToolCard implements Serializable {
      * @param player    he need to check the player state
      * @throws GameException if there is something wrong for using this tool card
      */
-    public void checkUsabilityToolCard(int roundGame, Player player) throws NoDiceException,FlowTurnException,AlreadyPlaceANewDiceException,
-            AlreadyDrawANewDiceException,DiceInHandToolException,FatalGameErrorException{
+    public void checkUsabilityToolCard(int roundGame, Player player) throws NoDiceException, FlowTurnException, AlreadyPlaceANewDiceException,
+            AlreadyDrawANewDiceException, DiceInHandToolException, FatalGameErrorException {
         if (checkFirstRound && roundGame == 0) throw new NoDiceException();
         //throw id checkFirstTurn=  true and player isn't in his first turn
         if (checkFirstTurn && !player.isFirstTurn())

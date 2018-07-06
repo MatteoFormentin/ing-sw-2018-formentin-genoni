@@ -12,7 +12,6 @@ import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 public interface RemotePlayer2 {
 
 
-
     /**
      * method for get the name of the remote player
      *
@@ -41,6 +40,7 @@ public interface RemotePlayer2 {
      * @param idPlayerInGame associated to this player
      */
     public void setIdPlayerInGame(int idPlayerInGame);
+
     /**
      * when the remote player is associated with a game return the reference to the interface
      * that allows to send messages directly to the game room and to notify a disconnection.
@@ -57,8 +57,6 @@ public interface RemotePlayer2 {
     public void setGameInterface(GameInterface gameInterface);
 
 
-
-
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
@@ -70,8 +68,7 @@ public interface RemotePlayer2 {
      * @param eventClient event that the client needs
      */
     //TODO l'implementazione deve gestire la disconnessione
-    public  void sendEventToView(EventClient eventClient);
-
+    public void sendEventToView(EventClient eventClient);
 
 
     //------------------------------------------------------------------------------------------------------------------
@@ -83,22 +80,22 @@ public interface RemotePlayer2 {
      * or any type of class that the player use to send the View.
      * doing so the game Room can kick out from the server the client.
      */
-    public  void kickPlayerOut();
+    public void kickPlayerOut();
 
     /**
      * method it's the same as is player running so
      * rmi can try to ping
      * socket response true or false depending if the thread is open
      */
-    public  boolean checkOnline();
+    public boolean checkOnline();
+
     /**
      * method of the Rmi player for send the event directly to the game room
      * without passing thought the main server that hold all the game room
      *
      * @param eventController event requested by the client
      */
-    public  void sendEventToController(EventController eventController);
-
+    public void sendEventToController(EventController eventController);
 
 
 }

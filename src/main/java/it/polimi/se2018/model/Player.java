@@ -36,7 +36,7 @@ public class Player {
      * Constructor for a new player.
      *
      * @param indexInGame ID of the player.
-     * @param nickname nickname of the player.
+     * @param nickname    nickname of the player.
      */
     public Player(int indexInGame, String nickname) {
         this.indexInGame = indexInGame;
@@ -59,6 +59,10 @@ public class Player {
         return indexInGame;
     }
 
+    public void setIndexInGame(int indexInGame) {
+        this.indexInGame = indexInGame;
+    }
+
     public String getNickname() {
         return nickname;
     }
@@ -67,20 +71,44 @@ public class Player {
         return favorToken;
     }
 
+    public void setFavorToken(int favorToken) {
+        this.favorToken = favorToken;
+    }
+
     public int getPoints() {
         return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     public ObjectivePrivateCard getPrivateObject() {
         return privateObject;
     }
 
+    void setPrivateObject(ObjectivePrivateCard privateObject) {
+        this.privateObject = privateObject;
+    }
+
     WindowPatternCard[] getThe4WindowPattern() {
         return the4WindowPattern;
     }
 
+    void setThe4WindowPattern(WindowPatternCard[] the4WindowPattern) {
+        this.the4WindowPattern = the4WindowPattern;
+    }
+
     public WindowPatternCard getPlayerWindowPattern() {
         return playerWindowPattern;
+    }
+
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+
+    public void setPlayerWindowPattern(WindowPatternCard playerWindowPattern) {
+        this.playerWindowPattern = playerWindowPattern;
     }
 
     public DiceStack getHandDice() {
@@ -91,42 +119,32 @@ public class Player {
         return firstTurn;
     }
 
+    public void setFirstTurn(boolean firstTurn) {
+        this.firstTurn = firstTurn;
+    }
 
     public boolean isHasDrawNewDice() {
         return hasDrawNewDice;
+    }
+
+    public void setHasDrawNewDice(boolean hasDrawNewDice) {
+        this.hasDrawNewDice = hasDrawNewDice;
     }
 
     public boolean isHasPlaceANewDice() {
         return hasPlaceANewDice;
     }
 
+    public void setHasPlaceANewDice(boolean hasPlaceANewDice) {
+        this.hasPlaceANewDice = hasPlaceANewDice;
+    }
+
     public boolean isHasUsedToolCard() {
         return hasUsedToolCard;
     }
 
-    //************************************setter**********************************************
-    //************************************setter**********************************************
-    //************************************setter**********************************************
-
-
-    public void setIndexInGame(int indexInGame) {
-        this.indexInGame = indexInGame;
-    }
-
-    public void setFavorToken(int favorToken) {
-        this.favorToken = favorToken;
-    }
-
-    public void setPlayerWindowPattern(WindowPatternCard playerWindowPattern) {
-        this.playerWindowPattern = playerWindowPattern;
-    }
-
-    public void setPoints(int points) {
-        this.points = points;
-    }
-
-    void setPrivateObject(ObjectivePrivateCard privateObject) {
-        this.privateObject = privateObject;
+    public void setHasUsedToolCard(boolean hasUsedToolCard) {
+        this.hasUsedToolCard = hasUsedToolCard;
     }
 
     /**
@@ -137,26 +155,6 @@ public class Player {
     void choosePlayerWindowPattern(int index) {
         playerWindowPattern = the4WindowPattern[index];
         favorToken = the4WindowPattern[index].getDifficulty();
-    }
-
-    void setThe4WindowPattern(WindowPatternCard[] the4WindowPattern) {
-        this.the4WindowPattern = the4WindowPattern;
-    }
-
-    public void setFirstTurn(boolean firstTurn) {
-        this.firstTurn = firstTurn;
-    }
-
-    public void setHasDrawNewDice(boolean hasDrawNewDice) {
-        this.hasDrawNewDice = hasDrawNewDice;
-    }
-
-    public void setHasPlaceANewDice(boolean hasPlaceANewDice) {
-        this.hasPlaceANewDice = hasPlaceANewDice;
-    }
-
-    public void setHasUsedToolCard(boolean hasUsedToolCard) {
-        this.hasUsedToolCard = hasUsedToolCard;
     }
 
 
@@ -170,30 +168,30 @@ public class Player {
     /**
      * Method to add a dice to hand.
      *
-     * @param dice the dice to add.
+     * @param dice         the dice to add.
      * @param fromDicePool true if the dice come from dice pool.
      */
-    void addDiceToHand(Dice dice,boolean fromDicePool) throws NoDiceException,AlreadyDrawANewDiceException {
+    void addDiceToHand(Dice dice, boolean fromDicePool) throws NoDiceException, AlreadyDrawANewDiceException {
         if (dice == null) throw new NoDiceException();
-        if(fromDicePool && hasDrawNewDice) throw new AlreadyDrawANewDiceException();
+        if (fromDicePool && hasDrawNewDice) throw new AlreadyDrawANewDiceException();
         handDice.addFirst(dice);
-        if(fromDicePool) hasDrawNewDice=true;
+        if (fromDicePool) hasDrawNewDice = true;
     }
 
     /**
      * Method used to insert the dice on the window pattern.
      *
-     * @param line index of the window's line.
-     * @param column index of the window's column.
-     * @param adjacentR true if need to be near a dice, false otherwise.
-     * @param colorR true if need to check this restriction.
-     * @param valueR true if need to check this restriction.
+     * @param line        index of the window's line.
+     * @param column      index of the window's column.
+     * @param adjacentR   true if need to be near a dice, false otherwise.
+     * @param colorR      true if need to check this restriction.
+     * @param valueR      true if need to check this restriction.
      * @param firstInsert true if it insert a new dice for the turn.
      * @throws WindowRestriction the specific exception of the insert.
-     * @throws PlayerException the exception regarding the state of the player.
+     * @throws PlayerException   the exception regarding the state of the player.
      */
-    public void insertDice(int line, int column, boolean adjacentR, boolean colorR, boolean valueR,boolean firstInsert)
-            throws WindowRestriction,PlayerException {
+    public void insertDice(int line, int column, boolean adjacentR, boolean colorR, boolean valueR, boolean firstInsert)
+            throws WindowRestriction, PlayerException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         if (firstInsert && hasPlaceANewDice) throw new AlreadyPlaceANewDiceException();
         playerWindowPattern.insertDice(line, column, handDice.get(0), adjacentR, colorR, valueR);
@@ -207,7 +205,7 @@ public class Player {
      *
      * @param cost of the tool card.
      */
-    void useToolCard(int cost) throws AlreadyUseToolCardException,NoEnoughTokenException {
+    void useToolCard(int cost) throws AlreadyUseToolCardException, NoEnoughTokenException {
         if (cost > favorToken) throw new NoEnoughTokenException();
         hasUsedToolCard = true;
         favorToken -= cost;
@@ -221,20 +219,18 @@ public class Player {
     }
 
 
-
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
     //*********************************************Tool's method*************************************************
-
 
 
     /**
      * move the dice from the indicated coordinate by hand. Available when using a tool card
      *
-     * @param line index of the wind's line
+     * @param line   index of the wind's line
      * @param column index of the window's column
      * @throws WindowRestriction if something isn't right
      */
@@ -243,25 +239,23 @@ public class Player {
         handDice.addFirst(dice);
     }
 
-    public Dice removeDiceFromHand() throws NoDiceInHandException{
+    public Dice removeDiceFromHand() throws NoDiceInHandException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         return handDice.remove(0);
     }
 
     /**
      * the player roll the active dice (index=0) in hand. Available when using a tool card
-     *
      */
-    void rollDiceInHand() throws NoDiceInHandException{
+    void rollDiceInHand() throws NoDiceInHandException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.reRollAllDiceInStack();
     }
 
     /**
      * the player change the face of the dice. Available when using a tool card
-     *
      */
-    void oppositeFaceDice() throws NoDiceInHandException,NoDiceException{
+    void oppositeFaceDice() throws NoDiceInHandException, NoDiceException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).oppositeValue();
     }
@@ -271,13 +265,13 @@ public class Player {
      *
      * @param increase true if the player want to increase the value, false for decrease
      */
-    void increaseOrDecrease(boolean increase) throws NoDiceException,ValueDiceWrongException,NoDiceInHandException {
+    void increaseOrDecrease(boolean increase) throws NoDiceException, ValueDiceWrongException, NoDiceInHandException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).increaseOrDecrease(increase);
     }
 
 
-    void setValueDiceHand(int value) throws NoDiceException, ValueDiceWrongException,NoDiceInHandException{
+    void setValueDiceHand(int value) throws NoDiceException, ValueDiceWrongException, NoDiceInHandException {
         if (handDice.isEmpty()) throw new NoDiceInHandException();
         handDice.getDice(0).setValue(value);
     }
@@ -285,9 +279,8 @@ public class Player {
 
     /**
      * the player can now place a new dice but the second turn will be skipped. Available when using a tool card
-     *
      */
-    public void endSpecialFirstTurn() throws GameException{
+    public void endSpecialFirstTurn() throws GameException {
         if (!firstTurn) throw new GameException("non puoi usare questo effetto adesso");
         hasUsedToolCard = true;
         hasDrawNewDice = false;

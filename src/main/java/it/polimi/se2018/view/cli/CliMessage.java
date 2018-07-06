@@ -560,7 +560,7 @@ class CliMessage {
     /**
      * Show end game screen
      *
-     * @param ranking     point value
+     * @param event       point value
      * @param playersName players name
      * @param myId        player id
      */

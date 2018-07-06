@@ -5,10 +5,11 @@ package it.polimi.se2018.exception.network_exception.server;
  */
 
 public class ServerStartException extends Exception {
-    public ServerStartException(){
+    public ServerStartException() {
         super("il server non può essere avviato");
     }
-    public ServerStartException(String cause){
+
+    public ServerStartException(String cause) {
         super(cause);
     }
 }

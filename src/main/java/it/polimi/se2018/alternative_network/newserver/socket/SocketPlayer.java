@@ -50,6 +50,26 @@ public class SocketPlayer implements RemotePlayer2, ServerVisitor, EventPreGameV
 
     private PrincipalServer server;
 
+    /**
+     * Socket Player Constructor.
+     *
+     * @param connection tunnel used to manage the socket connection.
+     */
+    public SocketPlayer(Socket connection, PrincipalServer server) {
+        this.server = server;
+        this.tunnel = connection;
+        online = new AtomicBoolean(true);
+        //TODO inizzializzare una variabile atomic boolean per segnare se il thread è attivo oppure no
+        try {
+            this.outputStream = new ObjectOutputStream(tunnel.getOutputStream());
+            this.inputStream = new ObjectInputStream(tunnel.getInputStream());
+            this.outputStream.flush();
+        } catch (IOException ex) {
+            online.set(false);
+            ex.printStackTrace();
+        }
+    }
+
     @Override
     public String getNickname() {
         return nickname;
@@ -74,33 +94,13 @@ public class SocketPlayer implements RemotePlayer2, ServerVisitor, EventPreGameV
     public GameInterface getGameInterface() {
         return gameInterface;
     }
-
-    @Override
-    public void setGameInterface(GameInterface gameInterface) {
-        this.gameInterface = gameInterface;
-    }
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
-    /**
-     * Socket Player Constructor.
-     *
-     * @param connection tunnel used to manage the socket connection.
-     */
-    public SocketPlayer(Socket connection, PrincipalServer server) {
-        this.server = server;
-        this.tunnel = connection;
-        online = new AtomicBoolean(true);
-        //TODO inizzializzare una variabile atomic boolean per segnare se il thread è attivo oppure no
-        try {
-            this.outputStream = new ObjectOutputStream(tunnel.getOutputStream());
-            this.inputStream = new ObjectInputStream(tunnel.getInputStream());
-            this.outputStream.flush();
-        } catch (IOException ex) {
-            online.set(false);
-            ex.printStackTrace();
-        }
+    @Override
+    public void setGameInterface(GameInterface gameInterface) {
+        this.gameInterface = gameInterface;
     }
 
     //------------------------------------------------------------------------------------------------------------------

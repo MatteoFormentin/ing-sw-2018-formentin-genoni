@@ -20,6 +20,8 @@ public class RestrictionAdjacentViolatedException extends WindowRestriction {
      * as its detail message. The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public RestrictionAdjacentViolatedException() {super("The restriction of adjacency to a die was violated");}
+    public RestrictionAdjacentViolatedException() {
+        super("The restriction of adjacency to a die was violated");
+    }
 
 }

@@ -18,11 +18,11 @@ public abstract class EffectGame implements Serializable {
      * Method used to applicate an effect to the game.
      *
      * @param gameBoard gameboard on when the player are playing.
-     * @param idPlayer ID of the player that requested the effect.
-     * @param infoMove information of the moves played with the effect.
+     * @param idPlayer  ID of the player that requested the effect.
+     * @param infoMove  information of the moves played with the effect.
      * @throws GameException exception derivate from game restriction.
      */
-    public abstract void doEffect(GameBoard gameBoard, int idPlayer,int[] infoMove) throws GameException;
+    public abstract void doEffect(GameBoard gameBoard, int idPlayer, int[] infoMove) throws GameException;
 
     /**
      * Method used to undo the application of an effect to the game.
@@ -50,12 +50,12 @@ public abstract class EffectGame implements Serializable {
     }
 
     /**
-     * Getter for the ID player.
+     * Setter for the gameboard.
      *
-     * @return ID of the player that's on the gameboard.
+     * @param gameBoard gameboard on when the player are playing.
      */
-    int getIdPlayer() {
-        return idPlayer;
+    void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -63,12 +63,12 @@ public abstract class EffectGame implements Serializable {
     //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Setter for the gameboard.
+     * Getter for the ID player.
      *
-     * @param gameBoard gameboard on when the player are playing.
+     * @return ID of the player that's on the gameboard.
      */
-    void setGameBoard(GameBoard gameBoard) {
-        this.gameBoard = gameBoard;
+    int getIdPlayer() {
+        return idPlayer;
     }
 
     /**

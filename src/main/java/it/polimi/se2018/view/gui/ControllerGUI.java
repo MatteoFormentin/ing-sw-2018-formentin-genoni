@@ -49,28 +49,11 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
 
     }
 
-    public ClientFactory getFactoryInstance() {
-        return factoryInstance;
-    }
-
-    public void setFactoryInstance(ClientFactory factoryInstance) {
-        this.factoryInstance = factoryInstance;
-    }
-
-    public AbstractClient2 getClient2() {
-        return client2;
-    }
-
-    public void setClient2(AbstractClient2 client2) {
-        this.client2 = client2;
-    }
-
     public static void main(String[] args) {
         getSingletonGUIInstance();
         instance.setFactoryInstance(ClientFactory.getClientFactory());
         instance.startGui();
     }
-
 
     /**
      * Get the Instance of the Gui, if null the application is off
@@ -91,6 +74,21 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
         return instance;
     }
 
+    public ClientFactory getFactoryInstance() {
+        return factoryInstance;
+    }
+
+    public void setFactoryInstance(ClientFactory factoryInstance) {
+        this.factoryInstance = factoryInstance;
+    }
+
+    public AbstractClient2 getClient2() {
+        return client2;
+    }
+
+    public void setClient2(AbstractClient2 client2) {
+        this.client2 = client2;
+    }
 
     /**
      * Start the single Thread of JavaFx Application

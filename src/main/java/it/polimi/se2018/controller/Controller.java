@@ -39,21 +39,18 @@ import java.util.Properties;
  * @author Luca Genoni
  */
 public class Controller implements ControllerVisitor, TimerCallback {
+    long PLAYER_TIMEOUT; //ms!!
     private GameBoard gameBoard;
     private int playerNumber;
     private String[] playersName;
     private boolean restoreAble;
     //Server in cui si setterà la partita
     private GameRoom gameRoom;
-
-
     //Lista di effetti da eseguire uno alla volta e spostati nello store una volta terminati
     private LinkedList<EffectGame> effectToRead;
     private int currentEffect;
     //Lista di effetti andati a buon fine e memorizzati. qui avviene il ripescagglio degli undo che rimette
     private LinkedList<EffectGame> effectGamesStored;
-
-    long PLAYER_TIMEOUT; //ms!!
     private TimerThread playerTimeout;
     private UpdaterView updaterView;
 
@@ -123,6 +120,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     public void endGame() {
         gameBoard.setStopGame(true);
         playerTimeout.shutdown();
+
         for (int i = 0; i < playerNumber; i++) {
             EndGame endGame = new EndGame();
             endGame.setPlayerId(i);
@@ -152,6 +150,9 @@ public class Controller implements ControllerVisitor, TimerCallback {
      */
     public void winBecauseOfDisconnection(int winnerId) {
         //TODO vittoria a tavolino per mancanza di player
+        MessageOk packet = new MessageOk("SEI L'ULTIMO GIOCATORE CONNESSO. HAI VINTO!", false);
+        packet.setPlayerId(winnerId);
+        sendEventToView(packet);
     }
 
     /**

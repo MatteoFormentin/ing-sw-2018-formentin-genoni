@@ -14,8 +14,8 @@ public class FactoryEffect extends EffectGame {
      * Method used to applicate an effect to the game.
      *
      * @param gameBoard gameboard on when the player are playing.
-     * @param idPlayer ID of the player that requested the effect.
-     * @param infoMove information of the moves played with the effect.
+     * @param idPlayer  ID of the player that requested the effect.
+     * @param infoMove  information of the moves played with the effect.
      * @throws GameException exception derivate from game restriction.
      */
     @Override

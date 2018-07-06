@@ -1,21 +1,6 @@
 package it.polimi.se2018.view.gui.classes_database;
 
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
-import it.polimi.se2018.model.card.ToolCard;
-import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
-import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
-import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
-import it.polimi.se2018.model.dice.DiceStack;
-import it.polimi.se2018.view.gui.classes_database.PlayerOnline;
-import it.polimi.se2018.view.gui.gamestage.GuiGame;
-import it.polimi.se2018.view.gui.gamestage.ShowValue;
-import it.polimi.se2018.view.gui.stage.WaitGame;
-import javafx.collections.ObservableList;
-
-import java.util.LinkedList;
-
-public class DatabaseGUI{ //implements ViewModelVisitor {
+public class DatabaseGUI { //implements ViewModelVisitor {
 /*
     private WaitGame waitGame;
     private GuiGame guiGame;

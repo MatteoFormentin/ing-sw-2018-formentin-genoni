@@ -16,12 +16,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ClientGatherer2 extends Thread {
 
-    private PrincipalServer server;
-
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
     private final AtomicBoolean running;
-
+    private PrincipalServer server;
     private ServerSocket serverSocket;
 
 

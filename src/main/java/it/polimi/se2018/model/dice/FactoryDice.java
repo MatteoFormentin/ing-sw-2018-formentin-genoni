@@ -9,5 +9,6 @@ import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWr
  */
 public interface FactoryDice {
     Dice createDice() throws ValueDiceWrongException;
+
     void removeDice(Dice dice);
 }

@@ -1,7 +1,7 @@
 package it.polimi.se2018.model.card.window_pattern_card;
 
-import it.polimi.se2018.exception.gameboard_exception.window_exception.*;
 import it.polimi.se2018.exception.gameboard_exception.cell_exception.CellException;
+import it.polimi.se2018.exception.gameboard_exception.window_exception.*;
 import it.polimi.se2018.model.dice.Dice;
 import it.polimi.se2018.model.dice.DiceColor;
 
@@ -50,12 +50,27 @@ public class WindowPatternCard implements Serializable {
         return name;
     }
 
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+    void setName(String name) {
+        this.name = name;
+    }
+
     public int getDifficulty() {
         return difficulty;
     }
 
+    void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
+
     public Cell[][] getMatrix() {
         return matrix;
+    }
+
+    void setMatrix(Cell[][] matrix) {
+        this.matrix = matrix;
     }
 
     public Cell[] getColumn(int line) {
@@ -68,21 +83,6 @@ public class WindowPatternCard implements Serializable {
 
     public int getNumberOfCellWithDice() {
         return numberOfCellWithDice;
-    }
-
-    //************************************setter**********************************************
-    //************************************setter**********************************************
-    //************************************setter**********************************************
-    void setName(String name) {
-        this.name = name;
-    }
-
-    void setDifficulty(int difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    void setMatrix(Cell[][] matrix) {
-        this.matrix = matrix;
     }
     //************************************window's method**********************************************
     //************************************window's method**********************************************
@@ -98,7 +98,8 @@ public class WindowPatternCard implements Serializable {
 
     private boolean checkMatrixAdjacentRestriction(int line, int column) throws RestrictionAdjacentFirstDiceViolatedException {
         if (numberOfCellWithDice == 0) {
-            if(!(column == 0 || column == 4 || line == 0 || line == 3)) throw new RestrictionAdjacentFirstDiceViolatedException();
+            if (!(column == 0 || column == 4 || line == 0 || line == 3))
+                throw new RestrictionAdjacentFirstDiceViolatedException();
             return true;
         } else {
             // one if for each near cell so 8 if
@@ -162,8 +163,8 @@ public class WindowPatternCard implements Serializable {
      * @param dice   to insert in the WindowsPattern
      * @return true if the insertDice is ok, false if can't insert the dice
      */
-    public void insertDice(int line, int column, Dice dice) throws WindowRestriction,CellException {
-        insertDice(line,column,dice,true,true,true);
+    public void insertDice(int line, int column, Dice dice) throws WindowRestriction, CellException {
+        insertDice(line, column, dice, true, true, true);
     }
 
     /**
@@ -185,13 +186,12 @@ public class WindowPatternCard implements Serializable {
      */
 
     public void insertDice(int line, int column, Dice dice, boolean adjacentRestriction,
-                              boolean colorRestriction, boolean valueRestriction) throws WindowRestriction,CellException{
-        if (!(line >= 0 && line < matrix.length )) throw new IndexRowOutOfWindowException();
-        if (!(column >= 0 && column < matrix[0].length )) throw new IndexColumnOutOfWindowException();
+                           boolean colorRestriction, boolean valueRestriction) throws WindowRestriction, CellException {
+        if (!(line >= 0 && line < matrix.length)) throw new IndexRowOutOfWindowException();
+        if (!(column >= 0 && column < matrix[0].length)) throw new IndexColumnOutOfWindowException();
         if (adjacentRestriction) {
             if (!checkMatrixAdjacentRestriction(line, column)) throw new RestrictionAdjacentViolatedException();
-        }
-        else if (numberOfCellWithDice != 0 && checkMatrixAdjacentRestriction(line, column))
+        } else if (numberOfCellWithDice != 0 && checkMatrixAdjacentRestriction(line, column))
             throw new RestrictionAntiAdjacentViolatedException();
         if (colorRestriction && !checkMatrixAdjacentColorRestriction(line, column, dice.getColor()))
             throw new RestrictionColorViolatedException();
@@ -208,9 +208,9 @@ public class WindowPatternCard implements Serializable {
      * @param column of the cell
      * @return the dice removed from the dell
      */
-    public Dice removeDice(int line, int column) throws WindowRestriction,CellException {
-        if (!(line >= 0 && line < matrix.length )) throw new IndexRowOutOfWindowException();
-        if (!(column >= 0 && column < matrix[0].length )) throw new IndexColumnOutOfWindowException();
+    public Dice removeDice(int line, int column) throws WindowRestriction, CellException {
+        if (!(line >= 0 && line < matrix.length)) throw new IndexRowOutOfWindowException();
+        if (!(column >= 0 && column < matrix[0].length)) throw new IndexColumnOutOfWindowException();
         Dice dice = matrix[line][column].removeDice();
         numberOfCellWithDice--;
         return dice;

@@ -1,4 +1,3 @@
-
 package it.polimi.se2018.alternative_network.client.socket;
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
@@ -158,13 +157,11 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
                 EventClient received = (EventClient) inputStream.readObject();
                 sendEventToView(received);
             } catch (IOException | ClassNotFoundException ex) {
-                ex.printStackTrace();
+                // ex.printStackTrace();
                 flag = false;
 
                 ConnectionDown packet = new ConnectionDown("Sei stato disconnesso dal server. Controlla la connessione.", false);
                 sendEventToView(packet);
-
-                ex.printStackTrace();
             }
         }
         shutDownClient2();

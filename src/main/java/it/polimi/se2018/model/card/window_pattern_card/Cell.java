@@ -17,15 +17,17 @@ public class Cell implements Serializable {
     private Dice dice;
     private int valueRestriction;
     private DiceColor colorRestriction;
-    public Cell(){
-        dice= null;
-        valueRestriction=0;
-        colorRestriction=null;
+
+    public Cell() {
+        dice = null;
+        valueRestriction = 0;
+        colorRestriction = null;
     }
-    public Cell(Dice dice,int valueRestriction,DiceColor colorRestriction){
-        this.dice=dice;
-        this.valueRestriction=valueRestriction;
-        this.colorRestriction=colorRestriction;
+
+    public Cell(Dice dice, int valueRestriction, DiceColor colorRestriction) {
+        this.dice = dice;
+        this.valueRestriction = valueRestriction;
+        this.colorRestriction = colorRestriction;
     }
     //************************************getter**********************************************
     //************************************getter**********************************************
@@ -41,28 +43,6 @@ public class Cell implements Serializable {
     }
 
     /**
-     * if the color is null you can place a dice with any color, otherwise you must place a dice with the same color
-     *
-     * @return the required color to allow the insertion of the dice
-     */
-    public DiceColor getColorRestriction() {
-        return colorRestriction;
-    }
-
-    /**
-     * normal get for the dice in the cell, null if there is no dice
-     *
-     * @return the dice in this cell
-     */
-    public Dice getDice() {
-        return dice;
-    }
-
-    //************************************setter**********************************************
-    //************************************setter**********************************************
-    //************************************setter**********************************************
-
-    /**
      * for setting a restriction of value
      *
      * @param valueRestriction a dice for being inserted here need to have this value
@@ -72,12 +52,34 @@ public class Cell implements Serializable {
     }
 
     /**
+     * if the color is null you can place a dice with any color, otherwise you must place a dice with the same color
+     *
+     * @return the required color to allow the insertion of the dice
+     */
+    public DiceColor getColorRestriction() {
+        return colorRestriction;
+    }
+
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+    //************************************setter**********************************************
+
+    /**
      * for setting a restriction of color
      *
      * @param colorRestriction a dice for being inserted here need to have this color
      */
     public void setColorRestriction(DiceColor colorRestriction) {
         this.colorRestriction = colorRestriction;
+    }
+
+    /**
+     * normal get for the dice in the cell, null if there is no dice
+     *
+     * @return the dice in this cell
+     */
+    public Dice getDice() {
+        return dice;
     }
 
     /**
@@ -115,16 +117,18 @@ public class Cell implements Serializable {
     /**
      * Insert the dice in the cell if the restriction of the cell are respected.
      *
-     * @param newDice                  to insert in the cell
+     * @param newDice               to insert in the cell
      * @param checkColorRestriction true if i need to check the restriction
      * @param checkValueRestriction true if i need to check the restriction
      */
     public void insertDice(Dice newDice, boolean checkColorRestriction, boolean checkValueRestriction)
             throws CellException {
-        if (newDice==null) throw new NullDiceToAddException();
+        if (newDice == null) throw new NullDiceToAddException();
         if (dice != null) throw new RestrictionCellOccupiedException();
-        if (checkColorRestriction && colorRestrictionViolated(newDice.getColor())) throw new RestrictionCellColorViolatedException();
-        if (checkValueRestriction && valueRestrictionViolated(newDice.getValue())) throw new RestrictionCellValueViolatedException();
+        if (checkColorRestriction && colorRestrictionViolated(newDice.getColor()))
+            throw new RestrictionCellColorViolatedException();
+        if (checkValueRestriction && valueRestrictionViolated(newDice.getValue()))
+            throw new RestrictionCellValueViolatedException();
         this.dice = newDice;
     }
 

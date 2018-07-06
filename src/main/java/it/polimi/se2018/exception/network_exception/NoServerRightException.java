@@ -5,7 +5,7 @@ package it.polimi.se2018.exception.network_exception;
  */
 
 public class NoServerRightException extends Exception {
-    public  NoServerRightException(){
+    public NoServerRightException() {
         super("Il server non è corretto");
     }
 

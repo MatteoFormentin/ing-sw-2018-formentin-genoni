@@ -1,6 +1,5 @@
 package it.polimi.se2018.view.gui.stage;
 
-import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGame;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game.LoginRequest;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,15 +23,6 @@ public class Login {
     private Stage stage;
 
     /**
-     * for get the stage of the waiting
-     *
-     * @return the stage where the waiting is running
-     */
-    public Stage getStage() {
-        return stage;
-    }
-
-    /**
      * Constructor
      *
      * @param owner of the stage for this class
@@ -43,6 +33,15 @@ public class Login {
         stage.initOwner(owner);
         stage.setResizable(false);
         answer = false;
+    }
+
+    /**
+     * for get the stage of the waiting
+     *
+     * @return the stage where the waiting is running
+     */
+    public Stage getStage() {
+        return stage;
     }
 
     /**
@@ -73,10 +72,10 @@ public class Login {
         form.addRow(2, back, connect);
         //components action
         connect.setOnAction(e -> {
-                    //TODO creare il pachetto di login e inviarlo
-                LoginRequest packet = new LoginRequest(nameInput.getText());
-                getGuiInstance().getClient2().sendEventToController2(packet);
-                stage.close();
+            //TODO creare il pachetto di login e inviarlo
+            LoginRequest packet = new LoginRequest(nameInput.getText());
+            getGuiInstance().getClient2().sendEventToController2(packet);
+            stage.close();
         });
         back.setOnAction(e -> stage.close());
         stage.show();

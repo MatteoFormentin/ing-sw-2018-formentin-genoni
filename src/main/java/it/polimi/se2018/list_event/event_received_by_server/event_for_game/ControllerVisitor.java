@@ -17,19 +17,22 @@ public interface ControllerVisitor {
 
     //for the 3 move of the player
     void visit(ControllerMoveDrawAndPlaceDie event);
+
     void visit(ControllerMoveUseToolCard event);
+
     void visit(ControllerEndTurn event);
 
     //for the info required
 
     void visit(ControllerInfoEffect event);
+
     void visit(ControllerSelectToolCard event);
 
     void visit(ControllerSelectCellOfWindow event);
+
     void visit(ControllerSelectDiceFromDraftPool event);
 
     void visit(ControllerUndoDiceInsert event);
-
 
 
 }

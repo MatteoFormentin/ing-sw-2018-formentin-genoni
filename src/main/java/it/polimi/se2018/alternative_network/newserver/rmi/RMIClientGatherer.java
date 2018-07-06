@@ -21,22 +21,23 @@ import static org.fusesource.jansi.Ansi.ansi;
  * @author Luca Genoni
  */
 public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient {
+    //MAKE HASH MAP
+    static LinkedList<RMIPlayer> playerLinkedList;
     private static RMIClientGatherer instance;
     private transient RMIServer server;
     private Server2 mainServer;
-    //MAKE HASH MAP
-    static LinkedList<RMIPlayer> playerLinkedList;
-    private RMIClientGatherer(Server2 mainServer,RMIServer server,int port) throws RemoteException {
+
+    private RMIClientGatherer(Server2 mainServer, RMIServer server, int port) throws RemoteException {
         super(port);
-        this.server=server;
-        this.mainServer=mainServer;
+        this.server = server;
+        this.mainServer = mainServer;
     }
     //********************************* FROM THE SERVER **********************************************
     //********************************* FROM THE SERVER **********************************************
     //********************************* FROM THE SERVER **********************************************
 
-    static RMIClientGatherer getSingletonClientGatherer(Server2 mainServer,RMIServer rmiServer,int port) throws RemoteException {
-        if (instance == null) instance = new RMIClientGatherer(mainServer,rmiServer,port);
+    static RMIClientGatherer getSingletonClientGatherer(Server2 mainServer, RMIServer rmiServer, int port) throws RemoteException {
+        if (instance == null) instance = new RMIClientGatherer(mainServer, rmiServer, port);
         return instance;
     }
     //__________________________________________________________
@@ -65,7 +66,7 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
     @Override
     public void sendEventToController(EventController event) {
         mainServer.sendEventToGame(event);
-      //  server.sendEventToServer(event);
+        //  server.sendEventToServer(event);
     }
 
     public String sayHelloToGatherer() {

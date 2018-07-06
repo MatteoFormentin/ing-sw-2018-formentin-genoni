@@ -29,8 +29,8 @@ public class RemoveDiceFromWindow extends EffectGame {
      * Method used to applicate an effect to the game.
      *
      * @param gameBoard gameboard on when the player are playing.
-     * @param idPlayer ID of the player that requested the effect.
-     * @param infoMove information of the moves played with the effect.
+     * @param idPlayer  ID of the player that requested the effect.
+     * @param infoMove  information of the moves played with the effect.
      * @throws GameException exception derivate from game restriction.
      */
     @Override
@@ -38,9 +38,9 @@ public class RemoveDiceFromWindow extends EffectGame {
         if (infoMove.length != 2) throw new NumberInfoWrongException();
         this.setGameBoard(gameBoard);
         this.setIdPlayer(idPlayer);
-        line=infoMove[0];
-        column=infoMove[1];
-        gameBoard.moveDiceFromWindowPatternToHand(getIdPlayer(),line,column,trueSpecialRemoveFalseNormal);
+        line = infoMove[0];
+        column = infoMove[1];
+        gameBoard.moveDiceFromWindowPatternToHand(getIdPlayer(), line, column, trueSpecialRemoveFalseNormal);
     }
 
     /**
@@ -50,8 +50,8 @@ public class RemoveDiceFromWindow extends EffectGame {
      */
     @Override
     public void undo() throws GameException {
-        Dice dice= getGameBoard().getPlayer(getIdPlayer()).removeDiceFromHand();
-        getGameBoard().getPlayer(getIdPlayer()).getPlayerWindowPattern().getCell(line,column).insertDice(dice,false,false);
+        Dice dice = getGameBoard().getPlayer(getIdPlayer()).removeDiceFromHand();
+        getGameBoard().getPlayer(getIdPlayer()).getPlayerWindowPattern().getCell(line, column).insertDice(dice, false, false);
     }
 
     /**

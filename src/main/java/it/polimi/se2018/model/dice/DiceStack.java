@@ -10,7 +10,7 @@ import java.util.LinkedList;
  *
  * @author Luca Genoni
  */
-public class DiceStack extends LinkedList<Dice> implements Serializable{
+public class DiceStack extends LinkedList<Dice> implements Serializable {
 
     /**
      * the method right method for take a dice without exception
@@ -19,7 +19,7 @@ public class DiceStack extends LinkedList<Dice> implements Serializable{
      * @return dice or null
      */
     public Dice getDice(int index) throws NoDiceException {
-        if(index>=this.size()) throw new NoDiceException();
+        if (index >= this.size()) throw new NoDiceException();
         return this.get(index);
     }
 
@@ -29,7 +29,7 @@ public class DiceStack extends LinkedList<Dice> implements Serializable{
         this.addFirst(this.remove(index));
     }*/
 
-    public void reRollAllDiceInStack(){
+    public void reRollAllDiceInStack() {
         for (Dice dice : this) {
             dice.rollDice();
         }

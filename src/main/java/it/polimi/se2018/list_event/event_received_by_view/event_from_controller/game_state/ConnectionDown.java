@@ -8,9 +8,9 @@ public class ConnectionDown extends EventClientFromController {
     private String cause;
     private boolean disconnectionWasRequested;
 
-    public ConnectionDown(String cause,boolean disconnectionWasRequested) {
+    public ConnectionDown(String cause, boolean disconnectionWasRequested) {
         this.cause = cause;
-        this.disconnectionWasRequested= disconnectionWasRequested;
+        this.disconnectionWasRequested = disconnectionWasRequested;
     }
 
     public String getCause() {

@@ -11,8 +11,8 @@ public class UpdateCurrentPoint extends EventClientFromModel {
     private String[] description;
     private int[] info;
 
-    public UpdateCurrentPoint(int[] info, String[] description ) {
-        this.description =description;
+    public UpdateCurrentPoint(int[] info, String[] description) {
+        this.description = description;
         this.info = info;
     }
 

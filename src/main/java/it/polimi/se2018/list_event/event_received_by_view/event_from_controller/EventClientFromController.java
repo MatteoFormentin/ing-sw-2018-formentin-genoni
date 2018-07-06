@@ -12,10 +12,12 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
  */
 public class EventClientFromController extends EventClient {
     @Override
-    public void acceptGeneric(ViewVisitor viewVisitor) {viewVisitor.visit(this);}
+    public void acceptGeneric(ViewVisitor viewVisitor) {
+        viewVisitor.visit(this);
+    }
 
     //ha bisogno dell'overriding
-    public void acceptControllerEvent(ViewControllerVisitor visitor){
+    public void acceptControllerEvent(ViewControllerVisitor visitor) {
         throw new UnsupportedOperationException();
     }
 

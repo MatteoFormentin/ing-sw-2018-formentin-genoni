@@ -22,7 +22,7 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author DavideMammarella
  */
-public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor,EventPreGameVisitor{
+public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor, EventPreGameVisitor {
 
     private RMIServerInterfaceSeenByClient serverRMI;
     private RMIClientInterface client; //instance of the stud
@@ -43,7 +43,7 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
     }
 
     @Override
-    public void connectToServer2(){
+    public void connectToServer2() {
         try {
             // Chiedo al Registry ( in esecuzione su localhost alla porta di default ) di localizzare 'Server' e restituirmi il suo Stub
             // Naming.lookup(//host:port/name) host è l'ip, port è la porta  name è il nome del servizio offerto dall'host
@@ -61,15 +61,15 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
             this.sendEventToUIInterface2(packet);
         } catch (NotBoundException ex) {
             ex.printStackTrace();
-            ConnectionDown packet = new ConnectionDown("Il server è stato raggiunto, ma non c'è il servizio richiesto",false);
+            ConnectionDown packet = new ConnectionDown("Il server è stato raggiunto, ma non c'è il servizio richiesto", false);
             view.showEventView(packet);
         } catch (RemoteException ex) {
             ex.printStackTrace();
-            ConnectionDown packet = new ConnectionDown("Non è stato possibile contattare il server.",false);
+            ConnectionDown packet = new ConnectionDown("Non è stato possibile contattare il server.", false);
             view.showEventView(packet);
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
-            ConnectionDown packet = new ConnectionDown("URL non corretto.",false);
+            ConnectionDown packet = new ConnectionDown("URL non corretto.", false);
             view.showEventView(packet);
         }
     }
@@ -80,11 +80,11 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
         try {
             serverRMI.sayHelloToGatherer();
             UnicastRemoteObject.unexportObject(client, true);
-            ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.",true);
+            ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
             view.showEventView(packet);
         } catch (RemoteException ex) {
             ex.printStackTrace();
-            ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.",true);
+            ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
             view.showEventView(packet);
         }
     }
@@ -103,18 +103,18 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
 
     @Override
     public void visit(EventController event) {
-            Runnable exec = () -> {
-                Thread.currentThread().setName("Visitor Handler: " + event.getClass().getSimpleName());
-                try {
-                    getServerRMI().sendEventToController(event);
-                }catch(RemoteException ex){
-                    ex.printStackTrace();
-                    ConnectionDown packet = new ConnectionDown("La connessione è caduta.",false);
-                    view.showEventView(packet);
-                }
-            };
-            currentTask = new Thread(exec);
-            currentTask.start();
+        Runnable exec = () -> {
+            Thread.currentThread().setName("Visitor Handler: " + event.getClass().getSimpleName());
+            try {
+                getServerRMI().sendEventToController(event);
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+                ConnectionDown packet = new ConnectionDown("La connessione è caduta.", false);
+                view.showEventView(packet);
+            }
+        };
+        currentTask = new Thread(exec);
+        currentTask.start();
 
     }
 
@@ -127,9 +127,9 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
     public void visit(LoginRequest event) {
         try {
             serverRMI.addClient(event.getNickname(), client);
-        }catch(RemoteException ex){
+        } catch (RemoteException ex) {
             ex.printStackTrace();
-            ConnectionDown packet = new ConnectionDown("La connessione è caduta.",false);
+            ConnectionDown packet = new ConnectionDown("La connessione è caduta.", false);
             view.showEventView(packet);
         }
     }

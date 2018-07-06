@@ -22,12 +22,10 @@ public class SocketServer implements AbstractServer2 {
     private final Server2 server;
     private final String host;
     private final int port;
-    private boolean started;
     // Utilizzo variabili atomiche perchè evitano problemi di concorrenza
     // Così prevengo conflitti nel settaggio e check delle variabili da metodi differenti
     private final AtomicBoolean running;
-
-
+    private boolean started;
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO LA CONNESSIONE AL SERVER SENZA LOGIN
     private LinkedList<SocketPlayer> socketPlayers;
     private ClientGatherer2 clientGatherer2;

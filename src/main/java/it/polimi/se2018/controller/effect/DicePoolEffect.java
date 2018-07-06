@@ -28,20 +28,20 @@ public class DicePoolEffect extends EffectGame {
      * Method used to applicate an effect to the game.
      *
      * @param gameBoard gameboard on when the player are playing.
-     * @param idPlayer ID of the player that requested the effect.
-     * @param infoMove information of the moves played with the effect.
+     * @param idPlayer  ID of the player that requested the effect.
+     * @param infoMove  information of the moves played with the effect.
      * @throws GameException exception derivate from game restriction.
      */
     @Override
     public void doEffect(GameBoard gameBoard, int idPlayer, int[] infoMove) throws GameException {
-        if(trueDrawDieFalseRollDice){
+        if (trueDrawDieFalseRollDice) {
             if (infoMove.length != 1) throw new NumberInfoWrongException();
             this.setGameBoard(gameBoard);
             this.setIdPlayer(idPlayer);
-            indexDiceOfDicePool= infoMove[0];
+            indexDiceOfDicePool = infoMove[0];
             gameBoard.addNewDiceToHandFromDicePool(idPlayer, indexDiceOfDicePool);
-        }else{
-            if (infoMove !=null) throw new NumberInfoWrongException();
+        } else {
+            if (infoMove != null) throw new NumberInfoWrongException();
             this.setGameBoard(gameBoard);
             this.setIdPlayer(idPlayer);
             gameBoard.rollDicePool(idPlayer);
@@ -66,7 +66,7 @@ public class DicePoolEffect extends EffectGame {
      */
     @Override
     public EventClient eventViewToAsk() {
-        if(trueDrawDieFalseRollDice) return new SelectDiceFromDraftPool();
+        if (trueDrawDieFalseRollDice) return new SelectDiceFromDraftPool();
         return null;
     }
 }

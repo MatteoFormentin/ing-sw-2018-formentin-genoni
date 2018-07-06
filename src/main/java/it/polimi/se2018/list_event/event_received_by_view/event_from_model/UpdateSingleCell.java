@@ -17,13 +17,13 @@ public class UpdateSingleCell extends EventClientFromModel {
     private int valueRestriction;
     private DiceColor colorRestriction;
 
-    public UpdateSingleCell(int indexPlayer, int line, int column, Dice dice,int valueRestriction,DiceColor colorRestriction) {
+    public UpdateSingleCell(int indexPlayer, int line, int column, Dice dice, int valueRestriction, DiceColor colorRestriction) {
         this.indexPlayer = indexPlayer;
         this.line = line;
         this.column = column;
         this.dice = dice;
-        this.valueRestriction=valueRestriction;
-        this.colorRestriction=colorRestriction;
+        this.valueRestriction = valueRestriction;
+        this.colorRestriction = colorRestriction;
     }
 
     public int getIndexPlayer() {

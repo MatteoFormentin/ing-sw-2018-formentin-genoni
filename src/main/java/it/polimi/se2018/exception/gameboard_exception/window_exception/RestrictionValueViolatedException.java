@@ -20,6 +20,8 @@ public class RestrictionValueViolatedException extends WindowRestriction {
      * as its detail message. The cause is not initialized, and may subsequently be
      * initialized by a call to {@link #initCause}.
      */
-    public RestrictionValueViolatedException() {super("Adjacent orthogonally to this cell there is a die with the same value");}
+    public RestrictionValueViolatedException() {
+        super("Adjacent orthogonally to this cell there is a die with the same value");
+    }
 
 }

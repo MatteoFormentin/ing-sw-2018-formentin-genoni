@@ -42,9 +42,9 @@ public class TimerThread implements Runnable {
     public TimerThread(TimerCallback timerCallback, long timeout) {
         this.timeout = timeout;
         this.timerCallback = timerCallback;
-        withIndex=false;
+        withIndex = false;
         this.isAlive = false;
-        index= new AtomicInteger(0);
+        index = new AtomicInteger(0);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -72,10 +72,9 @@ public class TimerThread implements Runnable {
             }
         }
         if (running.get()) {
-            if(withIndex) {
+            if (withIndex) {
                 timerCallback.timerCallbackWithIndex(index.get());
-            }
-            else timerCallback.timerCallback();
+            } else timerCallback.timerCallback();
         }
         isAlive = false;
     }
@@ -88,7 +87,7 @@ public class TimerThread implements Runnable {
      * Starter for the Timer Thread.
      */
     public void startThread() {
-        withIndex=false;
+        withIndex = false;
         timerThread = new Thread(this);
         running.set(true);
         timerThread.start();
@@ -98,10 +97,10 @@ public class TimerThread implements Runnable {
      * Starter for the Timer Thread.
      */
     public void startThread(int numberToReturn) {
-        withIndex=true;
-        System.out.println("Inderx timer richiesto è:"+numberToReturn);
+        withIndex = true;
+        System.out.println("Inderx timer richiesto è:" + numberToReturn);
         this.index.set(numberToReturn);
-        System.out.println("Inderx timer impostato è: "+index.get());
+        System.out.println("Inderx timer impostato è: " + index.get());
         timerThread = new Thread(this);
         running.set(true);
         timerThread.start();

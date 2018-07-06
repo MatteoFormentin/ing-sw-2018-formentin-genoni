@@ -11,10 +11,10 @@ public abstract class AbstractClient2 {
 
     public String ip_host;
     public int port;
-    public  UIInterface view;
+    public UIInterface view;
 
     //metodi del client(senza eccezioni)
-    public void sendEventToUIInterface2(EventClient event){
+    public void sendEventToUIInterface2(EventClient event) {
 
     }
 

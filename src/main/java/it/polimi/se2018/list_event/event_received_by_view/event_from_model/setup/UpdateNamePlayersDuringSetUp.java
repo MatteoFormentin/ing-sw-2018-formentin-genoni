@@ -20,6 +20,7 @@ public class UpdateNamePlayersDuringSetUp extends EventClientFromModel {
     public String[] getPlayerNames() {
         return playerNames;
     }
+
     public String getPlayerNames(int index) {
         return playerNames[index];
     }

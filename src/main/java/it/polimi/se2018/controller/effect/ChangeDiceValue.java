@@ -24,13 +24,13 @@ public class ChangeDiceValue extends EffectGame {
      * Method used to applicate an effect to the game.
      *
      * @param gameBoard gameboard on when the player are playing.
-     * @param idPlayer ID of the player that requested the effect.
-     * @param infoMove information of the moves played with the effect.
+     * @param idPlayer  ID of the player that requested the effect.
+     * @param infoMove  information of the moves played with the effect.
      * @throws GameException exception derivate from game restriction.
      */
     @Override
-    public void doEffect(GameBoard gameBoard, int idPlayer, int[] infoMove) throws GameException{
-        if (infoMove !=null) throw new NumberInfoWrongException();
+    public void doEffect(GameBoard gameBoard, int idPlayer, int[] infoMove) throws GameException {
+        if (infoMove != null) throw new NumberInfoWrongException();
         this.setGameBoard(gameBoard);
         this.setIdPlayer(idPlayer);
         if (trueRandomFalseOpposite) gameBoard.rollDiceInHand(getIdPlayer());

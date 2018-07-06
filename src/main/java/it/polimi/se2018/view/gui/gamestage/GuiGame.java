@@ -1,6 +1,6 @@
 package it.polimi.se2018.view.gui.gamestage;
 
-import it.polimi.se2018.list_event.event_received_by_server.event_for_game.*;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
@@ -48,67 +48,49 @@ import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
  */
 public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, ViewControllerVisitor {
 
-    @Override
-    public void errPrintln(String error){
-        System.err.println();
-        System.err.println(error);
-        System.err.println();
-    }
-
     private static GuiGame instance;
-    private WaitGame waitGame;
-    private Stage gameStage, utilStage,toolStage;
-    private Scene sceneGame, sceneInit;
-
     private static String diceSource = "file:src/resources/dadijpg/";
     private static String toolCardSource = "file:src/resources/carte_jpg/carte_strumento_";
     private static String privateObjectSource = "file:src/resources/carte_jpg/carte_private_";
     private static String publicObjectSource = "file:src/resources/carte_jpg/carte_pubbliche_";
+    private WaitGame waitGame;
+    private Stage gameStage, utilStage, toolStage;
+    private Scene sceneGame, sceneInit;
     //variables for show card
     private ShowCardBox cardShow;
     private ShowValue value;
     private AlertMessage popUpGame, popUpWait;
     private boolean init;
-
-
     //variabili per il giocatori
     private int playerId;
     private VBox opposingPlayers; //pane for add/remove Grid of other player
     private VBox centerBox; //contains the player and dice pool
-
     private HBox[] boxAllDataPlayer; //contains info and hand
     private VBox[] infoPlayer; //Contains Name, (favorToken, Points in one HBox) and WindowPattern
-
     private Text[] playersName;
     private HBox[] numberData;
     private Text[] favorTokenOfEachPlayer;
     private Text[] pointsOfEachPlayer;
     private VBox[] vBoxesHandOfEachPlayer; //
     private ImageView[][] imageViewsHandPlayer;
-    //imageView for Hand
-
     //widnwo of each player
     private VBox[] boxWindowPlayer;
+    //imageView for Hand
     private Text[] nameWindowPlayer;
     private GridPane[] gridCellPlayer;
     private ImageView[][][] imageViewsCellPlayer;
     private Text[] difficultyWindowPlayer;
-
-    //fields for windows of the players
-
-
     //fields for windows pool Choice
     private HBox boxAllWindowPoolChoice;
+
+    //fields for windows of the players
     private VBox[] boxWindowPoolChoice;
     private Text[] nameWindowPoolChoice;
     private GridPane[] gridCellPoolChoice;
     private ImageView[][][] imageViewsCellPoolChoice;
     private Text[] difficultyWindowPoolChoice;
-
-
     //fields for cards
     private VBox cardBox;
-
     private HBox toolBox; //pane for add/remove the Tool card
     private VBox[] toolCardInfoBox;
     private Text[] costToolCard;
@@ -117,7 +99,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private ImageView[] objectivePublicCard; //store the Public card
     private HBox objectivePrivateBox; //pane for add/remove the Private card
     private ImageView[] objectivePrivateCardOfEachPlayers; //store the Private card
-
     //round track
     private HBox boxAllRound;
     private VBox[] boxSingleRound;
@@ -127,7 +108,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private ComboBox<Image>[] comboBoxSingleRound;
     private FlowPane flowPaneDicePool;
     private LinkedList<ImageView> dicePool;
-
     private Button[] gameButton;
 
     private GuiGame() {
@@ -146,6 +126,13 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     public static GuiGame createGuiGame() {
         if (instance == null) instance = new GuiGame();
         return instance;
+    }
+
+    @Override
+    public void errPrintln(String error) {
+        System.err.println();
+        System.err.println(error);
+        System.err.println();
     }
 
     public void setGameWait(Stage owner) {
@@ -181,7 +168,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
             if (result) {
                 getGuiInstance().disconnect();
-                if(utilStage.isShowing()) utilStage.close();
+                if (utilStage.isShowing()) utilStage.close();
                 else gameStage.close();
             } else e.consume();
         });
@@ -210,9 +197,9 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         boxAllRound.setAlignment(Pos.CENTER);
         boxAllRound.setSpacing(5);
 
-        currentRound= new Text("Giro: 1");
-        currentTurn= new Text("Turno: 1");
-        VBox infoGame = new VBox(currentRound,currentTurn);
+        currentRound = new Text("Giro: 1");
+        currentTurn = new Text("Turno: 1");
+        VBox infoGame = new VBox(currentRound, currentTurn);
         infoGame.setAlignment(Pos.CENTER);
         infoGame.setSpacing(5);
         boxAllRound.getChildren().add(infoGame);
@@ -279,7 +266,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void showEventView(EventClient eventClient) {
-        System.out.println("Arrivato il pacchetto: "+ eventClient);
+        System.out.println("Arrivato il pacchetto: " + eventClient);
         Platform.runLater(() -> eventClient.acceptGeneric(this));
     }
 
@@ -306,13 +293,13 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(EventClientFromController event) {
-        System.out.println("Arrivato il pacchetto: "+event+"\n");
+        System.out.println("Arrivato il pacchetto: " + event + "\n");
         event.acceptControllerEvent(this);
     }
 
     @Override
     public void visit(EventClientFromModel event) {
-        System.out.println("Arrivato il pacchetto: "+event+"\n");
+        System.out.println("Arrivato il pacchetto: " + event + "\n");
         event.acceptModelEvent(this);
     }
 
@@ -335,8 +322,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(UpdatePlayerConnection event) {
-        if(waitGame==null) System.out.println("è ");
-        if(waitGame.getStage().isShowing()) waitGame.addPlayerOnline(event.getIndex(),event.getName(),true);
+        if (waitGame == null) System.out.println("è ");
+        if (waitGame.getStage().isShowing()) waitGame.addPlayerOnline(event.getIndex(), event.getName(), true);
 
     }
     //*************************************************From Controller*********************************************************************************
@@ -356,7 +343,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         disableDiceOfDicePool();
         disableWindow(playerId);
         disableAllRound();
-        if(value.isDisplaying()) toolStage.close();
+        if (value.isDisplaying()) toolStage.close();
         new AlertMessage(gameStage).displayMessage("Hai finito il tempo a disposizione");
     }
 
@@ -404,7 +391,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(StartPlayerTurn event) {
-        IntStream.range(0, comboBoxSingleRound.length).forEach(i ->comboBoxSingleRound[i].getSelectionModel().clearSelection());
+        IntStream.range(0, comboBoxSingleRound.length).forEach(i -> comboBoxSingleRound[i].getSelectionModel().clearSelection());
         for (Text t : playersName) t.setFill(Color.BLACK);
         playersName[playerId].setFill(Color.RED);
         gameButton[0].setOnAction(e -> {
@@ -433,7 +420,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     public void visit(WaitYourTurn event) {
         //TODO disattivare tutti i comandi
         //disattiva il menu
-        IntStream.range(0, comboBoxSingleRound.length).forEach(i ->comboBoxSingleRound[i].getSelectionModel().clearSelection());
+        IntStream.range(0, comboBoxSingleRound.length).forEach(i -> comboBoxSingleRound[i].getSelectionModel().clearSelection());
         IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
         //disattiva dicepool, windowPattern, roundtrack, toolcard
         disableDiceOfDicePool();
@@ -504,9 +491,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     }
 
 
-
     private void activeRoundTrack() {
-        IntStream.range(0, comboBoxSingleRound.length).forEach(i ->comboBoxSingleRound[i].getSelectionModel().clearSelection());
+        IntStream.range(0, comboBoxSingleRound.length).forEach(i -> comboBoxSingleRound[i].getSelectionModel().clearSelection());
         for (int i = 0; i < comboBoxSingleRound.length; i++) {
             if (!comboBoxSingleRound[i].getItems().isEmpty()) {
                 activeSingleRound(i);
@@ -535,7 +521,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(SelectValueDice event) {
-        int param =value.displayValuePool();
+        int param = value.displayValuePool();
         ControllerInfoEffect packet = new ControllerInfoEffect();
         packet.setPlayerId(playerId);
         int[] info = new int[1];
@@ -546,7 +532,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(SelectIncrementOrDecreaseDice event) {
-        int param =value.displayIncreaseDecrease();
+        int param = value.displayIncreaseDecrease();
         ControllerInfoEffect packet = new ControllerInfoEffect();
         packet.setPlayerId(playerId);
         int[] info = new int[1];
@@ -554,6 +540,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         packet.setInfo(info);
         sendEventToNetwork(packet);
     }
+
     /**
      * Method of the Visitor Pattern, event received from the controller
      * to let the player pick a dice from the draft pool
@@ -746,6 +733,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         }
         centerBox.getChildren().add(flowPaneDicePool);
     }
+
     /**
      * Method of the Visitor Pattern, event received from the model for setUp a private Object
      *
@@ -755,10 +743,10 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     public void visit(UpdateSinglePrivateObject event) {
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()] = createNewImageViewForCard();
         objectivePrivateBox.getChildren().add(objectivePrivateCardOfEachPlayers[event.getIndexPlayer()]);
-        Image newImage=null;
-        try{
+        Image newImage = null;
+        try {
             newImage = new Image(new FileInputStream(privateObjectSource + event.getPrivateCard().getId() + ".jpg"));
-        }catch(IOException ex){
+        } catch (IOException ex) {
             System.out.println("can't load");
         }
         objectivePrivateCardOfEachPlayers[event.getIndexPlayer()].setImage(newImage);
@@ -787,7 +775,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             gridCellPoolChoice[i].setPadding(new Insets(10, 0, 10, 0));
             gridCellPoolChoice[i].setVgap(5);
             gridCellPoolChoice[i].setHgap(5);
-            difficultyWindowPoolChoice[i] = new Text("Livello "+Integer.toString(event.getInitialWindowPatternCard(i).getDifficulty()));
+            difficultyWindowPoolChoice[i] = new Text("Livello " + Integer.toString(event.getInitialWindowPatternCard(i).getDifficulty()));
             difficultyWindowPoolChoice[i].setTextAlignment(TextAlignment.RIGHT);
             nameWindowPoolChoice[i] = new Text(event.getInitialWindowPatternCard(i).getName());
             boxWindowPoolChoice[i] = new VBox(nameWindowPoolChoice[i], gridCellPoolChoice[i], difficultyWindowPoolChoice[i]);
@@ -827,8 +815,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         //ForEach made for enable the click
         IntStream.range(0, event.getToolCard().length).forEach(i -> {
             toolCard[i] = createNewImageViewForCard();
-            costToolCard[i] = new Text("Costo: "+ event.getToolCard(i).getFavorToken());
-            toolCardInfoBox[i] = new VBox(toolCard[i],costToolCard[i]);
+            costToolCard[i] = new Text("Costo: " + event.getToolCard(i).getFavorToken());
+            toolCardInfoBox[i] = new VBox(toolCard[i], costToolCard[i]);
             toolBox.getChildren().add(toolCardInfoBox[i]);
             Image newImage = new Image(toolCardSource + event.getToolCard(i).getId() + ".jpg");
             toolCard[i].setImage(newImage);
@@ -900,28 +888,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         }
     }
 
-
-    //utils class for a better combo box
-    private class ImageListDice extends ListCell<Image> {
-        private final ImageView image;
-
-        ImageListDice() {
-            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            image = createNewImageViewForDicePool();
-        }
-
-        @Override
-        protected void updateItem(Image item, boolean empty) {
-            super.updateItem(item, empty);
-
-            if (item == null || empty) setGraphic(null);
-            else {
-                image.setImage(item);
-                setGraphic(image);
-            }
-        }
-    }
-
     /**
      * Method of the Visitor Pattern, event received from the model for set up the window of one player.
      *
@@ -936,12 +902,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         else dimCell = 25;
         imageViewsCellPlayer[event.getIndexPlayer()] = new ImageView[numberLine][numberColumn];
         nameWindowPlayer[event.getIndexPlayer()].setText(event.getWindowPatternCard().getName());
-        difficultyWindowPlayer[event.getIndexPlayer()].setText("Livello "+Integer.toString(event.getWindowPatternCard().getDifficulty()));
+        difficultyWindowPlayer[event.getIndexPlayer()].setText("Livello " + Integer.toString(event.getWindowPatternCard().getDifficulty()));
         difficultyWindowPlayer[event.getIndexPlayer()].setTextAlignment(TextAlignment.RIGHT);
         for (int line = 0; line < numberLine; line++) {
             for (int column = 0; column < numberColumn; column++) {
                 String color;
-                if (event.getWindowPatternCard().getCell(line, column).getColorRestriction() == null)color = "";
+                if (event.getWindowPatternCard().getCell(line, column).getColorRestriction() == null) color = "";
                 else color = event.getWindowPatternCard().getCell(line, column).getColorRestriction().toString();
                 Image newImage = new Image(diceSource + color + "Dice"
                         + Integer.toString(event.getWindowPatternCard().getCell(line, column).getValueRestriction()) + ".jpg");
@@ -956,7 +922,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(UpdateSingleToolCardCost event) {
-        costToolCard[event.getIndexToolCard()].setText("Costo: "+event.getCostToolCard());
+        costToolCard[event.getIndexToolCard()].setText("Costo: " + event.getCostToolCard());
     }
 
     /**
@@ -986,8 +952,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      */
     @Override
     public void visit(UpdateInfoCurrentTurn event) {
-        currentRound.setText("Giro: "+event.getCurrentRound());
-        currentTurn.setText("Turno: "+event.getCurrentTurn());
+        currentRound.setText("Giro: " + event.getCurrentRound());
+        currentTurn.setText("Turno: " + event.getCurrentTurn());
     }
 
     /**
@@ -1022,7 +988,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             String color;
             if (event.getColorRestriction() == null) color = "";
             else color = event.getColorRestriction().toString();
-            newImage = new Image(diceSource+ color+ "Dice" + Integer.toString(event.getValueRestriction()) + ".jpg");
+            newImage = new Image(diceSource + color + "Dice" + Integer.toString(event.getValueRestriction()) + ".jpg");
         } else {
             newImage = new Image(diceSource + event.getDice().getColor()
                     + "Dice" + Integer.toString(event.getDice().getValue()) + ".jpg");
@@ -1079,45 +1045,66 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         paneShow.setLeft(new Text("    "));
 
         Text win;
-        if(playerId==event.getOneSortedPlayerInfo(0,0))
+        if (playerId == event.getOneSortedPlayerInfo(0, 0))
             win = new Text("Hai Vinto!!!!!");
         else win = new Text("Hai Perso!!!!!");
         win.setTextAlignment(TextAlignment.CENTER);
 
         Button game = new Button("clicca per vedere la gameBoard");
-        paneWin.getChildren().addAll(win,pane,game);
+        paneWin.getChildren().addAll(win, pane, game);
         paneWin.setAlignment(Pos.CENTER);
         paneWin.setSpacing(30);
         pane.setAlignment(Pos.CENTER);
         pane.setVgap(5);
         pane.setHgap(15);
         //prima riga
-        pane.add(new Text("Posizione:"),0,0);
-        for(int i=1;i<(event.getSortedPlayer().length+1);i++){
-            Text description= new Text(Integer.toString(i));
-            pane.add(description,i,0);
+        pane.add(new Text("Posizione:"), 0, 0);
+        for (int i = 1; i < (event.getSortedPlayer().length + 1); i++) {
+            Text description = new Text(Integer.toString(i));
+            pane.add(description, i, 0);
         }
 
         //prima colonna
-        for(int currentDescription=0;currentDescription<event.getOneSortedPlayer(0).length;currentDescription++){
-            Text description= new Text(event.getDescription(currentDescription));
-            pane.add(description,0,currentDescription+1);
+        for (int currentDescription = 0; currentDescription < event.getOneSortedPlayer(0).length; currentDescription++) {
+            Text description = new Text(event.getDescription(currentDescription));
+            pane.add(description, 0, currentDescription + 1);
         }
 
-        for(int i=0; i<event.getSortedPlayer().length;i++){
-            Text name = new Text(playersName[event.getOneSortedPlayerInfo(i,0)].getText());
-            pane.add(name,(i+1),1);
-            for(int j=1; j<event.getOneSortedPlayer(i).length;j++){
-                Text point = new Text(""+ event.getOneSortedPlayerInfo(i,j));
-                pane.add(point,(i+1),j+1);
+        for (int i = 0; i < event.getSortedPlayer().length; i++) {
+            Text name = new Text(playersName[event.getOneSortedPlayerInfo(i, 0)].getText());
+            pane.add(name, (i + 1), 1);
+            for (int j = 1; j < event.getOneSortedPlayer(i).length; j++) {
+                Text point = new Text("" + event.getOneSortedPlayerInfo(i, j));
+                pane.add(point, (i + 1), j + 1);
             }
         }
         Scene scenePoint = new Scene(paneShow);
-        gameStage.setOnCloseRequest(e-> gameStage.close());
+        gameStage.setOnCloseRequest(e -> gameStage.close());
         gameStage.close();
         utilStage.setScene(scenePoint);
-        game.setOnAction(e-> utilStage.setScene(sceneGame));
+        game.setOnAction(e -> utilStage.setScene(sceneGame));
         utilStage.show();
+    }
+
+    //utils class for a better combo box
+    private class ImageListDice extends ListCell<Image> {
+        private final ImageView image;
+
+        ImageListDice() {
+            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+            image = createNewImageViewForDicePool();
+        }
+
+        @Override
+        protected void updateItem(Image item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (item == null || empty) setGraphic(null);
+            else {
+                image.setImage(item);
+                setGraphic(image);
+            }
+        }
     }
 
 }

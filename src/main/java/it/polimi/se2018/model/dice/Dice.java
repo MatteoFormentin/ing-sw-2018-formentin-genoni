@@ -1,6 +1,5 @@
 package it.polimi.se2018.model.dice;
 
-import it.polimi.se2018.exception.GameException;
 import it.polimi.se2018.exception.gameboard_exception.tool_exception.ValueDiceWrongException;
 
 import java.io.Serializable;
@@ -27,6 +26,15 @@ public class Dice implements Serializable {
     }
 
     /**
+     * get the Value of the dice
+     *
+     * @return the value of the dice
+     */
+    public int getValue() {
+        return value;
+    }
+
+    /**
      * set a value for the dice
      *
      * @param value to set on the dice
@@ -34,15 +42,6 @@ public class Dice implements Serializable {
     public void setValue(int value) throws ValueDiceWrongException {
         if (value > 0 && value < 7) this.value = value;
         else throw new ValueDiceWrongException();
-    }
-
-    /**
-     * get the Value of the dice
-     *
-     * @return the value of the dice
-     */
-    public int getValue() {
-        return value;
     }
 
     /**

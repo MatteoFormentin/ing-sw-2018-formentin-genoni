@@ -1,17 +1,13 @@
 package it.polimi.se2018.view.gui.gamestage;
 
-import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.util.stream.IntStream;
 
@@ -52,7 +48,7 @@ public class ShowValue {
             pane.add(imageView[i], i % 3, i / 3);
         }
         IntStream.range(0, imageView.length).forEach(i -> imageView[i].setOnMouseClicked(e -> {
-            value = i+1;
+            value = i + 1;
             stage.close();
         }));
         Scene scene = new Scene(vBox);
@@ -66,8 +62,8 @@ public class ShowValue {
         displaying = true;
         value = 0;
         ImageView[] imageTrun = new ImageView[2];
-        imageTrun[0]= new ImageView(new Image("file:src/it.polimi.se2018.resources/utility/TurnUp.png"));
-        imageTrun[1]= new ImageView(new Image("file:src/it.polimi.se2018.resources/utility/TurnDown.png"));
+        imageTrun[0] = new ImageView(new Image("file:src/it.polimi.se2018.resources/utility/TurnUp.png"));
+        imageTrun[1] = new ImageView(new Image("file:src/it.polimi.se2018.resources/utility/TurnDown.png"));
         imageTrun[0].setFitWidth(50);
         imageTrun[0].setFitHeight(50);
         imageTrun[1].setFitWidth(50);
@@ -82,7 +78,7 @@ public class ShowValue {
                     stage.close();
                 }
         );
-        VBox view = new VBox(imageTrun[0],imageTrun[1]);
+        VBox view = new VBox(imageTrun[0], imageTrun[1]);
         Scene scene = new Scene(view);
         stage.setScene(scene);
         stage.showAndWait();

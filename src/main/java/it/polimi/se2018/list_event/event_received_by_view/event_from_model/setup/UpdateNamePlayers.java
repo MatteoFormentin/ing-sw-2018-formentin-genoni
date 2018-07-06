@@ -20,6 +20,7 @@ public class UpdateNamePlayers extends EventClientFromModel {
     public String[] getPlayerNames() {
         return playerNames;
     }
+
     public String getNames(int index) {
         return playerNames[index];
     }

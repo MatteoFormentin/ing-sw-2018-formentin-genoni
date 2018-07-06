@@ -28,9 +28,9 @@ public class RMIServer implements AbstractServer2 {
     private LinkedList<RMIPlayer> players;
 
     public RMIServer(Server2 serverController, String host, int port) {
-        this.serverController=serverController;
-        this.host=host;
-        this.port=port;
+        this.serverController = serverController;
+        this.host = host;
+        this.port = port;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class RMIServer implements AbstractServer2 {
             throw new ServerStartException();
         }
         try {
-            clientGatherer = RMIClientGatherer.getSingletonClientGatherer(serverController,this,getPort());
+            clientGatherer = RMIClientGatherer.getSingletonClientGatherer(serverController, this, getPort());
         } catch (RemoteException ex) {
             AnsiConsole.out.println(ansi().fg(BLUE).a("RMIClientGatherer non può essere istanziato").reset());
             setStarted(false);
@@ -127,6 +127,6 @@ public class RMIServer implements AbstractServer2 {
 
     @Override
     public void setStarted(boolean started) {
-        this.started=started;
+        this.started = started;
     }
 }

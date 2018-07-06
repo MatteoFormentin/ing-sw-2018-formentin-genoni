@@ -36,11 +36,10 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     private static CliController instance;
     private static ClientFactory factory;
+    boolean[] connected;
     private CliMessage cliMessage;
     private CliParserNonBlocking cliParser;
     private CliParser cliParserBlocking;
-
-
     //Server alternativo
     private AbstractClient2 client2;
     private int currentRound;
@@ -51,10 +50,8 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private ObjectivePublicCard[] objectivePublicCards;
     // need for 1 time
     private WindowPatternCard[] windowPatternCardsToChoose;
-
     //the players
     private String[] playersName;
-    boolean[] connected;
     private WindowPatternCard[] windowPatternCardOfEachPlayer;
     private DiceStack[] handOfEachPlayer;
     private int[] favorTokenOfEachPlayer;
@@ -66,11 +63,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private Thread currentTask;
     private AtomicBoolean isInputActive;
     private Object MUTEX;
-
-    public ClientFactory getFactory() {
-        return factory;
-    }
-
 
     /**
      * CliController constructor
@@ -84,6 +76,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         cliMessage.splashScreen();
         cliParser.readSplash();
     }
+
 
     /**
      * Constructor for the socket Cli
@@ -103,11 +96,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         System.out.println("uscito dal costruttore");
     }
 
-    public boolean checkShutDown() {
-        System.out.println("Digita 0 per Resettare la connessione, 1 per uscire");
-        return (cliParserBlocking.parseInt(1) == 1);
-    }
-
     /**
      * Entry point for client
      */
@@ -116,6 +104,15 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         instance.initConnection();
         // instance.login();
 
+    }
+
+    public ClientFactory getFactory() {
+        return factory;
+    }
+
+    public boolean checkShutDown() {
+        System.out.println("Digita 0 per Resettare la connessione, 1 per uscire");
+        return (cliParserBlocking.parseInt(1) == 1);
     }
 
     /**

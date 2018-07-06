@@ -2,8 +2,8 @@ package it.polimi.se2018.model.card.objective_public_card;
 
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
-import it.polimi.se2018.model.dice.DiceColor;
 import it.polimi.se2018.model.dice.Dice;
+import it.polimi.se2018.model.dice.DiceColor;
 
 /**
  * Public objective card Varietà di Colore.

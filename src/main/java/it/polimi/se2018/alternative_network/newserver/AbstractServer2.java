@@ -8,7 +8,7 @@ import it.polimi.se2018.exception.network_exception.server.ServerStartException;
  */
 public interface AbstractServer2 {
 
-    public void startServer()throws ServerStartException;
+    public void startServer() throws ServerStartException;
 
     public void stopServer();
 

@@ -3,8 +3,6 @@ package it.polimi.se2018.list_event.event_received_by_server.event_for_game;
 
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_server.ServerVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 
 /**
  * Abstract class for the EventController in a game, implements Serializable.
@@ -14,7 +12,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
  * @author Luca Genoni
  * @author Matteo Formentin
  */
-public class EventController extends EventServer{
+public class EventController extends EventServer {
     private int playerId;
     private int idGame;
 
@@ -35,9 +33,13 @@ public class EventController extends EventServer{
     }
 
     @Override
-    public void acceptGeneric(ServerVisitor viewVisitor) {viewVisitor.visit(this);}
+    public void acceptGeneric(ServerVisitor viewVisitor) {
+        viewVisitor.visit(this);
+    }
 
     //ha bisogno dell'overriding
-    public void acceptInGame(ControllerVisitor visitor){throw new UnsupportedOperationException();}
+    public void acceptInGame(ControllerVisitor visitor) {
+        throw new UnsupportedOperationException();
+    }
 
 }

@@ -21,6 +21,7 @@ public class UpdateAllToolCard extends EventClientFromModel {
     public ToolCard[] getToolCard() {
         return toolCards;
     }
+
     public ToolCard getToolCard(int index) {
         return toolCards[index];
     }

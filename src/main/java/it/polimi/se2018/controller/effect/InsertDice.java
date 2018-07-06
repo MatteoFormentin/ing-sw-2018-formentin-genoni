@@ -21,9 +21,9 @@ public class InsertDice extends EffectGame {
     /**
      * Constructor.
      *
-     * @param adjacentR true if need to be near a dice, false otherwise.
-     * @param colorR true if need to check this restriction, false otherwise.
-     * @param valueR true if need to check this restriction, false otherwise.
+     * @param adjacentR         true if need to be near a dice, false otherwise.
+     * @param colorR            true if need to check this restriction, false otherwise.
+     * @param valueR            true if need to check this restriction, false otherwise.
      * @param firstDieOfTheTurn true if it's the first dice of the turn, false otherwise.
      */
     public InsertDice(boolean adjacentR, boolean colorR, boolean valueR, boolean firstDieOfTheTurn) {
@@ -37,8 +37,8 @@ public class InsertDice extends EffectGame {
      * Method used to applicate an effect to the game.
      *
      * @param gameBoard gameboard on when the player are playing.
-     * @param idPlayer ID of the player that requested the effect.
-     * @param infoMove information of the moves played with the effect.
+     * @param idPlayer  ID of the player that requested the effect.
+     * @param infoMove  information of the moves played with the effect.
      * @throws GameException exception derivate from game restriction.
      */
     @Override
@@ -46,9 +46,9 @@ public class InsertDice extends EffectGame {
         if (infoMove.length != 2) throw new NumberInfoWrongException();
         this.setGameBoard(gameBoard);
         this.setIdPlayer(idPlayer);
-        line=infoMove[0];
-        column=infoMove[1];
-        getGameBoard().insertDice(getIdPlayer(),line,column,adjacentR,colorR,valueR, firstDieOfTheTurn);
+        line = infoMove[0];
+        column = infoMove[1];
+        getGameBoard().insertDice(getIdPlayer(), line, column, adjacentR, colorR, valueR, firstDieOfTheTurn);
     }
 
     /**
@@ -58,7 +58,7 @@ public class InsertDice extends EffectGame {
      */
     @Override
     public void undo() throws GameException {
-        Dice dice =getGameBoard().getPlayer(getIdPlayer()).getPlayerWindowPattern().removeDice(line,column);
+        Dice dice = getGameBoard().getPlayer(getIdPlayer()).getPlayerWindowPattern().removeDice(line, column);
         getGameBoard().getPlayer(getIdPlayer()).getHandDice().addFirst(dice);
     }
 

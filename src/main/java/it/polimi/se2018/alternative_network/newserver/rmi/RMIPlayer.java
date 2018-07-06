@@ -28,7 +28,13 @@ public class RMIPlayer implements RemotePlayer2 {
     private String nickname;
     private int idPlayerInGame;
     private GameInterface gameInterface;
-   // private Object MUTEX;
+    // private Object MUTEX;
+
+    RMIPlayer(String nickname, RMIClientInterface clientRMIInterface) {
+        setNickname(nickname);
+        this.clientRMIInterface = clientRMIInterface;
+        //  MUTEX=new Object();
+    }
 
     @Override
     public String getNickname() {
@@ -37,7 +43,7 @@ public class RMIPlayer implements RemotePlayer2 {
 
     @Override
     public void setNickname(String nickname) {
-        this.nickname=nickname;
+        this.nickname = nickname;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class RMIPlayer implements RemotePlayer2 {
 
     @Override
     public void setIdPlayerInGame(int idPlayerInGame) {
-        this.idPlayerInGame=idPlayerInGame;
+        this.idPlayerInGame = idPlayerInGame;
     }
 
     @Override
@@ -57,22 +63,16 @@ public class RMIPlayer implements RemotePlayer2 {
 
     @Override
     public void setGameInterface(GameInterface gameInterface) {
-        this.gameInterface=gameInterface;
+        this.gameInterface = gameInterface;
     }
 
     @Override
-    public void sendEventToView(EventClient eventClient){
+    public void sendEventToView(EventClient eventClient) {
         try {
             clientRMIInterface.notifyTheClient(eventClient);
         } catch (RemoteException ex) {
             getGameInterface().disconnectFromGameRoom(this);
         }
-    }
-
-    RMIPlayer(String nickname, RMIClientInterface clientRMIInterface) {
-        setNickname(nickname);
-        this.clientRMIInterface = clientRMIInterface;
-      //  MUTEX=new Object();
     }
 
 
@@ -126,9 +126,9 @@ public class RMIPlayer implements RemotePlayer2 {
 
     @Override
     public void sendEventToController(EventController eventController) {
-    //    synchronized (MUTEX){
-            getGameInterface().sendEventToGameRoom(eventController);
-    //    }
+        //    synchronized (MUTEX){
+        getGameInterface().sendEventToGameRoom(eventController);
+        //    }
     }
 
 }

@@ -12,7 +12,7 @@ package it.polimi.se2018.exception.gameboard_exception.cell_exception;
  * by the execution of the method or constructor and propagate outside
  * the method or constructor boundary.
  *
- * @author  Luca Genoni
+ * @author Luca Genoni
  */
 public class RestrictionCellOccupiedException extends CellException {
 

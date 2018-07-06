@@ -28,7 +28,7 @@ public class NodePodium {
         //5 info fixed + n variables
         this.player = player;
         this.publicCard = publicCard;
-        int numberCard =publicCard.length;
+        int numberCard = publicCard.length;
         description = new String[5 + numberCard];
         pointsPublic = new int[numberCard];
         int i = 0;
@@ -43,9 +43,9 @@ public class NodePodium {
     }
 
     public void calculatePoint() {
-        totalPoints=0;
+        totalPoints = 0;
         WindowPatternCard window = player.getPlayerWindowPattern();
-        if(window!=null){
+        if (window != null) {
             int numberCell = window.getMatrix().length;
             if (numberCell != 0) numberCell = window.getColumn(0).length * numberCell;
             pointsPrivate = player.getPrivateObject().calculatePoint(window);
@@ -62,7 +62,8 @@ public class NodePodium {
     int getPointsPrivate() {
         return pointsPrivate;
     }
-    int getIndexPlayer(){
+
+    int getIndexPlayer() {
         return player.getIndexInGame();
     }
 
@@ -75,38 +76,39 @@ public class NodePodium {
         return totalPoints;
     }
 
-    void setFather(NodePodium father) {
-        this.father = father;
-    }
-
-    void setLeftLessPoint(NodePodium leftLessPoint) {
-        this.leftLessPoint = leftLessPoint;
-    }
-
-    void setRightMorePoint(NodePodium rightMorePoint) {
-        this.rightMorePoint = rightMorePoint;
-    }
-
     NodePodium getFather() {
         return father;
+    }
+
+    void setFather(NodePodium father) {
+        this.father = father;
     }
 
     NodePodium getLeftLessPoint() {
         return leftLessPoint;
     }
 
+    void setLeftLessPoint(NodePodium leftLessPoint) {
+        this.leftLessPoint = leftLessPoint;
+    }
+
     NodePodium getRightMorePoint() {
         return rightMorePoint;
     }
 
+    void setRightMorePoint(NodePodium rightMorePoint) {
+        this.rightMorePoint = rightMorePoint;
+    }
+
     /*********************************************************************************************/
-    public String[] getDescription(){
+    public String[] getDescription() {
         return description;
     }
-    public int[] getArrayIntInfo(){
-        int[] info = new int[5+publicCard.length];
-        int i=0;
-        info[0] =1;
+
+    public int[] getArrayIntInfo() {
+        int[] info = new int[5 + publicCard.length];
+        int i = 0;
+        info[0] = 1;
         info[i++] = player.getIndexInGame();
         info[i++] = pointsPrivate;
         for (int j = 0; j < publicCard.length; j++) info[i++] = pointsPublic[j];
