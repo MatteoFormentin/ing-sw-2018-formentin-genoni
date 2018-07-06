@@ -5,17 +5,14 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
-import it.polimi.se2018.network.server.ServerController;
 
 public class UpdaterView implements UpdateRequestedByServer {
     private GameBoard gameBoard;
-    private ServerController server;
     private GameInterface server2;
 
 
-    public UpdaterView(GameBoard gameBoard, ServerController server, GameInterface server2) {
+    public UpdaterView(GameBoard gameBoard, GameInterface server2) {
         this.gameBoard = gameBoard;
-        this.server = server;
         this.server2 = server2;
     }
     /************************************ CAN SEND TO ALL ************************************************/
@@ -26,8 +23,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateAllPublicObject(int indexPlayerToNotify) {
         UpdateAllPublicObject packet = new UpdateAllPublicObject(gameBoard.getObjectivePublicCard());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
 
@@ -42,8 +38,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateAllToolCard(int indexPlayerToNotify) {
         UpdateAllToolCard packet = new UpdateAllToolCard(gameBoard.getToolCard());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     /************************************ CAN SEND TO ALL ************************************************/
@@ -55,8 +50,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateInitDimRound(int indexPlayerToNotify){
         UpdateInitDimRound packet = new UpdateInitDimRound(gameBoard.getRoundTrack());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     /************************************ FOR SINGLE PLAYER *****************************************/
@@ -72,8 +66,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateInitialWindowPatternCard(int indexPlayerToNotify,int indexHolderWindow){
         UpdateInitialWindowPatternCard packet = new UpdateInitialWindowPatternCard(indexHolderWindow,gameBoard.getPlayer(indexPlayerToNotify).getThe4WindowPattern());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     private void updateSinglePrivateObject() {
@@ -83,8 +76,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateSinglePrivateObject(int indexPlayerToNotify) {
         UpdateSinglePrivateObject packet = new UpdateSinglePrivateObject(indexPlayerToNotify, gameBoard.getPlayer(indexPlayerToNotify).getPrivateObject());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
 
@@ -95,8 +87,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateDicePool(int indexPlayerToNotify){
         UpdateDicePool packet = new UpdateDicePool(gameBoard.getDicePool());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
 
@@ -107,8 +98,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateInfoCurrentTurn(int indexPlayerToNotify){
         UpdateInfoCurrentTurn packet = new UpdateInfoCurrentTurn(gameBoard.getCurrentRound(),gameBoard.getCurrentTurn());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     /**
@@ -127,8 +117,7 @@ public class UpdaterView implements UpdateRequestedByServer {
         UpdateSingleCell packet = new UpdateSingleCell(indexPlayerThatChanged,rowCell,columnCell,
                 cellModified.getDice(),cellModified.getValueRestriction(),cellModified.getColorRestriction());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
 
@@ -145,8 +134,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updatePlayerHand(int indexPlayerToNotify,int indexPlayerThatChanged) {
         UpdateSinglePlayerHand packet = new UpdateSinglePlayerHand(indexPlayerThatChanged,gameBoard.getPlayer(indexPlayerThatChanged).getHandDice());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     void updatePlayerTokenAndPoints(){
@@ -171,8 +159,7 @@ public class UpdaterView implements UpdateRequestedByServer {
         Player playerChanged = gameBoard.getPlayer(indexPlayerThatChanged);
         UpdateSinglePlayerToken packet = new UpdateSinglePlayerToken(indexPlayerThatChanged,playerChanged.getFavorToken());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     /**
@@ -194,8 +181,7 @@ public class UpdaterView implements UpdateRequestedByServer {
         ToolCard toolCard = gameBoard.getToolCard(indexToolCardChanged);
         UpdateSingleToolCardCost packet = new UpdateSingleToolCardCost(indexToolCardChanged,toolCard.getFavorToken());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     void updateSingleTurnRoundTrack(int indexRoundChanged){
@@ -205,8 +191,7 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateSingleTurnRoundTrack(int indexPlayerToNotify,int indexRoundChanged){
         UpdateSingleTurnRoundTrack packet = new UpdateSingleTurnRoundTrack(indexRoundChanged,gameBoard.getRoundTrack(indexRoundChanged));
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     /**
@@ -228,8 +213,7 @@ public class UpdaterView implements UpdateRequestedByServer {
         Player player = gameBoard.getPlayer(indexPlayerChanged);
         UpdateSingleWindow packet = new UpdateSingleWindow(indexPlayerChanged,player.getPlayerWindowPattern());
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
 
@@ -254,23 +238,20 @@ public class UpdaterView implements UpdateRequestedByServer {
     private void updateStatPodium(int indexPlayerToNotify,int [][] sortedPlayer,String[] description){
         UpdateStatPodium packet = new UpdateStatPodium(sortedPlayer,description);
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
 
     private void updatePlayerConnected(int indexPlayerToNotify, int index, String name) {
         UpdatePlayerConnection packet =new UpdatePlayerConnection(index,name);
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
     private void updateDisconnected(int indexPlayerToNotify, int index, String name) {
         UpdateDisconnectionDuringGame packet =new UpdateDisconnectionDuringGame(index,name);
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
 
 
@@ -278,8 +259,7 @@ public class UpdaterView implements UpdateRequestedByServer {
         NodePodium currentPoints = gameBoard.calculatePoint(indexPlayer);
         UpdateCurrentPoint packet = new UpdateCurrentPoint(currentPoints.getArrayIntInfo(),currentPoints.getDescription());
         packet.setPlayerId(indexPlayer);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
     void currentPoints(){
         for (int i = 0; i < gameBoard.getPlayer().length; i++) currentPoints(i);
@@ -294,8 +274,7 @@ public class UpdaterView implements UpdateRequestedByServer {
         for (int i = 0; i < gameBoard.getPlayer().length; i++) names[i]=gameBoard.getPlayer(i).getNickname();
         UpdateNamePlayers packet = new UpdateNamePlayers(names);
         packet.setPlayerId(indexPlayerToNotify);
-        if (server == null) server2.sendEventToView(packet);
-        else server.sendEventToView(packet);
+        server2.sendEventToView(packet);
     }
     @Override
     public void updatePlayerConnected(int index, String name) {

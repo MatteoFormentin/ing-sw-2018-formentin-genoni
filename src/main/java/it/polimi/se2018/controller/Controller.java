@@ -12,7 +12,8 @@ import it.polimi.se2018.exception.gameboard_exception.WindowSettingCompleteExcep
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyPlaceANewDiceException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.AlreadyUseToolCardException;
 import it.polimi.se2018.exception.gameboard_exception.player_state_exception.PlayerException;
-import it.polimi.se2018.list_event.event_received_by_server.event_for_game.*;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.ControllerVisitor;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
@@ -23,7 +24,6 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.model.GameBoard;
 import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.model.UpdaterView;
-import it.polimi.se2018.network.server.ServerController;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
@@ -42,7 +42,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
     private int playerNumber;
     private boolean restoreAble;
     //Server in cui si setterà la partita
-    private ServerController server;
     private GameRoom gameRoom;
 
 
@@ -62,15 +61,14 @@ public class Controller implements ControllerVisitor, TimerCallback {
     /**
      * Controller constructor.
      *
-     * @param server server on when the game is on.
+     * @param playerName server on when the game is on.
      */
-    public Controller(ServerController server, String[] playerName, GameRoom room) {
+    public Controller(String[] playerName, GameRoom room) {
         //set up actual game
-        this.server = server;
         this.gameRoom = room;
         this.playerNumber = playerName.length;
         gameBoard = new GameBoard(playerName);
-        updaterView = new UpdaterView(gameBoard, server, room);
+        updaterView = new UpdaterView(gameBoard, room);
         //set up utils for the game
         restoreAble = false;
         try {
@@ -213,8 +211,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
      * @param event event that will be unleashed on the view.
      */
     private void sendEventToView(EventClient event) {
-        if (server == null) gameRoom.sendEventToView(event);
-        else server.sendEventToView(event);
+        gameRoom.sendEventToView(event);
     }
 
     //------------------------------------------------------------------------------------------------------------------

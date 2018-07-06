@@ -2,19 +2,12 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
 import it.polimi.se2018.alternative_network.newserver.Server2;
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
-import it.polimi.se2018.network.client.rmi.RMIClient;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import static org.fusesource.jansi.Ansi.Color.BLUE;

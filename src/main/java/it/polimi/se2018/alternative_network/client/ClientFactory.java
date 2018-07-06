@@ -2,22 +2,13 @@ package it.polimi.se2018.alternative_network.client;
 
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClient2StartAndInput;
 import it.polimi.se2018.alternative_network.client.socket.SocketClient2;
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
-import it.polimi.se2018.network.client.Client;
-import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.cli.CliController;
-import it.polimi.se2018.view.cli.CliParser;
-import it.polimi.se2018.view.gui.ControllerGUI;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import static it.polimi.se2018.view.gui.ControllerGUI.createGuiInstance;
-import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 /**
  * Operazioni da esportare nel client

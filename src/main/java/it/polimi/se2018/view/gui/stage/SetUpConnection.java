@@ -1,20 +1,13 @@
 package it.polimi.se2018.view.gui.stage;
 
 
-import it.polimi.se2018.alternative_network.client.AbstractClient2;
-import it.polimi.se2018.exception.network_exception.NoPortRightException;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-
-import java.io.IOException;
-
-import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 
 /**
@@ -80,7 +73,7 @@ public class SetUpConnection {
         Button back = new Button("Back");
         form.addRow(3, back, connect);
         //components action
-        connect.setOnAction(e -> {
+       /* connect.setOnAction(e -> {
             int i = Integer.parseInt(group.getSelectedToggle().getUserData().toString());
             if (isInt(portInput2) || portInput2.getText() == null || portInput2.getText().equals("")) {
                 try {
@@ -100,7 +93,7 @@ public class SetUpConnection {
                     new AlertMessage(stage).displayMessage(ex.getMessage());
                 }
             }
-        });
+        });*/
         back.setOnAction(e -> stage.close());
         stage.showAndWait();
     }

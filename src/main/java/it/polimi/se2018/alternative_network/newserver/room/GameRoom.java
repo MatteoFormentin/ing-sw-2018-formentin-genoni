@@ -2,16 +2,10 @@ package it.polimi.se2018.alternative_network.newserver.room;
 
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
 import it.polimi.se2018.controller.Controller;
-import it.polimi.se2018.exception.gameboard_exception.GameIsBlockedException;
-import it.polimi.se2018.exception.gameboard_exception.GameIsOverException;
 import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.exception.network_exception.server.GameStartedException;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateDisconnectionDuringSetup;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdatePlayerConnection;
-import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
 
@@ -122,7 +116,7 @@ public class GameRoom extends Thread implements TimerCallback, GameInterface {
                 playersInGame[i]= players.get(i);
                 playersName[i] = playersInGame[i].getNickname();
             }
-            controller = new Controller(null, playersName, this);
+            controller = new Controller(playersName, this);
             controller.startController();
         }else{
             //TODO qui implementare il replay della partita

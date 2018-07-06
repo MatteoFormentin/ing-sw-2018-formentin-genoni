@@ -12,8 +12,7 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
-import it.polimi.se2018.network.client.ClientController;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventClientFromModel;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.classes_database.PlayerOnline;
 import it.polimi.se2018.view.gui.stage.Login;
@@ -29,13 +28,12 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
  *
  * @author Luca Genoni
  */
-public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisitor {
+public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVisitor {
 
     //TODO this class need to hold on all the stage in game
 
     //field for connect to server
     private static ControllerGUI instance;
-    private static ClientController client;
     private ClientFactory factoryInstance;
     private AbstractClient2 client2;
 
@@ -47,12 +45,8 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
     //field
     private LinkedList<PlayerOnline> players;
 
-    private ControllerGUI(){
+    private ControllerGUI() {
 
-    }
-
-    private ControllerGUI(ClientController client) {
-        this.client = client;
     }
 
     public ClientFactory getFactoryInstance() {
@@ -77,18 +71,6 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
         instance.startGui();
     }
 
-    public static void createGuiInstance() {
-        if (instance == null) instance = new ControllerGUI(client);
-    }
-
-    /**
-     * Method for create only one ControllerGUI
-     *
-     * @param client for the connection
-     */
-    public static void createGuiInstance(ClientController client) {
-        if (instance == null) instance = new ControllerGUI(client);
-    }
 
     /**
      * Get the Instance of the Gui, if null the application is off
@@ -104,18 +86,9 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
      *
      * @return ControllerGUI
      */
-    public static ControllerGUI getSingletonGUIInstance(){
-        if(instance==null) instance = new ControllerGUI();
+    public static ControllerGUI getSingletonGUIInstance() {
+        if (instance == null) instance = new ControllerGUI();
         return instance;
-    }
-
-    /**
-     * Get the Instance of the Gui, if null the application is off
-     *
-     * @return the client Controller for init the connection.
-     */
-    public ClientController getClient() {
-        return client;
     }
 
 
@@ -130,14 +103,10 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
         return waitGame;
     }
 
-    public void disconnect(){
-        if(factoryInstance==null) {
-            //TODO mettere la disconnessione volontaria
-            //client.disconnect();
-        }
-        else {
-            client2.shutDownClient2();
-        }
+    public void disconnect() {
+
+        client2.shutDownClient2();
+
     }
 
     //*************************************************************************************
@@ -164,10 +133,7 @@ public class ControllerGUI implements UIInterface,ViewVisitor,ViewControllerVisi
      */
     @Override
     public void sendEventToNetwork(EventController eventController) {
-        if(factoryInstance==null) client.sendEventToController(eventController);
-        else {
-               client2.sendEventToController2(eventController);
-        }
+        client2.sendEventToController2(eventController);
     }
 
     @Override

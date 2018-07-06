@@ -54,7 +54,7 @@ public class TestGameBoard {
     @Test
     public void testNextPlayer() throws GameException {
         GameBoard gameBoard = new GameBoard(names);
-        UpdaterView updaterView = new UpdaterView(gameBoard, null, gameRoom);
+        UpdaterView updaterView = new UpdaterView(gameBoard, gameRoom);
         gameBoard.startGame(updaterView);
         //testa fino al 9° round
         int numberPlayer = names.length;
@@ -88,7 +88,7 @@ public class TestGameBoard {
     @Test
     public void tryWalkGameBoard2() throws GameException {
         GameBoard gameBoard = new GameBoard(names);
-        UpdaterView updaterView = new UpdaterView(gameBoard, null, gameRoom);
+        UpdaterView updaterView = new UpdaterView(gameBoard, gameRoom);
         assertThrows(NullPointerException.class, () -> gameBoard.calculateAllPoint());
     }
 

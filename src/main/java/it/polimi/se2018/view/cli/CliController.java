@@ -2,10 +2,8 @@ package it.polimi.se2018.view.cli;
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.alternative_network.client.ClientFactory;
-import it.polimi.se2018.exception.network_exception.NoPortRightException;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
-import it.polimi.se2018.list_event.event_received_by_server.event_for_game.*;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGame;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game.LoginRequest;
@@ -25,7 +23,6 @@ import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
 import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
 import it.polimi.se2018.model.dice.DiceStack;
-import it.polimi.se2018.network.client.ClientController;
 import it.polimi.se2018.view.UIInterface;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,7 +41,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     private CliParser cliParserBlocking;
 
 
-    private ClientController client;
     //Server alternativo
     private AbstractClient2 client2;
     private int currentRound;
@@ -78,20 +74,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         return factory;
     }
 
-    /**
-     * CliController constructor
-     */
-    public CliController(ClientController clientController) {
-        client = clientController;
-        cliMessage = new CliMessage();
-        isInputActive = new AtomicBoolean(true);
-        cliParser = new CliParserNonBlocking(isInputActive);
-        MUTEX = new Object();
-        cliMessage.splashScreen();
-        cliParser.readSplash();
-        initConnection();
-        login();
-    }
 
     /**
      * CliController constructor
@@ -136,7 +118,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         instance = new CliController();
         System.out.println("\nuscito dal constructor della cli");
         instance.initConnection();
-       // instance.login();
+        // instance.login();
         System.out.println("uscito dal main");
 
     }
@@ -167,17 +149,12 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
      * Send one event to server
      */
     public void sendEventToNetwork(EventController packet) {
-        if (factory == null) client.sendEventToController(packet);
-        else {
-            client2.sendEventToController2(packet);
-        }
+        client2.sendEventToController2(packet);
+
     }
 
     public void sendEventToNetwork(EventServer packet) {
-        if (factory == null) ;// client.sendEventToController(packet);
-        else {
-            client2.sendEventToController2(packet);
-        }
+        client2.sendEventToController2(packet);
     }
 
     @Override
@@ -190,40 +167,20 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
      */
     private void initConnection() {
         boolean flag = false;
-        do {
-            int socketRmi;
-            int port = 0;
-            String ip;
-            cliMessage.showIpRequest();
-            ip = cliParser.parseIp();
+        int socketRmi;
+        int port = 0;
+        String ip;
+        cliMessage.showIpRequest();
+        ip = cliParser.parseIp();
 
-            cliMessage.showSocketRmi();
-            socketRmi = cliParser.parseInt(1);
-            if (flag) {
-                cliMessage.showPortRequest();
-                port = cliParser.parseInt(1);
-            }
-            try {
-                if (factory == null) client.startClient(ip, socketRmi);
-                else {
-                    client2 = factory.createClient(this, ip, port, socketRmi, true);
-                    client2.connectToServer2();
-                }
-                flag = true;
-                cliMessage.showConnectionSuccessful();
-                cliMessage.println();
-            } catch (ConnectionProblemException ex) {
-                ex.printStackTrace();
-                cliMessage.showMessage(ex.getMessage());
-                ex.printStackTrace();
-            } catch (NoPortRightException ex) {
-                ex.printStackTrace();
-                cliMessage.showMessage(ex.getMessage());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                cliMessage.showMessage(ex.getMessage());
-            }
-        } while (!flag);
+        cliMessage.showSocketRmi();
+        socketRmi = cliParser.parseInt(1);
+        if (flag) {
+            cliMessage.showPortRequest();
+            port = cliParser.parseInt(1);
+        }
+        client2 = factory.createClient(this, ip, port, socketRmi, true);
+        client2.connectToServer2();
     }
 
     /**
@@ -235,19 +192,9 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         while (!flag) {
             cliMessage.showInsertNickname();
             name = cliParser.parseNickname();
-            if (factory == null) {
-                if (client.login(name)) {
-                    flag = true;
-                } else {
-                    cliMessage.showNicknameExists();
-                }
-            } else {
-                //TODO creare
-                EventPreGame packet = new LoginRequest(cliParser.parseNickname());
-                sendEventToNetwork(packet);
-
-            }
-
+            //TODO creare
+            EventPreGame packet = new LoginRequest(cliParser.parseNickname());
+            sendEventToNetwork(packet);
         }
         cliMessage.showWelcomeNickname(name);
     }

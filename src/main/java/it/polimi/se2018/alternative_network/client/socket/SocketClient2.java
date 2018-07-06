@@ -1,17 +1,16 @@
+
 package it.polimi.se2018.alternative_network.client.socket;
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
-import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
-import it.polimi.se2018.network.SocketObject;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.view.UIInterface;
 
-import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 /**
  * Class based on the Abstract Factory Design Pattern.
@@ -20,49 +19,60 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author DavideMammarella
  */
-public class SocketClient2 extends AbstractClient2 {
+public class SocketClient2 extends AbstractClient2 implements Runnable {
 
     // comunicazione con il socket
-    private ServerSocketInterface server;
+    private Socket clientConnection;
 
-    private AtomicBoolean stayAlive;
+    // stream di input
+    private ObjectInputStream inputStream;
+    // stream di output
+    private ObjectOutputStream outputStream;
 
-    public SocketClient2(String ip_host, int port, UIInterface view, ServerSocketInterface server) {
-        this.ip_host = ip_host;
-        this.port = port;
-        this.view = view;
-        this.server = server;
-    }
-//------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
     //------------------------------------------------------------------------------------------------------------------
 
     /**
      * Socket Client constructor.
      *
-     * @param view            client interface, used as controller to communicate with the client.
-     * @param serverIpAddress server address.
-     * @param serverPort      port used from server to communicate.
+     * @param ip_host client interface, used as controller to communicate with the client.
+     * @param port    server address.
+     * @param view    port used from server to communicate.
      */
-    public SocketClient2(String serverIpAddress, int serverPort, UIInterface view) {
-        this.ip_host = serverIpAddress;
-        this.port = serverPort;
+    public SocketClient2(String ip_host, int port, UIInterface view) {
+        this.ip_host = ip_host;
+        this.port = port;
         this.view = view;
-        stayAlive.set(true);
     }
 
-    public void setView(UIInterface view) {
-        this.view = view;
-    }
+    //------------------------------------------------------------------------------------------------------------------
+    // CONNECTION
+    //------------------------------------------------------------------------------------------------------------------
 
     /**
-     * Method used to send to the client an update of the game.
-     *
-     * @param event object that will use the client to unleash the update associated.
+     * Method used to establish a connection with the Server.
      */
-    @Override
-    public void sendEventToUIInterface2(EventClient event) {
-        view.showEventView(event);
+
+
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM CLIENT - REQUEST TO THE SERVER
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Method used to write on the output stream the object that will be sent to the server.
+     *
+     * @param eventServer object that will be traduced on the server (it contain an event).
+     */
+    public void sendObject(EventServer eventServer) {
+        try {
+            outputStream.writeObject(eventServer);
+            outputStream.reset();
+        } catch (IOException ex) {
+
+            view.errPrintln(ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 
 
@@ -72,57 +82,86 @@ public class SocketClient2 extends AbstractClient2 {
      */
     @Override
     public void shutDownClient2() {
-        //TODO mettere lo shutDown volontario
+        try {
+            inputStream.close();
+            outputStream.close();
+            clientConnection.close();
+            System.out.println("Connection closed!");
+        } catch (IOException ex) {
+
+            ConnectionDown packet = new ConnectionDown("Sei stato disconnesso dal server.", true);
+            sendEventToView(packet);
+
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Method used to call the send event to controller on the protocol.
+     *
+     * @param eventServer object that will use the server to unleash the event associated.
+     */
+    @Override
+    public void sendEventToController2(EventServer eventServer) {
+        sendObject(eventServer);
     }
 
     @Override
-    public void sendEventToController2(EventServer eventController) {
-        SocketObject packet = new SocketObject();
-        packet.setType("Event");
-        packet.setObject(eventController);
-        //TODO send object
+    public void connectToServer2() {
+        try {
+            clientConnection = new Socket(ip_host, port);
+            outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
+            inputStream = new ObjectInputStream(clientConnection.getInputStream());
+            outputStream.flush();
+            (new Thread(this)).start();
+        } catch (IOException ex) {
+            ConnectionDown packet = new ConnectionDown("Controlla ip e porta.", false);
+            sendEventToView(packet);
+        }
     }
 
+    //------------------------------------------------------------------------------------------------------------------
+    // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
+    //------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Method used to send to the client an update of the game.
+     *
+     * @param eventClient object that will use the client to unleash the update associated.
+     */
+    void sendEventToView(EventClient eventClient) {
+        view.showEventView(eventClient);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+    // SOCKET OBJECT HANDLER
+    //------------------------------------------------------------------------------------------------------------------
 
 
     /**
-     * Method used to call the login event.
+     * Runner for Response Listener thread.
+     * Method that define the listener for the server response.
+     * This method will start a thread that will be on hold for a message from server, and will manage it with the protocol.
      *
-     * @param nickname name of the player associated to the client.
+     * @see Thread#run()
      */
-    //TODO quando riceve l'evento deve far partire il network handler e b
-    public void login2(String nickname) {
-        server.start();
-        //TODO il codice sotto è da mettere nel caso in cui non si riesca a mantenere viva la cli,
-        // TODO è stato in serito per colpa della
-     /*   stayAlive.set(true);
-        SocketObject packet = new SocketObject();
-        packet.setType("EventPreGame");
-        packet.setStringField(nickname);
-        server.send(packet);
-        //dopo l'invio del login mi metto in attesa di pacchetti
-        while (stayAlive.get()) {
-            //TODO dare qualche spazio di tempo con un altro ciclo while
+    @Override
+    public void run() {
+        Thread.currentThread().setName("Socket Client Thread");
+        boolean flag = true;
+        while (flag) {
             try {
-                Thread.sleep(100);
-                if (!eventControllers.isEmpty()) {
-                    server.send(eventControllers.getFirst());
-                    eventControllers.removeFirst();
-                }
-            } catch (InterruptedException ex) {
+                EventClient received = (EventClient) inputStream.readObject();
+                sendEventToView(received);
+            } catch (IOException | ClassNotFoundException ex) {
+                flag = false;
+
+                ConnectionDown packet = new ConnectionDown("Sei stato disconnesso dal server. Controlla la connessione.", false);
+                sendEventToView(packet);
+
                 ex.printStackTrace();
             }
-        }*/
-        System.err.println("client off");
-    }
-
-    /**
-     * Method used to establish a connection with the Server.
-     */
-    @Override
-    public void connectToServer2(){
-        //TODO build the netork Handler
-        server = new NetworkHandler(ip_host, port, view);
-        //TODO send event if can't construct
+        }
+        shutDownClient2();
     }
 }

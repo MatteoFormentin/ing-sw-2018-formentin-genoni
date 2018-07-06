@@ -1,29 +1,8 @@
 package it.polimi.se2018;
 
-import it.polimi.se2018.controller.effect.EffectGame;
-import it.polimi.se2018.controller.effect.InsertDice;
-import it.polimi.se2018.exception.GameException;
-import it.polimi.se2018.exception.gameboard_exception.window_exception.WindowRestriction;
-import it.polimi.se2018.exception.network_exception.PlayerNetworkException;
-import it.polimi.se2018.list_event.event_received_by_server.EventServer;
-import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
-import it.polimi.se2018.list_event.event_received_by_view.EventClient;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectCellOfWindow;
-import it.polimi.se2018.model.GameBoard;
-import it.polimi.se2018.model.card.window_pattern_card.Cell;
-import it.polimi.se2018.model.card.window_pattern_card.WindowPatternCard;
-import it.polimi.se2018.model.dice.Dice;
-import it.polimi.se2018.model.dice.DiceColor;
-import it.polimi.se2018.model.dice.TestFactory;
-import it.polimi.se2018.network.RemotePlayer;
-import it.polimi.se2018.network.server.ServerController;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-
 public class TestEffect {
 
+    /*
   //  private static final RestrictionCellValueViolatedException valueCellR = new RestrictionCellValueViolatedException();
     private WindowPatternCard testWindowPatternCard;
 
@@ -79,7 +58,7 @@ public class TestEffect {
 
             }*/
 
-            @Override
+    /*        @Override
             public void sendEventToView(EventClient eventClient) {
                 eventClientTest = eventClient;
             }
@@ -99,7 +78,7 @@ public class TestEffect {
         assertThrows(adjacentR.getClass(), () ->);
 */
 
-    @Test
+    /*@Test
     public void testEffectRight() throws GameException {
         EffectGame effectGame = new InsertDice(true,true,true,true);
         assertEquals(SelectCellOfWindow.class,effectGame.eventViewToAsk().getClass());
@@ -108,5 +87,5 @@ public class TestEffect {
     @Test
     public void testBoolInsertDice() throws WindowRestriction {
 
-    }
+    }*/
 }

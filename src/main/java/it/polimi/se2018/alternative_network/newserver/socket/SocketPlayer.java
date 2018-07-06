@@ -2,11 +2,13 @@ package it.polimi.se2018.alternative_network.newserver.socket;
 
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
-import it.polimi.se2018.exception.network_exception.PlayerAlreadyLoggedException;
-import it.polimi.se2018.exception.network_exception.RoomIsFullException;
+import it.polimi.se2018.list_event.event_received_by_server.EventServer;
+import it.polimi.se2018.list_event.event_received_by_server.ServerVisitor;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGame;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGameVisitor;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game.LoginRequest;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
-import it.polimi.se2018.network.SocketObject;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.EOFException;
@@ -16,12 +18,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.fusesource.jansi.Ansi.Color.DEFAULT;
-import static org.fusesource.jansi.Ansi.Color.GREEN;
-import static org.fusesource.jansi.Ansi.Color.YELLOW;
+import static org.fusesource.jansi.Ansi.Color.*;
 import static org.fusesource.jansi.Ansi.ansi;
 
 /**
@@ -31,7 +29,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * @author DavideMammarella
  */
 //TODO implementare Remote PLayer2
-public class SocketPlayer implements Runnable,RemotePlayer2{
+public class SocketPlayer implements Runnable, RemotePlayer2, ServerVisitor, EventPreGameVisitor {
 
     // LISTA DEI GIOCATORI CHE HANNO EFFETTUATO IL LOGIN ED HANNO UN NICKNAME
     static HashMap<String, SocketPlayer> socketPlayers;
@@ -49,7 +47,6 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
     private GameInterface gameInterface;
 
 
-
     @Override
     public String getNickname() {
         return nickname;
@@ -57,7 +54,7 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
 
     @Override
     public void setNickname(String nickname) {
-        this.nickname=nickname;
+        this.nickname = nickname;
     }
 
     @Override
@@ -67,7 +64,7 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
 
     @Override
     public void setIdPlayerInGame(int idPlayerInGame) {
-        this.idPlayerInGame=idPlayerInGame;
+        this.idPlayerInGame = idPlayerInGame;
     }
 
     @Override
@@ -77,7 +74,7 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
 
     @Override
     public void setGameInterface(GameInterface gameInterface) {
-        this.gameInterface=gameInterface;
+        this.gameInterface = gameInterface;
     }
     //------------------------------------------------------------------------------------------------------------------
     // CONSTRUCTOR
@@ -119,12 +116,12 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
         boolean flag = true;
         while (flag && tunnel.isConnected()) {
             try {
-                SocketObject received = (SocketObject) inputStream.readObject();
-                //socketObjectTraducer(received);
+                EventServer received = (EventServer) inputStream.readObject();
+                received.acceptGeneric(this);
             } catch (EOFException e) {
                 // se si disconnette metto il running a false e tengo in memoria il player
-                if(gameInterface==null) ;//TODO non ho ancora fatto il login
-                    else gameInterface.disconnectFromGameRoom(this);
+                if (gameInterface == null) ;//TODO non ho ancora fatto il login
+                else gameInterface.disconnectFromGameRoom(this);
                 closeConnection();
                 flag = false;
             } catch (IOException | ClassNotFoundException ex) {
@@ -133,6 +130,21 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
             }
         }
         closeConnection();
+    }
+
+    @Override
+    public void visit(EventPreGame event) {
+        event.acceptPreGame(this);
+    }
+
+    @Override
+    public void visit(LoginRequest event) {
+        serverController.getServerController().login(this);
+    }
+
+    @Override
+    public void visit(EventController event) {
+        serverController.getServerController().sendEventToGame(event);
     }
 
     /**
@@ -165,7 +177,7 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
      *
      * @param socketObject object that will be traduced on the client (it contain an event).
      */
-    public void sendObject(SocketObject socketObject) {
+    public void sendObject(EventClient socketObject) {
         try {
             outputStream.writeObject(socketObject);
             outputStream.reset();
@@ -177,7 +189,6 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
     }
 
 
-
     /**
      * Method used to send to the client an update of the game.
      *
@@ -185,11 +196,7 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
      */
     @Override
     public void sendEventToView(EventClient eventClient) {
-        SocketObject packet = new SocketObject();
-        packet.setType("Event");
-        packet.setObject(eventClient);
-        //TODO mandare il pacchetto
-       // eventViews.addLast(packet);
+        sendObject(eventClient);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -233,7 +240,7 @@ public class SocketPlayer implements Runnable,RemotePlayer2{
     public void kickPlayerOut() {
         //TODO variabile Atomic solo per socket per segnare se il thread è attivo o no
 
-       // setta la variabile come false
+        // setta la variabile come false
         AnsiConsole.out.println();
         AnsiConsole.out.print(ansi().fg(YELLOW).a("SocketPlayer -> kickPlayerOut: " + getNickname() + "  ").reset());
         //TODO try to send a ping
