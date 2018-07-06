@@ -15,7 +15,7 @@ import static org.fusesource.jansi.Ansi.Color.BLUE;
 import static org.fusesource.jansi.Ansi.ansi;
 
 /**
- * Probabilemte no errori
+ * @author DavideMammarella
  */
 public class RMIServer implements AbstractServer2 {
 

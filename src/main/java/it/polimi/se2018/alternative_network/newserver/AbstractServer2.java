@@ -2,6 +2,10 @@ package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.exception.network_exception.server.ServerStartException;
 
+/**
+ * @author DavideMammarella
+ * @author Luca Genoni
+ */
 public interface AbstractServer2 {
 
     public void startServer()throws ServerStartException;

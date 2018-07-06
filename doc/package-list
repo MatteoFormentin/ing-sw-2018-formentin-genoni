@@ -25,6 +25,7 @@ it.polimi.se2018.list_event.event_received_by_server.event_for_server
 it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game
 it.polimi.se2018.list_event.event_received_by_view
 it.polimi.se2018.list_event.event_received_by_view.event_from_controller
+it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state
 it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller
 it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input
 it.polimi.se2018.list_event.event_received_by_view.event_from_model
@@ -35,13 +36,6 @@ it.polimi.se2018.model.card.objective_private_card
 it.polimi.se2018.model.card.objective_public_card
 it.polimi.se2018.model.card.window_pattern_card
 it.polimi.se2018.model.dice
-it.polimi.se2018.network
-it.polimi.se2018.network.client
-it.polimi.se2018.network.client.rmi
-it.polimi.se2018.network.client.socket
-it.polimi.se2018.network.server
-it.polimi.se2018.network.server.rmi
-it.polimi.se2018.network.server.socket
 it.polimi.se2018.utils
 it.polimi.se2018.view
 it.polimi.se2018.view.cli

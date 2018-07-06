@@ -3,10 +3,11 @@ package it.polimi.se2018.alternative_network.client.rmi_client;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 
 import java.rmi.RemoteException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * this is the class remote class
+ *
+ * @author DavideMammarella
  */
 public class RemoteClientReceiver implements RMIClientInterface {
     //for

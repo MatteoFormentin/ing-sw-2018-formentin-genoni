@@ -2,7 +2,6 @@ package it.polimi.se2018.alternative_network.client.rmi_client;
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.alternative_network.newserver.rmi.RMIServerInterfaceSeenByClient;
-import it.polimi.se2018.exception.network_exception.client.ConnectionProblemException;
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_server.ServerVisitor;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
@@ -12,7 +11,6 @@ import it.polimi.se2018.list_event.event_received_by_server.event_for_server.eve
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.view.UIInterface;
 
 import java.net.MalformedURLException;
@@ -21,6 +19,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * @author DavideMammarella
+ */
 public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor,EventPreGameVisitor{
 
     private RMIServerInterfaceSeenByClient serverRMI;

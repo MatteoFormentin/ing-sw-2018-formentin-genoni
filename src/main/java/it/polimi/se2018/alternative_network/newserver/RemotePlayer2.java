@@ -1,14 +1,13 @@
 package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
-import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /**
  * Generic abstract class for send and receive messages
+ *
+ * @author DavideMammarella
  */
 public interface RemotePlayer2 {
 

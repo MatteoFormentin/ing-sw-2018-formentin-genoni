@@ -3,7 +3,6 @@ package it.polimi.se2018.alternative_network.client;
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClient2StartAndInput;
 import it.polimi.se2018.alternative_network.client.socket.SocketClient2;
 import it.polimi.se2018.view.UIInterface;
-import it.polimi.se2018.view.cli.CliController;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,6 +17,9 @@ import java.util.Properties;
  * 3 effettuare il login
  * (4 utilizzare sendEventToNetwork per inviare informazioni al giocatore)
  * 5 chiamare disconnect per disconnettersi legalmente
+ *
+ * @author DavideMammarella
+ * @author Luca Genoni
  */
 public class ClientFactory {
 
