@@ -3,6 +3,8 @@ package it.polimi.se2018.alternative_network.newserver.rmi;
 import it.polimi.se2018.alternative_network.client.rmi_client.RMIClientInterface;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.utils.TimerCallback;
+import it.polimi.se2018.utils.TimerThread;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.rmi.NoSuchObjectException;
@@ -20,24 +22,21 @@ import static org.fusesource.jansi.Ansi.ansi;
  * @author DavideMammarella
  * @author Luca Genoni
  */
-public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient {
+public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerInterfaceSeenByClient{
     //MAKE HASH MAP
-    static LinkedList<RMIPlayer> playerLinkedList;
     private static RMIClientGatherer instance;
-    private transient RMIServer server;
     private Server2 mainServer;
 
-    private RMIClientGatherer(Server2 mainServer, RMIServer server, int port) throws RemoteException {
+    private RMIClientGatherer(Server2 mainServer, int port) throws RemoteException {
         super(port);
-        this.server = server;
         this.mainServer = mainServer;
     }
     //********************************* FROM THE SERVER **********************************************
     //********************************* FROM THE SERVER **********************************************
     //********************************* FROM THE SERVER **********************************************
 
-    static RMIClientGatherer getSingletonClientGatherer(Server2 mainServer, RMIServer rmiServer, int port) throws RemoteException {
-        if (instance == null) instance = new RMIClientGatherer(mainServer, rmiServer, port);
+    static RMIClientGatherer getSingletonClientGatherer(Server2 mainServer, int port) throws RemoteException {
+        if (instance == null) instance = new RMIClientGatherer(mainServer, port);
         return instance;
     }
     //__________________________________________________________
@@ -66,8 +65,8 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
     @Override
     public void sendEventToController(EventController event) {
         mainServer.sendEventToGame(event);
-        //  server.sendEventToServer(event);
     }
+
 
     public String sayHelloToGatherer() {
         return "ping";
@@ -78,4 +77,5 @@ public class RMIClientGatherer extends UnicastRemoteObject implements RMIServerI
     public boolean equals(Object obj) {
         return super.equals(obj);
     }
+
 }

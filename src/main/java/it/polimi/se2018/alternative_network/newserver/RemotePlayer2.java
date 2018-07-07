@@ -1,45 +1,61 @@
 package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
+import it.polimi.se2018.alternative_network.newserver.room.GameRoom;
+import it.polimi.se2018.controller.effect.EffectGame;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
+
+import java.util.LinkedList;
 
 /**
  * Generic abstract class for send and receive messages
  *
  * @author DavideMammarella
  */
-public interface RemotePlayer2 {
+public abstract class RemotePlayer2 {
 
+    private String nickname;
+    private int idPlayerInGame;
+    private GameInterface gameInterface;
+    private LinkedList<GameRoom> gamesPlayed;
 
     /**
      * method for get the name of the remote player
      *
      * @return the name of the player
      */
-    public String getNickname();
-
+    public String getNickname() {
+        return nickname;
+    }
 
     /**
      * method for set the name of the player, typically is received when he ask to make the login
      *
      * @param nickname the nickname of the player
      */
-    public void setNickname(String nickname);
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
     /**
      * method for get the id of the remote player in the game room
      *
      * @return the index of the player in the game room
      */
-    public int getIdPlayerInGame();
+    public int getIdPlayerInGame() {
+        return idPlayerInGame;
+    }
 
     /**
      * method for set the id of the remote player in the game room
      *
      * @param idPlayerInGame associated to this player
      */
-    public void setIdPlayerInGame(int idPlayerInGame);
+    public void setIdPlayerInGame(int idPlayerInGame) {
+        this.idPlayerInGame = idPlayerInGame;
+    }
 
     /**
      * when the remote player is associated with a game return the reference to the interface
@@ -47,15 +63,18 @@ public interface RemotePlayer2 {
      *
      * @return the GameInterface associated to this player
      */
-    public GameInterface getGameInterface();
+    public GameInterface getGameInterface() {
+        return gameInterface;
+    }
 
     /**
      * method to associate the remote player with the game room
      *
      * @param gameInterface associated to this player
      */
-    public void setGameInterface(GameInterface gameInterface);
-
+    public void setGameInterface(GameInterface gameInterface) {
+        this.gameInterface = gameInterface;
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
@@ -67,10 +86,21 @@ public interface RemotePlayer2 {
      *
      * @param eventClient event that the client needs
      */
-    //TODO l'implementazione deve gestire la disconnessione
-    public void sendEventToView(EventClient eventClient);
+    public abstract void sendEventToView(EventClient eventClient);
 
-
+    /**
+     * method of the Rmi player for send the event directly to the game room
+     * without passing thought the main server that hold all the game room
+     *
+     * @param eventController event requested by the client
+     */
+    public void sendEventToGame(EventController eventController){
+        if(getGameInterface()!=null) getGameInterface().sendEventToGameRoom(eventController);
+        else {
+            AskNewGame packet = new AskNewGame();
+            sendEventToView(packet);
+        }
+    }
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - INTERNAL REQUEST
     //------------------------------------------------------------------------------------------------------------------
@@ -80,22 +110,22 @@ public interface RemotePlayer2 {
      * or any type of class that the player use to send the View.
      * doing so the game Room can kick out from the server the client.
      */
-    public void kickPlayerOut();
+    public abstract void kickPlayerOut();
 
     /**
      * method it's the same as is player running so
      * rmi can try to ping
      * socket response true or false depending if the thread is open
      */
-    public boolean checkOnline();
+    public abstract boolean checkOnline();
 
-    /**
-     * method of the Rmi player for send the event directly to the game room
-     * without passing thought the main server that hold all the game room
-     *
-     * @param eventController event requested by the client
-     */
-    public void sendEventToController(EventController eventController);
+    //**************************************************************************************************************
+    //                                             PERSISTENZA
+    //**************************************************************************************************************
+    public void moveGameStored(GameRoom gameRoom){
+        gamesPlayed.add(gameRoom);
+    }
+
 
 
 }

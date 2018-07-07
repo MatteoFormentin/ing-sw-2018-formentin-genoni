@@ -6,19 +6,40 @@ import it.polimi.se2018.exception.network_exception.server.ServerStartException;
  * @author DavideMammarella
  * @author Luca Genoni
  */
-public interface AbstractServer2 {
+public abstract class AbstractServer2 {
 
-    public void startServer() throws ServerStartException;
+    private final Server2 server;
+    private final String host;
+    private final int port;
+    private boolean started;
 
-    public void stopServer();
+    public AbstractServer2(Server2 server, String host, int port) {
+        this.server = server;
+        this.host = host;
+        this.port = port;
+    }
 
-    public Server2 getServer();
+    public abstract void startServer() throws ServerStartException;
 
-    public String getHost();
+    public abstract void stopServer();
 
-    public int getPort();
+    public Server2 getServer() {
+        return server;
+    }
 
-    public boolean isStarted();
+    public String getHost() {
+        return host;
+    }
 
-    public void setStarted(boolean started);
+    public int getPort() {
+        return port;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
 }

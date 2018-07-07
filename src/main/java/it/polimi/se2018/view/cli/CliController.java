@@ -12,6 +12,7 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
@@ -36,6 +37,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     private static CliController instance;
     private static ClientFactory factory;
+    private String nameThisPlayer;
     boolean[] connected;
     private CliMessage cliMessage;
     private CliParserNonBlocking cliParser;
@@ -171,7 +173,7 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
             cliMessage.showPortRequest();
             port = cliParser.parseInt(1);
         }
-        client2 = factory.createClient(this, ip, port, socketRmi, true);
+        client2 = factory.createClient(this, ip, port, socketRmi);
         client2.connectToServer2();
     }
 
@@ -361,16 +363,24 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(ConnectionDown event) {
-        //TODO messaggio di connessione down
+        System.out.println();
         System.out.println(event.getCause());
-        initConnection();
+        System.out.print("0 se vuoi provare a riconnetterti, 1 se vuoi uscire: ");
+        if(cliParser.parseInt(1)==0)initConnection();
     }
 
     @Override
     public void visit(AskLogin event) {
-        //TODO da sistemare
         System.out.print("Inserisci il tuo nickname: ");
-        LoginRequest packet = new LoginRequest(cliParser.parseNickname());
+        nameThisPlayer = cliParser.parseNickname();
+        LoginRequest packet = new LoginRequest(nameThisPlayer);
+        sendEventToNetwork(packet);
+    }
+
+    @Override
+    public void visit(AskNewGame event) {
+        System.out.print("Digita 0 se vuoi reiniziare una nuova partita, 1 per uscire");
+        LoginRequest packet = new LoginRequest(nameThisPlayer);
         sendEventToNetwork(packet);
     }
 

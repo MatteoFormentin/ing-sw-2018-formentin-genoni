@@ -9,11 +9,16 @@ import it.polimi.se2018.view.UIInterface;
  */
 public abstract class AbstractClient2 {
 
-    public String ip_host;
+    protected String ipHost;
     public int port;
     public UIInterface view;
 
-    //metodi del client(senza eccezioni)
+    public AbstractClient2(String ipHost, int port, UIInterface view) {
+        this.ipHost = ipHost;
+        this.port = port;
+        this.view = view;
+    }
+
     public void sendEventToUIInterface2(EventClient event) {
 
     }

@@ -11,6 +11,8 @@ import it.polimi.se2018.list_event.event_received_by_server.event_for_server.eve
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
+import it.polimi.se2018.utils.TimerCallback;
+import it.polimi.se2018.utils.TimerThread;
 import it.polimi.se2018.view.UIInterface;
 
 import java.net.MalformedURLException;
@@ -22,23 +24,19 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author DavideMammarella
  */
-public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor, EventPreGameVisitor {
+public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor, EventPreGameVisitor,TimerCallback {
 
     private RMIServerInterfaceSeenByClient serverRMI;
     private RMIClientInterface client; //instance of the stud
     private RMIClientInterface remoteRef; //remoteRef of the stud in the server used for login
-
-    private Thread currentTask;
-    private Object MUTEX;
+    private TimerThread timerThread;
 
     public RMIClient2StartAndInput(String serverIpAddress, int serverPort, UIInterface view) {
-        this.ip_host = serverIpAddress;
-        this.port = serverPort;
-        this.view = view;
-        MUTEX = new Object();
+        super(serverIpAddress,serverPort,view);
+        timerThread= new TimerThread(this,10*1000);
     }
 
-    public RMIServerInterfaceSeenByClient getServerRMI() {
+    private RMIServerInterfaceSeenByClient getServerRMI() {
         return serverRMI;
     }
 
@@ -47,7 +45,7 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
         try {
             // Chiedo al Registry ( in esecuzione su localhost alla porta di default ) di localizzare 'Server' e restituirmi il suo Stub
             // Naming.lookup(//host:port/name) host è l'ip, port è la porta  name è il nome del servizio offerto dall'host
-            serverRMI = (RMIServerInterfaceSeenByClient) Naming.lookup("//" + ip_host + ":" + port + "/MyServer");
+            serverRMI = (RMIServerInterfaceSeenByClient) Naming.lookup("//" + ipHost + ":" + port + "/MyServer");
             //ping
             serverRMI.sayHelloToGatherer();
             //create the stud
@@ -60,15 +58,12 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
             AskLogin packet = new AskLogin();
             this.sendEventToUIInterface2(packet);
         } catch (NotBoundException ex) {
-            ex.printStackTrace();
             ConnectionDown packet = new ConnectionDown("Il server è stato raggiunto, ma non c'è il servizio richiesto", false);
             view.showEventView(packet);
         } catch (RemoteException ex) {
-            ex.printStackTrace();
             ConnectionDown packet = new ConnectionDown("Non è stato possibile contattare il server.", false);
             view.showEventView(packet);
         } catch (MalformedURLException ex) {
-            ex.printStackTrace();
             ConnectionDown packet = new ConnectionDown("URL non corretto.", false);
             view.showEventView(packet);
         }
@@ -83,7 +78,6 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
             ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
             view.showEventView(packet);
         } catch (RemoteException ex) {
-            ex.printStackTrace();
             ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
             view.showEventView(packet);
         }
@@ -108,12 +102,11 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
             try {
                 getServerRMI().sendEventToController(event);
             } catch (RemoteException ex) {
-                ex.printStackTrace();
                 ConnectionDown packet = new ConnectionDown("La connessione è caduta.", false);
                 view.showEventView(packet);
             }
         };
-        currentTask = new Thread(exec);
+        Thread currentTask = new Thread(exec);
         currentTask.start();
 
     }
@@ -127,11 +120,28 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
     public void visit(LoginRequest event) {
         try {
             serverRMI.addClient(event.getNickname(), client);
+            timerThread.startThread();
         } catch (RemoteException ex) {
-            ex.printStackTrace();
             ConnectionDown packet = new ConnectionDown("La connessione è caduta.", false);
             view.showEventView(packet);
         }
+
     }
 
+    @Override
+    public void timerCallback() {
+        try {
+            serverRMI.sayHelloToGatherer();
+            timerThread.startThread();
+        } catch (RemoteException ex) {
+            ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
+            view.showEventView(packet);
+        }
+
+    }
+
+    @Override
+    public void timerCallbackWithIndex(int infoToReturn) {
+
+    }
 }

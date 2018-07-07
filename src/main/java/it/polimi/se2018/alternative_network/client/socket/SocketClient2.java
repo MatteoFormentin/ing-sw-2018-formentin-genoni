@@ -36,14 +36,12 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
     /**
      * Socket Client constructor.
      *
-     * @param ip_host client interface, used as controller to communicate with the client.
+     * @param ipHost client host
      * @param port    server address.
      * @param view    port used from server to communicate.
      */
-    public SocketClient2(String ip_host, int port, UIInterface view) {
-        this.ip_host = ip_host;
-        this.port = port;
-        this.view = view;
+    public SocketClient2(String ipHost, int port, UIInterface view) {
+        super(ipHost,port,view);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -69,9 +67,8 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
             outputStream.writeObject(eventServer);
             outputStream.reset();
         } catch (IOException ex) {
-
-            view.errPrintln(ex.getMessage());
-            ex.printStackTrace();
+            ConnectionDown packet = new ConnectionDown("Sei stato disconnesso dal server.", false);
+            sendEventToView(packet);
         }
     }
 
@@ -86,13 +83,9 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
             inputStream.close();
             outputStream.close();
             clientConnection.close();
-            System.out.println("Connection closed!");
         } catch (IOException ex) {
-
             ConnectionDown packet = new ConnectionDown("Sei stato disconnesso dal server.", true);
             sendEventToView(packet);
-
-            ex.printStackTrace();
         }
     }
 
@@ -109,7 +102,7 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
     @Override
     public void connectToServer2() {
         try {
-            clientConnection = new Socket(ip_host, port);
+            clientConnection = new Socket(ipHost, port);
             outputStream = new ObjectOutputStream(clientConnection.getOutputStream());
             inputStream = new ObjectInputStream(clientConnection.getInputStream());
             outputStream.flush();
@@ -117,7 +110,6 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
             AskLogin packet = new AskLogin();
             sendEventToView(packet);
         } catch (IOException ex) {
-            ex.printStackTrace();
             ConnectionDown packet = new ConnectionDown("Controlla ip e porta.", false);
             sendEventToView(packet);
         }
@@ -157,9 +149,7 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
                 EventClient received = (EventClient) inputStream.readObject();
                 sendEventToView(received);
             } catch (IOException | ClassNotFoundException ex) {
-                // ex.printStackTrace();
                 flag = false;
-
                 ConnectionDown packet = new ConnectionDown("Sei stato disconnesso dal server. Controlla la connessione.", false);
                 sendEventToView(packet);
             }

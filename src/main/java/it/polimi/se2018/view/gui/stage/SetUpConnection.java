@@ -79,7 +79,7 @@ public class SetUpConnection {
         connect.setOnAction(e -> {
             int i = Integer.parseInt(group.getSelectedToggle().getUserData().toString());
             if (isInt(portInput2) || portInput2.getText() == null || portInput2.getText().equals("")) {
-                AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i, false);
+                AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i);
                 client.connectToServer2();
                 getGuiInstance().setClient2(client);
             }

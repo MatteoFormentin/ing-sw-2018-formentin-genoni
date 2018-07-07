@@ -18,7 +18,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @author DavideMammarella
+ * @author Luca Genoni
  */
 public class Server2 implements PrincipalServer {
     //info for the operation of the server
@@ -197,7 +197,10 @@ public class Server2 implements PrincipalServer {
             newRemotePlayer.setNickname("Anon" + i + counterAnon + j);
             counterAnon++;
         }
-        //ricerca del giocatore
+        //controllo i giocatori della partita corrente
+        RemotePlayer2 oldRemotePlayer = newGameRoom.lookNewGame(newRemotePlayer.getNickname());
+        boolean findIt = false;
+        int i = 0;
         try {
             if (players.isEmpty()) {
                 System.out.println("Il primo giocatore della giornata!");
@@ -205,20 +208,14 @@ public class Server2 implements PrincipalServer {
                 newGameRoom.addRemotePlayer(newRemotePlayer);
                 response = new LoginResponse(true, "Hai effettuato il login, complimenti sei il primo");
 
-            } else {
-                RemotePlayer2 oldRemotePlayer;
-                boolean findIt = false;
-                int i = 0;
+            } else if (oldRemotePlayer == null) {
                 while (i < players.size() && !findIt) {
                     oldRemotePlayer = players.get(i);
                     // se i nomi combaciano
                     if (oldRemotePlayer.getNickname().equals(newRemotePlayer.getNickname())) {
                         System.out.println("nome combacia");
                         findIt = true; //uscirà dal while
-
                         if (oldRemotePlayer.checkOnline()) { //è già collegato
-                            //TODO provare a mandare un ping? non si può :/ ma se il socket player mi setta a false
-                            // appena trova la disconnessione è ok, al massimo fare la variabile nel remote player come Atomic boolean
                             System.out.println("Giocatore sta già giocando.");
                             response = new LoginResponse(false, "Giocatore sta già giocando.");
                         } else { //non è collegato
@@ -232,14 +229,11 @@ public class Server2 implements PrincipalServer {
                                 response = new LoginResponse(true, "Hai effettuato il relogin");
                                 System.out.println("Ha effettuato il login");
                             } else { //se è associato ad una gameboard
-                                //TODO reLogin
                                 System.out.println("è associato ad una gameboard, viene fatto il cambio ");
-                                //rimuovo detinitivamente il vecchio
                                 System.out.println("Ha effettuato il relogin");
                                 oldRemotePlayer.getGameInterface().reLogin(oldRemotePlayer, newRemotePlayer);
-                                //TODO controllare se va rimosso
-                  /*      players.remove(oldRemotePlayer);
-                        players.add(newRemotePlayer);*/
+                                players.remove(oldRemotePlayer);
+                                players.add(newRemotePlayer);
                                 response = new LoginResponse(true, "Hai effettuato il relogin");
                             }
                         }
@@ -255,9 +249,13 @@ public class Server2 implements PrincipalServer {
                     System.out.println("Controllato giocatore " + i + " esimo nella linked list del server principale");
                     i++;
                 }
+            } else {
+
             }
         } catch (GameStartedException ex) {
-            response = new LoginResponse(false, "La stanza era piena riprova ad effettuare il login");
+            response = new LoginResponse(true, "La stanza era piena, Sei entrato in una nuova stanza non implementata");
+            gameRoomRunning.add(newGameRoom);
+            newGameRoom=new GameRoom(gameRoomRunning.size(),this);
         }
         response.setNickname(newRemotePlayer.getNickname());
         ResponseEventLogin responseEventLogin = new ResponseEventLogin(response, newRemotePlayer);

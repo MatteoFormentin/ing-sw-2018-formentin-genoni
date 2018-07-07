@@ -55,7 +55,6 @@ public class ClientGatherer2 extends Thread {
                 SocketPlayer newPlayer = new SocketPlayer(newClientConnection, server);
                 (new Thread(newPlayer)).start();
             } catch (IOException ex) {
-                ex.printStackTrace();
                 System.out.println(ex.getMessage());
             }
         }

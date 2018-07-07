@@ -41,7 +41,6 @@ import java.util.Properties;
 public class Controller implements ControllerVisitor, TimerCallback {
     long PLAYER_TIMEOUT; //ms!!
     private GameBoard gameBoard;
-    private int playerNumber;
     private String[] playersName;
     private boolean restoreAble;
     //Server in cui si setterà la partita
@@ -65,7 +64,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
     public Controller(String[] playerName, GameRoom room) {
         //set up actual game
         this.gameRoom = room;
-        this.playerNumber = playerName.length;
+        this.playersName = playerName;
         playersName = new String[playerName.length];
         System.out.println(playerName.length);
         gameBoard = new GameBoard(playerName);
@@ -121,13 +120,12 @@ public class Controller implements ControllerVisitor, TimerCallback {
         gameBoard.setStopGame(true);
         playerTimeout.shutdown();
 
-        for (int i = 0; i < playerNumber; i++) {
+        for (int i = 0; i < playersName.length; i++) {
             EndGame endGame = new EndGame();
             endGame.setPlayerId(i);
             sendEventToView(endGame);
         }
-        if (gameRoom != null) gameRoom.resetOrStoreGameRoom();
-        gameRoom.stopServer();
+        if (gameRoom != null) gameRoom.resetOrStoreGameRoom(effectGamesStored);
     }
 
     /**
@@ -180,22 +178,19 @@ public class Controller implements ControllerVisitor, TimerCallback {
 
         updaterView.updateInfoStart();
 
-        for (int j = 0; j < playerNumber; j++) {
+        for (int j = 0; j < playersName.length; j++) {
             StartGame waitSetUp = new StartGame();
             waitSetUp.setPlayerId(j);
             sendEventToView(waitSetUp);
         }
 
-        //TODO forse questo mi permette di avviare il tutto correttamente
-
-
-        for (int j = 0; j < playerNumber; j++) {
+        for (int j = 0; j < playersName.length; j++) {
             ShowAllCards waitSetUp = new ShowAllCards();
             waitSetUp.setPlayerId(j);
             sendEventToView(waitSetUp);
         }
         //after showing the info ask the player to choose the window
-        for (int i = 0; i < playerNumber; i++) {
+        for (int i = 0; i < playersName.length; i++) {
             SelectInitialWindowPatternCard packet = new SelectInitialWindowPatternCard();
             packet.setPlayerId(i);
             sendEventToView(packet);
@@ -245,7 +240,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
         } catch (WindowSettingCompleteException ex) {
             started = true;
             //all the window are set
-            for (int i = 0; i < playerNumber; i++) {
+            for (int i = 0; i < playersName.length; i++) {
                 EventClient packetFineInit = new InitialEnded();
                 packetFineInit.setPlayerId(i);
                 sendEventToView(packetFineInit);
@@ -491,7 +486,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
      * @param showMenuTurn true if the player will get the menu turn, false otherwise.
      */
     private void showErrorMessage(Exception ex, int idPlayer, boolean showMenuTurn) {
-        ex.printStackTrace();
         MessageError packet = new MessageError(ex.getMessage(), showMenuTurn);
         packet.setPlayerId(idPlayer);
         sendEventToView(packet);
@@ -504,7 +498,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
      * @param currentPlayerId ID of player that is playing.
      */
     private void sendWaitTurnToAllTheNonCurrent(int currentPlayerId) {
-        for (int j = 0; j < playerNumber; j++) {
+        for (int j = 0; j < playersName.length; j++) {
             if (j == currentPlayerId) continue;
             EventClient waitTurn = new WaitYourTurn(currentPlayerId);
             waitTurn.setPlayerId(j);

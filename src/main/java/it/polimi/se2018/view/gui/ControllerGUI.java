@@ -8,6 +8,7 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
@@ -185,6 +186,11 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
     @Override
     public void visit(AskLogin event) {
         //TODO mostrare messaggio di login
+    }
+
+    @Override
+    public void visit(AskNewGame event) {
+
     }
 
     @Override

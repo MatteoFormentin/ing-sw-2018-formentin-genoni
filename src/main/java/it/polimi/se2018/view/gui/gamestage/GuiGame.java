@@ -7,6 +7,7 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
@@ -364,6 +365,11 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         new Login(utilStage).display();
     }
 
+    @Override
+    public void visit(AskNewGame event) {
+        //TODO creare un pacchetto asdf
+    }
+
     /**
      * Method of the Visitor Pattern, event received from the controller
      * to activate the button of the game for the player
@@ -674,6 +680,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     @Override
     public void visit(UpdateNamePlayers event) {
+        setBoard();
         int numberOfPlayer = event.getPlayerNames().length;
         playerId = event.getPlayerId();
         boxAllDataPlayer = new HBox[numberOfPlayer];
