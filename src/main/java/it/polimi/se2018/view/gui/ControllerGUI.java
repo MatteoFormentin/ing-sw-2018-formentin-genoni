@@ -164,7 +164,7 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(StartGame event) {
-
+        myId=event.getPlayerId();
     }
 
     @Override

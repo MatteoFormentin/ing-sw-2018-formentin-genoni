@@ -24,7 +24,7 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author DavideMammarella
  */
-public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor, EventPreGameVisitor{
+public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor, EventPreGameVisitor {
 
     private RMIServerInterfaceSeenByClient serverRMI;
     private RMIClientInterface client; //instance of the stud
@@ -91,9 +91,26 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
 
     @Override
     public void sendEventToUIInterface2(EventClient event) {
-        view.showEventView(event);
-
+        Message info= new Message(view,event);
+        info.run();
     }
+
+    class Message extends Thread {
+        private final UIInterface view;
+        private final EventClient event;
+
+        public Message(UIInterface view, EventClient event) {
+            this.view = view;
+            this.event = event;
+        }
+
+        @Override
+        public void run() {
+            Thread.currentThread().setName("give back the info");
+            view.showEventView(event);
+        }
+    }
+
 
     @Override
     public void visit(EventController event) {

@@ -16,7 +16,6 @@ import java.util.LinkedList;
 public abstract class RemotePlayer2 {
 
     private String nickname;
-    private int idPlayerInGame;
     private GameInterface gameInterface;
     private boolean notifyed;
     private LinkedList<GameRoom> gamesPlayed;
@@ -37,24 +36,6 @@ public abstract class RemotePlayer2 {
      */
     public void setNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    /**
-     * method for get the id of the remote player in the game room
-     *
-     * @return the index of the player in the game room
-     */
-    public int getIdPlayerInGame() {
-        return idPlayerInGame;
-    }
-
-    /**
-     * method for set the id of the remote player in the game room
-     *
-     * @param idPlayerInGame associated to this player
-     */
-    public void setIdPlayerInGame(int idPlayerInGame) {
-        this.idPlayerInGame = idPlayerInGame;
     }
 
     /**

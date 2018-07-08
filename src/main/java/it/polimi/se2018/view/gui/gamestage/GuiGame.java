@@ -218,7 +218,7 @@ public class GuiGame implements ViewModelVisitor {
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
     public void visit(StartGame event) {
-        playerId=event.getPlayerId();
+      //  playerId=event.getPlayerId();
         waitGame.closeWait();
         setInit();
         setBoard();
@@ -526,7 +526,7 @@ public class GuiGame implements ViewModelVisitor {
         setBoard();
         int numberOfPlayer = event.getPlayerNames().length;
         playerId = event.getPlayerId();
-        System.out.println(playerId);
+        System.out.println("questo è il tuo id: "+playerId);
         boxAllDataPlayer = new HBox[numberOfPlayer];
         infoPlayer = new VBox[numberOfPlayer];
         playersName = new Text[numberOfPlayer];
