@@ -1,4 +1,7 @@
-package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
+package it.polimi.se2018.list_event.event_received_by_view.event_from_model.update_game;
+
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventClientFromModel;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.ViewModelVisitor;
 
 /**
  * Extends EventClient, updates the favor Tokens and the points of one player

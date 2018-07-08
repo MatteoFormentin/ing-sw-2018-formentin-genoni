@@ -40,10 +40,6 @@ public class WaitGame {
         Label waitMessage = new Label(messageWait);
         waitMessage.setAlignment(Pos.CENTER);
 
-        TableColumn<PlayerOnline, String> indexPlayer = new TableColumn<>("index");
-        indexPlayer.setMinWidth(200);
-        indexPlayer.setCellValueFactory(new PropertyValueFactory<>("index"));
-
         TableColumn<PlayerOnline, String> nameColumn = new TableColumn<>("Nickname");
         nameColumn.setMinWidth(100);
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("nickname"));
@@ -54,7 +50,7 @@ public class WaitGame {
         stateConnection.setCellValueFactory(new PropertyValueFactory<>("connected"));
 
         tableView = new TableView<>(getPlayerOnlineSingleton());
-        tableView.getColumns().addAll(indexPlayer, nameColumn, stateConnection);
+        tableView.getColumns().addAll(nameColumn, stateConnection);
         nameInput = new TextField();
         nameInput.setMinWidth(100);
 
@@ -105,29 +101,16 @@ public class WaitGame {
     /**
      * Method for add the player to the list of the player connected
      *
-     * @param index     of the player in the game
      * @param nickname  of the player in the game
      * @param connected true if the player is connected, false otherwise
      */
-    public void addPlayerOnline(int index, String nickname, boolean connected) {
+    public void addPlayerOnline(String nickname, boolean connected) {
         PlayerOnline player = new PlayerOnline();
-        player.setIndex(index);
         player.setNickname(nickname);
         player.setConnected(connected);
         tableView.getItems().add(player);
     }
 
-    /**
-     * Method for add the player to the list of the player connected
-     *
-     * @param names an array of name to add as connected
-     */
-    public void addPlayerOnline(String[] names) {
-        for (int i = 0; i < names.length; i++) {
-            PlayerOnline player = new PlayerOnline(i, names[i], true);
-            tableView.getItems().add(player);
-        }
-    }
 
     /**
      * Method for delete the player from the list
@@ -143,7 +126,7 @@ public class WaitGame {
     }
 
     /**
-     * Method for delete All the player from the list
+     * Method for delete All the player from the list for reset the list
      */
     public void deletePlayerKicked() {
         ObservableList<PlayerOnline> allPlayerOnline;
@@ -159,11 +142,19 @@ public class WaitGame {
      *
      * @return a ObservableList<PlayerOnline> of all the player in game
      */
-    public ObservableList<PlayerOnline> getPlayerOnlineSingleton() {
+    ObservableList<PlayerOnline> getPlayerOnlineSingleton() {
         if (listPlayer == null) {
             listPlayer = FXCollections.observableArrayList();
         }
         return listPlayer;
+    }
+
+    public void setOnline(String nickname,boolean connected){
+        ObservableList<PlayerOnline> allPlayerOnline;
+        allPlayerOnline = tableView.getItems();
+        for (PlayerOnline x : allPlayerOnline) {
+            if (x.getNickname().equals(nickname)) x.setConnected(connected);
+        }
     }
 
     /**

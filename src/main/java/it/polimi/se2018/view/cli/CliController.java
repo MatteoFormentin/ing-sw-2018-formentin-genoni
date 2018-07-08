@@ -17,7 +17,10 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.notify_connection.UpdatePlayerConnectionDuringGame;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.notify_connection.UpdatePlayerConnectionSetUp;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.update_game.*;
 import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
@@ -668,28 +671,17 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
     }
 
     @Override
-    public void visit(UpdateDisconnectionDuringSetup event) {
-        cliMessage.showMessage("Il giocatore " + event.getName() + " ha lasciato la stanza");
+    public void visit(UpdatePlayerConnectionDuringGame event) {
+        if(event.isConnected()) cliMessage.showMessage("Il giocatore " + event.getName() + " ha effettuato il relogin");
+        else cliMessage.showMessage("Il giocatore " + event.getName() + " ha abbandonato il gioco");
     }
 
     @Override
-    public void visit(UpdateNamePlayersDuringSetUp event) {
-        playersName = event.getPlayerNames();
-        boolean[] connected = new boolean[playersName.length];
-        System.out.println("Giocatori attualmente nella stanza");
-        System.out.println();
-        for (int i = 0; i < playersName.length; i++) System.out.println("Nome: " + playersName[i]);
+    public void visit(UpdatePlayerConnectionSetUp event) {
+        if(event.isConnected()) cliMessage.showMessage("Il giocatore " + event.getNickname() + " ha effettuato il Login");
+        else cliMessage.showMessage("Il giocatore " + event.getNickname() + " ha abbandonato la stanza");
     }
 
-    @Override
-    public void visit(UpdateDisconnectionDuringGame event) {
-        cliMessage.showMessage("Il giocatore " + event.getName() + " ha abbandonato la partita");
-    }
-
-    @Override
-    public void visit(UpdatePlayerConnection event) {
-        cliMessage.showGreenMessage("Il giocatore " + event.getName() + " si è connesso dalla partita.");
-    }
 
     @Override
     public void visit(UpdateCurrentPoint event) {

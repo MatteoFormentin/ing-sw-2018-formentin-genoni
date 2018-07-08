@@ -1,7 +1,10 @@
 package it.polimi.se2018.list_event.event_received_by_view.event_from_model;
 
 
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.notify_connection.UpdatePlayerConnectionDuringGame;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.notify_connection.UpdatePlayerConnectionSetUp;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.update_game.*;
 
 /**
  * Visitor Pattern for the event received by the view.
@@ -13,15 +16,11 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup
 public interface ViewModelVisitor {
     //**********************************************from Model**************************************
 
-    //event before the setup
-    void visit(UpdateDisconnectionDuringSetup event);
+    //event before the setup and during
+    void visit(UpdatePlayerConnectionDuringGame event);
 
-    void visit(UpdateNamePlayersDuringSetUp event);
+    void visit(UpdatePlayerConnectionSetUp event);
 
-    //info other player connection state during game
-    void visit(UpdateDisconnectionDuringGame event);
-
-    void visit(UpdatePlayerConnection event);
 
     //setup update
     void visit(UpdateNamePlayers event);

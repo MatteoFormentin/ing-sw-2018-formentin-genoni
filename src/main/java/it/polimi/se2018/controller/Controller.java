@@ -23,7 +23,6 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectInitialWindowPatternCard;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.SelectToolCard;
 import it.polimi.se2018.model.GameBoard;
-import it.polimi.se2018.model.UpdateRequestedByServer;
 import it.polimi.se2018.model.UpdaterView;
 import it.polimi.se2018.utils.TimerCallback;
 import it.polimi.se2018.utils.TimerThread;
@@ -93,16 +92,6 @@ public class Controller implements ControllerVisitor, TimerCallback {
         started = false;
     }
 
-
-    /**
-     * Method used to get update requested by server.
-     *
-     * @return update requested by server.
-     */
-    public UpdateRequestedByServer getUpdater() {
-        return updaterView;
-    }
-
     /**
      * Starter for controller.
      * This method start the game board.
@@ -133,13 +122,7 @@ public class Controller implements ControllerVisitor, TimerCallback {
      *
      * @param index ID of the player in the game.
      */
-    public void playerDown(int index) {
-        if (started) {
-            ControllerEndTurn event = new ControllerEndTurn();
-            event.setIdGame(index);
-            visit(event);
-        }
-    }
+
 
     /**
      * Method used to notify a player win caused from the disconnection of the other players.

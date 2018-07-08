@@ -1,12 +1,12 @@
 package it.polimi.se2018.view.gui.gamestage;
 
-import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.notify_connection.UpdatePlayerConnectionDuringGame;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.notify_connection.UpdatePlayerConnectionSetUp;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
-import it.polimi.se2018.view.UIInterface;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.update_game.*;
 import it.polimi.se2018.view.gui.stage.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -509,26 +509,15 @@ public class GuiGame implements ViewModelVisitor {
     //************************************* UPLOAD FROM MODEL ************************************************************************************
     //************************************* UPLOAD FROM MODEL ************************************************************************************
 
-
     @Override
-    public void visit(UpdateDisconnectionDuringGame event) {
-        //TODO implementare
+    public void visit(UpdatePlayerConnectionDuringGame event) {
+        waitGame.setOnline(event.getName(),event.isConnected());
     }
 
     @Override
-    public void visit(UpdatePlayerConnection event) {
-        if (waitGame == null) System.out.println("è ");
-        if (waitGame.getStage().isShowing()) waitGame.addPlayerOnline(event.getIndex(), event.getName(), true);
-
-    }
-    @Override
-    public void visit(UpdateDisconnectionDuringSetup event) {
-        waitGame.deletePlayerKicked();
-    }
-
-    @Override
-    public void visit(UpdateNamePlayersDuringSetUp event) {
-
+    public void visit(UpdatePlayerConnectionSetUp event) {
+        if(event.isConnected()) waitGame.addPlayerOnline(event.getNickname(),event.isConnected());
+        else waitGame.deletePlayerKicked(event.getNickname());
     }
 
     @Override

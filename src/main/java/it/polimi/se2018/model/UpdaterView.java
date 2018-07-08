@@ -1,12 +1,12 @@
 package it.polimi.se2018.model;
 
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.update_game.*;
 import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.window_pattern_card.Cell;
 
-public class UpdaterView implements UpdateRequestedByServer {
+public class UpdaterView {
     private GameBoard gameBoard;
     private GameInterface server2;
 
@@ -244,19 +244,6 @@ public class UpdaterView implements UpdateRequestedByServer {
     }
 
 
-    private void updatePlayerConnected(int indexPlayerToNotify, int index, String name) {
-        UpdatePlayerConnection packet = new UpdatePlayerConnection(index, name);
-        packet.setPlayerId(indexPlayerToNotify);
-        server2.sendEventToView(packet);
-    }
-
-    private void updateDisconnected(int indexPlayerToNotify, int index, String name) {
-        UpdateDisconnectionDuringGame packet = new UpdateDisconnectionDuringGame(index, name);
-        packet.setPlayerId(indexPlayerToNotify);
-        server2.sendEventToView(packet);
-    }
-
-
     private void currentPoints(int indexPlayer) {
         NodePodium currentPoints = gameBoard.calculatePoint(indexPlayer);
         UpdateCurrentPoint packet = new UpdateCurrentPoint(currentPoints.getArrayIntInfo(), currentPoints.getDescription());
@@ -280,17 +267,6 @@ public class UpdaterView implements UpdateRequestedByServer {
         server2.sendEventToView(packet);
     }
 
-    @Override
-    public void updatePlayerConnected(int index, String name) {
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerConnected(i, index, name);
-    }
-
-    @Override
-    public void updateDisconnected(int index, String name) {
-        for (int i = 0; i < gameBoard.getPlayer().length; i++) updateDisconnected(i, index, name);
-    }
-
-    @Override
     public void updateInfoReLogin(int indexPlayerToNotify) {
         System.out.println();
         System.out.println("Relogin");
@@ -303,7 +279,6 @@ public class UpdaterView implements UpdateRequestedByServer {
         for (int i = 0; i < gameBoard.getPlayer().length; i++) updatePlayerTokenAndPoints();
     }
 
-    @Override
     public void updateInfoStart() {
         for (int i = 0; i < gameBoard.getPlayer().length; i++) updateInfoStart(i);
     }

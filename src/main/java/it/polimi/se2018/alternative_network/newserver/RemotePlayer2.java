@@ -18,6 +18,7 @@ public abstract class RemotePlayer2 {
     private String nickname;
     private int idPlayerInGame;
     private GameInterface gameInterface;
+    private boolean notifyed;
     private LinkedList<GameRoom> gamesPlayed;
 
     /**
@@ -114,6 +115,13 @@ public abstract class RemotePlayer2 {
      */
     public abstract void kickPlayerOut();
 
+    public boolean isDownIsNotifyed() {
+        return notifyed;
+    }
+
+    public void setNotifyed(boolean notifyed) {
+        this.notifyed = notifyed;
+    }
 
     //**************************************************************************************************************
     //                                             PERSISTENZA

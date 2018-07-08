@@ -229,9 +229,18 @@ public class Server2 implements PrincipalServer {
                         responseEventLogin.start();
                     } else {
                         if (oldRemotePlayer.getGameInterface() == null) {//se non è associato ad una partita
-                            System.out.println("non è associato ad una partita");
-                            players.remove(oldRemotePlayer);
-                            loginSuccessful(newRemotePlayer);
+                            if(newGameRoom.isWaitingInThisGame(oldRemotePlayer)){
+                                response = new LoginResponse(false, "il giocatore sta aspettando nella stanza in costruzione", false);
+                                response.setNickname(newRemotePlayer.getNickname());
+                                ResponseEventLogin responseEventLogin = new ResponseEventLogin(response, newRemotePlayer);
+                                responseEventLogin.start();
+
+                            }else{
+                                System.out.println("non è associato ad una partita");
+                                players.remove(oldRemotePlayer);
+                                players.add(newRemotePlayer);
+                                loginSuccessful(newRemotePlayer);
+                            }
                         } else { //se è associato ad una gameboard
                             // reLogin
                             if (newGameRoom.isStarted()) {
@@ -297,7 +306,6 @@ public class Server2 implements PrincipalServer {
     private void loginSuccessful(RemotePlayer2 newRemotePlayer) throws RoomIsFullException {
         if (!newGameRoom.isStarted()) {
             LoginResponse response;
-            players.add(newRemotePlayer);
             response = new LoginResponse(true, "Login effettuato", true);
             response.setNickname(newRemotePlayer.getNickname());
             ResponseEventLogin responseEventLogin = new ResponseEventLogin(response, newRemotePlayer);

@@ -1,6 +1,6 @@
 package it.polimi.se2018.view.cli;
 
-import it.polimi.se2018.list_event.event_received_by_view.event_from_model.UpdateStatPodium;
+import it.polimi.se2018.list_event.event_received_by_view.event_from_model.update_game.UpdateStatPodium;
 import it.polimi.se2018.model.card.ToolCard;
 import it.polimi.se2018.model.card.objective_private_card.ObjectivePrivateCard;
 import it.polimi.se2018.model.card.objective_public_card.ObjectivePublicCard;
