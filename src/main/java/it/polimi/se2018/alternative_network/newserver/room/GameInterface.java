@@ -18,6 +18,4 @@ public interface GameInterface {
 
     void reLogin(RemotePlayer2 oldRemotePlayer, RemotePlayer2 newRemotePlayer);
 
-    void disconnectFromGameRoom(RemotePlayer2 oldRemotePlayer);
-
 }

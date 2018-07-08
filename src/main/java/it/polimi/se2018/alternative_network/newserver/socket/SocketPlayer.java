@@ -36,6 +36,7 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
     private Socket tunnel;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+    private int init;
 
     private AtomicBoolean online;
     private PrincipalServer server;
@@ -70,6 +71,7 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
     @Override
     public void run() {
         Thread.currentThread().setName("Socket Player Thread");
+        init=0;
         online.set(true);
         while (online.get() && tunnel.isConnected()) {
             try {
@@ -78,8 +80,6 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
             } catch (EOFException e) {
                 online.set(false);
                 // se si disconnette metto il running a false e tengo in memoria il player
-                if (getGameInterface() == null) ;//TODO non ho ancora fatto il login
-                else getGameInterface().disconnectFromGameRoom(this);
                 e.printStackTrace();
                 closeConnection();
             } catch (IOException | ClassNotFoundException ex) {
@@ -106,8 +106,7 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
 
     @Override
     public void visit(EventController event) {
-        if (!online.get()) getGameInterface().disconnectFromGameRoom(this);
-        else if(getGameInterface()!=null) getGameInterface().sendEventToGameRoom(event);
+        getGameInterface().sendEventToGameRoom(event);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -124,6 +123,7 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
             outputStream.writeObject(socketObject);
             outputStream.reset();
         } catch (IOException ex) {
+            System.out.println("sendObject");
             kickPlayerOut();
         }
     }
@@ -171,7 +171,10 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
     @Override
     public boolean checkOnline()throws ConnectionPlayerException {
         if(online.get()) return true;
-        else throw new ConnectionPlayerException();
+        else if(init<5){
+            init++;
+            return true;
+        }else throw new ConnectionPlayerException();
     }
 
 

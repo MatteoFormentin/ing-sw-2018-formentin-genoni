@@ -132,7 +132,7 @@ public class GameRoom implements TimerCallback, GameInterface {
                 players.add(remotePlayer);
                 remotePlayer.setGameInterface(this);
                 currentConnected.incrementAndGet();
-                updateConnectionSetup(remotePlayer.getNickname(), true);
+           //     updateConnectionSetup(remotePlayer.getNickname(), true);
                 checkOnLine();
                 System.err.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi, " + players.size() + " registrati");
                 if (currentConnected.get() == maxPlayer) {
@@ -176,7 +176,7 @@ public class GameRoom implements TimerCallback, GameInterface {
             remotePlayerDown.kickPlayerOut();
             players.remove(remotePlayerDown);
             //TODO sostituire con thead
-            updateConnectionSetup(remotePlayerDown.getNickname(), false);
+       //     updateConnectionSetup(remotePlayerDown.getNickname(), false);
             if (currentConnected.get() == 1) timerThread.shutdown();
         }
         System.out.println(" ");
@@ -262,31 +262,27 @@ public class GameRoom implements TimerCallback, GameInterface {
         }
     }
 
-    @Override
-    public void disconnectFromGameRoom(RemotePlayer2 oldRemotePlayer) {
-        removeRemotePlayer(oldRemotePlayer);
-    }
 
     public boolean isWaitingInThisGame(RemotePlayer2 oldRemotePlayer) {
         checkOnLine();
         for (RemotePlayer2 x : players) if (x.getNickname().equals(oldRemotePlayer)) return true;
         return false;
     }
-
+    /*
     void updateConnectionSetup(String name, boolean connected) {
         for (int i = 0; i < players.size(); i++) {
             UpdatePlayerConnectionSetUp packet = new UpdatePlayerConnectionSetUp(name, connected);
             packet.setPlayerId(i);
-            sendEventToView(packet);
+            players.get(i).sendEventToView(packet);
         }
     }
-
+*/
     void updateConnectionGame(int id, String name, boolean connected) {
         for (int i = 0; i < players.size(); i++) {
             if (id == 1) continue;
             UpdatePlayerConnectionDuringGame packet = new UpdatePlayerConnectionDuringGame(name, connected);
             packet.setPlayerId(i);
-            sendEventToView(packet);
+            players.get(i).sendEventToView(packet);
         }
     }
 }

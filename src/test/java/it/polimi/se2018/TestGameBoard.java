@@ -44,10 +44,6 @@ public class TestGameBoard {
 
             }
 
-            @Override
-            public void disconnectFromGameRoom(RemotePlayer2 oldRemotePlayer) {
-
-            }
         };
     }
 

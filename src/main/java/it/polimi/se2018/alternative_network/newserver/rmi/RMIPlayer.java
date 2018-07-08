@@ -38,7 +38,6 @@ public class RMIPlayer extends RemotePlayer2 {
             clientRMIInterface.notifyTheClient(eventClient);
         } catch (RemoteException ex) {
             online=false;
-            getGameInterface().disconnectFromGameRoom(this);
         }
     }
 
