@@ -67,6 +67,7 @@ public class ClientFactory {
     }
 
     public AbstractClient2 getAbstractClient() {
+        if(abstractClient!=null) if(abstractClient.isDown()) return null;
         return abstractClient;
     }
 }

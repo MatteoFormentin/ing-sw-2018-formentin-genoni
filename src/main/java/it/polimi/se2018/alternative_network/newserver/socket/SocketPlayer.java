@@ -123,7 +123,6 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
             outputStream.writeObject(socketObject);
             outputStream.reset();
         } catch (IOException ex) {
-            System.out.println("sendObject");
             kickPlayerOut();
         }
     }
@@ -165,16 +164,13 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
     public void kickPlayerOut() {
         closeConnection();
         AnsiConsole.out.println();
-        AnsiConsole.out.print(ansi().fg(YELLOW).a("SocketPlayer -> kickPlayerOut: " + getNickname() + "  ").reset());
+        AnsiConsole.out.println(ansi().fg(YELLOW).a("SocketPlayer -> kickPlayerOut: " + getNickname() + "  ").reset());
     }
 
     @Override
     public boolean checkOnline()throws ConnectionPlayerException {
-        if(online.get()) return true;
-        else if(init<5){
-            init++;
-            return true;
-        }else throw new ConnectionPlayerException();
+        if(online.get() || tunnel.isConnected()) return true;
+        else throw new ConnectionPlayerException();
     }
 
 

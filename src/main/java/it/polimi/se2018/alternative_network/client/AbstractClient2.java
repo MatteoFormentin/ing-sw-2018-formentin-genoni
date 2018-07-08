@@ -22,6 +22,7 @@ public abstract class AbstractClient2 {
     public void sendEventToUIInterface2(EventClient event) {
 
     }
+    public abstract boolean isDown();
 
     public void setView(UIInterface view) {
         this.view = view;

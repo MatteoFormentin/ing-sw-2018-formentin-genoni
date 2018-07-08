@@ -211,7 +211,6 @@ public class GameRoom implements TimerCallback, GameInterface {
         players.set(i, newRemotePlayer);
         updateConnectionGame(i, newRemotePlayer.getNickname(), true);
         controller.playerUp(i);
-
     }
 
     @Override

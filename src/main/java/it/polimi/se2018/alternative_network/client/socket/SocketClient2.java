@@ -44,6 +44,11 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
         super(ipHost,port,view);
     }
 
+    @Override
+    public boolean isDown() {
+        return clientConnection.isClosed();
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // CONNECTION
     //------------------------------------------------------------------------------------------------------------------

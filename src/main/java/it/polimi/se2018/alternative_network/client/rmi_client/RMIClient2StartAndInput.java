@@ -29,6 +29,7 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
     private RMIServerInterfaceSeenByClient serverRMI;
     private RMIClientInterface client; //instance of the stud
     private RMIClientInterface remoteRef; //remoteRef of the stud in the server used for login
+    private boolean dead;
 
     public RMIClient2StartAndInput(String serverIpAddress, int serverPort, UIInterface view) {
         super(serverIpAddress, serverPort, view);
@@ -40,6 +41,7 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
 
     @Override
     public void connectToServer2() {
+        dead=true;
         try {
             // Chiedo al Registry ( in esecuzione su localhost alla porta di default ) di localizzare 'Server' e restituirmi il suo Stub
             // Naming.lookup(//host:port/name) host è l'ip, port è la porta  name è il nome del servizio offerto dall'host
@@ -53,6 +55,7 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
             // nota_1: se al server venisse passato "client", sarebbe una sua copia ( la deserializzazione della serializzazione di client )
             //         per questo si crea e si passa al server un riferimento remoto, che non serve essere esportato sul Registry come servizio.
             remoteRef = (RMIClientInterface) UnicastRemoteObject.exportObject(client, 0);
+            dead=false;
             AskLogin packet = new AskLogin();
             this.sendEventToUIInterface2(packet);
         } catch (NotBoundException ex) {
@@ -73,12 +76,11 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
         try {
             serverRMI.sayHelloToGatherer();
             UnicastRemoteObject.unexportObject(client, true);
-
-            ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
+            ConnectionDown packet = new ConnectionDown("Sei stato scollegato come richiesto", true);
             view.showEventView(packet);
         } catch (RemoteException ex) {
-
-            ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
+            dead=true;
+            ConnectionDown packet = new ConnectionDown("Eri già scollegato dal server", true);
             view.showEventView(packet);
         }
     }
@@ -93,6 +95,11 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
     public void sendEventToUIInterface2(EventClient event) {
         Message info= new Message(view,event);
         info.run();
+    }
+
+    @Override
+    public boolean isDown() {
+        return dead;
     }
 
     class Message extends Thread {
@@ -119,13 +126,13 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
             try {
                 getServerRMI().sendEventToController(event);
             } catch (RemoteException ex) {
+                dead=true;
                 ConnectionDown packet = new ConnectionDown("La connessione è caduta.", false);
                 view.showEventView(packet);
             }
         };
         Thread currentTask = new Thread(exec);
         currentTask.start();
-
     }
 
     @Override
@@ -138,6 +145,7 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
         try {
             serverRMI.addClient(event.getNickname(), client);
         } catch (RemoteException ex) {
+            dead=true;
             ConnectionDown packet = new ConnectionDown("La connessione è caduta.", false);
             view.showEventView(packet);
         }

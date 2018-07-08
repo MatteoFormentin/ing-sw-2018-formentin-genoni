@@ -1,5 +1,6 @@
 package it.polimi.se2018.view.gui.gamestage;
 
+import it.polimi.se2018.alternative_network.client.ClientFactory;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
@@ -115,10 +116,12 @@ public class GuiGame implements ViewModelVisitor {
         gameStage.initStyle(StageStyle.UTILITY);
         gameStage.initModality(Modality.APPLICATION_MODAL);
         gameStage.initOwner(owner);
+        closeGameStage(gameStage);
         utilStage = new Stage();
         utilStage.initStyle(StageStyle.UTILITY);
         utilStage.initModality(Modality.APPLICATION_MODAL);
         utilStage.initOwner(owner);
+        utilStage.setOnCloseRequest(null);
         //utils for tool card
         toolStage = new Stage(StageStyle.TRANSPARENT);
         toolStage.initModality(Modality.APPLICATION_MODAL);
@@ -130,7 +133,11 @@ public class GuiGame implements ViewModelVisitor {
         setInit();
         setBoard();
     }
+    private void closeGameStage(Stage toClose){
+        toClose.setOnCloseRequest(e->{
 
+        });
+    }
 
     private void setInit() {
         utilStage.setTitle("Pick a Window");

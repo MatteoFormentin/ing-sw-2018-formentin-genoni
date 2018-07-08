@@ -25,11 +25,10 @@ public class SetUpConnection {
     private Scene setUp;
     private AbstractClient2 client2;
     private AlertMessage wrongInput;
-
+    private Button back;
     /**
      * build the Scene of the connection SetUp
      * @param factory
-     * @param controllerGUI
      */
     public SetUpConnection(ClientFactory factory) {
 
@@ -65,7 +64,7 @@ public class SetUpConnection {
         form.addRow(2, rb1, rb2);
         //escape
         Button connect = new Button("Connect");
-        Button back = new Button("Back");
+        back = new Button("Back");
         form.addRow(3, back, connect);
         //components action
         connect.setOnAction(e -> {
@@ -92,6 +91,8 @@ public class SetUpConnection {
         stage.initOwner(owner);
         stage.setResizable(false);
         stage.setScene(setUp);
+
+        back.setOnAction(e->stage.close());
         wrongInput = new AlertMessage(stage);
         stage.showAndWait();
         return client2;

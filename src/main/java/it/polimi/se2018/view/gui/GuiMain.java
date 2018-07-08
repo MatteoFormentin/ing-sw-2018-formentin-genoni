@@ -20,7 +20,6 @@ import java.io.IOException;
  * @author Luca Genoni
  */
 public class GuiMain extends Application {
-    private Stage stage;
     private ControllerGUI controllerGUI;
     private ConfirmBox exitGame;
     private Stage thisPrimaryStage;
@@ -85,8 +84,9 @@ public class GuiMain extends Application {
         } while (flag);
 
         primaryStage.setScene(startMenu);
-
-        controllerGUI = new ControllerGUI(stage);
+        Stage second = new Stage();
+        second.initOwner(primaryStage);
+        controllerGUI = new ControllerGUI(second);
 
         // add button to the menu
         menu.setAlignment(Pos.CENTER);
