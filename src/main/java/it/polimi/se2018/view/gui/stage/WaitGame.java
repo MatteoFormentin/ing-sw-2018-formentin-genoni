@@ -16,6 +16,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import static it.polimi.se2018.alternative_network.client.ClientFactory.getClientFactory;
+
 /**
  * Class for handle the waiting room
  *
@@ -94,11 +96,10 @@ public class WaitGame {
         stage.setTitle("Waiting Room");
         stage.setResizable(false);
         stage.setOnCloseRequest(e -> {
-            e.consume();
+            getClientFactory().getAbstractClient().shutDownClient2();
         });
         stage.setScene(scene);
         stage.show();
-
     }
 
     /**

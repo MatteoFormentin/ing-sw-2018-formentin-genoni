@@ -53,14 +53,17 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
         return instanceControllerGUI;
     }
 
+    private static void setInstanceControllerGUI(ControllerGUI controllerGUI){
+        instanceControllerGUI=controllerGUI;
+    }
+
     ControllerGUI(Stage primaryStage) {
-        instanceControllerGUI=this;
+        setInstanceControllerGUI(this);
         this.primaryStage=primaryStage;
         clientFactory= ClientFactory.getClientFactory();
         connection = new SetUpConnection(clientFactory);
         login = new Login();
         waitGame=new WaitGame("Aspetta che tutti i giocatori si siano collegati");
-        game =new GuiGame(primaryStage);
         stage2 = new Stage(StageStyle.UTILITY);
         stage2.initModality(Modality.APPLICATION_MODAL);
         stage2.initOwner(primaryStage);
@@ -74,11 +77,12 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
     void intiConnection(Stage stage){
         primaryStage=stage;
         connection.display(stage2);
-        clientFactory.getAbstractClient().connectToServer2();
+        if(clientFactory.getAbstractClient()!=null) clientFactory.getAbstractClient().connectToServer2();
     }
 
     public void disconnect() {
-        clientFactory.getAbstractClient().shutDownClient2();
+        stage2.close();
+        if(clientFactory.getAbstractClient()!=null)clientFactory.getAbstractClient().shutDownClient2();
     }
 
     //*************************************************************************************
@@ -135,10 +139,8 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
     public void visit(LoginResponse event) {
         stage2.close();
         if(event.isLoginSuccessFull()){
-            if(event.isLogin()){
-                waitGame.displayWaiting(stage2);
-            }else{
-            }
+            game =new GuiGame(stage2,waitGame);
+            waitGame.displayWaiting(stage2);
         }else{
             new AlertMessage(stage2).displayMessage(event.getCause());
         }
@@ -146,11 +148,13 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(ConnectionDown event) {
+        stage2.close();
         new AlertMessage(stage2).displayMessage(event.getCause());
     }
 
     @Override
     public void visit(AskLogin event) {
+        stage2.close();
         LoginRequest packet = login.display(stage2);
         if(packet==null) clientFactory.getAbstractClient().shutDownClient2();
         else {
@@ -160,85 +164,78 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(StartGame event) {
-        Platform.runLater(()-> {
-            game.showEventView(event);
-        });
+
     }
 
     @Override
     public void visit(ShowAllCards event) {
-
+        game.activeShowAllCards();
     }
 
     @Override
     public void visit(SelectInitialWindowPatternCard event) {
-
+        game.activeSelectInitialWindowPatternCard();
     }
 
     @Override
     public void visit(InitialEnded event) {
-
+        game.goToBoard();
     }
 
     @Override
     public void visit(MessageError event) {
-
+        game.activeMessageError(event);
     }
 
     @Override
     public void visit(MessageOk event) {
-
+        game.activeMessageOk(event);
     }
 
     @Override
     public void visit(StartPlayerTurn event) {
-
+        game.ableTurn();
     }
 
     @Override
     public void visit(SelectCellOfWindow event) {
-
+        game.activeCellOfWindow();
     }
 
     @Override
     public void visit(SelectDiceFromDraftPool event) {
-
+        game.activeSelectDiceFromDraftPool();
     }
 
     @Override
     public void visit(SelectToolCard event) {
-
+        game.activeSelectToolCard();
     }
 
     @Override
     public void visit(MoveTimeoutExpired event) {
-     /*   IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
-        //disattiva dicepool, windowPattern, roundtrack, toolcard
-        disableDiceOfDicePool();
-        disableWindow(playerId);
-        disableAllRound();
-        if(value.isDisplaying()) toolStage.close();
-        new AlertMessage(gameStage).displayMessage("Hai finito il tempo a disposizione");*/
+        game.timeOver();
     }
 
     @Override
     public void visit(WaitYourTurn event) {
-
+        game.notYourTurn(event);
     }
 
     @Override
     public void visit(SelectDiceFromRoundTrack event) {
+        game.activeDiceFromRoundTrack();
 
     }
 
     @Override
     public void visit(SelectValueDice event) {
-
+        game.activeSelectValueDice();
     }
 
     @Override
     public void visit(SelectIncrementOrDecreaseDice event) {
-
+        game.activeSelectIncrementOrDecreaseDice();
     }
 
     @Override

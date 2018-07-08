@@ -122,13 +122,17 @@ public class GameRoom implements TimerCallback, GameInterface {
      */
     public synchronized void startGame() throws GameStartedException {
         if (controller == null) {
-            timerThread.shutdown();
-            nameStore = new String[players.size()];
-            for (int i = 0; i < players.size(); i++) {
-                nameStore[i] = players.get(i).getNickname();
+            checkOnLine();
+            if(players.size()==1) timerThread.startThread();
+            else{
+                timerThread.shutdown();
+                nameStore = new String[players.size()];
+                for (int i = 0; i < players.size(); i++) {
+                    nameStore[i] = players.get(i).getNickname();
+                }
+                controller = new Controller(nameStore, this);
+                controller.startController();
             }
-            controller = new Controller(nameStore, this);
-            controller.startController();
         } else {
             //TODO qui implementare il replay della partita
             System.out.println("errore è gia stata iniziata questa partita");
@@ -149,26 +153,32 @@ public class GameRoom implements TimerCallback, GameInterface {
      * @param remotePlayer
      * @throws GameStartedException
      */
-    public void addRemotePlayer(RemotePlayer2 remotePlayer) throws GameStartedException {
-        if (players.size() < maxPlayer) {
-            System.err.println("viene aggiunto il player");
-            players.add(remotePlayer);
-            remotePlayer.setGameInterface(this);
-            for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
-         //   updater.updatePlayerConnected(remotePlayer.getIdPlayerInGame(), remotePlayer.getNickname());
-            currentConnected.incrementAndGet();
-            //  checkOnLine();
-            System.err.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi, " + players.size() + " registrati");
-            if (currentConnected.get() == maxPlayer) {
-                //TODO set something boolean of i don't know
-                timerThread.shutdown();
-                startGame();
+    public synchronized void addRemotePlayer(RemotePlayer2 remotePlayer) throws GameStartedException {
+        if(controller==null){
+            if (players.size() < maxPlayer) {
+                System.err.println("viene aggiunto il player");
+                players.add(remotePlayer);
+                remotePlayer.setGameInterface(this);
+                for (int i = 0; i < players.size(); i++) players.get(i).setIdPlayerInGame(i);
+                //   updater.updatePlayerConnected(remotePlayer.getIdPlayerInGame(), remotePlayer.getNickname());
+                currentConnected.incrementAndGet();
+                checkOnLine();
+                System.err.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi, " + players.size() + " registrati");
+                if (currentConnected.get() == maxPlayer) {
+                    //TODO set something boolean of i don't know
+                    timerThread.shutdown();
+                    startGame();
+                }
+                if (currentConnected.get() == 2) timerThread.startThread();
+            } else {
+                System.out.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi e ");
+                throw new GameStartedException();
             }
-            if (currentConnected.get() == 2) timerThread.startThread();
-        } else {
-            System.out.println("Gameroom -> addRemotePlayer: ci sono " + currentConnected + " connessi e ");
-            throw new GameStartedException();
-        }
+        }else throw new GameStartedException();
+    }
+
+    public void checkOnLine(){
+        for (RemotePlayer2 x:players) {if(!x.isRunning()) removeRemotePlayer(x);}
     }
 
     /**

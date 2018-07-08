@@ -66,10 +66,11 @@ public class GuiMain extends Application {
         //carica il backgound della gui
         Scene startMenu;
         boolean flag;
+        String pathBefore="";
         do {
             try {
                 startMenu = new Scene(menu, 779, 261);
-                Image home = new Image(new FileInputStream("src/resources/Immagine.jpg"), 779, 261, true,
+                Image home = new Image(new FileInputStream(pathBefore+"src/resources/Immagine.jpg"), 779, 261, true,
                         true);
                 BackgroundImage backgroundImage = new BackgroundImage(home,
                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
@@ -108,7 +109,7 @@ public class GuiMain extends Application {
      */
     private void closeApplication() {
         if (exitGame.displayMessage(thisPrimaryStage)) {
-            stage.close();
+            thisPrimaryStage.close();
             Platform.exit();
             System.out.println("Sei uscito dal gioco con successo. \n Per fare l'upgrade mettere un do while nel launcher per riproporre la scelta");
         }

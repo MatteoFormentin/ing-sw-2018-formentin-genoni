@@ -3,19 +3,11 @@ package it.polimi.se2018.view.gui.gamestage;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.event_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
-import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.setup.*;
 import it.polimi.se2018.view.UIInterface;
 import it.polimi.se2018.view.gui.stage.*;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -39,12 +31,14 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
+import static it.polimi.se2018.view.gui.ControllerGUI.getInstanceControllerGUI;
+
 /**
  * Class for handle the Gui gameboard
  *
  * @author Luca Genoni
  */
-public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, ViewControllerVisitor {
+public class GuiGame implements ViewModelVisitor {
     private static GuiGame instance;
     private static String diceSource = "file:src/resources/dadijpg/";
     private static String toolCardSource = "file:src/resources/carte_jpg/carte_strumento_";
@@ -56,13 +50,15 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     //variables for show card
     private ShowCardBox cardShow;
     private ShowValue value;
-    private AlertMessage popUpGame, popUpWait;
-    private boolean init;
     //variabili per il giocatori
     private int playerId;
     private VBox opposingPlayers; //pane for add/remove Grid of other player
     private VBox centerBox; //contains the player and dice pool
     private HBox[] boxAllDataPlayer; //contains info and hand
+
+    private VBox infoGame;
+    private HBox menuButton;
+    private HBox allCards;
     private VBox[] infoPlayer; //Contains Name, (favorToken, Points in one HBox) and WindowPattern
     private Text[] playersName;
     private HBox[] numberData;
@@ -107,7 +103,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private LinkedList<ImageView> dicePool;
     private Button[] gameButton;
 
-    public GuiGame(Stage owner) {
+    public GuiGame(Stage owner,WaitGame waiting) {
+        waitGame=waiting;
         toolBox = new HBox();
         toolBox.setSpacing(5);
         objectivePublicBox = new HBox();
@@ -122,7 +119,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         utilStage.initStyle(StageStyle.UTILITY);
         utilStage.initModality(Modality.APPLICATION_MODAL);
         utilStage.initOwner(owner);
-
         //utils for tool card
         toolStage = new Stage(StageStyle.TRANSPARENT);
         toolStage.initModality(Modality.APPLICATION_MODAL);
@@ -130,27 +126,15 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         value = new ShowValue(toolStage);
         //setClass For show a bigger card
         cardShow = new ShowCardBox(gameStage, 700, 600);
-        popUpGame = new AlertMessage(gameStage);
-        popUpWait = new AlertMessage(utilStage);
+        //TODO asfdsvgdsgagadfgad
         setInit();
         setBoard();
-    }
-
-    private void closeGame(Stage stage) {
-        stage.setOnCloseRequest(e -> {
-     /*       Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
-            if (result) {
-               // getGuiInstance().disconnect();
-                if (utilStage.isShowing()) utilStage.close();
-                else gameStage.close();
-            } else e.consume();*/
-        });
     }
 
 
     private void setInit() {
         utilStage.setTitle("Pick a Window");
-        HBox allCards = new HBox();
+        allCards = new HBox();
         allCards.setAlignment(Pos.TOP_CENTER);
         allCards.setSpacing(10);
         allCards.getChildren().addAll(toolBox, objectivePublicBox, objectivePrivateBox);
@@ -172,7 +156,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
         currentRound = new Text("Giro: 1");
         currentTurn = new Text("Turno: 1");
-        VBox infoGame = new VBox(currentRound, currentTurn);
+        infoGame = new VBox(currentRound, currentTurn);
         infoGame.setAlignment(Pos.CENTER);
         infoGame.setSpacing(5);
         boxAllRound.getChildren().add(infoGame);
@@ -184,7 +168,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         centerBox.setAlignment(Pos.CENTER);
         //The button for menu in bottom position
         //Button of the menu game
-        HBox menuButton = new HBox();
+        menuButton = new HBox();
         menuButton.setAlignment(Pos.BASELINE_RIGHT);
         gameButton = new Button[3];
         for (int i = 0; i < gameButton.length; i++) {
@@ -228,51 +212,26 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         return imageView;
     }
 
-    //*************************************************VISITOR PATTERN*********************************************************************************
-    //*************************************************VISITOR PATTERN*********************************************************************************
-    //*************************************************VISITOR PATTERN*********************************************************************************
-    //*************************************************VISITOR PATTERN*********************************************************************************
-    //*************************************************VISITOR PATTERN*********************************************************************************
-    //*************************************************VISITOR PATTERN*********************************************************************************
-    //*************************************************VISITOR PATTERN*********************************************************************************
-    //*************************************************VISITOR PATTERN**********************************************************************************
-
-    @Override
-    public void showEventView(EventClient eventClient) {
-        System.out.println("Arrivato il pacchetto: " + eventClient);
-        Platform.runLater(() -> eventClient.acceptGeneric(this));
-    }
-
-    @Override
-    public void sendEventToNetwork(EventController eventController) {
-        eventController.setPlayerId(playerId);
-    }
-
-    @Override
-    public void visit(EventClientFromController event) {
-        System.out.println("Arrivato il pacchetto: " + event + "\n");
-        event.acceptControllerEvent(this);
-    }
-
-    @Override
-    public void visit(EventClientFromModel event) {
-        System.out.println("Arrivato il pacchetto: " + event + "\n");
-        event.acceptModelEvent(this);
-    }
-
 
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
+    public void visit(StartGame event) {
+        playerId=event.getPlayerId();
+        waitGame.closeWait();
+        setInit();
+        setBoard();
+        System.err.println("viene accettato :" + event.toString());
+        //TODO show the stage
 
-    @Override
+    }
     public void visit(EndGame event) {
         System.out.println("viene accettato :" + event.toString());
     }
 
-    @Override
-    public void visit(MoveTimeoutExpired event) {
+
+    public void timeOver() {
         IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
         //disattiva dicepool, windowPattern, roundtrack, toolcard
         disableDiceOfDicePool();
@@ -282,64 +241,27 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         new AlertMessage(gameStage).displayMessage("Hai finito il tempo a disposizione");
     }
 
-    @Override
-    public void visit(LoginResponse event) {
-        //TODO disattivare lo stage del login e avviare la wait room se restituisce false
-    //    new WaitGame(utilStage).displayMessage("aspetta che si connettano tutti");
-    }
-
-    @Override
-    public void visit(ConnectionDown event) {
-      //  new SetUpConnection().display();
-
-    }
-
-    @Override
-    public void visit(AskLogin event) {
-    }
-
 
     /**
      * Method of the Visitor Pattern, event received from the controller
      * to activate the button of the game for the player
      *
-     * @param event StartPlayerTurn
      */
-    @Override
-    public void visit(StartGame event) {
-        System.err.println("viene accettato :" + event.toString());
-
-    }
-
-   /* @Override
-    public void visit(JoinGame event) {
-        //TODO aggiungere cose speciale del join game
-        System.err.println("è arrivato il pacchetto join, non l'ho mai visto prima d'ora viene accettato :" + event.toString());
-        gameStage.show();
-    }*/
-
-    /**
-     * Method of the Visitor Pattern, event received from the controller
-     * to activate the button of the game for the player
-     *
-     * @param event StartPlayerTurn
-     */
-    @Override
-    public void visit(StartPlayerTurn event) {
+    public void ableTurn() {
         IntStream.range(0, comboBoxSingleRound.length).forEach(i -> comboBoxSingleRound[i].getSelectionModel().clearSelection());
         for (Text t : playersName) t.setFill(Color.BLACK);
         playersName[playerId].setFill(Color.RED);
         gameButton[0].setOnAction(e -> {
             ControllerMoveDrawAndPlaceDie packet = new ControllerMoveDrawAndPlaceDie();
-            sendEventToNetwork(packet);
+            getInstanceControllerGUI().sendEventToNetwork(packet);
         });
         gameButton[1].setOnAction(e -> {
             ControllerMoveUseToolCard packet = new ControllerMoveUseToolCard();
-            sendEventToNetwork(packet);
+            getInstanceControllerGUI().sendEventToNetwork(packet);
         });
         gameButton[2].setOnAction(e -> {
             ControllerEndTurn packet = new ControllerEndTurn();
-            sendEventToNetwork(packet);
+            getInstanceControllerGUI().sendEventToNetwork(packet);
         });
         new AlertMessage(gameStage).displayMessage("è il tuo turno!");
 
@@ -351,10 +273,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      *
      * @param event WaitYourTurn
      */
-    @Override
-    public void visit(WaitYourTurn event) {
+    public void notYourTurn(WaitYourTurn event) {
         //TODO disattivare tutti i comandi
-        //disattiva il menu
         IntStream.range(0, comboBoxSingleRound.length).forEach(i -> comboBoxSingleRound[i].getSelectionModel().clearSelection());
         IntStream.range(0, gameButton.length).forEach(i -> gameButton[i].setOnAction(null));
         //disattiva dicepool, windowPattern, roundtrack, toolcard
@@ -371,10 +291,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      * Method of the Visitor Pattern, event received from the controller
      * to let the player select a cell of the window
      *
-     * @param event SelectCellOfWindow
      */
-    @Override
-    public void visit(SelectCellOfWindow event) {
+    public void activeCellOfWindow() {
         disableDiceOfDicePool();
         activeWindow(playerId);
         disableAllRound();
@@ -398,7 +316,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             info[0] = indexRow;
             info[1] = indexColumn;
             packet.setInfo(info);
-            sendEventToNetwork(packet);
+            getInstanceControllerGUI().sendEventToNetwork(packet);
         });
     }
 
@@ -414,10 +332,9 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      * Method of the Visitor Pattern, event received from the controller
      * to let the player pick a dice from the round pool
      *
-     * @param event SelectDiceFromDraftPool
      */
-    @Override
-    public void visit(SelectDiceFromRoundTrack event) {
+
+    public void activeDiceFromRoundTrack() {
         activeRoundTrack();
         disableDiceOfDicePool();
         disableWindow(playerId);
@@ -445,7 +362,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
                 info[0] = indexRound;
                 info[1] = comboBoxSingleRound[indexRound].getSelectionModel().getSelectedIndex();
                 packet.setInfo(info);
-                sendEventToNetwork(packet);
+                getInstanceControllerGUI().sendEventToNetwork(packet);
             });
         }
     }
@@ -454,36 +371,33 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
         IntStream.range(0, comboBoxSingleRound.length).forEach(i -> comboBoxSingleRound[i].setOnAction(null));
     }
 
-    @Override
-    public void visit(SelectValueDice event) {
+
+    public void activeSelectValueDice() {
         int param = value.displayValuePool();
         ControllerInfoEffect packet = new ControllerInfoEffect();
         packet.setPlayerId(playerId);
         int[] info = new int[1];
         info[0] = param;
         packet.setInfo(info);
-        sendEventToNetwork(packet);
+        getInstanceControllerGUI().sendEventToNetwork(packet);
     }
 
-    @Override
-    public void visit(SelectIncrementOrDecreaseDice event) {
+    public void activeSelectIncrementOrDecreaseDice() {
         int param = value.displayIncreaseDecrease();
         ControllerInfoEffect packet = new ControllerInfoEffect();
         packet.setPlayerId(playerId);
         int[] info = new int[1];
         info[0] = param;
         packet.setInfo(info);
-        sendEventToNetwork(packet);
+        getInstanceControllerGUI().sendEventToNetwork(packet);
     }
 
     /**
      * Method of the Visitor Pattern, event received from the controller
      * to let the player pick a dice from the draft pool
      *
-     * @param event SelectDiceFromDraftPool
      */
-    @Override
-    public void visit(SelectDiceFromDraftPool event) {
+    public void activeSelectDiceFromDraftPool() {
         for (int i = 0; i < dicePool.size(); i++) activeDiceOfDicePool(i);
         disableWindow(playerId);
         disableAllRound();
@@ -498,7 +412,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
                     int[] info = new int[1];
                     info[0] = index;
                     packet.setInfo(info);
-            sendEventToNetwork(packet);
+            getInstanceControllerGUI().sendEventToNetwork(packet);
                 }
         );
     }
@@ -511,10 +425,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      * Method of the Visitor Pattern, event received from the controller
      * to let the player pick a tool card
      *
-     * @param event SelectToolCard
      */
-    @Override
-    public void visit(SelectToolCard event) {
+    public void activeSelectToolCard() {
         disableDiceOfDicePool();
         disableWindow(playerId);
         disableAllRound();
@@ -529,8 +441,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      *
      * @param event MessageError
      */
-    @Override
-    public void visit(MessageError event) {
+
+    public void activeMessageError(MessageError event) {
         if (utilStage.isShowing()) new AlertMessage(utilStage).displayMessage(event.getMessage());
         else new AlertMessage(gameStage).displayMessage(event.getMessage());
     }
@@ -541,8 +453,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      *
      * @param event MessageOk
      */
-    @Override
-    public void visit(MessageOk event) {
+    public void activeMessageOk(MessageOk event) {
         if (utilStage.isShowing()) new AlertMessage(utilStage).displayMessage(event.getMessageConfirm());
         else new AlertMessage(gameStage).displayMessage(event.getMessageConfirm());
     }
@@ -551,10 +462,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      * Method of the Visitor Pattern, event received from the controller
      * for show the stage of the init game
      *
-     * @param event ShowAllCards
      */
-    @Override
-    public void visit(ShowAllCards event) {
+    public void activeShowAllCards() {
         waitGame.closeWait();
         utilStage.show();
     }
@@ -563,10 +472,8 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      * Method of the Visitor Pattern, event received from the controller
      * for activated the selection of the window
      *
-     * @param event SelectInitialWindowPatternCard
      */
-    @Override
-    public void visit(SelectInitialWindowPatternCard event) {
+    public void activeSelectInitialWindowPatternCard() {
         for (int i = 0; i < boxWindowPoolChoice.length; i++) {
             activeWindowChoice(i);
         }
@@ -578,7 +485,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
             disableWindowChoice();
             ControllerSelectInitialWindowPatternCard packet = new ControllerSelectInitialWindowPatternCard();
             packet.setSelectedIndex(index);
-            sendEventToNetwork(packet);
+            getInstanceControllerGUI().sendEventToNetwork(packet);
         });
     }
 
@@ -590,26 +497,33 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
      * Method of the Visitor Pattern, event received from the controller
      * for close the initial and open the start the main game.
      *
-     * @param event InitialEnded
      */
-    @Override
-    public void visit(InitialEnded event) {
+    public void goToBoard() {
         utilStage.close();
         cardBox.getChildren().addAll(toolBox, objectivePublicBox, objectivePrivateBox);
         gameStage.showAndWait();
     }
+    //*************************************************VISITOR PATTERN*********************************************************************************
+    //*************************************************VISITOR PATTERN*********************************************************************************
+   //************************************* UPLOAD FROM MODEL ************************************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
+    //************************************* UPLOAD FROM MODEL ************************************************************************************
 
-    //************************************* UPLOAD FROM MODEL ************************************************************************************
-    //************************************* UPLOAD FROM MODEL ************************************************************************************
-    //************************************* UPLOAD FROM MODEL ************************************************************************************
-    //************************************* UPLOAD FROM MODEL ************************************************************************************
-    //************************************* UPLOAD FROM MODEL ************************************************************************************
-    //************************************* UPLOAD FROM MODEL ************************************************************************************
-    //************************************* UPLOAD FROM MODEL ************************************************************************************
 
     @Override
-    public void visit(UpdateDisconnectionDuringSetup event) {
+    public void visit(UpdateDisconnectionDuringGame event) {
+        //TODO implementare
+    }
 
+    @Override
+    public void visit(UpdatePlayerConnection event) {
+        if (waitGame == null) System.out.println("è ");
+        if (waitGame.getStage().isShowing()) waitGame.addPlayerOnline(event.getIndex(), event.getName(), true);
+
+    }
+    @Override
+    public void visit(UpdateDisconnectionDuringSetup event) {
+        waitGame.deletePlayerKicked();
     }
 
     @Override
@@ -618,20 +532,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     }
 
     @Override
-    public void visit(UpdateDisconnectionDuringGame event) {
-
-    }
-
-    @Override
-    public void visit(UpdatePlayerConnection event) {
-
-    }
-
-    @Override
     public void visit(UpdateNamePlayers event) {
+        setInit();
         setBoard();
         int numberOfPlayer = event.getPlayerNames().length;
         playerId = event.getPlayerId();
+        System.out.println(playerId);
         boxAllDataPlayer = new HBox[numberOfPlayer];
         infoPlayer = new VBox[numberOfPlayer];
         playersName = new Text[numberOfPlayer];
@@ -780,7 +686,7 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
                 if (cardShow.displayCard(toolCard[i], true)) {
                     ControllerSelectToolCard packet = new ControllerSelectToolCard();
                     packet.setIndexToolCard(i);
-                    sendEventToNetwork(packet);
+                    getInstanceControllerGUI().sendEventToNetwork(packet);
                 }
             });
         });

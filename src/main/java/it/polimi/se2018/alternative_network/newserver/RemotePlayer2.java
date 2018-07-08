@@ -83,7 +83,12 @@ public abstract class RemotePlayer2 {
             return false;
         }
     }
-
+    /**
+     * method it's the same as is player running so
+     * rmi can try to ping
+     * socket response true or false depending if the thread is open
+     */
+    public abstract boolean checkOnline() throws ConnectionPlayerException;
 
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
@@ -109,12 +114,6 @@ public abstract class RemotePlayer2 {
      */
     public abstract void kickPlayerOut();
 
-    /**
-     * method it's the same as is player running so
-     * rmi can try to ping
-     * socket response true or false depending if the thread is open
-     */
-    public abstract boolean checkOnline() throws ConnectionPlayerException;
 
     //**************************************************************************************************************
     //                                             PERSISTENZA

@@ -11,6 +11,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import static it.polimi.se2018.alternative_network.client.ClientFactory.getClientFactory;
+
 
 /**
  * class that handle the EventPreGame to the server
@@ -55,7 +57,7 @@ public class Login {
             packet = new LoginRequest(nameInput.getText());
             stage.close();
         });
-        back.setOnAction(e -> stage.close());
+        back.setOnAction(e -> getClientFactory().getAbstractClient().shutDownClient2());
     }
 
     /**
@@ -79,6 +81,9 @@ public class Login {
         stage.initOwner(owner);
         stage.setResizable(false);
         stage.setScene(loginScene);
+        stage.setOnCloseRequest(e -> {
+            getClientFactory().getAbstractClient().shutDownClient2();
+        });
         stage.showAndWait();
         return packet;
     }
