@@ -98,9 +98,9 @@ public class TimerThread implements Runnable {
      */
     public void startThread(int numberToReturn) {
         withIndex = true;
-        System.out.println("Inderx timer richiesto è:" + numberToReturn);
+      //  System.out.println("Inderx timer richiesto è:" + numberToReturn);
         this.index.set(numberToReturn);
-        System.out.println("Inderx timer impostato è: " + index.get());
+      //  System.out.println("Inderx timer impostato è: " + index.get());
         timerThread = new Thread(this);
         running.set(true);
         timerThread.start();

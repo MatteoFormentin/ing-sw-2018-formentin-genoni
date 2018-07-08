@@ -3,7 +3,8 @@ package it.polimi.se2018;
 import it.polimi.se2018.alternative_network.newserver.Server2;
 import it.polimi.se2018.view.cli.CliController;
 import it.polimi.se2018.view.cli.CliParser;
-import it.polimi.se2018.view.gui.ControllerGUI;
+
+import static it.polimi.se2018.view.gui.GuiMain.launchGui;
 
 
 public class SagradaLauncher {
@@ -19,7 +20,7 @@ public class SagradaLauncher {
                     CliController.main(args);
                     break;
                 case 1:
-                    ControllerGUI.main(args);
+                    launchGui();
                     break;
             }
         }

@@ -24,16 +24,14 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * @author DavideMammarella
  */
-public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor, EventPreGameVisitor,TimerCallback {
+public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVisitor, EventPreGameVisitor{
 
     private RMIServerInterfaceSeenByClient serverRMI;
     private RMIClientInterface client; //instance of the stud
     private RMIClientInterface remoteRef; //remoteRef of the stud in the server used for login
-    private TimerThread timerThread;
 
     public RMIClient2StartAndInput(String serverIpAddress, int serverPort, UIInterface view) {
-        super(serverIpAddress,serverPort,view);
-        timerThread= new TimerThread(this,10*1000);
+        super(serverIpAddress, serverPort, view);
     }
 
     private RMIServerInterfaceSeenByClient getServerRMI() {
@@ -75,9 +73,11 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
         try {
             serverRMI.sayHelloToGatherer();
             UnicastRemoteObject.unexportObject(client, true);
+
             ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
             view.showEventView(packet);
         } catch (RemoteException ex) {
+
             ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
             view.showEventView(packet);
         }
@@ -120,7 +120,6 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
     public void visit(LoginRequest event) {
         try {
             serverRMI.addClient(event.getNickname(), client);
-            timerThread.startThread();
         } catch (RemoteException ex) {
             ConnectionDown packet = new ConnectionDown("La connessione è caduta.", false);
             view.showEventView(packet);
@@ -128,20 +127,4 @@ public class RMIClient2StartAndInput extends AbstractClient2 implements ServerVi
 
     }
 
-    @Override
-    public void timerCallback() {
-        try {
-            serverRMI.sayHelloToGatherer();
-            timerThread.startThread();
-        } catch (RemoteException ex) {
-            ConnectionDown packet = new ConnectionDown("Eri già stato scollegato dal server.", true);
-            view.showEventView(packet);
-        }
-
-    }
-
-    @Override
-    public void timerCallbackWithIndex(int infoToReturn) {
-
-    }
 }

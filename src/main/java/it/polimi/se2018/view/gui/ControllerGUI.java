@@ -3,26 +3,30 @@ package it.polimi.se2018.view.gui;
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
 import it.polimi.se2018.alternative_network.client.ClientFactory;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
+import it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game.LoginRequest;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
 import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_input.*;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_model.EventClientFromModel;
 import it.polimi.se2018.view.UIInterface;
-import it.polimi.se2018.view.gui.classes_database.PlayerOnline;
-import it.polimi.se2018.view.gui.stage.Login;
-import it.polimi.se2018.view.gui.stage.WaitGame;
+import it.polimi.se2018.view.gui.gamestage.GuiGame;
+import it.polimi.se2018.view.gui.stage.*;
+import javafx.application.Platform;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import org.fusesource.jansi.AnsiConsole;
 
-import java.util.LinkedList;
-
-import static it.polimi.se2018.view.gui.GuiMain.launchGui;
-import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
+import static org.fusesource.jansi.Ansi.Color.DEFAULT;
+import static org.fusesource.jansi.Ansi.Color.GREEN;
+import static org.fusesource.jansi.Ansi.Color.RED;
+import static org.fusesource.jansi.Ansi.ansi;
 
 /**
  * the only class that link the Network to the Gui and vice versa.
@@ -31,81 +35,50 @@ import static it.polimi.se2018.view.gui.gamestage.GuiGame.getGuiGame;
  */
 public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVisitor {
 
-    //TODO this class need to hold on all the stage in game
-
     //field for connect to server
-    private static ControllerGUI instance;
-    private ClientFactory factoryInstance;
-    private AbstractClient2 client2;
+    private static ControllerGUI instanceControllerGUI;
+    private ClientFactory clientFactory;
+
+    private int myId;
 
     //field for handle the gui
+    private Stage primaryStage;
+    private Stage stage2;
+    private SetUpConnection connection;
     private Login login;
     private WaitGame waitGame;
+    private GuiGame game;
 
-
-    //field
-    private LinkedList<PlayerOnline> players;
-
-    private ControllerGUI() {
-
+    public static ControllerGUI getInstanceControllerGUI() {
+        return instanceControllerGUI;
     }
 
-    public static void main(String[] args) {
-        getSingletonGUIInstance();
-        instance.setFactoryInstance(ClientFactory.getClientFactory());
-        instance.startGui();
+    ControllerGUI(Stage primaryStage) {
+        instanceControllerGUI=this;
+        this.primaryStage=primaryStage;
+        clientFactory= ClientFactory.getClientFactory();
+        connection = new SetUpConnection(clientFactory);
+        login = new Login();
+        waitGame=new WaitGame("Aspetta che tutti i giocatori si siano collegati");
+        game =new GuiGame(primaryStage);
+        stage2 = new Stage(StageStyle.UTILITY);
+        stage2.initModality(Modality.APPLICATION_MODAL);
+        stage2.initOwner(primaryStage);
+        stage2.setResizable(false);
+        stage2.setOnCloseRequest(e->{
+            ConfirmBox ask = new ConfirmBox("Sei dicuro di volerti disconnettere?");
+            clientFactory.getAbstractClient().shutDownClient2();
+        });
     }
 
-    /**
-     * Get the Instance of the Gui, if null the application is off
-     *
-     * @return the instance of the bridge between the JavaFx Application and the Client
-     */
-    public static ControllerGUI getGuiInstance() {
-        return instance;
-    }
-
-    /**
-     * Singleton method for build the Gui
-     *
-     * @return ControllerGUI
-     */
-    public static ControllerGUI getSingletonGUIInstance() {
-        if (instance == null) instance = new ControllerGUI();
-        return instance;
-    }
-
-    public ClientFactory getFactoryInstance() {
-        return factoryInstance;
-    }
-
-    public void setFactoryInstance(ClientFactory factoryInstance) {
-        this.factoryInstance = factoryInstance;
-    }
-
-    public AbstractClient2 getClient2() {
-        return client2;
-    }
-
-    public void setClient2(AbstractClient2 client2) {
-        this.client2 = client2;
-    }
-
-    /**
-     * Start the single Thread of JavaFx Application
-     */
-    public void startGui() {
-        launchGui();
-    }
-
-    public WaitGame getWaitGame() {
-        return waitGame;
+    void intiConnection(Stage stage){
+        primaryStage=stage;
+        connection.display(stage2);
+        clientFactory.getAbstractClient().connectToServer2();
     }
 
     public void disconnect() {
-
-        client2.shutDownClient2();
-
+        clientFactory.getAbstractClient().shutDownClient2();
     }
 
     //*************************************************************************************
@@ -121,10 +94,9 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
      */
     @Override
     public void showEventView(EventClient eventClient) {
-        //TODO cambiare qui
-        getGuiGame().showEventView(eventClient);
+        AnsiConsole.out.println(ansi().fg(GREEN).a("Ricevuto: "+eventClient));
+        eventClient.acceptGeneric(this);
     }
-
     /**
      * Method for send to the server the Event Controller
      *
@@ -132,24 +104,10 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
      */
     @Override
     public void sendEventToNetwork(EventController eventController) {
-        client2.sendEventToController2(eventController);
+        AnsiConsole.out.println(ansi().fg(RED).a("Inviati al network: "+eventController));
+        eventController.setPlayerId(myId);
+        clientFactory.getAbstractClient().sendEventToController2(eventController);
     }
-
-    @Override
-    public void restartConnection(String message) {
-
-    }
-
-    @Override
-    public void errPrintln(String message) {
-
-    }
-
-    @Override
-    public void loginOk() {
-
-    }
-
 
     //*************************************************************************************
     //*************************************************************************************
@@ -158,12 +116,12 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
     //*************************************************************************************
     @Override
     public void visit(EventClientFromController eventView) {
-        eventView.acceptGeneric(this);
+        Platform.runLater(()-> eventView.acceptControllerEvent(this));
     }
 
     @Override
     public void visit(EventClientFromModel eventView) {
-        eventView.acceptGeneric(this);
+        Platform.runLater(()-> eventView.acceptModelEvent(game));
     }
 
 
@@ -175,27 +133,36 @@ public class ControllerGUI implements UIInterface, ViewVisitor, ViewControllerVi
 
     @Override
     public void visit(LoginResponse event) {
-        //TODO cambiare lo stage dalla waitRoom
+        stage2.close();
+        if(event.isLoginSuccessFull()){
+            if(event.isLogin()){
+                waitGame.displayWaiting(stage2);
+            }else{
+            }
+        }else{
+            new AlertMessage(stage2).displayMessage(event.getCause());
+        }
     }
 
     @Override
     public void visit(ConnectionDown event) {
-        //TODO mostrare messaggio di connessione down
+        new AlertMessage(stage2).displayMessage(event.getCause());
     }
 
     @Override
     public void visit(AskLogin event) {
-        //TODO mostrare messaggio di login
-    }
-
-    @Override
-    public void visit(AskNewGame event) {
-
+        LoginRequest packet = login.display(stage2);
+        if(packet==null) clientFactory.getAbstractClient().shutDownClient2();
+        else {
+            clientFactory.getAbstractClient().sendEventToController2(packet);
+        }
     }
 
     @Override
     public void visit(StartGame event) {
-
+        Platform.runLater(()-> {
+            game.showEventView(event);
+        });
     }
 
     @Override

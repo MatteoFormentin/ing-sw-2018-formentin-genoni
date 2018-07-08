@@ -7,7 +7,6 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
@@ -40,15 +39,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
 
-import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
-
 /**
  * Class for handle the Gui gameboard
  *
  * @author Luca Genoni
  */
 public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, ViewControllerVisitor {
-
     private static GuiGame instance;
     private static String diceSource = "file:src/resources/dadijpg/";
     private static String toolCardSource = "file:src/resources/carte_jpg/carte_strumento_";
@@ -111,45 +107,21 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     private LinkedList<ImageView> dicePool;
     private Button[] gameButton;
 
-    private GuiGame() {
+    public GuiGame(Stage owner) {
         toolBox = new HBox();
         toolBox.setSpacing(5);
         objectivePublicBox = new HBox();
         objectivePublicBox.setSpacing(5);
         objectivePrivateBox = new HBox();
         objectivePrivateBox.setSpacing(5);
-    }
-
-    public static GuiGame getGuiGame() {
-        return instance;
-    }
-
-    public static GuiGame createGuiGame() {
-        if (instance == null) instance = new GuiGame();
-        return instance;
-    }
-
-    @Override
-    public void errPrintln(String error) {
-        System.err.println();
-        System.err.println(error);
-        System.err.println();
-    }
-
-    public void setGameWait(Stage owner) {
-        waitGame = new WaitGame(owner);
-        waitGame.displayMessage("Ti sei aggiunto ad una partita\nAspetta che la stanza sia pronta");
-        closeGame(waitGame.getStage());
         gameStage = new Stage();
         gameStage.initStyle(StageStyle.UTILITY);
         gameStage.initModality(Modality.APPLICATION_MODAL);
         gameStage.initOwner(owner);
-        closeGame(gameStage);
         utilStage = new Stage();
         utilStage.initStyle(StageStyle.UTILITY);
         utilStage.initModality(Modality.APPLICATION_MODAL);
         utilStage.initOwner(owner);
-        closeGame(utilStage);
 
         //utils for tool card
         toolStage = new Stage(StageStyle.TRANSPARENT);
@@ -166,12 +138,12 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
 
     private void closeGame(Stage stage) {
         stage.setOnCloseRequest(e -> {
-            Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
+     /*       Boolean result = new ConfirmBox(gameStage).displayMessage("Sei sicuro di voler abbandonare la partita?");
             if (result) {
-                getGuiInstance().disconnect();
+               // getGuiInstance().disconnect();
                 if (utilStage.isShowing()) utilStage.close();
                 else gameStage.close();
-            } else e.consume();
+            } else e.consume();*/
         });
     }
 
@@ -274,22 +246,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     @Override
     public void sendEventToNetwork(EventController eventController) {
         eventController.setPlayerId(playerId);
-        getGuiInstance().sendEventToNetwork(eventController);
-    }
-
-    @Override
-    public void loginOk() {
-
-    }
-
-    @Override
-    public void restartConnection(String cause) {
-        System.out.println("Connessione persa");
-        Platform.runLater(() -> {
-            if (utilStage.isShowing()) new AlertMessage(utilStage).displayMessage(cause);
-            else new AlertMessage(gameStage).displayMessage(cause);
-            gameStage.close();
-        });
     }
 
     @Override
@@ -305,28 +261,6 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     }
 
 
-    @Override
-    public void visit(UpdateDisconnectionDuringSetup event) {
-        waitGame.deletePlayerKicked();
-    }
-
-    @Override
-    public void visit(UpdateNamePlayersDuringSetUp event) {
-        waitGame.deletePlayerKicked();
-        waitGame.addPlayerOnline(event.getPlayerNames());
-    }
-
-    @Override
-    public void visit(UpdateDisconnectionDuringGame event) {
-        //TODO implementare
-    }
-
-    @Override
-    public void visit(UpdatePlayerConnection event) {
-        if (waitGame == null) System.out.println("è ");
-        if (waitGame.getStage().isShowing()) waitGame.addPlayerOnline(event.getIndex(), event.getName(), true);
-
-    }
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
     //*************************************************From Controller*********************************************************************************
@@ -351,24 +285,19 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     @Override
     public void visit(LoginResponse event) {
         //TODO disattivare lo stage del login e avviare la wait room se restituisce false
-        new WaitGame(utilStage).displayMessage("aspetta che si connettano tutti");
+    //    new WaitGame(utilStage).displayMessage("aspetta che si connettano tutti");
     }
 
     @Override
     public void visit(ConnectionDown event) {
-        new SetUpConnection(utilStage).display();
+      //  new SetUpConnection().display();
 
     }
 
     @Override
     public void visit(AskLogin event) {
-        new Login(utilStage).display();
     }
 
-    @Override
-    public void visit(AskNewGame event) {
-        //TODO creare un pacchetto asdf
-    }
 
     /**
      * Method of the Visitor Pattern, event received from the controller
@@ -677,6 +606,26 @@ public class GuiGame implements UIInterface, ViewVisitor, ViewModelVisitor, View
     //************************************* UPLOAD FROM MODEL ************************************************************************************
     //************************************* UPLOAD FROM MODEL ************************************************************************************
     //************************************* UPLOAD FROM MODEL ************************************************************************************
+
+    @Override
+    public void visit(UpdateDisconnectionDuringSetup event) {
+
+    }
+
+    @Override
+    public void visit(UpdateNamePlayersDuringSetUp event) {
+
+    }
+
+    @Override
+    public void visit(UpdateDisconnectionDuringGame event) {
+
+    }
+
+    @Override
+    public void visit(UpdatePlayerConnection event) {
+
+    }
 
     @Override
     public void visit(UpdateNamePlayers event) {

@@ -19,26 +19,14 @@ import javafx.stage.StageStyle;
 public class ConfirmBox {
     private boolean answer;
     private Stage stage;
+    private Scene boxMessage;
 
     /**
      * Constructor
      *
      * @param owner of the stage for this class
      */
-    public ConfirmBox(Stage owner) {
-        stage = new Stage(StageStyle.UTILITY);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(owner);
-        answer = false;
-    }
-
-    /**
-     * Method for display the confirm Box
-     *
-     * @param message the message to show
-     * @return true if click yes button, no otherwise.
-     */
-    public boolean displayMessage(String message) {
+    public ConfirmBox(String message) {
         Background confirmBackground = new Background(new BackgroundFill(Color.web("#bbb"), CornerRadii.EMPTY, Insets.EMPTY));
         Label confirmMessage = new Label();
         confirmMessage.setText(message);
@@ -62,8 +50,22 @@ public class ConfirmBox {
         layoutMessage.getChildren().addAll(confirmMessage, buttonLine);
         layoutMessage.setAlignment(Pos.CENTER);
         layoutMessage.backgroundProperty().setValue(confirmBackground);
-        Scene boxMessage = new Scene(layoutMessage, 400, 200, Color.BLACK);
+        boxMessage = new Scene(layoutMessage, 400, 200, Color.BLACK);
         boxMessage.setFill(Color.BROWN);
+
+    }
+
+    /**
+     * Method for display the confirm Box
+     *
+     * @param message the message to show
+     * @return true if click yes button, no otherwise.
+     */
+    public boolean displayMessage(Stage owner) {
+        stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(owner);
+        answer = false;
         stage.setScene(boxMessage);
         stage.showAndWait();
         return answer;

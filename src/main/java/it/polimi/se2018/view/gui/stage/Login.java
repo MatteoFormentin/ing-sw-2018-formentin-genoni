@@ -11,7 +11,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
 
 /**
  * class that handle the EventPreGame to the server
@@ -19,41 +18,21 @@ import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
  * @author Luca Genoni
  */
 public class Login {
-    private boolean answer;
+
     private Stage stage;
+    private Scene loginScene;
+    private LoginRequest packet;
+
+
 
     /**
      * Constructor
      *
      * @param owner of the stage for this class
      */
-    public Login(Stage owner) {
-        stage = new Stage(StageStyle.UTILITY);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(owner);
-        stage.setResizable(false);
-        answer = false;
-    }
-
-    /**
-     * for get the stage of the waiting
-     *
-     * @return the stage where the waiting is running
-     */
-    public Stage getStage() {
-        return stage;
-    }
-
-    /**
-     * Method for display the login
-     *
-     * @return true if login is successful, false otherwise
-     */
-    public void display() {
+    public Login() {
         GridPane form = new GridPane();
-        Scene scene = new Scene(form, 250, 150);
-        stage.setScene(scene);
-        answer = false;
+        loginScene = new Scene(form, 250, 150);
         //gridPane design
         form.setAlignment(Pos.CENTER);
         form.setHgap(5);
@@ -73,11 +52,34 @@ public class Login {
         //components action
         connect.setOnAction(e -> {
             //TODO creare il pachetto di login e inviarlo
-            LoginRequest packet = new LoginRequest(nameInput.getText());
-            getGuiInstance().getClient2().sendEventToController2(packet);
+            packet = new LoginRequest(nameInput.getText());
             stage.close();
         });
         back.setOnAction(e -> stage.close());
-        stage.show();
+    }
+
+    /**
+     * for get the stage of the waiting
+     *
+     * @return the stage where the waiting is running
+     */
+    public Stage getStage() {
+        return stage;
+    }
+
+    /**
+     * Method for display the login
+     *
+     * @return true if login is successful, false otherwise
+     */
+    public LoginRequest display(Stage owner) {
+        packet=null;
+        stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(owner);
+        stage.setResizable(false);
+        stage.setScene(loginScene);
+        stage.showAndWait();
+        return packet;
     }
 }

@@ -2,10 +2,9 @@ package it.polimi.se2018.alternative_network.newserver;
 
 import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
 import it.polimi.se2018.alternative_network.newserver.room.GameRoom;
-import it.polimi.se2018.controller.effect.EffectGame;
+import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
 
 import java.util.LinkedList;
 
@@ -76,6 +75,16 @@ public abstract class RemotePlayer2 {
         this.gameInterface = gameInterface;
     }
 
+    public boolean isRunning() {
+        try {
+            checkOnline();
+            return true;
+        }catch(ConnectionPlayerException ex){
+            return false;
+        }
+    }
+
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - REQUEST TO THE CLIENT
     //------------------------------------------------------------------------------------------------------------------
@@ -88,19 +97,7 @@ public abstract class RemotePlayer2 {
      */
     public abstract void sendEventToView(EventClient eventClient);
 
-    /**
-     * method of the Rmi player for send the event directly to the game room
-     * without passing thought the main server that hold all the game room
-     *
-     * @param eventController event requested by the client
-     */
-    public void sendEventToGame(EventController eventController){
-        if(getGameInterface()!=null) getGameInterface().sendEventToGameRoom(eventController);
-        else {
-            AskNewGame packet = new AskNewGame();
-            sendEventToView(packet);
-        }
-    }
+
     //------------------------------------------------------------------------------------------------------------------
     // METHOD CALLED FROM SERVER - INTERNAL REQUEST
     //------------------------------------------------------------------------------------------------------------------
@@ -117,7 +114,7 @@ public abstract class RemotePlayer2 {
      * rmi can try to ping
      * socket response true or false depending if the thread is open
      */
-    public abstract boolean checkOnline();
+    public abstract boolean checkOnline() throws ConnectionPlayerException;
 
     //**************************************************************************************************************
     //                                             PERSISTENZA

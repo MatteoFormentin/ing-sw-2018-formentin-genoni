@@ -144,4 +144,12 @@ public class CliParser {
         return parsed;
     }
 
+    public String parseResources() {
+        String parsed;
+        Scanner in = new Scanner(System.in);
+        parsed = in.next();
+        return parsed;
+    }
+
+
 }

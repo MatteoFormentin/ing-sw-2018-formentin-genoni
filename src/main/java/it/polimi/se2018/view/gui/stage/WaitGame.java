@@ -16,8 +16,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import static it.polimi.se2018.view.gui.GuiMain.closeProgram;
-
 /**
  * Class for handle the waiting room
  *
@@ -29,39 +27,14 @@ public class WaitGame {
     TextField nameInput;
     ObservableList<PlayerOnline> listPlayer;
     private Stage stage;
+    Scene scene;
 
     /**
      * Constructor
      *
-     * @param owner the owner of the waiting stage
+     * @param messageWait the owner of the waiting stage
      */
-    public WaitGame(Stage owner) {
-        stage = new Stage(StageStyle.UTILITY);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(owner);
-        stage.setTitle("Waiting Room");
-        stage.setResizable(false);
-        stage.setOnCloseRequest(e -> {
-            e.consume();
-            closeProgram();
-        });
-    }
-
-    /**
-     * for get the stage of the waiting
-     *
-     * @return the stage where the waiting is running
-     */
-    public Stage getStage() {
-        return stage;
-    }
-
-    /**
-     * show the stage for wait something
-     *
-     * @param messageWait the message to show while the waiting is shown
-     */
-    public void displayMessage(String messageWait) {
+    public WaitGame(String messageWait) {
         Label waitMessage = new Label(messageWait);
         waitMessage.setAlignment(Pos.CENTER);
 
@@ -83,7 +56,6 @@ public class WaitGame {
         nameInput = new TextField();
         nameInput.setMinWidth(100);
 
-
         //Button
         Button login = new Button("EventPreGame");
         Button disconnect = new Button("Disconnect");
@@ -96,10 +68,37 @@ public class WaitGame {
 
         VBox pane = new VBox();
         pane.getChildren().addAll(waitMessage, tableView, hBox);
-        Scene scene = new Scene(pane, 400, 200, Color.RED);
+        scene = new Scene(pane, 400, 200, Color.RED);
         scene.setCursor(Cursor.WAIT);
+
+    }
+
+    /**
+     * for get the stage of the waiting
+     *
+     * @return the stage where the waiting is running
+     */
+    public Stage getStage() {
+        return stage;
+    }
+
+    /**
+     * show the stage for wait something
+     *
+     * @param owner the message to show while the waiting is shown
+     */
+    public void displayWaiting(Stage owner) {
+        stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(owner);
+        stage.setTitle("Waiting Room");
+        stage.setResizable(false);
+        stage.setOnCloseRequest(e -> {
+            e.consume();
+        });
         stage.setScene(scene);
         stage.show();
+
     }
 
     /**

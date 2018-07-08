@@ -144,6 +144,7 @@ public class SocketClient2 extends AbstractClient2 implements Runnable {
     public void run() {
         Thread.currentThread().setName("Socket Client Thread");
         boolean flag = true;
+
         while (flag) {
             try {
                 EventClient received = (EventClient) inputStream.readObject();

@@ -2,6 +2,9 @@ package it.polimi.se2018.view.gui.stage;
 
 
 import it.polimi.se2018.alternative_network.client.AbstractClient2;
+import it.polimi.se2018.alternative_network.client.ClientFactory;
+import it.polimi.se2018.view.UIInterface;
+import it.polimi.se2018.view.gui.ControllerGUI;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -10,8 +13,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
-
 
 /**
  * Class for handle the setup of the connection
@@ -19,33 +20,25 @@ import static it.polimi.se2018.view.gui.ControllerGUI.getGuiInstance;
  * @author Luca Genoni
  */
 public class SetUpConnection {
+
     private Stage stage;
+    private Scene setUp;
+    private AbstractClient2 client2;
+    private AlertMessage wrongInput;
 
     /**
-     * Constructor
-     *
-     * @param owner of the stage for this class
+     * build the Scene of the connection SetUp
+     * @param factory
+     * @param controllerGUI
      */
-    public SetUpConnection(Stage owner) {
-        stage = new Stage(StageStyle.UTILITY);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(owner);
-        stage.setResizable(false);
-    }
+    public SetUpConnection(ClientFactory factory) {
 
-    /**
-     * Method for display the stage
-     */
-    public void display() {
         GridPane form = new GridPane();
-        Scene scene = new Scene(form, 250, 150);
-        stage.setScene(scene);
-
+        setUp = new Scene(form, 250, 150);
         //gridPane design
         form.setAlignment(Pos.CENTER);
         form.setHgap(5);
         form.setVgap(10);
-
 
         //GridPane children
         TextField ipInput = new TextField();
@@ -65,7 +58,6 @@ public class SetUpConnection {
         rb1.setToggleGroup(group);
         rb1.setSelected(true);
 
-
         RadioButton rb2 = new RadioButton("SOCKET");
         rb2.setUserData(1);
         rb2.setToggleGroup(group);
@@ -78,24 +70,47 @@ public class SetUpConnection {
         //components action
         connect.setOnAction(e -> {
             int i = Integer.parseInt(group.getSelectedToggle().getUserData().toString());
-            if (isInt(portInput2) || portInput2.getText() == null || portInput2.getText().equals("")) {
-                AbstractClient2 client = getGuiInstance().getFactoryInstance().createClient(getGuiInstance(), ipInput.getText(), Integer.parseInt(portInput2.getText()), i);
-                client.connectToServer2();
-                getGuiInstance().setClient2(client);
+            int port = isIntOrNull(portInput2);
+            if (port != -1) {
+                client2 = factory.createClient(ControllerGUI.getInstanceControllerGUI(), ipInput.getText(), port, i);
+                client2.connectToServer2();
+            } else {
+                wrongInput.displayMessage("Non è stato inserito un valore ammissibile per la porta");
             }
         });
-        back.setOnAction(e -> stage.close());
-        stage.showAndWait();
     }
 
-    private boolean isInt(TextField input) {
+    /**
+     * method for ask and get the client for the connection
+     *
+     * @param owner the stage owner of this reconnection
+     * @return the client setup
+     */
+    public AbstractClient2 display(Stage owner) {
+        stage = new Stage(StageStyle.UTILITY);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(owner);
+        stage.setResizable(false);
+        stage.setScene(setUp);
+        wrongInput = new AlertMessage(stage);
+        stage.showAndWait();
+        return client2;
+    }
+
+    /**
+     * method that check the integrity constraints of the port
+     *
+     * @param input Text field to check
+     * @return the integer insert, 0 if port is null,-1 if the port is unavailable
+     */
+    private int isIntOrNull(TextField input) {
         try {
-            Integer.parseInt(input.getText());
-            input.setStyle("-fx-text-inner-color: black;");
-            return true;
+            int i = Integer.parseInt(input.getText());
+            if (i < 65535 && i>=0) return i;
+            else return -1;
         } catch (NumberFormatException e) {
-            input.setStyle("-fx-text-inner-color: red;");
-            return false;
+            if (input.getText().equals("")) return 0;
         }
+        return -1;
     }
 }

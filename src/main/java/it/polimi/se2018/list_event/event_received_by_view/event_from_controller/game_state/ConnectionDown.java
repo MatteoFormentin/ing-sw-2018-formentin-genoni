@@ -17,6 +17,10 @@ public class ConnectionDown extends EventClientFromController {
         return cause;
     }
 
+    public boolean isDisconnectionWasRequested() {
+        return disconnectionWasRequested;
+    }
+
     @Override
     public void acceptControllerEvent(ViewControllerVisitor visitor) {
         visitor.visit(this);

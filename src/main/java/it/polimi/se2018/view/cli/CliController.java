@@ -12,7 +12,6 @@ import it.polimi.se2018.list_event.event_received_by_view.ViewVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.EventClientFromController;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.ViewControllerVisitor;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.ConnectionDown;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.LoginResponse;
 import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.request_controller.*;
@@ -125,19 +124,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         cliParser.readSplash();
     }
 
-    /**
-     * Print one error message
-     */
-    public void errPrintln(String error) {
-        System.err.println();
-        System.err.println(error);
-        System.err.println();
-    }
-
-    @Override
-    public void loginOk() {
-
-    }
 
     /**
      * Send one event to server
@@ -149,11 +135,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
 
     public void sendEventToNetwork(EventServer packet) {
         client2.sendEventToController2(packet);
-    }
-
-    @Override
-    public void restartConnection(String message) {
-
     }
 
     /**
@@ -377,12 +358,6 @@ public class CliController implements UIInterface, ViewVisitor, ViewControllerVi
         sendEventToNetwork(packet);
     }
 
-    @Override
-    public void visit(AskNewGame event) {
-        System.out.print("Digita 0 se vuoi reiniziare una nuova partita, 1 per uscire");
-        LoginRequest packet = new LoginRequest(nameThisPlayer);
-        sendEventToNetwork(packet);
-    }
 
     @Override
     public void visit(StartGame event) {

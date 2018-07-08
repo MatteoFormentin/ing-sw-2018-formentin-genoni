@@ -2,7 +2,7 @@ package it.polimi.se2018.alternative_network.newserver.socket;
 
 import it.polimi.se2018.alternative_network.newserver.PrincipalServer;
 import it.polimi.se2018.alternative_network.newserver.RemotePlayer2;
-import it.polimi.se2018.alternative_network.newserver.room.GameInterface;
+import it.polimi.se2018.exception.network_exception.server.ConnectionPlayerException;
 import it.polimi.se2018.list_event.event_received_by_server.EventServer;
 import it.polimi.se2018.list_event.event_received_by_server.ServerVisitor;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_game.EventController;
@@ -10,8 +10,6 @@ import it.polimi.se2018.list_event.event_received_by_server.event_for_server.Eve
 import it.polimi.se2018.list_event.event_received_by_server.event_for_server.EventPreGameVisitor;
 import it.polimi.se2018.list_event.event_received_by_server.event_for_server.event_pre_game.LoginRequest;
 import it.polimi.se2018.list_event.event_received_by_view.EventClient;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskLogin;
-import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.game_state.AskNewGame;
 import org.fusesource.jansi.AnsiConsole;
 
 import java.io.EOFException;
@@ -19,8 +17,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.fusesource.jansi.Ansi.Color.*;
@@ -74,13 +70,20 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
     @Override
     public void run() {
         Thread.currentThread().setName("Socket Player Thread");
+        online.set(true);
         while (online.get() && tunnel.isConnected()) {
             try {
                 EventServer received = (EventServer) inputStream.readObject();
                 received.acceptGeneric(this);
-            } catch (IOException | ClassNotFoundException e) {
-                kickPlayerOut();
-                if (getGameInterface() != null) getGameInterface().disconnectFromGameRoom(this);
+            } catch (EOFException e) {
+                online.set(false);
+                // se si disconnette metto il running a false e tengo in memoria il player
+                if (getGameInterface() == null) ;//TODO non ho ancora fatto il login
+                else getGameInterface().disconnectFromGameRoom(this);
+                e.printStackTrace();
+                closeConnection();
+            } catch (IOException | ClassNotFoundException ex) {
+                online.set(false);
             }
         }
         closeConnection();
@@ -103,11 +106,8 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
 
     @Override
     public void visit(EventController event) {
-        if (getGameInterface() != null) getGameInterface().disconnectFromGameRoom(this);
-        else{
-            AskNewGame packet = new AskNewGame();
-            sendEventToView(packet);
-        }
+        if (!online.get()) getGameInterface().disconnectFromGameRoom(this);
+        else if(getGameInterface()!=null) getGameInterface().sendEventToGameRoom(event);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -169,8 +169,9 @@ public class SocketPlayer extends RemotePlayer2 implements ServerVisitor, EventP
     }
 
     @Override
-    public boolean checkOnline() {
-        return online.get();
+    public boolean checkOnline()throws ConnectionPlayerException {
+        if(online.get()) return true;
+        else throw new ConnectionPlayerException();
     }
 
 

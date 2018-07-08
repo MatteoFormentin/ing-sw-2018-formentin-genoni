@@ -61,6 +61,5 @@ public class AlertMessage {
         boxMessage.setFill(Color.BROWN);
         stageMessage.setScene(boxMessage);
         stageMessage.showAndWait();
-
     }
 }

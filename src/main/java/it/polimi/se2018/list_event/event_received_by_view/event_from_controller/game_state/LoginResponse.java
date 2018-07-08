@@ -6,16 +6,22 @@ import it.polimi.se2018.list_event.event_received_by_view.event_from_controller.
 public class LoginResponse extends EventClientFromController {
 
     private boolean loginSuccessFull;
+    private boolean login;
     private String cause;
     private String nickname;
 
-    public LoginResponse(boolean loginSuccessFull, String cause) {
+    public LoginResponse(boolean loginSuccessFull, String cause,boolean login) {
         this.loginSuccessFull = loginSuccessFull;
         this.cause = cause;
+        this.login =login;
     }
 
     public boolean isLoginSuccessFull() {
         return loginSuccessFull;
+    }
+
+    public boolean isLogin() {
+        return login;
     }
 
     public String getCause() {

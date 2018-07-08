@@ -65,4 +65,8 @@ public class ClientFactory {
         }
         return abstractClient;
     }
+
+    public AbstractClient2 getAbstractClient() {
+        return abstractClient;
+    }
 }
